@@ -130,7 +130,7 @@ export default function PortfolioDetail() {
               <h2 className="font-heading text-2xl md:text-3xl text-white mb-4">Client Privacy &amp; Confidentiality</h2>
               <div className="space-y-4 text-sm text-white/55 font-body font-light leading-relaxed max-w-3xl">
                 <p>
-                  At AROM Studio, we respect the privacy and confidentiality of every client. Many projects are
+                  At AROM STUDIO, we respect the privacy and confidentiality of every client. Many projects are
                   delivered under private agreements or contain sensitive business information. For this reason, we
                   do not publicly share live client website links without explicit written permission.
                 </p>

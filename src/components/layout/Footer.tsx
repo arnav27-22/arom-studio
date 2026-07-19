@@ -35,7 +35,7 @@ export function Footer() {
           {/* Brand */}
           <div className="col-span-2 md:col-span-4">
             <Link to="/" className="inline-flex items-center gap-2 mb-4">
-              <span className="font-heading text-white text-xl">AROM Studio</span>
+              <span className="font-heading text-white text-xl">AROM STUDIO</span>
             </Link>
             <p className="text-sm text-white/50 font-body font-light leading-relaxed max-w-xs">
               Crafting premium digital experiences for ambitious businesses. Based in India, serving globally.
@@ -130,7 +130,7 @@ export function Footer() {
         {/* Bottom */}
         <div className="mt-16 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-xs text-white/30 font-body">
-            &copy; {currentYear} AROM Studio. All rights reserved. Crafted with precision in India.
+            &copy; {currentYear} AROM STUDIO. All rights reserved. Crafted with precision in India.
           </p>
           <div className="flex items-center gap-4">
             <Link to="/privacy" className="text-xs text-white/30 hover:text-white/60 transition-colors font-body">

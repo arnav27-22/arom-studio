@@ -12,7 +12,7 @@ interface SEOProps {
 
 const BASE_URL = 'https://aromstudio.vercel.app'
 const DEFAULT_OG_IMAGE = '/favicon.svg'
-const SITE_NAME = 'AROM Studio'
+const SITE_NAME = 'AROM STUDIO'
 
 export function SEO({ title, description, ogImage, ogType = 'website', canonicalPath, jsonLd }: SEOProps) {
   const { pathname } = useLocation()

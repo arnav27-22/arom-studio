@@ -16,7 +16,7 @@ export default function FAQ() {
     <main className="pt-32">
       <SEO
         title="FAQ"
-        description="Frequently asked questions about AROM Studio's services, pricing, process, and support. Everything you need to know before starting your project."
+        description="Frequently asked questions about AROM STUDIO's services, pricing, process, and support. Everything you need to know before starting your project."
       />
       <Section>
         <Container>
@@ -24,7 +24,7 @@ export default function FAQ() {
             badge="FAQ"
             title="Frequently asked"
             highlightWord="questions"
-            description="Everything you need to know about working with AROM Studio."
+            description="Everything you need to know about working with AROM STUDIO."
           />
 
           {/* Category Tabs */}

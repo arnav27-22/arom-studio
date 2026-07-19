@@ -12,7 +12,7 @@ import { CTABanner } from '../components/sections/shared/CTABanner'
 const homeSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
-  name: 'AROM Studio',
+  name: 'AROM STUDIO',
   url: 'https://aromstudio.vercel.app',
   description: 'Premium web design and development agency crafting high-performance websites and digital experiences for Indian businesses.',
   potentialAction: {
@@ -27,7 +27,7 @@ export default function Home() {
     <main>
       <SEO
         title="Home"
-        description="AROM Studio is a premium web design and development agency crafting high-performance websites and digital experiences for Indian businesses. 1 Year Support included."
+        description="AROM STUDIO is a premium web design and development agency crafting high-performance websites and digital experiences for Indian businesses. 1 Year Support included."
         jsonLd={homeSchema}
       />
       <HeroSection />

@@ -3,7 +3,7 @@ import type { Testimonial } from '../types'
 export const testimonials: Testimonial[] = [
   {
     id: 1,
-    quote: 'AROM Studio delivered a website that exceeded our expectations. The attention to detail and performance optimization is outstanding.',
+    quote: 'AROM STUDIO delivered a website that exceeded our expectations. The attention to detail and performance optimization is outstanding.',
     client: 'Rajesh Mehta',
     company: 'CEO, Nexus Financial Services',
     rating: 5,
@@ -24,7 +24,7 @@ export const testimonials: Testimonial[] = [
   },
   {
     id: 4,
-    quote: 'The platform AROM Studio built for us handles thousands of active users without breaking a sweat. Exceptional engineering.',
+    quote: 'The platform AROM STUDIO built for us handles thousands of active users without breaking a sweat. Exceptional engineering.',
     client: 'Dr. Suresh Kumar',
     company: 'CTO, MediVault Hospitals',
     rating: 5,
@@ -38,7 +38,7 @@ export const testimonials: Testimonial[] = [
   },
   {
     id: 6,
-    quote: 'AROM Studio doesn\'t just build websites — they build digital experiences that drive real business results.',
+    quote: 'AROM STUDIO doesn\'t just build websites — they build digital experiences that drive real business results.',
     client: 'Neha Gupta',
     company: 'Marketing Head, EduSphere',
     rating: 5,

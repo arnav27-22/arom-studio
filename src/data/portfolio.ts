@@ -18,7 +18,7 @@ export const portfolioItems: PortfolioItem[] = [
     ],
     technologies: ['Next.js', 'TypeScript', 'Tailwind CSS', 'PostgreSQL', 'WebSocket', 'Chart.js'],
     testimonial: {
-      quote: 'AROM Studio transformed our digital presence completely. The new platform has exceeded every expectation.',
+      quote: 'AROM STUDIO transformed our digital presence completely. The new platform has exceeded every expectation.',
       client: 'Rajesh Mehta',
       company: 'CEO, Nexus Financial Services',
     },
@@ -40,7 +40,7 @@ export const portfolioItems: PortfolioItem[] = [
     ],
     technologies: ['Next.js', 'TypeScript', 'Stripe', 'PostgreSQL', 'Tailwind CSS', 'Google Maps API'],
     testimonial: {
-      quote: 'The platform AROM Studio built for us has been a game-changer. Our online sales have more than doubled.',
+      quote: 'The platform AROM STUDIO built for us has been a game-changer. Our online sales have more than doubled.',
       client: 'Priya Sharma',
       company: 'Founder, GreenPlate Organics',
     },
@@ -79,7 +79,7 @@ export const portfolioItems: PortfolioItem[] = [
     ],
     technologies: ['Next.js', 'TypeScript', 'Framer Motion', 'Tailwind CSS', 'GSAP', 'Supabase'],
     testimonial: {
-      quote: 'AROM Studio delivered a website that truly represents the quality of our work. It has become our most powerful sales tool.',
+      quote: 'AROM STUDIO delivered a website that truly represents the quality of our work. It has become our most powerful sales tool.',
       client: 'Vikram Patel',
       company: 'Director, BuildCraft Infrastructures',
     },

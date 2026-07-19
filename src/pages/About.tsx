@@ -32,7 +32,7 @@ export default function About() {
     <main className="pt-32">
       <SEO
         title="About"
-        description="AROM Studio was founded by Arnav Pagare — a premium web design and development agency based in India. Learn our story, mission, and values."
+        description="AROM STUDIO was founded by Arnav Pagare — a premium web design and development agency based in India. Learn our story, mission, and values."
       />
       {/* Hero */}
       <Section>
@@ -42,10 +42,10 @@ export default function About() {
             <h1 className="font-heading text-5xl md:text-7xl lg:text-8xl text-white leading-[0.9] tracking-[-3px] mt-3 mb-6">
               The story behind
               <br />
-              <span className="text-accent">AROM Studio</span>
+              <span className="text-accent">AROM STUDIO</span>
             </h1>
             <p className="text-base text-white/60 font-body font-light max-w-2xl leading-relaxed">
-              AROM Studio was founded with a simple belief: every business deserves a premium digital presence. 
+              AROM STUDIO was founded with a simple belief: every business deserves a premium digital presence. 
               We combine technical excellence with creative vision to build websites that don't just look good — they deliver results.
             </p>
           </div>
@@ -73,7 +73,7 @@ export default function About() {
                   
                   <div className="space-y-4 text-base text-white/60 font-body font-light leading-relaxed max-w-3xl">
                     <p>
-                      AROM Studio was founded by Arnav Pagare, a web developer and digital designer passionate about
+                      AROM STUDIO was founded by Arnav Pagare, a web developer and digital designer passionate about
                       creating premium websites that help businesses establish a strong online presence. Every project
                       is built with a focus on quality, performance, and long-term value.
                     </p>
@@ -172,7 +172,7 @@ export default function About() {
                 <Eye className="h-8 w-8 text-accent mb-4" />
                 <h2 className="font-heading text-3xl text-white mb-3">Our Vision</h2>
                 <p className="text-sm text-white/60 font-body font-light leading-relaxed">
-                  To establish AROM Studio as one of India's most trusted premium digital agencies, recognized for
+                  To establish AROM STUDIO as one of India's most trusted premium digital agencies, recognized for
                   craftsmanship, innovation, reliability, and long-term client partnerships. We're building a studio that 
                   clients recommend without hesitation.
                 </p>
@@ -205,7 +205,7 @@ export default function About() {
       {/* What Sets Us Apart */}
       <Section>
         <Container>
-          <SectionHeader title="What sets us" highlightWord="apart" description="Why clients choose AROM Studio over other agencies." />
+          <SectionHeader title="What sets us" highlightWord="apart" description="Why clients choose AROM STUDIO over other agencies." />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {[
               { icon: <Code2 className="h-6 w-6" />, title: 'Modern Tech Stack', desc: 'Built with Next.js, TypeScript, and Tailwind CSS — not outdated CMS platforms. Faster, more secure, and easier to maintain.' },

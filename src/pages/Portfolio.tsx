@@ -19,7 +19,7 @@ export default function Portfolio() {
     <main className="pt-32">
       <SEO
         title="Portfolio"
-        description="View our portfolio of premium websites and applications. See how AROM Studio delivers high-performance digital experiences for Indian businesses."
+        description="View our portfolio of premium websites and applications. See how AROM STUDIO delivers high-performance digital experiences for Indian businesses."
       />
       <Section>
         <Container>
@@ -50,7 +50,7 @@ export default function Portfolio() {
           {/* Results Message */}
           <div className="max-w-3xl mx-auto text-center mb-12 p-6 md:p-8 rounded-[24px] glass">
             <p className="font-heading text-2xl md:text-3xl text-white leading-tight">
-              A website from <span className="text-accent">AROM Studio</span> doesn't just look good —
+              A website from <span className="text-accent">AROM STUDIO</span> doesn't just look good —
             </p>
             <p className="font-heading text-2xl md:text-3xl text-white leading-tight mt-1">
               it brings you <span className="text-accent">more clients</span> and{' '}
@@ -105,7 +105,7 @@ export default function Portfolio() {
                 <h2 className="font-heading text-2xl md:text-3xl text-white mb-4">Client Privacy &amp; Confidentiality</h2>
                 <div className="space-y-4 text-sm text-white/55 font-body font-light leading-relaxed">
                   <p>
-                    Every project at AROM Studio is built with professionalism and trust. To protect our clients' privacy,
+                    Every project at AROM STUDIO is built with professionalism and trust. To protect our clients' privacy,
                     confidential business information, and intellectual property, we do not publicly share live website
                     links unless we have explicit permission to do so.
                   </p>

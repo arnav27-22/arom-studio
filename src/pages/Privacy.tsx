@@ -6,7 +6,7 @@ export default function Privacy() {
     <main className="pt-32">
       <SEO
         title="Privacy Policy"
-        description="AROM Studio privacy policy. Learn how we collect, use, and protect your personal information."
+        description="AROM STUDIO privacy policy. Learn how we collect, use, and protect your personal information."
       />
       <Section>
         <Container>

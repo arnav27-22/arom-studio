@@ -28,7 +28,7 @@ export default function Services() {
     <main className="pt-32">
       <SEO
         title="Services"
-        description="AROM Studio offers business websites, e-commerce, web applications, SaaS platforms, UI/UX design, SEO, and more. Premium web development services for Indian businesses."
+        description="AROM STUDIO offers business websites, e-commerce, web applications, SaaS platforms, UI/UX design, SEO, and more. Premium web development services for Indian businesses."
       />
       <Section>
         <Container>
@@ -93,7 +93,7 @@ export default function Services() {
       <Section>
         <Container>
           <SectionHeader
-            badge="Why AROM Studio"
+            badge="Why AROM STUDIO"
             title="What makes us"
             highlightWord="different"
             description="We don't just build websites — we build digital experiences that drive real business results."

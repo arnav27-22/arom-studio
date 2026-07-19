@@ -69,7 +69,7 @@ export default function Contact() {
     <main className="pt-32">
       <SEO
         title="Contact"
-        description="Get in touch with AROM Studio. Contact us via email at aromstudio27@gmail.com or WhatsApp at +91 8767990061. We respond within 24 hours."
+        description="Get in touch with AROM STUDIO. Contact us via email at aromstudio27@gmail.com or WhatsApp at +91 8767990061. We respond within 24 hours."
       />
       <Section>
         <Container>

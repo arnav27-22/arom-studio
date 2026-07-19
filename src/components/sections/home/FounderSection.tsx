@@ -27,7 +27,7 @@ export function FounderSection() {
                 </h2>
                 <p className="text-sm text-accent font-body font-medium mb-5">Founder & Solo Developer</p>
                 <p className="text-base text-white/60 font-body font-light leading-relaxed max-w-2xl">
-                  AROM Studio was founded with a mission to build premium digital experiences that help businesses grow.
+                  AROM STUDIO was founded with a mission to build premium digital experiences that help businesses grow.
                   Every project is approached with craftsmanship, attention to detail, and a commitment to solving real
                   business problems — not just building beautiful interfaces.
                 </p>

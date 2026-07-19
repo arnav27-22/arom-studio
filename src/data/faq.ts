@@ -2,15 +2,15 @@ export const faqCategories = [
   {
     category: 'General',
     items: [
-      { question: 'What is AROM Studio?', answer: 'AROM Studio is a premium web design and development agency based in India. We create high-performance websites, web applications, and digital experiences for startups, growing businesses, and enterprises.' },
-      { question: 'Where is AROM Studio based?', answer: 'We are based in India and work with clients across the country and globally.' },
-      { question: 'Who is the founder of AROM Studio?', answer: 'AROM Studio was founded by Arnav Pagare, a passionate web developer and designer dedicated to building premium digital experiences.' },
+      { question: 'What is AROM STUDIO?', answer: 'AROM STUDIO is a premium web design and development agency based in India. We create high-performance websites, web applications, and digital experiences for startups, growing businesses, and enterprises.' },
+      { question: 'Where is AROM STUDIO based?', answer: 'We are based in India and work with clients across the country and globally.' },
+      { question: 'Who is the founder of AROM STUDIO?', answer: 'AROM STUDIO was founded by Arnav Pagare, a passionate web developer and designer dedicated to building premium digital experiences.' },
     ],
   },
   {
     category: 'Services',
     items: [
-      { question: 'What services does AROM Studio offer?', answer: 'We offer business websites, corporate websites, landing pages, e-commerce, web applications, SaaS platforms, UI/UX design, redesign, SEO, performance optimization, maintenance, hosting, AI integration, and more.' },
+      { question: 'What services does AROM STUDIO offer?', answer: 'We offer business websites, corporate websites, landing pages, e-commerce, web applications, SaaS platforms, UI/UX design, redesign, SEO, performance optimization, maintenance, hosting, AI integration, and more.' },
       { question: 'Do you offer website maintenance?', answer: 'Yes, we offer ongoing website maintenance services including updates, security patches, performance monitoring, and content updates.' },
       { question: 'Can you redesign my existing website?', answer: 'Absolutely. We specialize in redesigning existing websites to improve performance, aesthetics, and user experience.' },
     ],

@@ -6,7 +6,7 @@ export default function Refund() {
     <main className="pt-32">
       <SEO
         title="Refund Policy"
-        description="AROM Studio refund and cancellation policy. Learn about our refund terms for web design and development services."
+        description="AROM STUDIO refund and cancellation policy. Learn about our refund terms for web design and development services."
       />
       <Section>
         <Container>

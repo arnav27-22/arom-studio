@@ -6,7 +6,7 @@ export default function Terms() {
     <main className="pt-32">
       <SEO
         title="Terms & Conditions"
-        description="AROM Studio terms and conditions governing the use of our website and services."
+        description="AROM STUDIO terms and conditions governing the use of our website and services."
       />
       <Section>
         <Container>
@@ -20,17 +20,17 @@ export default function Terms() {
             <div className="space-y-8 text-sm text-white/60 font-body font-light leading-relaxed">
               <section>
                 <h2 className="font-heading text-2xl text-white mb-3">1. Acceptance of Terms</h2>
-                <p>By accessing or using the AROM Studio website, you agree to be bound by these Terms and Conditions. If you do not agree, please do not use our services.</p>
+                <p>By accessing or using the AROM STUDIO website, you agree to be bound by these Terms and Conditions. If you do not agree, please do not use our services.</p>
               </section>
 
               <section>
                 <h2 className="font-heading text-2xl text-white mb-3">2. Services</h2>
-                <p>AROM Studio provides web design, development, and related digital services. The scope, timeline, and pricing of each project will be outlined in a separate agreement.</p>
+                <p>AROM STUDIO provides web design, development, and related digital services. The scope, timeline, and pricing of each project will be outlined in a separate agreement.</p>
               </section>
 
               <section>
                 <h2 className="font-heading text-2xl text-white mb-3">3. Intellectual Property</h2>
-                <p>Upon full payment, clients retain ownership of the final delivered work. AROM Studio retains the right to display the work in its portfolio.</p>
+                <p>Upon full payment, clients retain ownership of the final delivered work. AROM STUDIO retains the right to display the work in its portfolio.</p>
               </section>
 
               <section>
@@ -40,7 +40,7 @@ export default function Terms() {
 
               <section>
                 <h2 className="font-heading text-2xl text-white mb-3">5. Limitation of Liability</h2>
-                <p>AROM Studio shall not be liable for any indirect, incidental, or consequential damages arising from the use of our services.</p>
+                <p>AROM STUDIO shall not be liable for any indirect, incidental, or consequential damages arising from the use of our services.</p>
               </section>
             </div>
           </div>

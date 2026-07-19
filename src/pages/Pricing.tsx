@@ -12,7 +12,7 @@ export default function Pricing() {
     <main className="pt-32">
       <SEO
         title="Pricing"
-        description="AROM Studio pricing starts from ₹12,000. Transparent pricing for business websites, e-commerce, web applications, and more. All prices in INR."
+        description="AROM STUDIO pricing starts from ₹12,000. Transparent pricing for business websites, e-commerce, web applications, and more. All prices in INR."
       />
       <Section>
         <Container>
