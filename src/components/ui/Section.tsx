@@ -70,10 +70,11 @@ export function SectionHeader({ badge, title, highlightWord, description, align 
         }}
       >
         {parts[0]}
+        {highlightWord && parts.length === 1 && <span> </span>}
         {highlightWord && (
           <span className="text-accent">{highlightWord}</span>
         )}
-        {parts[1]}
+        {parts.length > 1 && parts[1]}
       </h2>
       {description && (
         <p

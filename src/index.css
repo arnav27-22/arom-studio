@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 @theme {
-  --font-heading: 'Instrument Serif', serif;
-  --font-body: 'Barlow', sans-serif;
+  --font-heading: 'Manrope', sans-serif;
+  --font-body: 'Inter', sans-serif;
 
   --color-bg: #000000;
   --color-surface: #080808;

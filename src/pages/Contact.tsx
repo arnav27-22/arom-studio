@@ -1,6 +1,6 @@
 import type React from 'react'
 import { useState } from 'react'
-import { Mail, MessageCircle, Clock, Send, AlertCircle } from 'lucide-react'
+import { Mail, MessageCircle, Clock, Send, AlertCircle, FileText } from 'lucide-react'
 import { Section, Container } from '../components/ui/Section'
 import { SEO } from '../components/ui/SEO'
 import { GlassCard } from '../components/ui/GlassCard'
@@ -270,6 +270,24 @@ export default function Contact() {
                   <p className="text-sm text-white/60 font-body font-light">
                     We typically respond within 24 hours on business days.
                   </p>
+                </GlassCard>
+              </FadeIn>
+
+              <FadeIn delay={0.4}>
+                <GlassCard hover={false}>
+                  <FileText className="h-5 w-5 text-accent mb-3" />
+                  <h3 className="font-heading italic text-lg text-white mb-1">Client Inquiry Form</h3>
+                  <p className="text-sm text-white/60 font-body font-light mb-4">
+                    Prefer a structured form? Fill out our detailed inquiry form and we'll get back to you within 24–48 hours.
+                  </p>
+                  <a
+                    href="https://forms.gle/fGwvkaTRdtb5ZH3x6"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-accent hover:text-accent-light transition-colors duration-200 font-body font-medium inline-flex items-center gap-1"
+                  >
+                    Open Form <FileText className="h-3.5 w-3.5" />
+                  </a>
                 </GlassCard>
               </FadeIn>
             </div>

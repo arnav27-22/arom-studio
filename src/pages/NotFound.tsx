@@ -21,7 +21,7 @@ export default function NotFound() {
   }
 
   return (
-    <div className="relative min-h-screen flex flex-col overflow-hidden" style={{ fontFamily: '"Instrument Serif", "Barlow", sans-serif' }}>
+    <div className="relative min-h-screen flex flex-col overflow-hidden" style={{ fontFamily: '"Manrope", "Inter", sans-serif' }}>
       <SEO title="404 — Page Not Found" description="The page you are looking for does not exist. Return to AROM Studio homepage." />
 
       {/* Content */}
