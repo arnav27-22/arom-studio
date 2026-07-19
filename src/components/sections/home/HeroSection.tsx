@@ -89,7 +89,7 @@ export function HeroSection() {
           initial={{ filter: 'blur(10px)', opacity: 0, y: 20 }}
           animate={{ filter: 'blur(0px)', opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6, ease: 'easeOut' }}
-          className="font-heading text-[clamp(60px,12vw,140px)] text-white leading-[0.85] tracking-[-4px] max-w-4xl"
+          className="font-heading text-[clamp(36px,8vw,90px)] text-white leading-[0.85] tracking-[-2px] max-w-4xl"
         >
           <BlurText text="We Build Websites" delay={0.6} />
           <span className="text-accent"><BlurText text="That Grow Businesses" delay={0.9} /></span>
