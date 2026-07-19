@@ -39,7 +39,7 @@ export default function About() {
         <Container>
           <div className="max-w-3xl">
             <span className="text-xs text-accent font-body uppercase tracking-[0.2em]">About</span>
-            <h1 className="font-heading italic text-5xl md:text-7xl lg:text-8xl text-white leading-[0.9] tracking-[-3px] mt-3 mb-6">
+            <h1 className="font-heading text-5xl md:text-7xl lg:text-8xl text-white leading-[0.9] tracking-[-3px] mt-3 mb-6">
               The story behind
               <br />
               <span className="text-accent">AROM Studio</span>
@@ -61,12 +61,12 @@ export default function About() {
               <div className="relative z-10 flex flex-col lg:flex-row items-start gap-8 lg:gap-16">
                 <div className="shrink-0">
                   <div className="w-28 h-28 md:w-36 md:h-36 rounded-full glass flex items-center justify-center">
-                    <span className="font-heading italic text-4xl md:text-5xl text-accent">AP</span>
+                    <span className="font-heading text-4xl md:text-5xl text-accent">AP</span>
                   </div>
                 </div>
                 <div className="flex-1">
                   <span className="text-xs text-white/40 font-body uppercase tracking-[0.2em]">Founder & Solo Developer</span>
-                  <h2 className="font-heading italic text-4xl md:text-5xl lg:text-6xl text-white tracking-[-1px] leading-none mt-2 mb-1">
+                  <h2 className="font-heading text-4xl md:text-5xl lg:text-6xl text-white tracking-[-1px] leading-none mt-2 mb-1">
                     Arnav Pagare
                   </h2>
                   <p className="text-sm text-accent font-body font-medium mb-6">Founder & Solo Developer</p>
@@ -104,7 +104,7 @@ export default function About() {
                     ].map((fact) => (
                       <div key={fact.label} className="glass rounded-[16px] p-3 text-center">
                         <span className="text-accent flex justify-center mb-1">{fact.icon}</span>
-                        <p className="font-heading italic text-lg text-white">{fact.label}</p>
+                        <p className="font-heading text-lg text-white">{fact.label}</p>
                         <p className="text-[10px] text-white/40 font-body">{fact.desc}</p>
                       </div>
                     ))}
@@ -113,12 +113,12 @@ export default function About() {
                   {/* Quote */}
                   <div className="mt-8 pt-6 border-t border-white/5">
                     <div className="flex items-start gap-3">
-                      <span className="text-accent/30 font-heading italic text-3xl leading-none leading-[0.8]">"</span>
-                      <p className="text-base text-white/70 font-heading italic leading-relaxed">
+                      <span className="text-accent/30 font-heading text-3xl leading-none leading-[0.8]">"</span>
+                      <p className="text-base text-white/70 font-heading leading-relaxed">
                         I don't just build websites — I build digital experiences that help businesses earn trust,
                         attract customers, and grow with confidence.
                       </p>
-                      <span className="text-accent/30 font-heading italic text-3xl leading-none self-end leading-[0.8]">"</span>
+                      <span className="text-accent/30 font-heading text-3xl leading-none self-end leading-[0.8]">"</span>
                     </div>
                     <p className="text-xs text-white/40 font-body mt-3 text-right">— Arnav Pagare</p>
                   </div>
@@ -159,7 +159,7 @@ export default function About() {
             <FadeIn>
               <GlassCard hover={false}>
                 <Target className="h-8 w-8 text-accent mb-4" />
-                <h2 className="font-heading italic text-3xl text-white mb-3">Our Mission</h2>
+                <h2 className="font-heading text-3xl text-white mb-3">Our Mission</h2>
                 <p className="text-sm text-white/60 font-body font-light leading-relaxed">
                   To help businesses succeed online by building premium, high-performance websites and digital products
                   that combine exceptional design, modern technology, and measurable business results. Every project includes 
@@ -170,7 +170,7 @@ export default function About() {
             <FadeIn delay={0.1}>
               <GlassCard hover={false}>
                 <Eye className="h-8 w-8 text-accent mb-4" />
-                <h2 className="font-heading italic text-3xl text-white mb-3">Our Vision</h2>
+                <h2 className="font-heading text-3xl text-white mb-3">Our Vision</h2>
                 <p className="text-sm text-white/60 font-body font-light leading-relaxed">
                   To establish AROM Studio as one of India's most trusted premium digital agencies, recognized for
                   craftsmanship, innovation, reliability, and long-term client partnerships. We're building a studio that 
@@ -193,7 +193,7 @@ export default function About() {
                   <div className="w-10 h-10 rounded-[10px] glass flex items-center justify-center text-accent mb-4">
                     {v.icon}
                   </div>
-                  <h3 className="font-heading italic text-lg text-white mb-2">{v.title}</h3>
+                  <h3 className="font-heading text-lg text-white mb-2">{v.title}</h3>
                   <p className="text-xs text-white/55 font-body font-light leading-relaxed">{v.description}</p>
                 </GlassCard>
               </StaggerItem>
@@ -214,7 +214,7 @@ export default function About() {
             ].map((item) => (
               <GlassCard key={item.title}>
                 <div className="w-11 h-11 rounded-[12px] glass flex items-center justify-center text-accent mb-5">{item.icon}</div>
-                <h3 className="font-heading italic text-xl text-white mb-2">{item.title}</h3>
+                <h3 className="font-heading text-xl text-white mb-2">{item.title}</h3>
                 <p className="text-sm text-white/55 font-body font-light leading-relaxed">{item.desc}</p>
               </GlassCard>
             ))}

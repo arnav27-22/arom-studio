@@ -29,7 +29,7 @@ export function Navbar() {
           >
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 px-3">
-              <span className="font-heading italic text-white text-lg md:text-xl tracking-tight">
+              <span className="font-heading text-white text-lg md:text-xl tracking-tight">
                 AROM STUDIO
               </span>
             </Link>
@@ -96,7 +96,7 @@ export function Navbar() {
                   to={link.href}
                   onClick={() => setMobileOpen(false)}
                   className={cn(
-                    'text-3xl font-heading italic transition-colors duration-200',
+                    'text-3xl font-heading transition-colors duration-200',
                     location.pathname === link.href
                       ? 'text-white'
                       : 'text-white/40 hover:text-white',

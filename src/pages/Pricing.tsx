@@ -37,9 +37,9 @@ export default function Pricing() {
                       {plan.badge}
                     </span>
                   )}
-                  <h3 className="font-heading italic text-2xl text-white mb-1">{plan.name}</h3>
+                  <h3 className="font-heading text-2xl text-white mb-1">{plan.name}</h3>
                   <div className="flex items-baseline gap-1 mb-4">
-                    <span className="font-heading italic text-4xl md:text-5xl text-accent tracking-[-1px]">{plan.price}</span>
+                    <span className="font-heading text-4xl md:text-5xl text-accent tracking-[-1px]">{plan.price}</span>
                   </div>
                   <p className="text-xs text-white/50 font-body mb-5">{plan.description}</p>
                   <ul className="space-y-2.5 flex-1 mb-6">
@@ -69,9 +69,9 @@ export default function Pricing() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-20">
               {pricingPlans.slice(3).map((plan) => (
                 <GlassCard key={plan.name} className="flex flex-col border border-accent/20">
-                  <h3 className="font-heading italic text-2xl text-white mb-1">{plan.name}</h3>
+                  <h3 className="font-heading text-2xl text-white mb-1">{plan.name}</h3>
                   <div className="flex items-baseline gap-1 mb-4">
-                    <span className="font-heading italic text-4xl md:text-5xl text-accent tracking-[-1px]">{plan.price}</span>
+                    <span className="font-heading text-4xl md:text-5xl text-accent tracking-[-1px]">{plan.price}</span>
                   </div>
                   <p className="text-xs text-white/50 font-body mb-5">{plan.description}</p>
                   <ul className="grid grid-cols-2 gap-2.5 flex-1 mb-6">
@@ -101,7 +101,7 @@ export default function Pricing() {
                   <tr className="border-b border-white/10">
                     <th className="text-left py-4 pr-8 text-white/60 font-medium whitespace-nowrap">Feature</th>
                     {pricingPlans.map((p) => (
-                      <th key={p.name} className="text-center py-4 px-3 text-white/80 font-heading italic text-sm min-w-[110px]">
+                      <th key={p.name} className="text-center py-4 px-3 text-white/80 font-heading text-sm min-w-[110px]">
                         {p.name}
                       </th>
                     ))}
@@ -148,8 +148,8 @@ export default function Pricing() {
               { title: 'SEO Boost Package', price: '₹8,000', desc: 'Advanced keyword research, backlinks, and monthly reporting.' },
             ].map((addon) => (
               <GlassCard key={addon.title} className="flex flex-col">
-                <h3 className="font-heading italic text-xl text-white mb-1">{addon.title}</h3>
-                <p className="font-heading italic text-2xl text-accent mb-2">{addon.price}</p>
+                <h3 className="font-heading text-xl text-white mb-1">{addon.title}</h3>
+                <p className="font-heading text-2xl text-accent mb-2">{addon.price}</p>
                 <p className="text-xs text-white/55 font-body font-light flex-1">{addon.desc}</p>
                 <Link
                   to="/contact"

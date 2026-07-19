@@ -89,7 +89,7 @@ export function HeroSection() {
           initial={{ filter: 'blur(10px)', opacity: 0, y: 20 }}
           animate={{ filter: 'blur(0px)', opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6, ease: 'easeOut' }}
-          className="font-heading italic text-[clamp(60px,12vw,140px)] text-white leading-[0.85] tracking-[-4px] max-w-4xl"
+          className="font-heading text-[clamp(60px,12vw,140px)] text-white leading-[0.85] tracking-[-4px] max-w-4xl"
         >
           <BlurText text="We Build Websites" delay={0.6} />
           <span className="text-accent"><BlurText text="That Grow Businesses" delay={0.9} /></span>
@@ -155,21 +155,21 @@ export function HeroSection() {
             <svg className="h-5 w-5 md:h-6 md:w-6 text-white/80 mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
             </svg>
-            <p className="font-heading italic text-3xl md:text-4xl text-white tracking-[-1px] leading-none">3+</p>
+            <p className="font-heading text-3xl md:text-4xl text-white tracking-[-1px] leading-none">3+</p>
             <p className="text-[11px] text-white/60 font-body font-light mt-1.5">Years Experience</p>
           </div>
           <div className="glass rounded-[20px] p-4 md:p-5 w-[160px] md:w-[200px]">
             <svg className="h-5 w-5 md:h-6 md:w-6 text-white/80 mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
             </svg>
-            <p className="font-heading italic text-3xl md:text-4xl text-white tracking-[-1px] leading-none">50+</p>
+            <p className="font-heading text-3xl md:text-4xl text-white tracking-[-1px] leading-none">50+</p>
             <p className="text-[11px] text-white/60 font-body font-light mt-1.5">Projects Delivered</p>
           </div>
           <div className="glass rounded-[20px] p-4 md:p-5 w-[160px] md:w-[200px]">
             <svg className="h-5 w-5 md:h-6 md:w-6 text-white/80 mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
-            <p className="font-heading italic text-3xl md:text-4xl text-white tracking-[-1px] leading-none">95+</p>
+            <p className="font-heading text-3xl md:text-4xl text-white tracking-[-1px] leading-none">95+</p>
             <p className="text-[11px] text-white/60 font-body font-light mt-1.5">Lighthouse Score</p>
           </div>
         </motion.div>

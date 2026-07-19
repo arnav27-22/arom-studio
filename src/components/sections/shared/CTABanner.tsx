@@ -13,7 +13,7 @@ export function CTABanner() {
 
       <Container className="relative z-10 text-center">
         <FadeIn>
-          <h2 className="font-heading italic text-5xl md:text-7xl lg:text-8xl text-white leading-[0.9] tracking-[-3px] max-w-3xl mx-auto">
+          <h2 className="font-heading text-5xl md:text-7xl lg:text-8xl text-white leading-[0.9] tracking-[-3px] max-w-3xl mx-auto">
             Ready to Build
             <br />
             <span className="text-accent">Something Premium?</span>

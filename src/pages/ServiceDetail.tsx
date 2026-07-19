@@ -14,7 +14,7 @@ export default function ServiceDetail() {
     return (
       <main className="pt-32 min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="font-heading italic text-4xl text-white mb-4">Service not found</h1>
+          <h1 className="font-heading text-4xl text-white mb-4">Service not found</h1>
           <Link to="/services" className="text-accent hover:underline font-body">Back to Services</Link>
         </div>
       </main>
@@ -36,7 +36,7 @@ export default function ServiceDetail() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
             <div>
               <span className="text-xs text-accent font-body uppercase tracking-[0.2em]">Service</span>
-              <h1 className="font-heading italic text-5xl md:text-7xl text-white leading-[0.9] tracking-[-2px] mt-2 mb-6">
+              <h1 className="font-heading text-5xl md:text-7xl text-white leading-[0.9] tracking-[-2px] mt-2 mb-6">
                 {service.title}
               </h1>
               <p className="text-base text-white/60 font-body font-light leading-relaxed mb-8">{service.description}</p>
@@ -47,12 +47,12 @@ export default function ServiceDetail() {
                 >
                   Get Started <ArrowUpRight className="h-4 w-4" />
                 </Link>
-                <span className="font-heading italic text-3xl text-accent">{service.price}</span>
+                <span className="font-heading text-3xl text-accent">{service.price}</span>
               </div>
             </div>
 
             <GlassCard className="!rounded-[24px]">
-              <h3 className="font-heading italic text-2xl text-white mb-5">What&apos;s Included</h3>
+              <h3 className="font-heading text-2xl text-white mb-5">What&apos;s Included</h3>
               <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {service.features.map((f) => (
                   <li key={f} className="flex items-start gap-2 text-sm text-white/65 font-body font-light">
@@ -72,9 +72,9 @@ export default function ServiceDetail() {
           <div className="space-y-4">
             {service.process.map((step) => (
               <GlassCard key={step.step} className="flex items-start gap-5 !rounded-[20px]" hover={false}>
-                <span className="font-heading italic text-3xl text-accent shrink-0 w-10">{String(step.step).padStart(2, '0')}</span>
+                <span className="font-heading text-3xl text-accent shrink-0 w-10">{String(step.step).padStart(2, '0')}</span>
                 <div>
-                  <h3 className="font-heading italic text-xl text-white mb-1">{step.title}</h3>
+                  <h3 className="font-heading text-xl text-white mb-1">{step.title}</h3>
                   <p className="text-sm text-white/55 font-body font-light">{step.description}</p>
                 </div>
               </GlassCard>
@@ -91,7 +91,7 @@ export default function ServiceDetail() {
             <div className="space-y-4 max-w-2xl">
               {service.faqs.map((faq, i) => (
                 <GlassCard key={i} hover={false} className="!rounded-[20px]">
-                  <h4 className="font-heading italic text-lg text-white mb-2">{faq.question}</h4>
+                  <h4 className="font-heading text-lg text-white mb-2">{faq.question}</h4>
                   <p className="text-sm text-white/55 font-body font-light">{faq.answer}</p>
                 </GlassCard>
               ))}

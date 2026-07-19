@@ -15,14 +15,14 @@ export function FounderSection() {
               {/* Avatar */}
               <div className="shrink-0">
                 <div className="w-24 h-24 md:w-32 md:h-32 rounded-full glass flex items-center justify-center">
-                  <span className="font-heading italic text-3xl md:text-4xl text-accent">AP</span>
+                  <span className="font-heading text-3xl md:text-4xl text-accent">AP</span>
                 </div>
               </div>
 
               {/* Content */}
               <div className="flex-1">
                 <span className="text-xs text-white/40 font-body uppercase tracking-[0.2em]">Founder</span>
-                <h2 className="font-heading italic text-4xl md:text-5xl lg:text-6xl text-white tracking-[-1px] leading-none mt-2 mb-1">
+                <h2 className="font-heading text-4xl md:text-5xl lg:text-6xl text-white tracking-[-1px] leading-none mt-2 mb-1">
                   Arnav Pagare
                 </h2>
                 <p className="text-sm text-accent font-body font-medium mb-5">Founder & Solo Developer</p>

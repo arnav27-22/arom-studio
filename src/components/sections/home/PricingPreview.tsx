@@ -31,9 +31,9 @@ export function PricingPreview() {
                   </span>
                 )}
                 <div className="mb-5">
-                  <h3 className="font-heading italic text-2xl text-white mb-1">{plan.name}</h3>
+                  <h3 className="font-heading text-2xl text-white mb-1">{plan.name}</h3>
                   <div className="flex items-baseline gap-1">
-                    <span className="font-heading italic text-4xl text-accent tracking-[-1px]">{plan.price}</span>
+                    <span className="font-heading text-4xl text-accent tracking-[-1px]">{plan.price}</span>
                   </div>
                   <p className="text-xs text-white/50 font-body mt-2">{plan.description}</p>
                 </div>

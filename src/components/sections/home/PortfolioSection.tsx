@@ -34,7 +34,7 @@ export function PortfolioSection() {
                     <span className="text-[11px] text-white/40 font-body">{featured[0].industry}</span>
                   </div>
                   <div className="flex-1" />
-                  <h3 className="font-heading italic text-3xl md:text-4xl text-white tracking-[-1px] leading-none mb-2">
+                  <h3 className="font-heading text-3xl md:text-4xl text-white tracking-[-1px] leading-none mb-2">
                     {featured[0].title}
                   </h3>
                   <p className="text-sm text-white/50 font-body font-light mb-3">{featured[0].client}</p>
@@ -75,7 +75,7 @@ export function PortfolioSection() {
                   <span className="text-[11px] text-white/40 font-body">{item.industry}</span>
                 </div>
                 <div className="flex-1" />
-                <h3 className="font-heading italic text-2xl md:text-3xl text-white tracking-[-1px] leading-none mb-2">{item.title}</h3>
+                <h3 className="font-heading text-2xl md:text-3xl text-white tracking-[-1px] leading-none mb-2">{item.title}</h3>
                 <p className="text-sm text-white/50 font-body font-light mb-2">{item.client}</p>
                 <p className="text-xs text-white/40 font-body mb-4 line-clamp-2">{item.description}</p>
                 <div className="flex flex-wrap gap-2 mb-4">

@@ -54,14 +54,14 @@ export function ServicesSection() {
                 <div className="w-11 h-11 rounded-[12px] glass flex items-center justify-center text-accent mb-5 group-hover:border-accent/30 transition-all">
                   {iconMap[service.icon]}
                 </div>
-                <h3 className="font-heading italic text-2xl md:text-3xl text-white tracking-[-1px] leading-none mb-3">
+                <h3 className="font-heading text-2xl md:text-3xl text-white tracking-[-1px] leading-none mb-3">
                   {service.title}
                 </h3>
                 <p className="text-sm text-white/60 font-body font-light leading-relaxed flex-1">
                   {service.description}
                 </p>
                 <div className="flex items-center justify-between mt-5 pt-4 border-t border-white/5">
-                  <span className="font-heading italic text-base text-accent">{service.price}</span>
+                  <span className="font-heading text-base text-accent">{service.price}</span>
                   <div className="flex items-center gap-1.5 text-xs text-accent font-medium group-hover:gap-2.5 transition-all duration-300">
                     Learn More <ArrowUpRight className="h-3.5 w-3.5" />
                   </div>

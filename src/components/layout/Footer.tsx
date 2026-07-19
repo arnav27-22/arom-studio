@@ -35,7 +35,7 @@ export function Footer() {
           {/* Brand */}
           <div className="col-span-2 md:col-span-4">
             <Link to="/" className="inline-flex items-center gap-2 mb-4">
-              <span className="font-heading italic text-white text-xl">AROM Studio</span>
+              <span className="font-heading text-white text-xl">AROM Studio</span>
             </Link>
             <p className="text-sm text-white/50 font-body font-light leading-relaxed max-w-xs">
               Crafting premium digital experiences for ambitious businesses. Based in India, serving globally.

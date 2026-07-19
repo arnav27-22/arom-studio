@@ -75,7 +75,7 @@ export default function Contact() {
         <Container>
           <div className="max-w-3xl mb-12">
             <span className="text-xs text-accent font-body uppercase tracking-[0.2em]">Contact</span>
-            <h1 className="font-heading italic text-5xl md:text-7xl text-white leading-[0.9] tracking-[-2px] mt-3 mb-4">
+            <h1 className="font-heading text-5xl md:text-7xl text-white leading-[0.9] tracking-[-2px] mt-3 mb-4">
               Let&apos;s build
               <br />
               <span className="text-accent">something great</span>
@@ -94,7 +94,7 @@ export default function Contact() {
                     <div className="w-16 h-16 rounded-full bg-accent/20 flex items-center justify-center mx-auto mb-6">
                       <Send className="h-8 w-8 text-accent" />
                     </div>
-                    <h2 className="font-heading italic text-3xl text-white mb-3">Thank You!</h2>
+                    <h2 className="font-heading text-3xl text-white mb-3">Thank You!</h2>
                     <p className="text-sm text-white/60 font-body font-light max-w-md mx-auto">
                       Your message has been received. Arnav will review it and get back to you within 24 hours.
                     </p>
@@ -240,18 +240,36 @@ export default function Contact() {
             <div className="space-y-5">
               <FadeIn delay={0.1}>
                 <GlassCard hover={false}>
-                  <Mail className="h-5 w-5 text-accent mb-3" />
-                  <h3 className="font-heading italic text-lg text-white mb-1">Email</h3>
-                  <a href={SOCIAL_LINKS.email} className="text-sm text-white/60 hover:text-accent transition-colors font-body">
-                    aromstudio27@gmail.com
+                  <FileText className="h-5 w-5 text-accent mb-3" />
+                  <h3 className="font-heading text-sm text-white mb-1">Client Inquiry Form</h3>
+                  <p className="text-xs text-white/60 font-body font-light mb-4">
+                    Prefer a structured form? Fill out our detailed inquiry form and we'll get back to you within 24–48 hours.
+                  </p>
+                  <a
+                    href="https://forms.gle/fGwvkaTRdtb5ZH3x6"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-accent hover:text-accent-light transition-colors duration-200 font-body font-medium inline-flex items-center gap-1"
+                  >
+                    Open Form <FileText className="h-3.5 w-3.5" />
                   </a>
                 </GlassCard>
               </FadeIn>
 
               <FadeIn delay={0.2}>
                 <GlassCard hover={false}>
+                  <Mail className="h-5 w-5 text-accent mb-3" />
+                  <h3 className="font-heading text-lg text-white mb-1">Email</h3>
+                  <a href={SOCIAL_LINKS.email} className="text-sm text-white/60 hover:text-accent transition-colors font-body">
+                    aromstudio27@gmail.com
+                  </a>
+                </GlassCard>
+              </FadeIn>
+
+              <FadeIn delay={0.3}>
+                <GlassCard hover={false}>
                   <MessageCircle className="h-5 w-5 text-whatsapp mb-3" />
-                  <h3 className="font-heading italic text-lg text-white mb-1">WhatsApp</h3>
+                  <h3 className="font-heading text-lg text-white mb-1">WhatsApp</h3>
                   <a
                     href={SOCIAL_LINKS.whatsapp}
                     target="_blank"
@@ -263,31 +281,13 @@ export default function Contact() {
                 </GlassCard>
               </FadeIn>
 
-              <FadeIn delay={0.3}>
+              <FadeIn delay={0.4}>
                 <GlassCard hover={false}>
                   <Clock className="h-5 w-5 text-accent mb-3" />
-                  <h3 className="font-heading italic text-lg text-white mb-1">Response Time</h3>
+                  <h3 className="font-heading text-lg text-white mb-1">Response Time</h3>
                   <p className="text-sm text-white/60 font-body font-light">
                     We typically respond within 24 hours on business days.
                   </p>
-                </GlassCard>
-              </FadeIn>
-
-              <FadeIn delay={0.4}>
-                <GlassCard hover={false}>
-                  <FileText className="h-5 w-5 text-accent mb-3" />
-                  <h3 className="font-heading italic text-lg text-white mb-1">Client Inquiry Form</h3>
-                  <p className="text-sm text-white/60 font-body font-light mb-4">
-                    Prefer a structured form? Fill out our detailed inquiry form and we'll get back to you within 24–48 hours.
-                  </p>
-                  <a
-                    href="https://forms.gle/fGwvkaTRdtb5ZH3x6"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-accent hover:text-accent-light transition-colors duration-200 font-body font-medium inline-flex items-center gap-1"
-                  >
-                    Open Form <FileText className="h-3.5 w-3.5" />
-                  </a>
                 </GlassCard>
               </FadeIn>
             </div>

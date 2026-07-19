@@ -61,7 +61,7 @@ export default function Services() {
                   <div className="w-11 h-11 rounded-[12px] glass flex items-center justify-center text-accent mb-5 group-hover:border-accent/30 transition-all">
                     {iconMap[service.icon] || <Building2 className="h-6 w-6" />}
                   </div>
-                  <h3 className="font-heading italic text-2xl text-white tracking-[-0.5px] mb-3 leading-tight">{service.title}</h3>
+                  <h3 className="font-heading text-2xl text-white tracking-[-0.5px] mb-3 leading-tight">{service.title}</h3>
                   <p className="text-sm text-white/55 font-body font-light leading-relaxed flex-1 line-clamp-3">
                     {expandedService === service.slug && service.longDescription ? service.longDescription : service.description}
                   </p>
@@ -77,7 +77,7 @@ export default function Services() {
                   )}
 
                   <div className="flex items-center justify-between mt-5 pt-4 border-t border-white/5">
-                    <span className="font-heading italic text-lg text-accent">{service.price}</span>
+                    <span className="font-heading text-lg text-accent">{service.price}</span>
                     <div className="flex items-center gap-1.5 text-xs text-accent font-medium group-hover:gap-2.5 transition-all duration-300">
                       Learn More <ArrowUpRight className="h-3.5 w-3.5" />
                     </div>
@@ -109,7 +109,7 @@ export default function Services() {
                 <div className="w-10 h-10 rounded-[10px] glass flex items-center justify-center text-accent mx-auto mb-4">
                   {item.icon}
                 </div>
-                <h3 className="font-heading italic text-lg text-white mb-2">{item.title}</h3>
+                <h3 className="font-heading text-lg text-white mb-2">{item.title}</h3>
                 <p className="text-xs text-white/55 font-body font-light leading-relaxed">{item.desc}</p>
               </GlassCard>
             ))}

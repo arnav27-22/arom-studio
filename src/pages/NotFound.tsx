@@ -30,7 +30,7 @@ export default function NotFound() {
         <nav className="flex items-center justify-between px-6 md:px-12 lg:px-16 py-5">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
-            <span className="text-white text-xl font-heading italic tracking-wider">AROM STUDIO</span>
+            <span className="text-white text-xl font-heading tracking-wider">AROM STUDIO</span>
           </Link>
 
           {/* Desktop Nav */}

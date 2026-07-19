@@ -62,7 +62,7 @@ export function SectionHeader({ badge, title, highlightWord, description, align 
         </div>
       )}
       <h2
-        className="font-heading italic text-5xl md:text-6xl lg:text-7xl text-white leading-[0.9] tracking-[-2px]"
+        className="font-heading text-5xl md:text-6xl lg:text-7xl text-white leading-[0.9] tracking-[-2px]"
         style={{
           opacity: isInView ? 1 : 0,
           transform: isInView ? 'translateY(0)' : 'translateY(20px)',

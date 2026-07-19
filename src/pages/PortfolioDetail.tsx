@@ -14,7 +14,7 @@ export default function PortfolioDetail() {
     return (
       <main className="pt-32 min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="font-heading italic text-4xl text-white mb-4">Project not found</h1>
+          <h1 className="font-heading text-4xl text-white mb-4">Project not found</h1>
           <Link to="/portfolio" className="text-accent hover:underline font-body">Back to Portfolio</Link>
         </div>
       </main>
@@ -36,7 +36,7 @@ export default function PortfolioDetail() {
           {/* Hero */}
           <div className="glass rounded-[32px] p-8 md:p-12 mb-12">
             <span className="text-xs text-accent font-body uppercase tracking-[0.2em]">{item.category}</span>
-            <h1 className="font-heading italic text-5xl md:text-7xl text-white leading-[0.9] tracking-[-2px] mt-3 mb-4">
+            <h1 className="font-heading text-5xl md:text-7xl text-white leading-[0.9] tracking-[-2px] mt-3 mb-4">
               {item.title}
             </h1>
             <p className="text-base text-white/60 font-body font-light max-w-2xl">{item.description}</p>
@@ -61,11 +61,11 @@ export default function PortfolioDetail() {
 
             <div className="lg:col-span-8 space-y-6">
               <div>
-                <h2 className="font-heading italic text-2xl text-white mb-3">The Challenge</h2>
+                <h2 className="font-heading text-2xl text-white mb-3">The Challenge</h2>
                 <p className="text-sm text-white/60 font-body font-light leading-relaxed">{item.challenge}</p>
               </div>
               <div>
-                <h2 className="font-heading italic text-2xl text-white mb-3">The Solution</h2>
+                <h2 className="font-heading text-2xl text-white mb-3">The Solution</h2>
                 <p className="text-sm text-white/60 font-body font-light leading-relaxed">{item.solution}</p>
               </div>
             </div>
@@ -73,11 +73,11 @@ export default function PortfolioDetail() {
 
           {/* Results */}
           <div className="mb-12">
-            <h2 className="font-heading italic text-3xl text-white mb-6 text-center">Results</h2>
+            <h2 className="font-heading text-3xl text-white mb-6 text-center">Results</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {item.results.map((r) => (
                 <GlassCard key={r.metric} className="text-center !rounded-[20px]">
-                  <p className="font-heading italic text-3xl md:text-4xl text-accent tracking-[-1px]">{r.value}</p>
+                  <p className="font-heading text-3xl md:text-4xl text-accent tracking-[-1px]">{r.value}</p>
                   <p className="text-xs text-white/50 font-body mt-1">{r.metric}</p>
                 </GlassCard>
               ))}
@@ -86,7 +86,7 @@ export default function PortfolioDetail() {
 
           {/* Tech Stack */}
           <div className="mb-12">
-            <h2 className="font-heading italic text-2xl text-white mb-5">Technologies Used</h2>
+            <h2 className="font-heading text-2xl text-white mb-5">Technologies Used</h2>
             <div className="flex flex-wrap gap-2">
               {item.technologies.map((tech) => (
                 <span key={tech} className="glass text-sm text-white/70 font-body px-4 py-2 rounded-full">
@@ -99,7 +99,7 @@ export default function PortfolioDetail() {
           {/* Testimonial */}
           {item.testimonial && (
             <GlassCard hover={false} className="!rounded-[24px] mb-12">
-              <blockquote className="text-lg md:text-xl text-white/80 font-heading italic leading-relaxed mb-4">
+              <blockquote className="text-lg md:text-xl text-white/80 font-heading leading-relaxed mb-4">
                 &ldquo;{item.testimonial.quote}&rdquo;
               </blockquote>
               <p className="text-sm font-body font-medium text-white">{item.testimonial.client}</p>
@@ -127,7 +127,7 @@ export default function PortfolioDetail() {
                 <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
                 Privacy First
               </span>
-              <h2 className="font-heading italic text-2xl md:text-3xl text-white mb-4">Client Privacy &amp; Confidentiality</h2>
+              <h2 className="font-heading text-2xl md:text-3xl text-white mb-4">Client Privacy &amp; Confidentiality</h2>
               <div className="space-y-4 text-sm text-white/55 font-body font-light leading-relaxed max-w-3xl">
                 <p>
                   At AROM Studio, we respect the privacy and confidentiality of every client. Many projects are

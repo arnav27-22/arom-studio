@@ -49,10 +49,10 @@ export default function Portfolio() {
 
           {/* Results Message */}
           <div className="max-w-3xl mx-auto text-center mb-12 p-6 md:p-8 rounded-[24px] glass">
-            <p className="font-heading italic text-2xl md:text-3xl text-white leading-tight">
+            <p className="font-heading text-2xl md:text-3xl text-white leading-tight">
               A website from <span className="text-accent">AROM Studio</span> doesn't just look good —
             </p>
-            <p className="font-heading italic text-2xl md:text-3xl text-white leading-tight mt-1">
+            <p className="font-heading text-2xl md:text-3xl text-white leading-tight mt-1">
               it brings you <span className="text-accent">more clients</span> and{' '}
               <span className="text-accent">more customers</span>.
             </p>
@@ -81,7 +81,7 @@ export default function Portfolio() {
                       </span>
                     </div>
                     <div className="flex-1" />
-                    <h3 className="font-heading italic text-2xl md:text-3xl text-white tracking-[-1px] leading-none mb-2">
+                    <h3 className="font-heading text-2xl md:text-3xl text-white tracking-[-1px] leading-none mb-2">
                       {item.title}
                     </h3>
                     <p className="text-sm text-white/50 font-body font-light mb-4">{item.client}</p>
@@ -102,7 +102,7 @@ export default function Portfolio() {
                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
               </svg>
               <div>
-                <h2 className="font-heading italic text-2xl md:text-3xl text-white mb-4">Client Privacy &amp; Confidentiality</h2>
+                <h2 className="font-heading text-2xl md:text-3xl text-white mb-4">Client Privacy &amp; Confidentiality</h2>
                 <div className="space-y-4 text-sm text-white/55 font-body font-light leading-relaxed">
                   <p>
                     Every project at AROM Studio is built with professionalism and trust. To protect our clients' privacy,
