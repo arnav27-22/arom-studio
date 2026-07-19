@@ -106,7 +106,7 @@ export const comparisonFeatures = [
   { name: 'API Integrations', tiers: [false, false, true, true, true] },
   { name: 'Custom Animations', tiers: [false, false, true, true, true] },
   { name: 'AI-powered Features', tiers: [false, false, false, true, true] },
-  { name: 'Free Domain (1 Year)\n(Terms & Conditions)', tiers: [false, true, true, true, true] },
+  { name: 'Free Domain (1 Year) (T&C)', tiers: [false, true, true, true, true] },
   { name: 'Custom Domain Setup', tiers: [false, false, true, true, true] },
   { name: '1 Year Support', tiers: [true, true, true, true, true] },
   { name: 'Dedicated Project Manager', tiers: [false, false, false, false, true] },

@@ -43,18 +43,11 @@ export default function Pricing() {
                   </div>
                   <p className="text-xs text-white/50 font-body mb-5">{plan.description}</p>
                   <ul className="space-y-2.5 flex-1 mb-6">
-                    {plan.features.map((f) => {
-                      const parts = f.split('\n');
-                      return (
-                        <li key={f} className="flex items-start gap-2 text-sm text-white/65 font-body font-light">
-                          <Check className="h-4 w-4 text-accent shrink-0 mt-0.5" />
-                          <span>
-                            {parts[0]}
-                            {parts[1] && <><br /><span className="text-[11px] text-white/40">{parts[1]}</span></>}
-                          </span>
-                        </li>
-                      );
-                    })}
+                    {plan.features.map((f) => (
+                      <li key={f} className="flex items-start gap-2 text-sm text-white/65 font-body font-light">
+                        <Check className="h-4 w-4 text-accent shrink-0 mt-0.5" /> {f}
+                      </li>
+                    ))}
                   </ul>
                   <Link
                     to="/contact"
@@ -82,18 +75,11 @@ export default function Pricing() {
                   </div>
                   <p className="text-xs text-white/50 font-body mb-5">{plan.description}</p>
                   <ul className="grid grid-cols-2 gap-2.5 flex-1 mb-6">
-                    {plan.features.map((f) => {
-                      const parts = f.split('\n');
-                      return (
-                        <li key={f} className="flex items-start gap-2 text-sm text-white/65 font-body font-light">
-                          <Check className="h-4 w-4 text-accent shrink-0 mt-0.5" />
-                          <span>
-                            {parts[0]}
-                            {parts[1] && <><br /><span className="text-[11px] text-white/40">{parts[1]}</span></>}
-                          </span>
-                        </li>
-                      );
-                    })}
+                    {plan.features.map((f) => (
+                      <li key={f} className="flex items-start gap-2 text-sm text-white/65 font-body font-light">
+                        <Check className="h-4 w-4 text-accent shrink-0 mt-0.5" /> {f}
+                      </li>
+                    ))}
                   </ul>
                   <Link
                     to="/contact"
