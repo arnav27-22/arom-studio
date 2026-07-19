@@ -51,7 +51,7 @@ export function SectionHeader({ badge, title, highlightWord, description, align 
     >
       {badge && (
         <div
-          className="glass inline-flex items-center rounded-full px-4 py-1.5 text-xs font-medium text-white/80 mb-6"
+          className="glass inline-flex items-center rounded-full px-4 py-1.5 text-sm font-medium text-white/80 mb-6"
           style={{
             opacity: isInView ? 1 : 0,
             transform: isInView ? 'translateY(0)' : 'translateY(10px)',

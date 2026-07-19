@@ -31,7 +31,7 @@ export default function Pricing() {
           <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8 mt-8">
             {pricingPlans.slice(0, 3).map((plan) => (
               <StaggerItem key={plan.name}>
-                <GlassCard className={`flex flex-col h-full relative ${plan.highlighted ? 'border border-accent/30 shadow-[0_0_30px_0_rgba(78,133,191,0.15)]' : ''}`}>
+                <GlassCard className={`flex flex-col h-full relative overflow-visible ${plan.highlighted ? 'border border-accent/30 shadow-[0_0_30px_0_rgba(78,133,191,0.15)]' : ''}`}>
                   {plan.badge && (
                     <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-accent text-white text-[10px] font-semibold px-3 py-1 rounded-full whitespace-nowrap">
                       {plan.badge}
