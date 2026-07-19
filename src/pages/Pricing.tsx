@@ -141,7 +141,7 @@ export default function Pricing() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {[
               { title: 'Custom Domain Setup', price: '₹1,500', desc: 'Professional email & domain configuration with SSL.' },
-              { title: 'Free Domain (1 Year)', price: '₹0*', desc: 'Free domain registration for the first year (*T&C apply).' },
+              { title: 'Free Domain LIFETIME', price: '₹5,000', desc: 'Free domain registration for the first year (*T&C apply).' },
               { title: 'Extended Support', price: '₹5,000/mo', desc: 'Ongoing maintenance, updates, and priority support beyond included period.' },
               { title: 'Content Writing', price: '₹3,000', desc: 'Professional copywriting for up to 5 pages.' },
               { title: 'Logo & Brand Kit', price: '₹4,500', desc: 'Custom logo design with brand guidelines.' },
