@@ -13,7 +13,7 @@ export const pricingPlans: PricingPlan[] = [
       'Social Media Links',
       'Google Analytics Setup',
       'Basic Performance Optimization',
-      '1 Month Support',
+      '1 Year Support',
     ],
   },
   {
@@ -108,7 +108,7 @@ export const comparisonFeatures = [
   { name: 'AI-powered Features', tiers: [false, false, false, true, true] },
   { name: 'Free Domain (1 Year)', tiers: [false, true, true, true, true] },
   { name: 'Custom Domain Setup', tiers: [false, false, true, true, true] },
-  { name: '1 Year Support', tiers: [false, false, false, true, true] },
+  { name: '1 Year Support', tiers: [true, false, false, true, true] },
   { name: 'Dedicated Project Manager', tiers: [false, false, false, false, true] },
   { name: 'SLA-backed Support', tiers: [false, false, false, false, true] },
   { name: 'Monthly Performance Reports', tiers: [false, false, false, false, true] },
