@@ -23,7 +23,7 @@ export function Navbar() {
             className={cn(
               'inline-flex items-center rounded-full px-2 py-2 transition-all duration-500',
               isScrolled
-                ? 'glass shadow-lg shadow-black/20'
+                ? 'bg-white/5 backdrop-blur-xl shadow-lg shadow-black/20 border border-white/10'
                 : 'bg-transparent',
             )}
           >
