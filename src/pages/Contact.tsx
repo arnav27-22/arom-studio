@@ -16,6 +16,8 @@ export default function Contact() {
     service: '',
     budget: '',
     message: '',
+    customService: '',
+    customBudget: '',
   })
   const [errors, setErrors] = useState<ValidationErrors>({})
   const [submitted, setSubmitted] = useState(false)
@@ -40,8 +42,8 @@ export default function Contact() {
     const safeName = sanitize(formData.name)
     const safeEmail = sanitize(formData.email)
     const safePhone = sanitize(formData.phone)
-    const safeService = sanitize(formData.service)
-    const safeBudget = sanitize(formData.budget)
+    const safeService = sanitize(formData.service === 'other' ? formData.customService : formData.service)
+    const safeBudget = sanitize(formData.budget === 'custom' ? formData.customBudget : formData.budget)
     const safeMessage = sanitize(formData.message)
 
     const msgBody = [
@@ -179,6 +181,16 @@ export default function Contact() {
                             <option value="seo" className="bg-bg">SEO Optimization</option>
                             <option value="other" className="bg-bg">Other</option>
                           </select>
+                          {formData.service === 'other' && (
+                            <input
+                              type="text"
+                              name="customService"
+                              value={formData.customService}
+                              onChange={handleChange}
+                              placeholder="Please specify your service..."
+                              className="w-full bg-white/5 border border-white/10 rounded-[18px] px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-accent/50 transition-colors font-body mt-2"
+                            />
+                          )}
                           {errors.service && (
                             <p className="flex items-center gap-1 text-[11px] text-red-400 font-body mt-1.5">
                               <AlertCircle className="h-3 w-3" /> {errors.service}
@@ -202,6 +214,16 @@ export default function Contact() {
                           <option value="75000-plus" className="bg-bg">₹75,000+</option>
                           <option value="custom" className="bg-bg">Custom / Enterprise</option>
                         </select>
+                        {formData.budget === 'custom' && (
+                          <input
+                            type="text"
+                            name="customBudget"
+                            value={formData.customBudget}
+                            onChange={handleChange}
+                            placeholder="Enter your budget..."
+                            className="w-full bg-white/5 border border-white/10 rounded-[18px] px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-accent/50 transition-colors font-body mt-2"
+                          />
+                        )}
                       </div>
 
                       <div>
