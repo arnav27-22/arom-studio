@@ -54,13 +54,15 @@ export function Navbar() {
 
             {/* Desktop CTA */}
             <div className="hidden md:flex items-center gap-2 ml-2">
-              <Link
-                to="/contact"
+              <a
+                href="https://forms.gle/fGwvkaTRdtb5ZH3x6"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="glass-strong text-sm font-body font-medium text-white rounded-full px-5 py-2 hover:shadow-[0_0_20px_2px_rgba(255,255,255,0.1)] transition-all duration-200 inline-flex items-center gap-1.5"
               >
                 Book Consultation
                 <ArrowUpRight className="h-3.5 w-3.5" />
-              </Link>
+              </a>
             </div>
 
             {/* Mobile Hamburger */}
@@ -111,14 +113,16 @@ export function Navbar() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
             >
-              <Link
-                to="/contact"
+              <a
+                href="https://forms.gle/fGwvkaTRdtb5ZH3x6"
+                target="_blank"
+                rel="noopener noreferrer"
                 onClick={() => setMobileOpen(false)}
                 className="glass-strong text-base font-body font-medium text-white rounded-full px-8 py-4 inline-flex items-center gap-2"
               >
                 Book Consultation
                 <ArrowUpRight className="h-4 w-4" />
-              </Link>
+              </a>
             </motion.div>
           </motion.div>
         )}

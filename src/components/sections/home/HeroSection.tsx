@@ -136,12 +136,14 @@ export function HeroSection() {
             <Play className="h-4 w-4 fill-current" />
             View Portfolio
           </Link>
-          <Link
-            to="/contact"
+          <a
+            href="https://forms.gle/fGwvkaTRdtb5ZH3x6"
+            target="_blank"
+            rel="noopener noreferrer"
             className="text-sm md:text-base text-white/50 hover:text-white transition-colors duration-200 font-body font-light inline-flex items-center gap-2"
           >
             Book Consultation
-          </Link>
+          </a>
         </motion.div>
 
         {/* Stats */}
