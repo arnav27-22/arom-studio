@@ -33,7 +33,7 @@ export function ProcessSection() {
         <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {steps.map((step, i) => (
             <StaggerItem key={i}>
-              <div className="glass rounded-[24px] p-6 relative group hover:shadow-[0_0_30px_0_rgba(78,133,191,0.08)] transition-all duration-500">
+              <div className="glass rounded-[24px] p-6 relative group hover:shadow-[0_0_30px_0_rgba(78,133,191,0.08)] transition-all duration-500 flex flex-col h-full">
                 <span className="font-heading text-6xl text-white/5 absolute -top-2 -right-2 leading-none select-none">
                   {String(i + 1).padStart(2, '0')}
                 </span>
@@ -46,7 +46,7 @@ export function ProcessSection() {
                   </h3>
                   <span className="text-[10px] text-accent/80 font-body font-medium whitespace-nowrap ml-2 mt-1">{step.time}</span>
                 </div>
-                <p className="text-sm text-white/55 font-body font-light leading-relaxed">
+                <p className="text-sm text-white/55 font-body font-light leading-relaxed flex-1">
                   {step.description}
                 </p>
               </div>
