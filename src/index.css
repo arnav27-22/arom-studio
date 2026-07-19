@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  --font-heading: 'Nunito', sans-serif;
+  --font-heading: 'Lora', serif;
   --font-body: 'Inter', sans-serif;
 
   --color-bg: #000000;
