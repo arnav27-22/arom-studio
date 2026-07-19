@@ -33,7 +33,7 @@ export default function Pricing() {
               <StaggerItem key={plan.name}>
                 <GlassCard className={`flex flex-col h-full relative overflow-visible ${plan.highlighted ? 'border border-accent/30 shadow-[0_0_30px_0_rgba(78,133,191,0.15)]' : ''}`}>
                   {plan.badge && (
-                    <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-accent text-white text-[10px] font-semibold px-3 py-1 rounded-full whitespace-nowrap">
+                    <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-accent text-white text-sm font-semibold px-4 py-1.5 rounded-full whitespace-nowrap">
                       {plan.badge}
                     </span>
                   )}

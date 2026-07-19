@@ -59,7 +59,7 @@ export function HeroSection() {
           className="flex flex-wrap items-center justify-center gap-2 mb-8"
         >
           <div className="glass inline-flex items-center gap-2 rounded-full px-4 py-1.5">
-            <span className="bg-white text-black text-[10px] font-semibold px-2.5 py-0.5 rounded-full">Premium</span>
+            <span className="bg-white text-black text-xs font-semibold px-3 py-0.5 rounded-full">Premium</span>
             <span className="text-xs text-white/80 font-body font-light">Web Design & Development Agency — India</span>
           </div>
         </motion.div>
@@ -77,7 +77,7 @@ export function HeroSection() {
             { icon: <Zap className="h-3 w-3" />, text: 'Lighthouse 95+' },
             { icon: <Globe className="h-3 w-3" />, text: 'Custom Domain Setup' },
           ].map((badge) => (
-            <span key={badge.text} className="glass inline-flex items-center gap-1 rounded-full px-3 py-1 text-[10px] text-white/60 font-body">
+            <span key={badge.text} className="glass inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm text-white/60 font-body">
               <span className="text-accent">{badge.icon}</span>
               {badge.text}
             </span>

@@ -26,7 +26,7 @@ export function PricingPreview() {
                 }`}
               >
                 {plan.badge && (
-                  <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-accent text-white text-[10px] font-semibold px-3 py-1 rounded-full whitespace-nowrap">
+                  <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-accent text-white text-sm font-semibold px-4 py-1.5 rounded-full whitespace-nowrap">
                     {plan.badge}
                   </span>
                 )}
