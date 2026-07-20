@@ -31,7 +31,7 @@ export default function App() {
       <ScrollToTop />
       <div className="min-h-screen bg-bg text-white font-body overflow-x-hidden relative">
         <SiteBackground />
-        <Particles quantity={55} color="#4e85bf" size={1.2} />
+        <Particles quantity={55} color="#4e85bf" size={1.2} vx={0.03} vy={0.03} />
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
