@@ -1,5 +1,6 @@
+import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { Check, ArrowUpRight, ArrowLeft } from 'lucide-react'
+import { Check, ArrowUpRight, ArrowLeft, ChevronDown } from 'lucide-react'
 import { Section, Container, SectionHeader } from '../components/ui/Section'
 import { SEO } from '../components/ui/SEO'
 import { GlassCard } from '../components/ui/GlassCard'
@@ -9,6 +10,7 @@ import { services } from '../data/services'
 export default function ServiceDetail() {
   const { slug } = useParams<{ slug: string }>()
   const service = services.find((s) => s.slug === slug)
+  const [openFaq, setOpenFaq] = useState<number | null>(null)
 
   if (!service) {
     return (
@@ -112,12 +114,32 @@ export default function ServiceDetail() {
         <Section>
           <Container>
             <SectionHeader title="Frequently Asked" highlightWord="Questions" align="left" className="mb-10" />
-            <div className="space-y-4 max-w-2xl">
+            <div className="space-y-3 max-w-2xl">
               {service.faqs.map((faq, i) => (
-                <GlassCard key={i} hover={false} className="!rounded-[20px]">
-                  <h4 className="font-heading text-lg text-white mb-2">{faq.question}</h4>
-                  <p className="text-sm text-white/55 font-body font-light">{faq.answer}</p>
-                </GlassCard>
+                <div key={i}>
+                  <button
+                    onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                    className="w-full glass !rounded-[20px] p-5 md:p-6 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-white/[0.03] transition-colors"
+                  >
+                    <span className="font-heading text-lg text-white">{faq.question}</span>
+                    <ChevronDown
+                      className="h-4 w-4 text-white/30 shrink-0 transition-transform duration-300"
+                      style={{ transform: openFaq === i ? 'rotate(180deg)' : 'rotate(0deg)' }}
+                    />
+                  </button>
+                  <div
+                    className="overflow-hidden transition-all duration-300 ease-in-out"
+                    style={{
+                      maxHeight: openFaq === i ? '300px' : '0px',
+                      opacity: openFaq === i ? 1 : 0,
+                    }}
+                  >
+                    <div className="px-5 md:px-6 pb-5 md:pb-6 pt-3">
+                      <div className="w-8 h-[1.5px] bg-accent/30 mb-3" />
+                      <p className="text-sm text-white/55 font-body font-light leading-relaxed">{faq.answer}</p>
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
           </Container>
