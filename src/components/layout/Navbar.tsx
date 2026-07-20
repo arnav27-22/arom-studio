@@ -1,15 +1,57 @@
-import { useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { useState, useEffect, useCallback } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, ArrowUpRight } from 'lucide-react'
 import { cn } from '../../lib/cn'
 import { NAV_LINKS } from '../../constants/navigation'
 import { useScrollPosition } from '../../hooks/useScrollPosition'
 
+export function ReverseText({ text }: { text: string }) {
+  const [visibleCount, setVisibleCount] = useState(0)
+
+  useEffect(() => {
+    if (visibleCount < text.length) {
+      const timer = setTimeout(() => setVisibleCount((c) => c + 1), 60)
+      return () => clearTimeout(timer)
+    }
+  }, [visibleCount, text.length])
+
+  return (
+    <span>
+      {text.split('').map((char, i) => {
+        const idx = text.length - 1 - i
+        return (
+          <span
+            key={idx}
+            className="inline-block transition-all duration-300"
+            style={{
+              opacity: idx < visibleCount ? 1 : 0,
+              transform: idx < visibleCount ? 'translateX(0)' : 'translateX(-8px)',
+              filter: idx < visibleCount ? 'blur(0)' : 'blur(4px)',
+            }}
+          >
+            {char}
+          </span>
+        )
+      })}
+    </span>
+  )
+}
+
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const { isScrolled } = useScrollPosition()
   const location = useLocation()
+  const navigate = useNavigate()
+
+  const handleLogoClick = useCallback((e: React.MouseEvent) => {
+    e.preventDefault()
+    if (location.pathname === '/') {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    } else {
+      navigate('/')
+    }
+  }, [location.pathname, navigate])
 
   return (
     <>
@@ -28,11 +70,11 @@ export function Navbar() {
             )}
           >
             {/* Logo */}
-            <Link to="/" className="flex items-center gap-2 px-3">
+            <a href="/" onClick={handleLogoClick} className="flex items-center gap-2 px-3 cursor-pointer">
               <span className="font-heading text-white text-lg md:text-xl tracking-tight">
-                AROM STUDIO
+                <ReverseText text="AROM STUDIO" />
               </span>
-            </Link>
+            </a>
 
             {/* Desktop Nav */}
             <div className="hidden md:flex items-center gap-1 ml-2">
