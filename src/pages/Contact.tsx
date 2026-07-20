@@ -343,13 +343,35 @@ export default function Contact() {
               <div className="w-16 h-16 rounded-full bg-accent/20 flex items-center justify-center mx-auto mb-5">
                 <Send className="h-8 w-8 text-accent" />
               </div>
-              <h2 className="font-heading text-3xl text-white mb-2">Thank You!</h2>
+              <h2 className="font-heading text-3xl text-white mb-2">Message Sent!</h2>
               <p className="text-sm text-white/60 font-body font-light mb-6">
-                Your message has been received. Arnav will review it and get back to you within 24 hours.
+                Your details have been sent to Arnav. Choose how to follow up:
               </p>
-              <div className="border-t border-white/10 pt-6 space-y-3">
+              <div className="space-y-3">
+                <a
+                  href={`https://wa.me/918767990061?text=${encodeURIComponent(
+                    `Hi Arnav,%0A%0AI just submitted an inquiry on your website.%0A%0AName: ${sanitize(formData.name)}%0AEmail: ${sanitize(formData.email)}%0AService: ${sanitize(formData.service === 'other' ? formData.customService : formData.service)}%0ABudget: ${sanitize(formData.budget === 'custom' ? formData.customBudget : formData.budget)}%0AMessage: ${sanitize(formData.message)}`
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 w-full bg-whatsapp/20 hover:bg-whatsapp/30 text-whatsapp text-sm font-body font-medium rounded-full px-5 py-3 transition-all duration-300"
+                >
+                  <MessageCircle className="h-5 w-5" />
+                  Chat on WhatsApp
+                </a>
+                <a
+                  href={`mailto:aromstudio27@gmail.com?subject=${encodeURIComponent(`Project Inquiry from ${sanitize(formData.name)}`)}&body=${encodeURIComponent(
+                    `Hi Arnav,%0A%0AI just submitted an inquiry on your website.%0A%0AName: ${sanitize(formData.name)}%0AEmail: ${sanitize(formData.email)}%0APhone: ${sanitize(formData.phone)}%0AService: ${sanitize(formData.service === 'other' ? formData.customService : formData.service)}%0ABudget: ${sanitize(formData.budget === 'custom' ? formData.customBudget : formData.budget)}%0AMessage: ${sanitize(formData.message)}`
+                  )}`}
+                  className="flex items-center justify-center gap-2 w-full bg-accent/10 hover:bg-accent/20 text-accent text-sm font-body font-medium rounded-full px-5 py-3 transition-all duration-300"
+                >
+                  <Mail className="h-5 w-5" />
+                  Send Email
+                </a>
+              </div>
+              <div className="border-t border-white/10 pt-5 mt-5 space-y-2">
                 <p className="text-xs text-white/40 font-body uppercase tracking-wider">
-                  While you wait, check out:
+                  Also, check out:
                 </p>
                 <a
                   href="https://forms.gle/fGwvkaTRdtb5ZH3x6"
