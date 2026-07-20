@@ -71,9 +71,12 @@ export function Footer() {
           {/* Link Columns */}
           {Object.entries(footerLinks).map(([title, links]) => (
             <div key={title} className="col-span-1 md:col-span-2">
-              <h4 className="text-xs font-body font-semibold text-white/40 uppercase tracking-wider mb-4">
+              <Link
+                to={title === 'Services' ? '/services' : title === 'Company' ? '/about' : '/privacy'}
+                className="text-xs font-body font-semibold text-white/40 uppercase tracking-wider mb-4 block hover:text-white transition-colors duration-200"
+              >
                 {title}
-              </h4>
+              </Link>
               <ul className="space-y-3">
                 {links.map((link) => (
                   <li key={link.href}>
@@ -91,9 +94,12 @@ export function Footer() {
 
           {/* Contact */}
           <div className="col-span-2 md:col-span-2">
-            <h4 className="text-xs font-body font-semibold text-white/40 uppercase tracking-wider mb-4">
+            <Link
+              to="/contact"
+              className="text-xs font-body font-semibold text-white/40 uppercase tracking-wider mb-4 block hover:text-white transition-colors duration-200"
+            >
               Contact
-            </h4>
+            </Link>
             <ul className="space-y-3">
               <li>
                 <a
