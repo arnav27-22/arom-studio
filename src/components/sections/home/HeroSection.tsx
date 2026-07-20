@@ -160,11 +160,11 @@ export function HeroSection() {
             <ArrowUpRight className="h-4 w-4" />
           </Link>
           <Link
-            to="/portfolio"
+            to="/contact"
             className="text-sm md:text-base text-white/70 hover:text-white transition-colors duration-200 font-body font-light inline-flex items-center gap-2"
           >
             <Play className="h-4 w-4 fill-current" />
-            View Portfolio
+            Start Your Project
           </Link>
           <a
             href="https://forms.gle/fGwvkaTRdtb5ZH3x6"

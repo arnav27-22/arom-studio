@@ -30,7 +30,7 @@ export default function Terms() {
 
               <section>
                 <h2 className="font-heading text-2xl text-white mb-3">3. Intellectual Property</h2>
-                <p>Upon full payment, clients retain ownership of the final delivered work. AROM STUDIO retains the right to display the work in its portfolio.</p>
+                <p>Upon full payment, clients retain ownership of the final delivered work.</p>
               </section>
 
               <section>

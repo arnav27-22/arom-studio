@@ -1,7 +1,6 @@
 import { SEO } from '../components/ui/SEO'
 import { HeroSection } from '../components/sections/home/HeroSection'
 import { ServicesSection } from '../components/sections/home/ServicesSection'
-import { PortfolioSection } from '../components/sections/home/PortfolioSection'
 import { ProcessSection } from '../components/sections/home/ProcessSection'
 import { TechStackSection } from '../components/sections/home/TechStackSection'
 import { FounderSection } from '../components/sections/home/FounderSection'
@@ -32,7 +31,6 @@ export default function Home() {
       />
       <HeroSection />
       <ServicesSection />
-      <PortfolioSection />
       <ProcessSection />
       <TechStackSection />
       <FounderSection />
