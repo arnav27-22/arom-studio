@@ -14,23 +14,27 @@ function BlurPrice({ price }: { price: string }) {
   return (
     <button
       onClick={() => setRevealed((p) => !p)}
-      className="w-full text-center mb-3 group cursor-pointer relative"
+      className="w-full text-center mb-3 cursor-pointer"
       aria-label={revealed ? 'Hide price' : 'Reveal price'}
     >
-      <span className="font-heading text-4xl md:text-5xl text-accent tracking-[-1px] inline-flex items-center gap-2 relative">
-        {price}
+      <span className="relative inline-flex items-center gap-2">
+        <span
+          className={`font-heading text-4xl md:text-5xl text-accent tracking-[-1px] transition-all duration-300 ${
+            revealed ? '' : 'blur-[6px] select-none'
+          }`}
+          style={{
+            filter: revealed ? 'none' : 'blur(6px)',
+            transition: 'filter 0.3s ease',
+          }}
+        >
+          {price}
+        </span>
         <span className="text-xs text-white/40 font-body font-normal">
           {revealed ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
         </span>
-        <span
-          className={`absolute inset-0 bg-accent/90 rounded-lg transition-all duration-500 ${
-            revealed ? 'w-0 opacity-0' : 'w-full opacity-100'
-          }`}
-          style={{ left: 0, top: '50%', transform: 'translateY(-50%)', height: '1.2em' }}
-        />
       </span>
       {!revealed && (
-        <span className="block text-[10px] text-white/30 font-body mt-1">Click to reveal</span>
+        <span className="block text-[10px] text-white/30 font-body mt-1">Tap to reveal</span>
       )}
     </button>
   )
