@@ -36,10 +36,32 @@ export default function ServiceDetail() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
             <div>
               <span className="text-xs text-accent font-body uppercase tracking-[0.2em]">Service</span>
-              <h1 className="font-heading text-5xl md:text-7xl text-white leading-[0.9] tracking-[-2px] mt-2 mb-6">
+              <h1 className="font-heading text-5xl md:text-7xl text-white leading-[0.9] tracking-[-2px] mt-2 mb-4">
                 {service.title}
               </h1>
-              <p className="text-base text-white/60 font-body font-light leading-relaxed mb-8">{service.description}</p>
+
+              {service.idealFor && (
+                <span className="inline-block text-[11px] text-accent font-body font-medium border border-accent/20 px-3 py-1 rounded-full mb-4">
+                  {service.idealFor}
+                </span>
+              )}
+
+              <p className="text-base text-white/60 font-body font-light leading-relaxed mb-6">{service.description}</p>
+
+              {service.longDescription && (
+                <p className="text-sm text-white/50 font-body font-light leading-relaxed mb-6">{service.longDescription}</p>
+              )}
+
+              {service.techTags && (
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {service.techTags.map((tag) => (
+                    <span key={tag} className="text-[11px] text-accent/70 font-body border border-accent/10 bg-accent/5 px-3 py-1 rounded-full">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+
               <div className="flex items-center gap-4">
                 <Link
                   to="/contact"
@@ -51,7 +73,10 @@ export default function ServiceDetail() {
             </div>
 
             <GlassCard className="!rounded-[24px]">
-              <h3 className="font-heading text-2xl text-white mb-5">What&apos;s Included</h3>
+              <div className="flex items-center justify-between mb-5">
+                <h3 className="font-heading text-2xl text-white">What&apos;s Included</h3>
+                <span className="text-xs text-white/40 font-body">{service.features.length} items</span>
+              </div>
               <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {service.features.map((f) => (
                   <li key={f} className="flex items-start gap-2 text-sm text-white/65 font-body font-light">
