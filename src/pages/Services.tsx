@@ -29,15 +29,23 @@ export default function Services() {
       <SEO
         title="Services"
         description="AROM STUDIO offers business websites, e-commerce, web applications, SaaS platforms, UI/UX design, SEO, and more. Premium web development services for Indian businesses."
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'WebPage',
+          name: 'Services - AROM STUDIO',
+          description: 'Premium web design and development services by AROM STUDIO.',
+          provider: { '@type': 'Organization', name: 'AROM STUDIO' },
+        }}
       />
       <Section>
         <Container>
-          <SectionHeader
-            badge="What We Offer"
-            title="Full-service digital"
-            highlightWord="agency"
-            description="From strategy to launch and beyond — every service designed to help your business succeed online. All plans include 1 Year Support."
-          />
+<SectionHeader
+          badge="What We Offer"
+          title="Full-service digital"
+          highlightWord="agency"
+          description="From strategy to launch and beyond — every service designed to help your business succeed online. All plans include 1 Year Support."
+          headingLevel="h1"
+        />
 
           <div className="mb-10 glass rounded-full px-5 py-3 text-sm text-white/70 font-body inline-flex items-center gap-3 mx-auto w-fit flex-wrap justify-center">
             <span className="flex items-center gap-1.5"><Check className="h-3.5 w-3.5 text-accent" /> 1 Year Support</span>

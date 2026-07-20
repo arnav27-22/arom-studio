@@ -32,13 +32,16 @@ interface SectionHeaderProps {
   description?: string
   align?: 'left' | 'center'
   className?: string
+  headingLevel?: 'h1' | 'h2' | 'h3'
 }
 
-export function SectionHeader({ badge, title, highlightWord, description, align = 'center', className }: SectionHeaderProps) {
+export function SectionHeader({ badge, title, highlightWord, description, align = 'center', className, headingLevel = 'h2' }: SectionHeaderProps) {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: '-100px' })
 
   const parts = highlightWord ? title.split(highlightWord) : [title]
+
+  const HeadingTag = headingLevel
 
   return (
     <div
@@ -61,7 +64,7 @@ export function SectionHeader({ badge, title, highlightWord, description, align 
           {badge}
         </div>
       )}
-      <h2
+      <HeadingTag
         className="font-heading text-5xl md:text-6xl lg:text-7xl text-white leading-[0.9] tracking-[-2px]"
         style={{
           opacity: isInView ? 1 : 0,
@@ -75,7 +78,7 @@ export function SectionHeader({ badge, title, highlightWord, description, align 
           <span className="text-accent">{highlightWord}</span>
         )}
         {parts.length > 1 && parts[1]}
-      </h2>
+      </HeadingTag>
       {description && (
         <p
           className="mt-6 text-base md:text-lg text-white/65 font-body font-light leading-relaxed"

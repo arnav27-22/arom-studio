@@ -41,15 +41,22 @@ export default function Pricing() {
       <SEO
         title="Plans"
         description="AROM STUDIO offers flexible plans for business websites, e-commerce, web applications, and more. Transparent packages with no hidden fees."
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'WebPage',
+          name: 'Plans - AROM STUDIO',
+          description: 'Transparent pricing plans for web development services.',
+        }}
       />
       <Section>
         <Container>
-          <SectionHeader
-            badge="Investment"
-            title="Simple, transparent"
-            highlightWord="plans"
-            description="No hidden fees. No surprises. Choose the package that fits your needs. Every plan includes 1 Year Support on higher tiers, Free Domain, and Custom Domain options."
-          />
+<SectionHeader
+          badge="Investment"
+          title="Simple, transparent"
+          highlightWord="plans"
+          description="No hidden fees. No surprises. Choose the package that fits your needs. Every plan includes 1 Year Support on higher tiers, Free Domain, and Custom Domain options."
+          headingLevel="h1"
+        />
 
           <div className="mb-6 glass rounded-full px-5 py-2.5 text-sm text-white/70 font-body inline-flex items-center gap-2 mx-auto w-fit">
             <Check className="h-4 w-4 text-accent" />

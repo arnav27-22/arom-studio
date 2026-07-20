@@ -28,6 +28,14 @@ export default function ServiceDetail() {
       <SEO
         title={service ? service.title : 'Service'}
         description={service ? service.description : 'Service details'}
+        jsonLd={service ? {
+          '@context': 'https://schema.org',
+          '@type': 'Service',
+          name: service.title,
+          description: service.description,
+          provider: { '@type': 'Organization', name: 'AROM STUDIO' },
+          offers: { '@type': 'Offer', availability: 'https://schema.org/InStock' },
+        } : undefined}
       />
       <Section>
         <Container>

@@ -8,11 +8,51 @@
   <url>
     <loc>https://aromstudio.vercel.app/services</loc>
     <priority>0.9</priority>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
+    <loc>https://aromstudio.vercel.app/services/business-websites</loc>
+    <priority>0.8</priority>
     <changefreq>monthly</changefreq>
   </url>
   <url>
-    <loc>https://aromstudio.vercel.app/portfolio</loc>
-    <priority>0.9</priority>
+    <loc>https://aromstudio.vercel.app/services/ecommerce</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://aromstudio.vercel.app/services/web-applications</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://aromstudio.vercel.app/services/saas-platforms</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://aromstudio.vercel.app/services/ui-ux-design</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://aromstudio.vercel.app/services/website-redesign</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://aromstudio.vercel.app/services/seo-optimization</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://aromstudio.vercel.app/services/performance-optimization</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://aromstudio.vercel.app/services/ai-integration</loc>
+    <priority>0.8</priority>
     <changefreq>monthly</changefreq>
   </url>
   <url>

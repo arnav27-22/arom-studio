@@ -17,15 +17,25 @@ export default function FAQ() {
       <SEO
         title="FAQ"
         description="Frequently asked questions about AROM STUDIO's services, process, and support. Everything you need to know before starting your project."
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          mainEntity: faqCategories.flatMap(cat => cat.items).map(item => ({
+            '@type': 'Question',
+            name: item.question,
+            acceptedAnswer: { '@type': 'Answer', text: item.answer },
+          })),
+        }}
       />
       <Section>
         <Container>
-          <SectionHeader
-            badge="FAQ"
-            title="Frequently asked"
-            highlightWord="questions"
-            description="Everything you need to know about working with AROM STUDIO."
-          />
+<SectionHeader
+          badge="FAQ"
+          title="Frequently asked"
+          highlightWord="questions"
+          description="Everything you need to know about working with AROM STUDIO."
+          headingLevel="h1"
+        />
 
           {/* Category Tabs */}
           <div className="flex flex-wrap justify-center gap-2 mb-10">
