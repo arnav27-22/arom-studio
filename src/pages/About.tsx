@@ -4,6 +4,7 @@ import { SEO } from '../components/ui/SEO'
 import { GlassCard } from '../components/ui/GlassCard'
 import { FadeIn, StaggerContainer, StaggerItem } from '../components/motion/FadeIn'
 import { CTABanner } from '../components/sections/shared/CTABanner'
+import { VideoBackground } from '../components/ui/VideoBackground'
 
 const values = [
   { icon: <Heart className="h-5 w-5" />, title: 'Quality Over Quantity', description: 'We take on fewer projects to deliver exceptional results for each client. Every detail matters.' },
@@ -35,22 +36,28 @@ export default function About() {
         description="AROM STUDIO was founded by Arnav Pagare — a premium web design and development agency based in India. Learn our story, mission, and values."
       />
       {/* Hero */}
-      <Section>
-        <Container>
-          <div className="max-w-3xl">
-            <span className="text-xs text-accent font-body uppercase tracking-[0.2em]">About</span>
-            <h1 className="font-heading text-5xl md:text-7xl lg:text-8xl text-white leading-[0.9] tracking-[-3px] mt-3 mb-6">
-              The story behind
-              <br />
-              <span className="text-accent">AROM STUDIO</span>
-            </h1>
-            <p className="text-base text-white/60 font-body font-light max-w-2xl leading-relaxed">
-              AROM STUDIO was founded with a simple belief: every business deserves a premium digital presence. 
-              We combine technical excellence with creative vision to build websites that don't just look good — they deliver results.
-            </p>
-          </div>
-        </Container>
-      </Section>
+      <section className="relative min-h-screen flex items-center overflow-hidden">
+        <VideoBackground />
+        <div className="relative z-10 w-full py-32">
+          <Container>
+            <div className="max-w-3xl">
+              <span className="text-xs text-accent font-body uppercase tracking-[0.2em]">About</span>
+              <h1
+                className="text-5xl md:text-7xl lg:text-8xl text-white leading-[0.9] tracking-[-3px] mt-3 mb-6"
+                style={{ fontFamily: "'Instrument Serif', serif" }}
+              >
+                The story behind
+                <br />
+                <span className="text-accent">AROM STUDIO</span>
+              </h1>
+              <p className="text-base text-white/60 font-body font-light max-w-2xl leading-relaxed">
+                AROM STUDIO was founded with a simple belief: every business deserves a premium digital presence. 
+                We combine technical excellence with creative vision to build websites that don't just look good — they deliver results.
+              </p>
+            </div>
+          </Container>
+        </div>
+      </section>
 
       {/* Founder */}
       <Section>
