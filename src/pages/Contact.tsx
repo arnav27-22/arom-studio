@@ -1,12 +1,14 @@
 import type React from 'react'
 import { useState } from 'react'
-import { Mail, MessageCircle, Clock, Send, AlertCircle, FileText } from 'lucide-react'
+import { Mail, MessageCircle, Clock, Send, AlertCircle, FileText, X, ExternalLink } from 'lucide-react'
 import { Section, Container } from '../components/ui/Section'
 import { SEO } from '../components/ui/SEO'
 import { GlassCard } from '../components/ui/GlassCard'
 import { FadeIn } from '../components/motion/FadeIn'
 import { SOCIAL_LINKS } from '../constants/navigation'
 import { sanitize, validateContactForm, type ValidationErrors } from '../lib/validation'
+import emailjs from '@emailjs/browser'
+import { EMAILJS_CONFIG } from '../lib/emailjs'
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -20,7 +22,8 @@ export default function Contact() {
     customBudget: '',
   })
   const [errors, setErrors] = useState<ValidationErrors>({})
-  const [submitted, setSubmitted] = useState(false)
+  const [sending, setSending] = useState(false)
+  const [showModal, setShowModal] = useState(false)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -30,7 +33,7 @@ export default function Contact() {
     }
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     const validationErrors = validateContactForm(formData)
@@ -39,6 +42,8 @@ export default function Contact() {
       return
     }
 
+    setSending(true)
+
     const safeName = sanitize(formData.name)
     const safeEmail = sanitize(formData.email)
     const safePhone = sanitize(formData.phone)
@@ -46,22 +51,26 @@ export default function Contact() {
     const safeBudget = sanitize(formData.budget === 'custom' ? formData.customBudget : formData.budget)
     const safeMessage = sanitize(formData.message)
 
-    const msgBody = [
-      `Hi Arnav,`,
-      ``,
-      `I'm interested in discussing a web project.`,
-      ``,
-      `Name: ${safeName}`,
-      `Email: ${safeEmail}`,
-      `Phone: ${safePhone}`,
-      `Service: ${safeService}`,
-      `Budget: ${safeBudget}`,
-      `Message: ${safeMessage}`,
-    ].join('%0A')
-
-    window.open(`https://wa.me/918767990061?text=${encodeURIComponent(msgBody.replace(/%0A/g, '\n'))}`, '_blank')
-    window.location.href = `mailto:aromstudio27@gmail.com?subject=Project Inquiry from ${encodeURIComponent(safeName)}&body=${encodeURIComponent(msgBody.replace(/%0A/g, '\n'))}`
-    setSubmitted(true)
+    try {
+      await emailjs.send(
+        EMAILJS_CONFIG.SERVICE_ID,
+        EMAILJS_CONFIG.TEMPLATE_ID,
+        {
+          from_name: safeName,
+          from_email: safeEmail,
+          phone: safePhone,
+          service: safeService,
+          budget: safeBudget,
+          message: safeMessage,
+        },
+        EMAILJS_CONFIG.PUBLIC_KEY,
+      )
+      setShowModal(true)
+    } catch {
+      setErrors({ message: 'Failed to send message. Please try again or email us directly.' })
+    } finally {
+      setSending(false)
+    }
   }
 
   const inputClass = (field: keyof ValidationErrors) =>
@@ -91,18 +100,7 @@ export default function Contact() {
             {/* Form */}
             <div className="lg:col-span-2">
               <FadeIn>
-                {submitted ? (
-                  <GlassCard hover={false} className="text-center py-16">
-                    <div className="w-16 h-16 rounded-full bg-accent/20 flex items-center justify-center mx-auto mb-6">
-                      <Send className="h-8 w-8 text-accent" />
-                    </div>
-                    <h2 className="font-heading text-3xl text-white mb-3">Thank You!</h2>
-                    <p className="text-sm text-white/60 font-body font-light max-w-md mx-auto">
-                      Your message has been received. Arnav will review it and get back to you within 24 hours.
-                    </p>
-                  </GlassCard>
-                ) : (
-                  <GlassCard hover={false}>
+                <GlassCard hover={false}>
                     <form onSubmit={handleSubmit} noValidate className="space-y-5">
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                         <div>
@@ -247,14 +245,14 @@ export default function Contact() {
 
                       <button
                         type="submit"
-                        className="glass-strong text-sm font-body font-medium text-white rounded-full px-6 py-3 inline-flex items-center gap-2 hover:shadow-[0_0_20px_2px_rgba(78,133,191,0.3)] transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+                        disabled={sending}
+                        className="glass-strong text-sm font-body font-medium text-white rounded-full px-6 py-3 inline-flex items-center gap-2 hover:shadow-[0_0_20px_2px_rgba(78,133,191,0.3)] transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        <Send className="h-4 w-4" />
-                        Send Message
+                        <Send className={`h-4 w-4 ${sending ? 'animate-spin' : ''}`} />
+                        {sending ? 'Sending...' : 'Send Message'}
                       </button>
                     </form>
                   </GlassCard>
-                )}
               </FadeIn>
             </div>
 
@@ -324,6 +322,61 @@ export default function Contact() {
           </div>
         </Container>
       </Section>
+      {/* Success Modal */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowModal(false)} />
+          <div className="relative w-full max-w-md">
+            <GlassCard hover={false} className="text-center py-10 px-8">
+              <button
+                onClick={() => setShowModal(false)}
+                className="absolute top-4 right-4 text-white/40 hover:text-white transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+              <div className="w-16 h-16 rounded-full bg-accent/20 flex items-center justify-center mx-auto mb-5">
+                <Send className="h-8 w-8 text-accent" />
+              </div>
+              <h2 className="font-heading text-3xl text-white mb-2">Thank You!</h2>
+              <p className="text-sm text-white/60 font-body font-light mb-6">
+                Your message has been received. Arnav will review it and get back to you within 24 hours.
+              </p>
+              <div className="border-t border-white/10 pt-6 space-y-3">
+                <p className="text-xs text-white/40 font-body uppercase tracking-wider">
+                  While you wait, check out:
+                </p>
+                <a
+                  href="https://forms.gle/fGwvkaTRdtb5ZH3x6"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between w-full glass-strong text-sm font-body font-medium text-white rounded-full px-5 py-3 hover:shadow-[0_0_20px_2px_rgba(78,133,191,0.3)] transition-all duration-300"
+                >
+                  <span className="flex items-center gap-2">
+                    <FileText className="h-4 w-4 text-accent" />
+                    Open Form
+                  </span>
+                  <ExternalLink className="h-3.5 w-3.5 text-white/40" />
+                </a>
+                <a
+                  href="https://forms.gle/kBeLEHtnouuBXBsk6"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between w-full glass-strong text-sm font-body font-medium text-white rounded-full px-5 py-3 hover:shadow-[0_0_20px_2px_rgba(78,133,191,0.3)] transition-all duration-300"
+                >
+                  <span className="flex items-center gap-2">
+                    <FileText className="h-4 w-4 text-accent" />
+                    AROM Studio – Project Proposal
+                  </span>
+                  <ExternalLink className="h-3.5 w-3.5 text-white/40" />
+                </a>
+                <p className="text-[11px] text-white/30 font-body pt-2">
+                  More forms &amp; PDFs will be added here soon.
+                </p>
+              </div>
+            </GlassCard>
+          </div>
+        </div>
+      )}
     </main>
   )
 }
