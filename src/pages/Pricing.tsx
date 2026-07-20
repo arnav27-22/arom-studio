@@ -1,44 +1,13 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Check, ArrowUpRight, Minus, Eye, EyeOff } from 'lucide-react'
+import { Check, ArrowUpRight, Minus } from 'lucide-react'
+import { Spoiler } from 'spoiled'
 import { Section, Container, SectionHeader } from '../components/ui/Section'
 import { SEO } from '../components/ui/SEO'
 import { GlassCard } from '../components/ui/GlassCard'
 import { FadeIn, StaggerContainer, StaggerItem } from '../components/motion/FadeIn'
 import { CTABanner } from '../components/sections/shared/CTABanner'
 import { plans, comparisonFeatures } from '../data/pricing'
-
-function BlurPrice({ price }: { price: string }) {
-  const [revealed, setRevealed] = useState(false)
-
-  return (
-    <button
-      onClick={() => setRevealed((p) => !p)}
-      className="w-full text-center mb-3 cursor-pointer"
-      aria-label={revealed ? 'Hide price' : 'Reveal price'}
-    >
-      <span className="relative inline-flex items-center gap-2">
-        <span
-          className={`font-heading text-4xl md:text-5xl text-accent tracking-[-1px] transition-all duration-300 ${
-            revealed ? '' : 'blur-[6px] select-none'
-          }`}
-          style={{
-            filter: revealed ? 'none' : 'blur(6px)',
-            transition: 'filter 0.3s ease',
-          }}
-        >
-          {price}
-        </span>
-        <span className="text-xs text-white/40 font-body font-normal">
-          {revealed ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-        </span>
-      </span>
-      {!revealed && (
-        <span className="block text-[10px] text-white/30 font-body mt-1">Tap to reveal</span>
-      )}
-    </button>
-  )
-}
 
 export default function Pricing() {
   return (
@@ -79,7 +48,11 @@ export default function Pricing() {
                       </li>
                     ))}
                   </ul>
-                  <BlurPrice price={plan.price} />
+                  <div className="mb-3 text-center">
+                    <span className="font-heading text-4xl md:text-5xl text-accent tracking-[-1px]">
+                      <Spoiler revealOn="click">{plan.price}</Spoiler>
+                    </span>
+                  </div>
                   <Link
                     to="/contact"
                     className={`text-sm font-body font-medium rounded-full px-5 py-2.5 inline-flex items-center justify-center gap-1.5 transition-all duration-300 ${
@@ -109,7 +82,11 @@ export default function Pricing() {
                       </li>
                     ))}
                   </ul>
-                  <BlurPrice price={plan.price} />
+                  <div className="mb-3 text-center">
+                    <span className="font-heading text-4xl md:text-5xl text-accent tracking-[-1px]">
+                      <Spoiler revealOn="click">{plan.price}</Spoiler>
+                    </span>
+                  </div>
                   <Link
                     to="/contact"
                     className="glass-strong text-sm font-body font-medium text-white rounded-full px-5 py-2.5 inline-flex items-center justify-center gap-1.5 transition-all duration-300"
