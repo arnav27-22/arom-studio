@@ -165,7 +165,7 @@ export default function Pricing() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {[
               { title: 'Custom Domain Setup', desc: 'Professional email & domain configuration with SSL.' },
-              { title: 'Free Domain LIFETIME', desc: 'Free domain registration for the first year (*T&C apply).' },
+              { title: 'Free Domain Registration', desc: 'Free domain registration for the first year (*T&C apply).' },
               { title: 'Extended Support', desc: 'Ongoing maintenance, updates, and priority support beyond included period.' },
               { title: 'Content Writing', desc: 'Professional copywriting for up to 5 pages.' },
               { title: 'Logo & Brand Kit', desc: 'Custom logo design with brand guidelines.' },
