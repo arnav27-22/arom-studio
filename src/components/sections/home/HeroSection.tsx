@@ -41,6 +41,7 @@ function TypeWriter({ texts, typingSpeed = 80, deletingSpeed = 50, pauseDuration
 
 function BlurText({ text, delay = 0 }: { text: string; delay?: number }) {
   const [triggered, setTriggered] = useState(false)
+  const [animKey, setAnimKey] = useState(0)
   const ref = useRef(null)
 
   useEffect(() => {
@@ -48,7 +49,9 @@ function BlurText({ text, delay = 0 }: { text: string; delay?: number }) {
       ([entry]) => {
         if (entry.isIntersecting) {
           setTriggered(true)
-          observer.disconnect()
+          setAnimKey((k) => k + 1)
+        } else {
+          setTriggered(false)
         }
       },
       { threshold: 0.1 },
@@ -63,10 +66,10 @@ function BlurText({ text, delay = 0 }: { text: string; delay?: number }) {
     <p ref={ref} className="flex flex-wrap justify-center" style={{ rowGap: '0.1em' }}>
       {words.map((word, i) => (
         <motion.span
-          key={i}
+          key={`${animKey}-${i}`}
           className="inline-block"
           style={{ marginRight: '0.28em' }}
-          initial={triggered ? false : { filter: 'blur(10px)', opacity: 0, y: 50 }}
+          initial={{ filter: 'blur(10px)', opacity: 0, y: 50 }}
           animate={triggered ? { filter: ['blur(10px)', 'blur(5px)', 'blur(0px)'], opacity: [0, 0.5, 1], y: [50, -5, 0] } : {}}
           transition={{
             duration: 0.7,
