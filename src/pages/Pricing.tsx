@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Check, ArrowUpRight, Minus } from 'lucide-react'
 import { Spoiler } from 'spoiled'
