@@ -10,6 +10,8 @@ import { sanitize, validateContactForm, type ValidationErrors } from '../lib/val
 import emailjs from '@emailjs/browser'
 import { EMAILJS_CONFIG } from '../lib/emailjs'
 
+emailjs.init({ publicKey: EMAILJS_CONFIG.PUBLIC_KEY })
+
 export default function Contact() {
   const [formData, setFormData] = useState({
     name: '',
@@ -63,7 +65,6 @@ export default function Contact() {
           budget: safeBudget,
           message: safeMessage,
         },
-        EMAILJS_CONFIG.PUBLIC_KEY,
       )
       setShowModal(true)
     } catch {
