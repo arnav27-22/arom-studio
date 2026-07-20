@@ -125,20 +125,14 @@ export function HeroSection() {
           initial={{ filter: 'blur(10px)', opacity: 0, y: 20 }}
           animate={{ filter: 'blur(0px)', opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6, ease: 'easeOut' }}
-          className="font-heading text-[clamp(42px,10vw,110px)] text-white leading-[0.85] tracking-[-2px] max-w-4xl"
+          className="font-heading text-[clamp(32px,7vw,80px)] text-white leading-[0.85] tracking-[-1.5px] max-w-4xl"
         >
-          <BlurText text="We Build Websites" delay={0.6} />
-          <span className="text-accent"><BlurText text="That Grow Businesses" delay={0.9} /></span>
-          <div className="h-4" />
-          <p className="text-sm md:text-base text-white/50 font-body font-light tracking-[0.15em] uppercase mt-4">
-            <motion.span
-              initial={{ filter: 'blur(10px)', opacity: 0, y: 20 }}
-              animate={{ filter: 'blur(0px)', opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 1.2, ease: 'easeOut' }}
-            >
-              <TypeWriter texts={['We Design.', 'We Develop.', 'We Deliver.', 'We Optimize.', 'We Innovate.']} />
-            </motion.span>
-          </p>
+          We Build{' '}
+          <span className="text-accent">
+            <TypeWriter texts={['Business Websites', 'E-commerce Websites', 'Custom Web Apps', 'SaaS Platforms', 'UI/UX Design', 'Website Redesign', 'SEO Optimization']} />
+          </span>
+          <div className="h-2" />
+          <span className="text-[clamp(28px,6vw,70px)] text-white/80"><BlurText text="That Grow Businesses" delay={0.9} /></span>
         </motion.h1>
 
         {/* Subheading */}
