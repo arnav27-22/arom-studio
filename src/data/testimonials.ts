@@ -13,7 +13,7 @@ export const testimonials: Testimonial[] = [
     quote: 'Working with Arnav was a seamless experience. He understood our vision perfectly and delivered a product that truly represents our brand.',
     client: 'Priya Sharma',
     company: 'Founder, GreenPlate Organics',
-    rating: 5,
+    rating: 4.5,
   },
   {
     id: 3,
@@ -34,7 +34,7 @@ export const testimonials: Testimonial[] = [
     quote: 'From concept to launch, Arnav was professional, communicative, and delivered on every promise. Highly recommended.',
     client: 'Ananya Reddy',
     company: 'Owner, Stellar Cuisine',
-    rating: 5,
+    rating: 4.5,
   },
   {
     id: 6,
