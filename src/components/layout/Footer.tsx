@@ -73,9 +73,10 @@ export function Footer() {
             <div key={title} className="col-span-1 md:col-span-2">
               <Link
                 to={title === 'Services' ? '/services' : title === 'Company' ? '/about' : '/privacy'}
-                className="text-xs font-body font-semibold text-white/40 uppercase tracking-wider mb-4 block hover:text-white transition-colors duration-200"
+                className="text-xs font-body font-semibold text-white/40 hover:text-accent uppercase tracking-wider mb-4 flex items-center gap-1.5 hover:gap-2.5 transition-all duration-200 group w-full"
               >
                 {title}
+                <ArrowUpRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 shrink-0" />
               </Link>
               <ul className="space-y-3">
                 {links.map((link) => (
@@ -96,9 +97,10 @@ export function Footer() {
           <div className="col-span-2 md:col-span-2">
             <Link
               to="/contact"
-              className="text-xs font-body font-semibold text-white/40 uppercase tracking-wider mb-4 block hover:text-white transition-colors duration-200"
+              className="text-xs font-body font-semibold text-white/40 hover:text-accent uppercase tracking-wider mb-4 flex items-center gap-1.5 hover:gap-2.5 transition-all duration-200 group w-full"
             >
               Contact
+              <ArrowUpRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 shrink-0" />
             </Link>
             <ul className="space-y-3">
               <li>
