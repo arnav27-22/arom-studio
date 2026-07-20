@@ -61,22 +61,39 @@ export default function Services() {
                   <div className="w-11 h-11 rounded-[12px] glass flex items-center justify-center text-accent mb-5 group-hover:border-accent/30 transition-all">
                     {iconMap[service.icon] || <Building2 className="h-6 w-6" />}
                   </div>
-                  <h3 className="font-heading text-2xl text-white tracking-[-0.5px] mb-3 leading-tight">{service.title}</h3>
-                  <p className="text-sm text-white/55 font-body font-light leading-relaxed flex-1 line-clamp-3">
+                  <h3 className="font-heading text-2xl text-white tracking-[-0.5px] mb-2 leading-tight">{service.title}</h3>
+
+                  {service.idealFor && (
+                    <p className="text-[11px] text-accent/70 font-body font-medium mb-2">{service.idealFor}</p>
+                  )}
+
+                  <p className="text-sm text-white/55 font-body font-light leading-relaxed line-clamp-3">
                     {expandedService === service.slug && service.longDescription ? service.longDescription : service.description}
                   </p>
 
+                  <div className="flex flex-wrap gap-1.5 mt-3">
+                    {service.features.slice(0, 4).map((f) => (
+                      <span key={f} className="text-[10px] text-white/50 font-body border border-white/10 px-2 py-0.5 rounded-full">
+                        {f}
+                      </span>
+                    ))}
+                    {service.features.length > 4 && (
+                      <span className="text-[10px] text-white/30 font-body">+{service.features.length - 4}</span>
+                    )}
+                  </div>
+
                   {service.techTags && (
-                    <div className="flex flex-wrap gap-1.5 mt-4">
+                    <div className="flex flex-wrap gap-1.5 mt-3">
                       {service.techTags.slice(0, 4).map((tag) => (
-                        <span key={tag} className="text-[10px] text-white/40 font-body border border-white/10 px-2 py-0.5 rounded-full">
+                        <span key={tag} className="text-[10px] text-accent/50 font-body border border-accent/10 px-2 py-0.5 rounded-full">
                           {tag}
                         </span>
                       ))}
                     </div>
                   )}
 
-                  <div className="flex items-center justify-end mt-5 pt-4 border-t border-white/5">
+                  <div className="flex items-center justify-between mt-4 pt-4 border-t border-white/5">
+                    <span className="text-[11px] text-white/40 font-body">{service.process.length}-step process</span>
                     <div className="flex items-center gap-1.5 text-xs text-accent font-medium group-hover:gap-2.5 transition-all duration-300">
                       Learn More <ArrowUpRight className="h-3.5 w-3.5" />
                     </div>
