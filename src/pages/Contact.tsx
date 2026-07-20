@@ -312,7 +312,7 @@ export default function Contact() {
               <div className="space-y-3">
                 <a
                   href={`https://wa.me/918767990061?text=${encodeURIComponent(
-                    `Hi Arnav,%0A%0AI just submitted an inquiry on your website.%0A%0AName: ${sanitize(formData.name)}%0AEmail: ${sanitize(formData.email)}%0AService: ${sanitize(formData.service === 'other' ? formData.customService : formData.service)}%0ABudget: ${sanitize(formData.budget === 'custom' ? formData.customBudget : formData.budget)}%0AMessage: ${sanitize(formData.message)}`
+                    `Hi Arnav,\n\nI just submitted an inquiry on your website.\n\nName: ${sanitize(formData.name)}\nEmail: ${sanitize(formData.email)}\nService: ${sanitize(formData.service === 'other' ? formData.customService : formData.service)}\nBudget: ${sanitize(formData.budget === 'custom' ? formData.customBudget : formData.budget)}\nMessage: ${sanitize(formData.message)}`
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -323,7 +323,7 @@ export default function Contact() {
                 </a>
                 <a
                   href={`mailto:aromstudio27@gmail.com?subject=${encodeURIComponent(`Project Inquiry from ${sanitize(formData.name)}`)}&body=${encodeURIComponent(
-                    `Hi Arnav,%0A%0AI just submitted an inquiry on your website.%0A%0AName: ${sanitize(formData.name)}%0AEmail: ${sanitize(formData.email)}%0APhone: ${sanitize(formData.phone)}%0AService: ${sanitize(formData.service === 'other' ? formData.customService : formData.service)}%0ABudget: ${sanitize(formData.budget === 'custom' ? formData.customBudget : formData.budget)}%0AMessage: ${sanitize(formData.message)}`
+                    `Hi Arnav,\n\nI just submitted an inquiry on your website.\n\nName: ${sanitize(formData.name)}\nEmail: ${sanitize(formData.email)}\nPhone: ${sanitize(formData.phone)}\nService: ${sanitize(formData.service === 'other' ? formData.customService : formData.service)}\nBudget: ${sanitize(formData.budget === 'custom' ? formData.customBudget : formData.budget)}\nMessage: ${sanitize(formData.message)}`
                   )}`}
                   className="flex items-center justify-center gap-2 w-full bg-accent/10 hover:bg-accent/20 text-accent text-sm font-body font-medium rounded-full px-5 py-3 transition-all duration-300"
                 >
