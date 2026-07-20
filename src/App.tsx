@@ -3,8 +3,8 @@ import { Routes, Route, useLocation } from 'react-router-dom'
 import { Navbar } from './components/layout/Navbar'
 import { Footer } from './components/layout/Footer'
 import { WhatsAppButton } from './components/ui/WhatsAppButton'
-import { ParticleBackground } from './components/ui/ParticleBackground'
 import { SiteBackground } from './components/ui/SiteBackground'
+import { Particles } from './components/ui/ParticleBackground'
 import Home from './pages/Home'
 import Services from './pages/Services'
 import ServiceDetail from './pages/ServiceDetail'
@@ -31,7 +31,7 @@ export default function App() {
       <ScrollToTop />
       <div className="min-h-screen bg-bg text-white font-body overflow-x-hidden relative">
         <SiteBackground />
-        <ParticleBackground />
+        <Particles quantity={55} color="#4e85bf" size={1.2} />
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
