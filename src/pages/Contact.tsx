@@ -1,5 +1,5 @@
 import type React from 'react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Mail, MessageCircle, Clock, Send, AlertCircle, FileText, X, ExternalLink } from 'lucide-react'
 import { Section, Container } from '../components/ui/Section'
 import { SEO } from '../components/ui/SEO'
@@ -7,7 +7,6 @@ import { GlassCard } from '../components/ui/GlassCard'
 import { FadeIn } from '../components/motion/FadeIn'
 import { SOCIAL_LINKS } from '../constants/navigation'
 import { sanitize, validateContactForm, type ValidationErrors } from '../lib/validation'
-import emailjs from '@emailjs/browser'
 import { EMAILJS_CONFIG } from '../lib/emailjs'
 
 export default function Contact() {
@@ -24,12 +23,6 @@ export default function Contact() {
   const [errors, setErrors] = useState<ValidationErrors>({})
   const [sending, setSending] = useState(false)
   const [showModal, setShowModal] = useState(false)
-
-  useEffect(() => {
-    if (EMAILJS_CONFIG.PUBLIC_KEY) {
-      emailjs.init({ publicKey: EMAILJS_CONFIG.PUBLIC_KEY })
-    }
-  }, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -58,22 +51,31 @@ export default function Contact() {
     const safeMessage = sanitize(formData.message)
 
     try {
-      await emailjs.send(
-        EMAILJS_CONFIG.SERVICE_ID,
-        EMAILJS_CONFIG.TEMPLATE_ID,
-        {
-          from_name: safeName,
-          from_email: safeEmail,
-          phone: safePhone,
-          service: safeService,
-          budget: safeBudget,
-          message: safeMessage,
-        },
-      )
+      const res = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          service_id: EMAILJS_CONFIG.SERVICE_ID,
+          template_id: EMAILJS_CONFIG.TEMPLATE_ID,
+          user_id: EMAILJS_CONFIG.PUBLIC_KEY,
+          template_params: {
+            from_name: safeName,
+            from_email: safeEmail,
+            phone: safePhone,
+            service: safeService,
+            budget: safeBudget,
+            message: safeMessage,
+          },
+        }),
+      })
+      if (!res.ok) {
+        const text = await res.text()
+        throw new Error(`EmailJS ${res.status}: ${text}`)
+      }
       setShowModal(true)
     } catch (err) {
       console.error('EmailJS error:', err)
-      setErrors({ message: 'Failed to send message. Please try again or email us directly.' })
+      setErrors({ message: `Failed to send message. ${err instanceof Error ? err.message : 'Unknown error'}` })
     } finally {
       setSending(false)
     }
