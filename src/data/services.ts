@@ -14,7 +14,6 @@ export const services: Service[] = [
       { step: 3, title: 'Development', description: 'Building with Next.js, TypeScript, and Tailwind CSS — modern, scalable technology that ensures fast load times and smooth experiences.' },
       { step: 4, title: 'Launch', description: 'Deploying with zero downtime, configuring CDN, SSL, analytics, and monitoring. Post-launch support included for peace of mind.' },
     ],
-    price: '₹45,000+',
     techTags: ['Next.js', 'React', 'TypeScript', 'Tailwind CSS', 'Supabase', 'Vercel'],
     idealFor: 'Local businesses, startups, and SMEs looking to establish a strong online presence.',
     faqs: [
@@ -30,7 +29,6 @@ export const services: Service[] = [
     longDescription: 'Transform your business with a custom e-commerce platform designed for conversions. We build online stores that handle complex product catalogs, secure payments, and provide a shopping experience that keeps customers coming back. From product listings to order management, every aspect is optimized for sales.',
     icon: 'ShoppingCart',
     features: ['Product Management', 'Secure Checkout', 'Payment Integration (Razorpay/Stripe)', 'Inventory Tracking', 'Order Management Dashboard', 'Mobile Optimized UI', 'SEO Ready Architecture', '1 Year Support', 'Free Domain (1 Year)'],
-    price: '₹55,000+',
     techTags: ['Next.js', 'TypeScript', 'Stripe', 'Razorpay', 'PostgreSQL', 'Tailwind CSS'],
     idealFor: 'Retailers, D2C brands, and wholesalers wanting a custom online store.',
     process: [
@@ -51,7 +49,6 @@ export const services: Service[] = [
     longDescription: 'When off-the-shelf software doesn\'t cut it, we build custom web applications that solve your specific business challenges. From internal tools to customer-facing platforms, we deliver robust, scalable applications with clean architecture and exceptional user experiences.',
     icon: 'AppWindow',
     features: ['Full-Stack Development', 'Database Design & Optimization', 'RESTful & GraphQL APIs', 'User Authentication & Roles', 'Real-time Features', 'Dashboard UI', 'Scalable Architecture', 'Cloud Deployment', '1 Year Support'],
-    price: '₹75,000+',
     techTags: ['Next.js', 'Node.js', 'PostgreSQL', 'Supabase', 'TypeScript', 'Docker'],
     idealFor: 'Businesses needing custom internal tools, customer portals, or data management platforms.',
     process: [
@@ -72,7 +69,6 @@ export const services: Service[] = [
     longDescription: 'Launch your SaaS product with confidence. We build multi-tenant platforms that handle user management, subscription billing, and scale effortlessly. From MVP to enterprise-grade platforms, our SaaS solutions are built with security, performance, and growth in mind.',
     icon: 'Cloud',
     features: ['Multi-Tenant Architecture', 'Subscription Billing (Stripe)', 'User Management & Roles', 'Analytics Dashboard', 'RESTful API Development', 'Scalable Cloud Infrastructure', '1 Year Support', 'Free Domain (1 Year)'],
-    price: '₹1,00,000+',
     techTags: ['Next.js', 'PostgreSQL', 'Stripe', 'Supabase', 'TypeScript', 'Vercel', 'Docker'],
     idealFor: 'Founders and companies launching subscription-based digital products.',
     process: [
@@ -93,7 +89,6 @@ export const services: Service[] = [
     longDescription: 'Great design is invisible. We create interfaces that users love to interact with — combining visual aesthetics with deep usability research. Every color, spacing, and interaction is intentional. Our design process ensures your users achieve their goals effortlessly while enjoying a premium visual experience.',
     icon: 'Palette',
     features: ['User Research & Personas', 'Wireframing & Prototyping', 'Interactive Figma Prototypes', 'Visual Design & Branding', 'Design Systems', 'Usability Testing', 'Developer Handoff', '1 Year Design Support'],
-    price: '₹25,000+',
     techTags: ['Figma', 'Adobe Creative Suite', 'Prototyping', 'Design Systems'],
     idealFor: 'Startups and businesses needing professional UI/UX design for digital products.',
     process: [
@@ -114,7 +109,6 @@ export const services: Service[] = [
     longDescription: 'Your website is often the first impression customers have of your business. If it looks outdated, loads slowly, or doesn\'t convert, you\'re losing opportunities. We breathe new life into existing websites — preserving what works, reimagining what doesn\'t, and delivering a modern experience that drives results.',
     icon: 'RefreshCw',
     features: ['Full Site Audit & Analysis', 'Modern UI Refresh', 'Performance Optimization', 'SEO Improvements', 'Content Restructuring', 'Mobile Optimization', 'Migration & Redirects', '1 Year Support'],
-    price: '₹30,000+',
     techTags: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Framer Motion', 'SEO Tools'],
     idealFor: 'Businesses with outdated websites needing a modern, high-performance upgrade.',
     process: [
@@ -135,7 +129,6 @@ export const services: Service[] = [
     longDescription: 'Getting found on Google is essential for business growth. We implement comprehensive SEO strategies that help your website rank higher, attract more visitors, and convert traffic into customers. From technical audits to content optimization, we cover every aspect of search engine visibility.',
     icon: 'Search',
     features: ['Technical SEO Audit', 'On-Page Optimization', 'Keyword Research & Strategy', 'Meta Tags & Structured Data', 'Performance Optimization', 'XML Sitemap & Robots.txt', 'Google Search Console Setup', 'Rank Tracking & Reports', 'Quarterly Strategy Reviews'],
-    price: '₹15,000+',
     techTags: ['Google Search Console', 'Semrush', 'Schema.org', 'PageSpeed Insights'],
     idealFor: 'Businesses wanting to improve search rankings and drive organic traffic.',
     process: [
@@ -156,7 +149,6 @@ export const services: Service[] = [
     longDescription: 'Speed is a competitive advantage. Studies show that a 1-second delay in page load time can reduce conversions by 7%. We optimize your website to achieve Lighthouse 95+ scores across Performance, Accessibility, Best Practices, and SEO — ensuring your site loads instantly on any device.',
     icon: 'Zap',
     features: ['Performance Audit & Waterfall Analysis', 'Image & Video Optimization', 'Code Splitting & Bundling', 'Caching Strategy Implementation', 'CDN Configuration', 'Database Query Optimization', 'Lighthouse 95+ Target', 'Core Web Vitals Optimization', 'Monthly Performance Reports'],
-    price: '₹12,000+',
     techTags: ['Lighthouse', 'WebPageTest', 'Cloudflare', 'Vercel', 'Sentry'],
     idealFor: 'Websites suffering from slow load times, high bounce rates, or poor Core Web Vitals.',
     process: [
@@ -177,7 +169,6 @@ export const services: Service[] = [
     longDescription: 'Artificial intelligence is transforming how businesses interact with customers online. We help you leverage AI to provide smarter search, personalized content, automated customer support, and intelligent recommendations — all integrated seamlessly into your existing website or application.',
     icon: 'Brain',
     features: ['AI Chatbots & Virtual Assistants', 'Content Generation & Summarization', 'Smart Search & Recommendations', 'User Personalization Engine', 'Image & Video Analysis', 'Natural Language Processing', 'Custom AI Model Integration', '1 Year Support'],
-    price: '₹35,000+',
     techTags: ['OpenAI', 'LangChain', 'Vector DB', 'Node.js', 'Python'],
     idealFor: 'Businesses wanting to add AI-powered features to improve user experience and automate processes.',
     process: [

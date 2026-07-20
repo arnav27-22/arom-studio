@@ -34,7 +34,7 @@ export const portfolioItems: PortfolioItem[] = [
     solution: 'We designed and developed a custom e-commerce platform with subscription management, real-time delivery tracking, and a seamless checkout experience.',
     results: [
       { metric: 'Monthly Revenue', value: '+230%' },
-      { metric: 'Avg. Order Value', value: '₹1,850' },
+      { metric: 'Avg. Order Value', value: '+65%' },
       { metric: 'Cart Abandonment', value: '-42%' },
       { metric: 'Customer Retention', value: '87%' },
     ],

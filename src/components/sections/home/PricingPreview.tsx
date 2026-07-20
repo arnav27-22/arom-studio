@@ -2,18 +2,18 @@ import { Link } from 'react-router-dom'
 import { Check, ArrowUpRight } from 'lucide-react'
 import { Section, Container, SectionHeader } from '../../ui/Section'
 import { FadeIn } from '../../motion/FadeIn'
-import { pricingPlans } from '../../../data/pricing'
+import { plans } from '../../../data/pricing'
 
 export function PricingPreview() {
-  const previewPlans = pricingPlans.slice(0, 3)
+  const previewPlans = plans.slice(0, 3)
 
   return (
     <Section>
       <Container>
         <SectionHeader
-          badge="Pricing"
+          badge="Plans"
           title="Transparent"
-          highlightWord="pricing"
+          highlightWord="plans"
           description="No hidden fees, no surprises. Choose the plan that fits your needs."
         />
 
@@ -32,9 +32,6 @@ export function PricingPreview() {
                 )}
                 <div className="mb-5">
                   <h3 className="font-heading text-2xl text-white mb-1">{plan.name}</h3>
-                  <div className="flex items-baseline gap-1">
-                    <span className="font-heading text-4xl text-accent tracking-[-1px]">{plan.price}</span>
-                  </div>
                   <p className="text-xs text-white/50 font-body mt-2">{plan.description}</p>
                 </div>
 

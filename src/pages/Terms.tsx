@@ -25,7 +25,7 @@ export default function Terms() {
 
               <section>
                 <h2 className="font-heading text-2xl text-white mb-3">2. Services</h2>
-                <p>AROM STUDIO provides web design, development, and related digital services. The scope, timeline, and pricing of each project will be outlined in a separate agreement.</p>
+                <p>AROM STUDIO provides web design, development, and related digital services. The scope, timeline, and terms of each project will be outlined in a separate agreement.</p>
               </section>
 
               <section>
@@ -35,7 +35,7 @@ export default function Terms() {
 
               <section>
                 <h2 className="font-heading text-2xl text-white mb-3">4. Payment Terms</h2>
-                <p>Payment terms are outlined in the project proposal. All prices are in Indian Rupees (₹). Late payments may result in project delays.</p>
+                <p>Payment terms are outlined in the project proposal. Late payments may result in project delays.</p>
               </section>
 
               <section>

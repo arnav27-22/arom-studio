@@ -76,8 +76,7 @@ export default function Services() {
                     </div>
                   )}
 
-                  <div className="flex items-center justify-between mt-5 pt-4 border-t border-white/5">
-                    <span className="font-heading text-lg text-accent">{service.price}</span>
+                  <div className="flex items-center justify-end mt-5 pt-4 border-t border-white/5">
                     <div className="flex items-center gap-1.5 text-xs text-accent font-medium group-hover:gap-2.5 transition-all duration-300">
                       Learn More <ArrowUpRight className="h-3.5 w-3.5" />
                     </div>

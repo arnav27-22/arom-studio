@@ -6,7 +6,6 @@ export interface Service {
   icon: string
   features: string[]
   process: { step: number; title: string; description: string }[]
-  price: string
   faqs: { question: string; answer: string }[]
   techTags?: string[]
   idealFor?: string
@@ -34,9 +33,8 @@ export interface Testimonial {
   rating: number
 }
 
-export interface PricingPlan {
+export interface Plan {
   name: string
-  price: string
   description: string
   features: string[]
   highlighted?: boolean

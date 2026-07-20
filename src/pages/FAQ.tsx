@@ -16,7 +16,7 @@ export default function FAQ() {
     <main className="pt-32">
       <SEO
         title="FAQ"
-        description="Frequently asked questions about AROM STUDIO's services, pricing, process, and support. Everything you need to know before starting your project."
+        description="Frequently asked questions about AROM STUDIO's services, process, and support. Everything you need to know before starting your project."
       />
       <Section>
         <Container>

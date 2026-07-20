@@ -16,10 +16,9 @@ export const faqCategories = [
     ],
   },
   {
-    category: 'Pricing',
+    category: 'Investment',
     items: [
-      { question: 'How much does a website cost?', answer: 'Our pricing starts from ₹12,000 for a starter website and goes up based on complexity. Contact us for a detailed quote tailored to your needs.' },
-      { question: 'Do you charge in Indian Rupees?', answer: 'Yes, all our pricing is in Indian Rupees (₹). We do not charge in USD.' },
+      { question: 'How much does a website cost?', answer: 'Our plans start from a starter website and go up based on complexity. Contact us for a detailed quote tailored to your needs.' },
       { question: 'Is there a payment plan available?', answer: 'Yes, we offer flexible payment plans — typically 50% upfront and 50% on completion. Enterprise projects may have customized payment schedules.' },
     ],
   },

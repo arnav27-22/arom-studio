@@ -13,12 +13,12 @@ const iconMap: Record<string, React.ReactNode> = {
 }
 
 const featuredServices = [
-  { slug: 'business-websites', title: 'Business Websites', description: 'High-performance websites that establish credibility and drive leads. Includes 1 Year Support & Free Domain.', icon: 'Building2', price: '₹45,000+' },
-  { slug: 'ecommerce', title: 'E-commerce', description: 'Scalable online stores with seamless checkout and inventory management. Includes payment gateway integration.', icon: 'ShoppingCart', price: '₹55,000+' },
-  { slug: 'web-applications', title: 'Web Applications', description: 'Custom web applications built to solve complex business problems with modern full-stack technology.', icon: 'AppWindow', price: '₹75,000+' },
-  { slug: 'saas-platforms', title: 'SaaS Platforms', description: 'Multi-tenant platforms with subscription billing, user management, and scalable cloud infrastructure.', icon: 'Cloud', price: '₹1,00,000+' },
-  { slug: 'ui-ux-design', title: 'UI/UX Design', description: 'User-centered design that blends aesthetics with usability for intuitive digital experiences.', icon: 'Palette', price: '₹25,000+' },
-  { slug: 'website-redesign', title: 'Website Redesign', description: 'Transform your existing site into a modern, high-performance digital experience with full SEO preservation.', icon: 'RefreshCw', price: '₹30,000+' },
+  { slug: 'business-websites', title: 'Business Websites', description: 'High-performance websites that establish credibility and drive leads. Includes 1 Year Support & Free Domain.', icon: 'Building2' },
+  { slug: 'ecommerce', title: 'E-commerce', description: 'Scalable online stores with seamless checkout and inventory management. Includes payment gateway integration.', icon: 'ShoppingCart' },
+  { slug: 'web-applications', title: 'Web Applications', description: 'Custom web applications built to solve complex business problems with modern full-stack technology.', icon: 'AppWindow' },
+  { slug: 'saas-platforms', title: 'SaaS Platforms', description: 'Multi-tenant platforms with subscription billing, user management, and scalable cloud infrastructure.', icon: 'Cloud' },
+  { slug: 'ui-ux-design', title: 'UI/UX Design', description: 'User-centered design that blends aesthetics with usability for intuitive digital experiences.', icon: 'Palette' },
+  { slug: 'website-redesign', title: 'Website Redesign', description: 'Transform your existing site into a modern, high-performance digital experience with full SEO preservation.', icon: 'RefreshCw' },
 ]
 
 export function ServicesSection() {
@@ -60,8 +60,7 @@ export function ServicesSection() {
                 <p className="text-sm text-white/60 font-body font-light leading-relaxed flex-1">
                   {service.description}
                 </p>
-                <div className="flex items-center justify-between mt-5 pt-4 border-t border-white/5">
-                  <span className="font-heading text-base text-accent">{service.price}</span>
+                <div className="flex items-center justify-end mt-5 pt-4 border-t border-white/5">
                   <div className="flex items-center gap-1.5 text-xs text-accent font-medium group-hover:gap-2.5 transition-all duration-300">
                     Learn More <ArrowUpRight className="h-3.5 w-3.5" />
                   </div>

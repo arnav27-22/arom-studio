@@ -47,7 +47,6 @@ export default function ServiceDetail() {
                 >
                   Get Started <ArrowUpRight className="h-4 w-4" />
                 </Link>
-                <span className="font-heading text-3xl text-accent">{service.price}</span>
               </div>
             </div>
 

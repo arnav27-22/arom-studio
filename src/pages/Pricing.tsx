@@ -5,21 +5,21 @@ import { SEO } from '../components/ui/SEO'
 import { GlassCard } from '../components/ui/GlassCard'
 import { FadeIn, StaggerContainer, StaggerItem } from '../components/motion/FadeIn'
 import { CTABanner } from '../components/sections/shared/CTABanner'
-import { pricingPlans, comparisonFeatures } from '../data/pricing'
+import { plans, comparisonFeatures } from '../data/pricing'
 
 export default function Pricing() {
   return (
     <main className="pt-32">
       <SEO
-        title="Pricing"
-        description="AROM STUDIO pricing starts from ₹12,000. Transparent pricing for business websites, e-commerce, web applications, and more. All prices in INR."
+        title="Plans"
+        description="AROM STUDIO offers flexible plans for business websites, e-commerce, web applications, and more. Transparent packages with no hidden fees."
       />
       <Section>
         <Container>
           <SectionHeader
             badge="Investment"
             title="Simple, transparent"
-            highlightWord="pricing"
+            highlightWord="plans"
             description="No hidden fees. No surprises. Choose the package that fits your needs. Every plan includes 1 Year Support on higher tiers, Free Domain, and Custom Domain options."
           />
 
@@ -29,7 +29,7 @@ export default function Pricing() {
           </div>
 
           <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8 mt-8">
-            {pricingPlans.slice(0, 3).map((plan) => (
+            {plans.slice(0, 3).map((plan) => (
               <StaggerItem key={plan.name}>
                 <GlassCard className={`flex flex-col h-full relative overflow-visible ${plan.highlighted ? 'border border-accent/30 shadow-[0_0_30px_0_rgba(78,133,191,0.15)]' : ''}`}>
                   {plan.badge && (
@@ -37,10 +37,7 @@ export default function Pricing() {
                       {plan.badge}
                     </span>
                   )}
-                  <h3 className="font-heading text-2xl text-white mb-1">{plan.name}</h3>
-                  <div className="flex items-baseline gap-1 mb-4">
-                    <span className="font-heading text-4xl md:text-5xl text-accent tracking-[-1px]">{plan.price}</span>
-                  </div>
+                  <h3 className="font-heading text-2xl text-white mb-4">{plan.name}</h3>
                   <p className="text-xs text-white/50 font-body mb-5">{plan.description}</p>
                   <ul className="space-y-2.5 flex-1 mb-6">
                     {plan.features.map((f) => (
@@ -67,12 +64,9 @@ export default function Pricing() {
           {/* Premium + Enterprise */}
           <FadeIn>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-20">
-              {pricingPlans.slice(3).map((plan) => (
+              {plans.slice(3).map((plan) => (
                 <GlassCard key={plan.name} className="flex flex-col border border-accent/20">
-                  <h3 className="font-heading text-2xl text-white mb-1">{plan.name}</h3>
-                  <div className="flex items-baseline gap-1 mb-4">
-                    <span className="font-heading text-4xl md:text-5xl text-accent tracking-[-1px]">{plan.price}</span>
-                  </div>
+                  <h3 className="font-heading text-2xl text-white mb-4">{plan.name}</h3>
                   <p className="text-xs text-white/50 font-body mb-5">{plan.description}</p>
                   <ul className="grid grid-cols-2 gap-2.5 flex-1 mb-6">
                     {plan.features.map((f) => (
@@ -100,7 +94,7 @@ export default function Pricing() {
                 <thead>
                   <tr className="border-b border-white/10">
                     <th className="text-left py-4 pr-8 text-white/60 font-medium whitespace-nowrap">Feature</th>
-                    {pricingPlans.map((p) => (
+                    {plans.map((p) => (
                       <th key={p.name} className="text-center py-4 px-3 text-white/80 font-heading text-sm min-w-[110px]">
                         {p.name}
                       </th>
@@ -140,20 +134,19 @@ export default function Pricing() {
           />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {[
-              { title: 'Custom Domain Setup', price: '₹1,500', desc: 'Professional email & domain configuration with SSL.' },
-              { title: 'Free Domain LIFETIME', price: '₹5,000', desc: 'Free domain registration for the first year (*T&C apply).' },
-              { title: 'Extended Support', price: '₹5,000/mo', desc: 'Ongoing maintenance, updates, and priority support beyond included period.' },
-              { title: 'Content Writing', price: '₹3,000', desc: 'Professional copywriting for up to 5 pages.' },
-              { title: 'Logo & Brand Kit', price: '₹4,500', desc: 'Custom logo design with brand guidelines.' },
-              { title: 'SEO Boost Package', price: '₹8,000', desc: 'Advanced keyword research, backlinks, and monthly reporting.' },
+              { title: 'Custom Domain Setup', desc: 'Professional email & domain configuration with SSL.' },
+              { title: 'Free Domain LIFETIME', desc: 'Free domain registration for the first year (*T&C apply).' },
+              { title: 'Extended Support', desc: 'Ongoing maintenance, updates, and priority support beyond included period.' },
+              { title: 'Content Writing', desc: 'Professional copywriting for up to 5 pages.' },
+              { title: 'Logo & Brand Kit', desc: 'Custom logo design with brand guidelines.' },
+              { title: 'SEO Boost Package', desc: 'Advanced keyword research, backlinks, and monthly reporting.' },
             ].map((addon) => (
               <GlassCard key={addon.title} className="flex flex-col">
                 <h3 className="font-heading text-xl text-white mb-1">{addon.title}</h3>
-                <p className="font-heading text-2xl text-accent mb-2">{addon.price}</p>
-                <p className="text-xs text-white/55 font-body font-light flex-1">{addon.desc}</p>
+                <p className="text-xs text-white/55 font-body font-light flex-1 mb-4">{addon.desc}</p>
                 <Link
                   to="/contact"
-                  className="mt-4 text-xs text-accent font-body font-medium inline-flex items-center gap-1 hover:gap-2 transition-all"
+                  className="mt-auto text-xs text-accent font-body font-medium inline-flex items-center gap-1 hover:gap-2 transition-all"
                 >
                   Add to Project <ArrowUpRight className="h-3 w-3" />
                 </Link>

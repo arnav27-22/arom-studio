@@ -1,7 +1,43 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowUpRight, Play, Check, Shield, Zap, Globe } from 'lucide-react'
 import { Link } from 'react-router-dom'
+
+function TypeWriter({ texts, typingSpeed = 80, deletingSpeed = 50, pauseDuration = 2000 }: { texts: string[]; typingSpeed?: number; deletingSpeed?: number; pauseDuration?: number }) {
+  const [displayText, setDisplayText] = useState('')
+  const [wordIndex, setWordIndex] = useState(0)
+  const [isDeleting, setIsDeleting] = useState(false)
+
+  const handleTyping = useCallback(() => {
+    const currentWord = texts[wordIndex]
+    if (!isDeleting) {
+      setDisplayText(currentWord.substring(0, displayText.length + 1))
+      if (displayText.length === currentWord.length) {
+        setTimeout(() => setIsDeleting(true), pauseDuration)
+        return
+      }
+    } else {
+      setDisplayText(currentWord.substring(0, displayText.length - 1))
+      if (displayText.length === 0) {
+        setIsDeleting(false)
+        setWordIndex((prev) => (prev + 1) % texts.length)
+        return
+      }
+    }
+  }, [texts, wordIndex, isDeleting, displayText, pauseDuration])
+
+  useEffect(() => {
+    const timer = setTimeout(handleTyping, isDeleting ? deletingSpeed : typingSpeed)
+    return () => clearTimeout(timer)
+  }, [displayText, isDeleting, handleTyping, deletingSpeed, typingSpeed])
+
+  return (
+    <span>
+      {displayText}
+      <span className="animate-pulse">|</span>
+    </span>
+  )
+}
 
 function BlurText({ text, delay = 0 }: { text: string; delay?: number }) {
   const [triggered, setTriggered] = useState(false)
@@ -100,7 +136,7 @@ export function HeroSection() {
               animate={{ filter: 'blur(0px)', opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 1.2, ease: 'easeOut' }}
             >
-              We Design. We Develop. We Deliver.
+              <TypeWriter texts={['We Design.', 'We Develop.', 'We Deliver.', 'We Optimize.', 'We Innovate.']} />
             </motion.span>
           </p>
         </motion.h1>
@@ -126,7 +162,7 @@ export function HeroSection() {
             to="/pricing"
             className="glass-strong text-sm md:text-base font-body font-medium text-white rounded-full px-6 py-3 md:px-8 md:py-3.5 inline-flex items-center gap-2 hover:shadow-[0_0_24px_4px_rgba(78,133,191,0.35)] transition-all duration-300 hover:scale-[1.03] active:scale-[0.97]"
           >
-            View Pricing & Plans
+            View Plans
             <ArrowUpRight className="h-4 w-4" />
           </Link>
           <Link
