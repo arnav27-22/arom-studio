@@ -1,5 +1,5 @@
 import type React from 'react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Mail, MessageCircle, Clock, Send, AlertCircle, FileText, X, ExternalLink } from 'lucide-react'
 import { Section, Container } from '../components/ui/Section'
 import { SEO } from '../components/ui/SEO'
@@ -9,8 +9,6 @@ import { SOCIAL_LINKS } from '../constants/navigation'
 import { sanitize, validateContactForm, type ValidationErrors } from '../lib/validation'
 import emailjs from '@emailjs/browser'
 import { EMAILJS_CONFIG } from '../lib/emailjs'
-
-emailjs.init({ publicKey: EMAILJS_CONFIG.PUBLIC_KEY })
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -26,6 +24,12 @@ export default function Contact() {
   const [errors, setErrors] = useState<ValidationErrors>({})
   const [sending, setSending] = useState(false)
   const [showModal, setShowModal] = useState(false)
+
+  useEffect(() => {
+    if (EMAILJS_CONFIG.PUBLIC_KEY) {
+      emailjs.init({ publicKey: EMAILJS_CONFIG.PUBLIC_KEY })
+    }
+  }, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -67,7 +71,8 @@ export default function Contact() {
         },
       )
       setShowModal(true)
-    } catch {
+    } catch (err) {
+      console.error('EmailJS error:', err)
       setErrors({ message: 'Failed to send message. Please try again or email us directly.' })
     } finally {
       setSending(false)
