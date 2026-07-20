@@ -1,6 +1,15 @@
 import type React from 'react'
 import { useState } from 'react'
-import { Mail, Clock, Send, AlertCircle, FileText, X, ExternalLink } from 'lucide-react'
+import { Clock, Send, AlertCircle, FileText, X, ExternalLink } from 'lucide-react'
+
+function MailIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <rect x="2" y="4" width="20" height="16" rx="2"/>
+      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+    </svg>
+  )
+}
 
 function WhatsAppIcon({ className }: { className?: string }) {
   return (
@@ -262,7 +271,7 @@ export default function Contact() {
 
               <FadeIn delay={0.2}>
                 <GlassCard hover={false}>
-                  <Mail className="h-5 w-5 text-accent mb-3" />
+                  <MailIcon className="h-5 w-5 text-accent mb-3" />
                   <h3 className="font-heading text-lg text-white mb-1">Email</h3>
                   <a href={SOCIAL_LINKS.email} className="text-sm text-white/60 hover:text-accent transition-colors font-body">
                     aromstudio27@gmail.com
@@ -335,7 +344,7 @@ export default function Contact() {
                   )}`}
                   className="flex items-center justify-center gap-2 w-full bg-accent/10 hover:bg-accent/20 text-accent text-sm font-body font-medium rounded-full px-5 py-3 transition-all duration-300"
                 >
-                  <Mail className="h-5 w-5" />
+                  <MailIcon className="h-5 w-5" />
                   Send Email
                 </a>
               </div>
