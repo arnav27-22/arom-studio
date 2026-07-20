@@ -275,6 +275,14 @@ export default function Contact() {
                   >
                     Open Form <FileText className="h-3.5 w-3.5" />
                   </a>
+                  <a
+                    href="https://forms.gle/kBeLEHtnouuBXBsk6"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-accent hover:text-accent-light transition-colors duration-200 font-body font-medium inline-flex items-center gap-1 mt-2"
+                  >
+                    AROM Studio – Project Proposal <FileText className="h-3.5 w-3.5" />
+                  </a>
                 </GlassCard>
               </FadeIn>
 
