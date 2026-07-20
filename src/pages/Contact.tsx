@@ -7,7 +7,6 @@ import { GlassCard } from '../components/ui/GlassCard'
 import { FadeIn } from '../components/motion/FadeIn'
 import { SOCIAL_LINKS } from '../constants/navigation'
 import { sanitize, validateContactForm, type ValidationErrors } from '../lib/validation'
-import { EMAILJS_CONFIG } from '../lib/emailjs'
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -21,7 +20,6 @@ export default function Contact() {
     customBudget: '',
   })
   const [errors, setErrors] = useState<ValidationErrors>({})
-  const [sending, setSending] = useState(false)
   const [showModal, setShowModal] = useState(false)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -32,7 +30,7 @@ export default function Contact() {
     }
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
     const validationErrors = validateContactForm(formData)
@@ -41,44 +39,7 @@ export default function Contact() {
       return
     }
 
-    setSending(true)
-
-    const safeName = sanitize(formData.name)
-    const safeEmail = sanitize(formData.email)
-    const safePhone = sanitize(formData.phone)
-    const safeService = sanitize(formData.service === 'other' ? formData.customService : formData.service)
-    const safeBudget = sanitize(formData.budget === 'custom' ? formData.customBudget : formData.budget)
-    const safeMessage = sanitize(formData.message)
-
-    try {
-      const res = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          service_id: EMAILJS_CONFIG.SERVICE_ID,
-          template_id: EMAILJS_CONFIG.TEMPLATE_ID,
-          user_id: EMAILJS_CONFIG.PUBLIC_KEY,
-          template_params: {
-            from_name: safeName,
-            from_email: safeEmail,
-            phone: safePhone,
-            service: safeService,
-            budget: safeBudget,
-            message: safeMessage,
-          },
-        }),
-      })
-      if (!res.ok) {
-        const text = await res.text()
-        throw new Error(`EmailJS ${res.status}: ${text}`)
-      }
-      setShowModal(true)
-    } catch (err) {
-      console.error('EmailJS error:', err)
-      setErrors({ message: `Failed to send message. ${err instanceof Error ? err.message : 'Unknown error'}` })
-    } finally {
-      setSending(false)
-    }
+    setShowModal(true)
   }
 
   const inputClass = (field: keyof ValidationErrors) =>
@@ -253,11 +214,10 @@ export default function Contact() {
 
                       <button
                         type="submit"
-                        disabled={sending}
-                        className="glass-strong text-sm font-body font-medium text-white rounded-full px-6 py-3 inline-flex items-center gap-2 hover:shadow-[0_0_20px_2px_rgba(78,133,191,0.3)] transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="glass-strong text-sm font-body font-medium text-white rounded-full px-6 py-3 inline-flex items-center gap-2 hover:shadow-[0_0_20px_2px_rgba(78,133,191,0.3)] transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
                       >
-                        <Send className={`h-4 w-4 ${sending ? 'animate-spin' : ''}`} />
-                        {sending ? 'Sending...' : 'Send Message'}
+                        <Send className="h-4 w-4" />
+                        Send Message
                       </button>
                     </form>
                   </GlassCard>
