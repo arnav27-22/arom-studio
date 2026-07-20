@@ -1,12 +1,39 @@
 import { Link } from 'react-router-dom'
-import { Check, ArrowUpRight, Minus } from 'lucide-react'
-import { Spoiler } from 'spoiled'
+import { Check, ArrowUpRight, Minus, Eye, EyeOff } from 'lucide-react'
+import { useState } from 'react'
 import { Section, Container, SectionHeader } from '../components/ui/Section'
 import { SEO } from '../components/ui/SEO'
 import { GlassCard } from '../components/ui/GlassCard'
 import { FadeIn, StaggerContainer, StaggerItem } from '../components/motion/FadeIn'
 import { CTABanner } from '../components/sections/shared/CTABanner'
 import { plans, comparisonFeatures } from '../data/pricing'
+
+function PriceDisplay({ price }: { price: string }) {
+  const [revealed, setRevealed] = useState(false)
+
+  return (
+    <div className="mb-3 text-center">
+      <button
+        onClick={() => setRevealed((p) => !p)}
+        className="inline-flex items-center gap-2 cursor-pointer group"
+      >
+        <span
+          className={`font-heading text-4xl md:text-5xl text-accent tracking-[-1px] transition-all duration-300 ${
+            revealed ? '' : 'blur-sm select-none'
+          }`}
+        >
+          {price}
+        </span>
+        <span className="text-xs text-white/40 font-body">
+          {revealed ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+        </span>
+      </button>
+      {!revealed && (
+        <p className="text-[10px] text-white/30 font-body mt-0.5">Tap to reveal</p>
+      )}
+    </div>
+  )
+}
 
 export default function Pricing() {
   return (
@@ -47,14 +74,10 @@ export default function Pricing() {
                       </li>
                     ))}
                   </ul>
-                  <div className="mb-3 text-center">
-                    <span className="font-heading text-4xl md:text-5xl text-accent tracking-[-1px]">
-                      <Spoiler revealOn="click">{plan.price}</Spoiler>
-                    </span>
-                  </div>
+                  <PriceDisplay price={plan.price} />
                   <Link
                     to="/contact"
-                    className={`text-sm font-body font-medium rounded-full px-5 py-2.5 inline-flex items-center justify-center gap-1.5 transition-all duration-300 ${
+                    className={`text-sm font-body font-medium rounded-full px-5 py-2.5 inline-flex items-center justify-center gap-1.5 transition-all duration-300 mt-auto ${
                       plan.highlighted
                         ? 'glass-strong text-white hover:shadow-[0_0_20px_2px_rgba(78,133,191,0.3)]'
                         : 'glass text-white/80 hover:text-white'
@@ -81,11 +104,7 @@ export default function Pricing() {
                       </li>
                     ))}
                   </ul>
-                  <div className="mb-3 text-center">
-                    <span className="font-heading text-4xl md:text-5xl text-accent tracking-[-1px]">
-                      <Spoiler revealOn="click">{plan.price}</Spoiler>
-                    </span>
-                  </div>
+                  <PriceDisplay price={plan.price} />
                   <Link
                     to="/contact"
                     className="glass-strong text-sm font-body font-medium text-white rounded-full px-5 py-2.5 inline-flex items-center justify-center gap-1.5 transition-all duration-300"
