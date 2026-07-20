@@ -26,7 +26,7 @@ export default function Home() {
     <main>
       <SEO
         title="Home"
-        description="AROM STUDIO is a premium web design and development agency crafting high-performance websites and digital experiences for Indian businesses. 1 Year Support included."
+        description="AROM STUDIO is a premium web design and development agency crafting high-performance websites and digital experiences for Indian businesses. 3+ Years Experience."
         jsonLd={homeSchema}
       />
       <HeroSection />

@@ -111,7 +111,7 @@ export function HeroSection() {
           className="flex flex-wrap items-center justify-center gap-2 mb-6"
         >
           {[
-            { icon: <Check className="h-3 w-3" />, text: '1 Year Support' },
+            { icon: <Check className="h-3 w-3" />, text: '3+ Years Experience' },
             { icon: <Shield className="h-3 w-3" />, text: 'Free Domain Included' },
             { icon: <Zap className="h-3 w-3" />, text: 'Lighthouse 95+' },
             { icon: <Globe className="h-3 w-3" />, text: 'Custom Domain Setup' },
@@ -145,7 +145,7 @@ export function HeroSection() {
           transition={{ duration: 0.8, delay: 1.2, ease: 'easeOut' }}
           className="mt-6 text-sm md:text-base text-white/70 max-w-xl font-body font-light leading-relaxed"
         >
-          We build high-performance websites and digital products for startups, growing businesses, and enterprises — combining exceptional design with engineering excellence. Every project includes <span className="text-accent font-medium">1 Year Support</span> and <span className="text-accent font-medium">Free Domain</span>.
+          We build high-performance websites and digital products for startups, growing businesses, and enterprises — combining exceptional design with engineering excellence. Backed by <span className="text-accent font-medium">3+ Years Experience</span> and <span className="text-accent font-medium">Free Domain</span>.
         </motion.p>
 
         {/* CTA Buttons */}
