@@ -21,6 +21,7 @@ export interface Testimonial {
 
 export interface Plan {
   name: string
+  price: string
   description: string
   features: string[]
   highlighted?: boolean

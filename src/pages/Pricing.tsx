@@ -1,11 +1,38 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Check, ArrowUpRight, Minus } from 'lucide-react'
+import { Check, ArrowUpRight, Minus, Eye, EyeOff } from 'lucide-react'
 import { Section, Container, SectionHeader } from '../components/ui/Section'
 import { SEO } from '../components/ui/SEO'
 import { GlassCard } from '../components/ui/GlassCard'
 import { FadeIn, StaggerContainer, StaggerItem } from '../components/motion/FadeIn'
 import { CTABanner } from '../components/sections/shared/CTABanner'
 import { plans, comparisonFeatures } from '../data/pricing'
+
+function BlurPrice({ price }: { price: string }) {
+  const [revealed, setRevealed] = useState(false)
+
+  return (
+    <button
+      onClick={() => setRevealed((p) => !p)}
+      className="w-full text-center mb-3 group cursor-pointer"
+      aria-label={revealed ? 'Hide price' : 'Reveal price'}
+    >
+      <span
+        className={`font-heading text-4xl md:text-5xl text-accent tracking-[-1px] transition-all duration-300 inline-flex items-center gap-2 ${
+          revealed ? 'blur-0' : 'blur-md select-none'
+        }`}
+      >
+        {price}
+        <span className="text-xs text-white/40 font-body font-normal">
+          {revealed ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+        </span>
+      </span>
+      {!revealed && (
+        <span className="block text-[10px] text-white/30 font-body mt-0.5">Click to reveal</span>
+      )}
+    </button>
+  )
+}
 
 export default function Pricing() {
   return (
@@ -39,16 +66,17 @@ export default function Pricing() {
                   )}
                   <h3 className="font-heading text-2xl text-white mb-4">{plan.name}</h3>
                   <p className="text-xs text-white/50 font-body mb-5">{plan.description}</p>
-                  <ul className="space-y-2.5 flex-1 mb-6">
+                  <ul className="space-y-2.5 flex-1 mb-4">
                     {plan.features.map((f) => (
                       <li key={f} className="flex items-start gap-2 text-sm text-white/65 font-body font-light">
                         <Check className="h-4 w-4 text-accent shrink-0 mt-0.5" /> {f}
                       </li>
                     ))}
                   </ul>
+                  <BlurPrice price={plan.price} />
                   <Link
                     to="/contact"
-                    className={`text-sm font-body font-medium rounded-full px-5 py-2.5 inline-flex items-center justify-center gap-1.5 transition-all duration-300 mt-auto ${
+                    className={`text-sm font-body font-medium rounded-full px-5 py-2.5 inline-flex items-center justify-center gap-1.5 transition-all duration-300 ${
                       plan.highlighted
                         ? 'glass-strong text-white hover:shadow-[0_0_20px_2px_rgba(78,133,191,0.3)]'
                         : 'glass text-white/80 hover:text-white'
@@ -68,16 +96,17 @@ export default function Pricing() {
                 <GlassCard key={plan.name} className="flex flex-col border border-accent/20">
                   <h3 className="font-heading text-2xl text-white mb-4">{plan.name}</h3>
                   <p className="text-xs text-white/50 font-body mb-5">{plan.description}</p>
-                  <ul className="grid grid-cols-2 gap-2.5 flex-1 mb-6">
+                  <ul className="grid grid-cols-2 gap-2.5 flex-1 mb-4">
                     {plan.features.map((f) => (
                       <li key={f} className="flex items-start gap-2 text-sm text-white/65 font-body font-light">
                         <Check className="h-4 w-4 text-accent shrink-0 mt-0.5" /> {f}
                       </li>
                     ))}
                   </ul>
+                  <BlurPrice price={plan.price} />
                   <Link
                     to="/contact"
-                    className="glass-strong text-sm font-body font-medium text-white rounded-full px-5 py-2.5 inline-flex items-center justify-center gap-1.5 transition-all duration-300 mt-auto"
+                    className="glass-strong text-sm font-body font-medium text-white rounded-full px-5 py-2.5 inline-flex items-center justify-center gap-1.5 transition-all duration-300"
                   >
                     Contact Us <ArrowUpRight className="h-3.5 w-3.5" />
                   </Link>

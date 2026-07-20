@@ -3,6 +3,7 @@ import type { Plan } from '../types'
 export const plans: Plan[] = [
   {
     name: 'Starter Website',
+    price: '₹12,000+',
     description: 'Perfect for small businesses and personal brands getting started online.',
     features: [
       '1-Page or 5-Page Website',
@@ -17,6 +18,7 @@ export const plans: Plan[] = [
   },
   {
     name: 'Professional Website',
+    price: '₹25,000+',
     description: 'Ideal for growing businesses that need a professional online presence.',
     features: [
       'Up to 10 Pages',
@@ -35,6 +37,7 @@ export const plans: Plan[] = [
   },
   {
     name: 'Business Website',
+    price: '₹45,000+',
     description: 'For established businesses requiring a comprehensive digital presence.',
     features: [
       'Up to 20 Pages',
@@ -52,6 +55,7 @@ export const plans: Plan[] = [
   },
   {
     name: 'Premium Website',
+    price: '₹75,000+',
     description: 'For enterprises and brands demanding the highest quality digital experience.',
     features: [
       'Unlimited Pages',
@@ -69,6 +73,7 @@ export const plans: Plan[] = [
   },
   {
     name: 'Enterprise Solution',
+    price: '₹1,00,000+',
     description: 'For large-scale projects requiring a dedicated partnership and custom solutions.',
     features: [
       'Custom Scope & Architecture',
