@@ -231,7 +231,7 @@ export function writeSection(
   doc.setFontSize(11)
   doc.setTextColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
   doc.text(title, layout.marginLeft + 6, y + 3)
-  y += 10
+  y += 16
 
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(9)
@@ -243,7 +243,7 @@ export function writeSection(
     if (line.startsWith('  -') || line.startsWith('  •')) {
       const text = line.trim().replace(/^[-•]\s*/, '').replace(/\*\*/g, '')
       const split = doc.splitTextToSize(text, layout.contentWidth - 25)
-      const totalNeeded = split.length * lineH + 40
+      const totalNeeded = split.length * lineH + 4
       y = checkPage(doc, y, totalNeeded)
       if (checkboxes) {
         const bx = layout.marginLeft + 5
@@ -260,7 +260,7 @@ export function writeSection(
           doc.text(s, layout.marginLeft + 12, y)
           y += lineH
         }
-        y += 42
+        y += 2
       } else {
         doc.setFontSize(5)
         doc.setTextColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
