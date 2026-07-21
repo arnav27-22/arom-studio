@@ -46,7 +46,7 @@ const availableServices = [
   'CMS Integration', 'SEO Optimization', 'Website Deployment',
 ]
 
-function todayStr() { return new Date().toISOString().split('T')[0] }
+function todayStr() { return new Date().toLocaleDateString('en-CA') }
 
 export default function Agreement() {
   const [clientName, setClientName] = useState('')
@@ -247,7 +247,6 @@ export default function Agreement() {
               <h4 className="font-heading text-base text-white mb-3">4. Payment Terms</h4>
               <p className="mb-2">Payment schedule:</p>
               <p className="mb-1"><strong>{advancePct || '27'}%</strong> Advance before project commencement.</p>
-              <p className="mb-1"><strong>{Number(100 - Number(advancePct || 27) - Number(finalPct || 50))}%</strong> Milestone payment upon design approval.</p>
               <p className="mb-2"><strong>{finalPct || '50'}%</strong> Final Payment before final website delivery or deployment.</p>
               <p className="mb-2">Additional work requested after project approval will be charged separately.</p>
               <p className="mb-1">Payments are due within the agreed payment period.</p>
@@ -344,7 +343,7 @@ export default function Agreement() {
           {!canGenerate && (
             <p className="text-xs text-red-400 font-body text-center mt-2">
               {!clientName.trim() && '• Enter client name. '}
-              {!allChecked && '• Accept all 23 sections. '}
+              {!allChecked && '• Accept all 22 sections. '}
               {!declaration && '• Check the declaration.'}
             </p>
           )}
