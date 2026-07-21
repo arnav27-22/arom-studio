@@ -252,7 +252,7 @@ export default function Contact() {
 
                       <button
                         type="submit"
-                        className="bg-accent text-white text-sm md:text-base font-body font-semibold rounded-full px-8 py-3.5 inline-flex items-center gap-2 shadow-[0_0_20px_4px_rgba(78,133,191,0.3)] hover:shadow-[0_0_30px_6px_rgba(78,133,191,0.5)] transition-all duration-300 hover:scale-[1.03] active:scale-[0.97]"
+                        className="glass-strong text-sm font-body font-medium text-white rounded-full px-6 py-3 inline-flex items-center gap-2 hover:shadow-[0_0_20px_2px_rgba(78,133,191,0.3)] transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
                       >
                         <Send className="h-4 w-4" />
                         Send Message

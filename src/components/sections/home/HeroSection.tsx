@@ -1,6 +1,89 @@
+import { useEffect, useRef, useState, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowUpRight, Check, Shield, Zap, Globe } from 'lucide-react'
 import { Link } from 'react-router-dom'
+
+function TypeWriter({ texts, typingSpeed = 80, deletingSpeed = 50, pauseDuration = 2000 }: { texts: string[]; typingSpeed?: number; deletingSpeed?: number; pauseDuration?: number }) {
+  const [displayText, setDisplayText] = useState('')
+  const [wordIndex, setWordIndex] = useState(0)
+  const [isDeleting, setIsDeleting] = useState(false)
+
+  const handleTyping = useCallback(() => {
+    const currentWord = texts[wordIndex]
+    if (!isDeleting) {
+      setDisplayText(currentWord.substring(0, displayText.length + 1))
+      if (displayText.length === currentWord.length) {
+        setTimeout(() => setIsDeleting(true), pauseDuration)
+        return
+      }
+    } else {
+      setDisplayText(currentWord.substring(0, displayText.length - 1))
+      if (displayText.length === 0) {
+        setIsDeleting(false)
+        setWordIndex((prev) => (prev + 1) % texts.length)
+        return
+      }
+    }
+  }, [texts, wordIndex, isDeleting, displayText, pauseDuration])
+
+  useEffect(() => {
+    const timer = setTimeout(handleTyping, isDeleting ? deletingSpeed : typingSpeed)
+    return () => clearTimeout(timer)
+  }, [displayText, isDeleting, handleTyping, deletingSpeed, typingSpeed])
+
+  return (
+    <span>
+      {displayText}
+      <span className="animate-pulse">|</span>
+    </span>
+  )
+}
+
+function BlurText({ text, delay = 0 }: { text: string; delay?: number }) {
+  const [triggered, setTriggered] = useState(false)
+  const [animKey, setAnimKey] = useState(0)
+  const ref = useRef(null)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setTriggered(true)
+          setAnimKey((k) => k + 1)
+        } else {
+          setTriggered(false)
+        }
+      },
+      { threshold: 0.1 },
+    )
+    if (ref.current) observer.observe(ref.current)
+    return () => observer.disconnect()
+  }, [])
+
+  const words = text.split(' ')
+
+  return (
+    <p ref={ref} className="flex flex-wrap justify-center" style={{ rowGap: '0.1em' }}>
+      {words.map((word, i) => (
+        <motion.span
+          key={`${animKey}-${i}`}
+          className="inline-block"
+          style={{ marginRight: '0.28em' }}
+          initial={{ filter: 'blur(10px)', opacity: 0, y: 50 }}
+          animate={triggered ? { filter: ['blur(20px)', 'blur(8px)', 'blur(0px)'], opacity: [0, 0.5, 1], y: [50, -5, 0] } : {}}
+          transition={{
+            duration: 0.7,
+            times: [0, 0.5, 1],
+            ease: 'easeOut',
+            delay: delay + i * 0.1,
+          }}
+        >
+          {word}
+        </motion.span>
+      ))}
+    </p>
+  )
+}
 
 export function HeroSection() {
   return (
@@ -48,9 +131,11 @@ export function HeroSection() {
           className="font-heading text-[clamp(32px,7vw,80px)] text-white leading-[0.85] tracking-[-1.5px] max-w-4xl"
         >
           We Build{' '}
-          <span className="text-accent">Business Websites</span>
+          <span className="text-accent">
+            <TypeWriter texts={['Business Websites', 'E-commerce Websites', 'Custom Web Apps', 'SaaS Platforms', 'UI/UX Design', 'Website Redesign', 'SEO Optimization']} />
+          </span>
           <div className="h-2" />
-          <span className="text-[clamp(28px,6vw,70px)] text-white/80">That Grow Businesses</span>
+          <span className="text-[clamp(28px,6vw,70px)] text-white/80"><BlurText text="That Grow Businesses" delay={0.9} /></span>
         </motion.h1>
 
         {/* Subheading */}
@@ -58,9 +143,9 @@ export function HeroSection() {
           initial={{ filter: 'blur(10px)', opacity: 0, y: 20 }}
           animate={{ filter: 'blur(0px)', opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.2, ease: 'easeOut' }}
-          className="mt-6 text-base md:text-lg text-white/80 max-w-2xl font-body font-light leading-relaxed"
+          className="mt-6 text-sm md:text-base text-white/80 max-w-2xl font-body font-light leading-relaxed"
         >
-          High-performance websites and digital products for startups, growing businesses, and enterprises — combining exceptional design with engineering excellence.
+          We build high-performance websites and digital products for startups, growing businesses, and enterprises — combining exceptional design with engineering excellence.
         </motion.p>
 
         {/* CTA Buttons */}
@@ -68,22 +153,31 @@ export function HeroSection() {
           initial={{ filter: 'blur(10px)', opacity: 0, y: 20 }}
           animate={{ filter: 'blur(0px)', opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.5, ease: 'easeOut' }}
-          className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 mt-8"
+          className="flex flex-wrap items-center justify-center gap-4 mt-8"
         >
           <Link
             to="/contact"
-            className="bg-accent text-white text-sm md:text-base font-body font-semibold rounded-full px-8 py-3.5 md:px-10 md:py-4 inline-flex items-center gap-2 shadow-[0_0_20px_4px_rgba(78,133,191,0.3)] hover:shadow-[0_0_30px_6px_rgba(78,133,191,0.5)] transition-all duration-300 hover:scale-[1.03] active:scale-[0.97]"
+            className="glass-strong text-sm md:text-base font-body font-semibold text-white rounded-full px-7 py-3 md:px-9 md:py-3.5 inline-flex items-center gap-2 hover:shadow-[0_0_24px_4px_rgba(78,133,191,0.35)] transition-all duration-300 hover:scale-[1.03] active:scale-[0.97]"
           >
             Start Your Project
             <ArrowUpRight className="h-4 w-4" />
           </Link>
           <Link
             to="/pricing"
-            className="glass-strong text-sm md:text-base font-body font-medium text-white rounded-full px-7 py-3.5 md:px-9 md:py-4 inline-flex items-center gap-2 border border-white/15 hover:shadow-[0_0_24px_4px_rgba(78,133,191,0.35)] transition-all duration-300 hover:scale-[1.03] active:scale-[0.97]"
+            className="glass-strong text-sm md:text-base font-body font-medium text-white rounded-full px-6 py-3 md:px-8 md:py-3.5 inline-flex items-center gap-2 hover:shadow-[0_0_24px_4px_rgba(78,133,191,0.35)] transition-all duration-300 hover:scale-[1.03] active:scale-[0.97]"
           >
             View Plans
             <ArrowUpRight className="h-4 w-4" />
           </Link>
+          <span className="hidden sm:inline text-white/20 font-body font-light text-sm">|</span>
+          <a
+            href="https://forms.gle/fGwvkaTRdtb5ZH3x6"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm md:text-base text-white/50 hover:text-white transition-colors duration-200 font-body font-light inline-flex items-center gap-2"
+          >
+            Book Consultation
+          </a>
         </motion.div>
 
         {/* Stats */}

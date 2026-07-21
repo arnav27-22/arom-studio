@@ -57,7 +57,7 @@ export function ServicesSection() {
                 <h3 className="font-heading text-2xl md:text-3xl text-white tracking-[-1px] leading-none mb-3">
                   {service.title}
                 </h3>
-                <p className="text-sm md:text-base text-white/60 font-body font-light leading-relaxed flex-1">
+                <p className="text-sm text-white/60 font-body font-light leading-relaxed flex-1">
                   {service.description}
                 </p>
                 <div className="flex items-center justify-end mt-5 pt-4 border-t border-white/5">
@@ -73,7 +73,7 @@ export function ServicesSection() {
         <div className="text-center mt-10">
           <Link
             to="/services"
-            className="glass-strong inline-flex items-center gap-2 text-sm md:text-base font-body font-medium text-white rounded-full px-6 py-3 border border-white/15 hover:shadow-[0_0_20px_2px_rgba(255,255,255,0.07)] transition-all duration-300 hover:scale-[1.02]"
+            className="glass inline-flex items-center gap-2 text-sm font-body font-medium text-white rounded-full px-6 py-3 hover:shadow-[0_0_20px_2px_rgba(255,255,255,0.07)] transition-all duration-300 hover:scale-[1.02]"
           >
             View All Services
             <ArrowUpRight className="h-4 w-4" />
