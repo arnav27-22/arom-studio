@@ -16,7 +16,6 @@ const hostingOptions = [
 const freeDomains = [
   { url: 'https://yoursite.vercel.app', label: 'Vercel' },
   { url: 'https://yoursite.netlify.app', label: 'Netlify' },
-  { url: 'https://yoursite.github.io', label: 'GitHub Pages' },
 ]
 
 export default function Handover() {

@@ -3,7 +3,7 @@ import { NavLink, Outlet } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Upload, Clock, Handshake, ChevronLeft, ChevronRight, Menu, X,
-  PenSquare, FileCheck, ScrollText, ClipboardCheck
+  PenSquare, FileCheck, ScrollText, ClipboardCheck, FileText
 } from 'lucide-react'
 import { cn } from '../../lib/cn'
 
@@ -13,6 +13,7 @@ const sidebarLinks = [
   { label: 'Website Agreement', href: '/clientportal/agreement', icon: ScrollText },
   { label: 'Discovery Questionnaire', href: '/clientportal/questionnaire', icon: ClipboardCheck },
   { label: 'Project Timeline', href: '/clientportal/timeline', icon: Clock },
+  { label: 'Content Collection', href: '/clientportal/content', icon: FileText },
   { label: 'Assets Upload', href: '/clientportal/assets', icon: Upload },
   { label: 'Handover', href: '/clientportal/handover', icon: Handshake },
 ]
@@ -93,8 +94,8 @@ export default function ClientPortal() {
                     cn(
                       'flex items-center gap-3 rounded-[14px] px-3 py-2.5 text-sm font-body font-light transition-all duration-200 mb-0.5',
                       isActive
-                        ? 'glass-strong text-white'
-                        : 'text-white/50 hover:text-white hover:bg-white/5',
+                        ? 'glass-strong text-accent border border-accent/20 font-medium'
+                        : 'text-white/60 hover:text-white hover:bg-white/5',
                     )
                   }
                   title={link.label}
@@ -127,7 +128,7 @@ function renderSidebarLinks(mobile: boolean) {
         className={({ isActive }) =>
           cn(
             'flex items-center gap-3 rounded-[14px] px-3 py-2.5 text-sm font-body font-light transition-all duration-200 mb-0.5',
-            isActive ? 'glass-strong text-white' : 'text-white/50 hover:text-white hover:bg-white/5',
+            isActive ? 'glass-strong text-accent border border-accent/20 font-medium' : 'text-white/60 hover:text-white hover:bg-white/5',
           )
         }
       >

@@ -826,7 +826,6 @@ export function generateHandoverPDF(data: {
     'A free subdomain is provided for staging or production:',
     `  • ${data.websiteUrl}`,
     '  • https://yoursite.netlify.app (if using Netlify)',
-    '  • https://yoursite.github.io (if using GitHub Pages)',
     '',
     'You can also connect a custom domain (e.g., yoursite.com) at any time.',
   ], layout)
@@ -1002,4 +1001,63 @@ export function generateAssetsPDF(data: {
   }
 
   doc.save(`Assets_Summary_${data.clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`)
+}
+
+export function generateContentCollectionPDF(data: {
+  clientName: string
+  projectName: string
+  homePage: string
+  aboutUs: string
+  services: string
+  faqs: string
+  contactDetails: string
+  socialMedia: string
+  seoTitleDesc: string
+}) {
+  const doc = createDoc()
+  const layout = getPageLayout(doc)
+
+  addCoverPage(doc, {
+    title: 'Content Collection',
+    subtitle: data.projectName,
+    clientName: data.clientName,
+    date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+  })
+
+  let y = layout.marginTop
+  addHeader(doc, 'Content Collection')
+
+  const contentSections: [string, string][] = [
+    ['Home Page', data.homePage],
+    ['About Us', data.aboutUs],
+    ['Services', data.services],
+    ['FAQs', data.faqs],
+    ['Contact Details', data.contactDetails],
+    ['Social Media Links', data.socialMedia],
+    ['SEO Title & Description', data.seoTitleDesc],
+  ]
+
+  for (const [title, content] of contentSections) {
+    if (!content.trim()) continue
+    y = writeSection(doc, y, title, [
+      content,
+    ], layout)
+  }
+
+  y = writeSection(doc, y, 'Next Steps', [
+    'Please review the content above and ensure everything is accurate.',
+    'Once confirmed, AROM Studio will proceed with integrating this content into the website.',
+    'For any changes or updates, please contact AROM Studio via email or WhatsApp.',
+  ], layout)
+
+  y = writeSignatureBlock(doc, y, layout, data.clientName, new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }))
+  y = writeContactFooter(doc, y, layout)
+
+  finalizeDoc(doc)
+  for (let i = 2; i <= doc.getNumberOfPages(); i++) {
+    doc.setPage(i)
+    addHeader(doc, 'Content Collection')
+  }
+
+  doc.save(`Content_Collection_${data.clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`)
 }

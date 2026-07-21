@@ -28,6 +28,7 @@ import Agreement from './pages/portal/Agreement'
 import DiscoveryQuestionnaire from './pages/portal/DiscoveryQuestionnaire'
 import AssetsUpload from './pages/portal/AssetsUpload'
 import ProjectTimeline from './pages/portal/ProjectTimeline'
+import ContentCollection from './pages/portal/ContentCollection'
 import Handover from './pages/portal/Handover'
 
 function ScrollToTop() {
@@ -69,6 +70,7 @@ export default function App() {
             <Route path="agreement" element={<Agreement />} />
             <Route path="questionnaire" element={<DiscoveryQuestionnaire />} />
             <Route path="timeline" element={<ProjectTimeline />} />
+            <Route path="content" element={<ContentCollection />} />
             <Route path="assets" element={<AssetsUpload />} />
             <Route path="handover" element={<Handover />} />
           </Route>
