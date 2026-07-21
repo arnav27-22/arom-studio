@@ -155,7 +155,7 @@ export default function DesignApproval() {
               />
               <div className="flex gap-2 justify-end">
                 <Button variant="ghost" size="sm" onClick={() => setCommentModal(null)}>Cancel</Button>
-                <Button variant="primary" size="sm" onClick={() => handleAction(commentModal, 'changes', comment)}>
+                <Button variant="secondary" size="sm" onClick={() => handleAction(commentModal, 'changes', comment)}>
                   <MessageSquare className="h-4 w-4" /> Submit
                 </Button>
               </div>

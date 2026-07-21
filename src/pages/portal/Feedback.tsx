@@ -135,7 +135,7 @@ export default function Feedback() {
           </span>
         </label>
 
-        <Button variant="primary" size="lg" onClick={handleSubmit} className="w-full">
+        <Button variant="secondary" size="lg" onClick={handleSubmit} className="w-full">
           Submit Feedback
         </Button>
       </div>

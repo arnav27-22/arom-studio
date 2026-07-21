@@ -119,7 +119,7 @@ export default function Proposal() {
               <h3 className="font-heading text-2xl text-white mb-2">Ready to Get Started?</h3>
               <p className="text-sm text-white/50 font-body font-light mb-6">Accept this proposal and let's bring your vision to life.</p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Button variant="primary" size="lg" onClick={() => window.open('https://wa.me/918767990061', '_blank')}>
+                <Button variant="secondary" size="lg" onClick={() => window.open('https://wa.me/918767990061', '_blank')}>
                   Accept & Start <ArrowRight className="h-4 w-4" />
                 </Button>
                 <Link to="/contact">

@@ -92,7 +92,7 @@ export default function Handover() {
 
       {/* Download buttons */}
       <div className="flex flex-wrap gap-3">
-        <Button variant="primary" size="sm">
+        <Button variant="secondary" size="sm">
           <Download className="h-4 w-4" /> Download Source ZIP
         </Button>
         <Button variant="secondary" size="sm">

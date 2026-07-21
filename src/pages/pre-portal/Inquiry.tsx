@@ -139,7 +139,7 @@ export default function Inquiry() {
               <label className="text-sm text-white/70 font-body block mb-1.5">Project Description *</label>
               <textarea value={form.description} onChange={(e) => update('description', e.target.value)} placeholder="Tell us about your project — goals, features, timeline, and anything else we should know." rows={5} required className="w-full bg-white/5 border border-white/10 rounded-[20px] px-5 py-4 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-accent/40 font-body resize-y" />
             </div>
-            <Button type="submit" variant="primary" size="lg" isLoading={sending} className="w-full"><Send className="h-4 w-4" /> {sending ? 'Sending...' : 'Submit Inquiry'}</Button>
+            <Button type="submit" variant="secondary" size="lg" isLoading={sending} className="w-full"><Send className="h-4 w-4" /> {sending ? 'Sending...' : 'Submit Inquiry'}</Button>
             <p className="text-[10px] text-white/30 font-body text-center mt-4">We respect your privacy. Your information will never be shared.</p>
           </motion.form>
         </Container>

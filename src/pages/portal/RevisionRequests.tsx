@@ -68,7 +68,7 @@ export default function RevisionRequests() {
           <Button variant="secondary" size="sm" onClick={handleDownloadPDF}>
             <Download className="h-4 w-4" /> PDF
           </Button>
-          <Button variant="primary" size="sm" onClick={() => setShowForm(true)}>
+          <Button variant="secondary" size="sm" onClick={() => setShowForm(true)}>
             <Plus className="h-4 w-4" /> New Request
           </Button>
         </div>
@@ -145,7 +145,7 @@ export default function RevisionRequests() {
               </div>
               <div className="flex justify-end gap-2">
                 <Button variant="ghost" size="sm" onClick={() => setShowForm(false)}>Cancel</Button>
-                <Button variant="primary" size="sm" onClick={handleSubmit}>Submit Request</Button>
+                <Button variant="secondary" size="sm" onClick={handleSubmit}>Submit Request</Button>
               </div>
             </div>
           </motion.div>

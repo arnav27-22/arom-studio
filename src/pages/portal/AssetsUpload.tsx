@@ -178,7 +178,7 @@ export default function AssetsUpload() {
               {errors && <p className="text-xs text-red-400 mt-1 font-body">{errors}</p>}
             </div>
 
-            <Button variant="primary" size="lg" onClick={handleSubmit} className="w-full">
+            <Button variant="secondary" size="lg" onClick={handleSubmit} className="w-full">
               <CheckCircle2 className="h-4 w-4" /> I've Uploaded Everything
             </Button>
 

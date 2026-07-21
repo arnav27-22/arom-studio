@@ -115,7 +115,7 @@ export default function Settings() {
 
         {/* Save */}
         <div className="flex justify-end">
-          <Button variant="primary" onClick={handleSave}>
+          <Button variant="secondary" onClick={handleSave}>
             {saved ? <><CheckCircle2 className="h-4 w-4" /> Saved!</> : <><Save className="h-4 w-4" /> Save Changes</>}
           </Button>
         </div>

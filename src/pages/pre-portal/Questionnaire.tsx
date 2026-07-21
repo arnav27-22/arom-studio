@@ -104,7 +104,7 @@ export default function Questionnaire() {
               <h1 className="font-heading text-3xl text-white mb-3">Questionnaire Submitted!</h1>
               <p className="text-sm text-white/60 font-body font-light mb-6">We have received your project requirements. Our team will review them and prepare a tailored proposal.</p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Button variant="primary" onClick={handleDownload}><Download className="h-4 w-4" /> Download PDF</Button>
+                <Button variant="secondary" onClick={handleDownload}><Download className="h-4 w-4" /> Download PDF</Button>
                 <a href="/contact" className="inline-flex items-center gap-2 text-sm font-body font-medium text-white/70 hover:text-white transition-colors rounded-full px-6 py-3">Contact Us <ChevronRight className="h-4 w-4" /></a>
               </div>
             </motion.div>
@@ -177,7 +177,7 @@ export default function Questionnaire() {
 
             {/* Submit */}
             <div className="mt-8 pt-6 border-t border-white/10 text-center">
-              <Button variant="primary" size="lg" onClick={handleSubmit} isLoading={sending} disabled={!allFilled}>
+              <Button variant="secondary" size="lg" onClick={handleSubmit} isLoading={sending} disabled={!allFilled}>
                 <Send className="h-4 w-4" /> {sending ? 'Submitting...' : 'Submit Questionnaire'}
               </Button>
               {!allFilled && <p className="text-[10px] text-white/30 font-body mt-2">Please fill in all sections before submitting.</p>}
