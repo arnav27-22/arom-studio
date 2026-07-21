@@ -36,6 +36,9 @@ const sectionCheckboxes = [
   { id: 'force', label: 'I have read and agree to Section 18: Force Majeure' },
   { id: 'law', label: 'I have read and agree to Section 19: Governing Law' },
   { id: 'acceptance', label: 'I have read and agree to Section 20: Acceptance' },
+  { id: 'entireAgreement', label: 'I have read and agree to Section 21: Entire Agreement' },
+  { id: 'browserSupport', label: 'I have read and agree to Section 22: Browser Support' },
+  { id: 'digitalAcceptance', label: 'I have read and agree to Section 23: Digital Acceptance' },
 ]
 
 const availableServices = [
@@ -247,7 +250,8 @@ export default function Agreement() {
               <p className="mb-1"><strong>{advancePct || '50'}%</strong> Advance before project commencement.</p>
               <p className="mb-2"><strong>{finalPct || '50'}%</strong> Final Payment before final website delivery or deployment.</p>
               <p className="mb-2">Additional work requested after project approval will be charged separately.</p>
-              <p className="mb-3">Payments are due within the agreed payment period.</p>
+              <p className="mb-1">Payments are due within the agreed payment period.</p>
+              <p className="mb-3">If payment is delayed by more than 7 days, AROM Studio may pause work until payment is received.</p>
               <label className="flex items-start gap-3 cursor-pointer mt-3 pt-3 border-t border-white/10">
                 <input type="checkbox" checked={!!checkedSections['payment']} onChange={() => toggleSection('payment')} className="mt-0.5 accent-accent" />
                 <span className="text-xs text-white/60 font-body">I have read and agree to Section 4: Payment Terms</span>
@@ -274,8 +278,8 @@ export default function Agreement() {
 
             {/* Sections 6-20 in compact format */}
             {[
-              { id: 'communication', title: '6. Project Communication', content: 'The Client should provide timely feedback and approvals to avoid unnecessary delays. Preferred communication methods include: Email, WhatsApp, Google Meet, Zoom, Phone Call.' },
-              { id: 'revisions', title: '7. Revisions', content: 'Unless otherwise agreed in writing: Minor revisions are included within the agreed revision limit. Requests outside the original scope may require additional charges. Major redesigns after approval are treated as new work.' },
+              { id: 'communication', title: '6. Project Communication', content: 'The Client should provide timely feedback and approvals to avoid unnecessary delays. Preferred communication methods include: Email, WhatsApp, Google Meet, Zoom, Phone Call. If the Client does not respond within 10 business days, the project may be placed on hold until communication resumes.' },
+              { id: 'revisions', title: '7. Revisions', content: 'Revision limits are defined per project tier: Basic (2 revision rounds), Standard (3 revision rounds), Premium (Unlimited until design approval). Requests outside the original scope or beyond the revision limit may require additional charges. Major redesigns after approval are treated as new work.' },
               { id: 'changes', title: '8. Change Requests', content: 'If the Client requests additional pages, new features, major design changes, third-party integrations, or functional changes, AROM Studio will provide a revised quotation before starting the additional work.' },
               { id: 'domain', title: '9. Domain & Hosting', content: 'Unless specifically included in the proposal, domain registration and hosting purchase are the Client\'s responsibility. If AROM Studio assists with these services, any third-party costs will be billed separately.' },
               { id: 'ownership', title: '10. Content Ownership', content: 'The Client retains ownership of: Logos, Images, Videos, Written Content, Brand Assets. The Client confirms they have permission to use all provided materials.' },
@@ -283,12 +287,15 @@ export default function Agreement() {
               { id: 'confidentiality', title: '12. Confidentiality', content: 'Both parties agree to keep confidential information private. Business information, passwords, source files, and sensitive project information shall not be shared with third parties without permission, unless required by law.' },
               { id: 'cancellation', title: '13. Cancellation', content: 'Either party may cancel the project. If cancelled: Work completed up to the cancellation date must be paid for. Advance payments cover work already performed and are generally non-refundable. Completed deliverables up to the cancellation date may be provided after outstanding payments are settled.' },
               { id: 'launch', title: '14. Website Launch', content: 'The website will be deployed after: Final approval, Final payment received, Required domain and hosting access provided (if applicable).' },
-              { id: 'support', title: '15. Support', content: `After website delivery, the included support period is ${supportPeriod || '30'} days. Support includes: Bug Fixes, Minor Technical Assistance. Support does not include: New Features, Major Design Changes, Additional Pages, Third-party software issues.` },
+              { id: 'support', title: '15. Support', content: `After website delivery, the included support period is ${supportPeriod || '30'} days. The warranty covers defects in delivered work. Support includes: Bug Fixes, Minor Technical Assistance. Support does not include: Client modifications, Third-party plugin updates, New Features, Major Design Changes, Additional Pages, Third-party software issues.` },
               { id: 'liability', title: '16. Limitation of Liability', content: 'AROM Studio shall not be responsible for: Third-party hosting failures, Domain provider issues, Payment gateway outages, Search engine ranking changes, Client-added errors after handover, Cyberattacks or data loss caused by third-party systems beyond AROM Studio\'s control.' },
               { id: 'portfolio', title: '17. Portfolio Rights', content: 'Unless the Client specifically requests confidentiality in writing, AROM Studio may showcase the completed project in its portfolio, website, and social media for promotional purposes. If confidentiality is requested and agreed upon, AROM Studio will not publicly display the project.' },
               { id: 'force', title: '18. Force Majeure', content: 'Neither party shall be liable for delays caused by events beyond reasonable control, including natural disasters, government actions, internet outages, pandemics, or other unforeseen circumstances.' },
               { id: 'law', title: '19. Governing Law', content: 'This Agreement shall be governed by the applicable laws of India. Any disputes shall first be attempted to be resolved through mutual discussion before pursuing legal remedies.' },
-              { id: 'acceptance', title: '20. Acceptance', content: 'By proceeding with the project and making the agreed advance payment after accepting the proposal, the Client acknowledges that they have read, understood, and accepted the terms of this Agreement.' },
+              { id: 'acceptance', title: '20. Digital Acceptance', content: 'By clicking "I Agree" in the AROM Studio Client Portal or by making the agreed advance payment after accepting the proposal, the Client acknowledges that they have read, understood, and accepted the terms of this Agreement. This constitutes a legally binding digital acceptance.' },
+              { id: 'entireAgreement', title: '21. Entire Agreement', content: 'This Agreement, together with the approved Project Proposal, constitutes the entire agreement between the parties and supersedes any prior discussions, negotiations, or communications, whether written or oral.' },
+              { id: 'browserSupport', title: '22. Browser Support', content: 'AROM Studio officially supports the latest two versions of: Google Chrome, Mozilla Firefox, Apple Safari, and Microsoft Edge. The website may not function as intended on older or unsupported browsers.' },
+              { id: 'digitalAcceptance', title: '23. Digital Acceptance', content: 'By clicking "I Agree" in the AROM Studio Client Portal or by making the agreed advance payment, the client accepts this Agreement as a legally binding document. No handwritten signature is required.' },
             ].map((sec) => (
               <div key={sec.id} className="glass rounded-[16px] p-5 border-l-2 border-accent">
                 <h4 className="font-heading text-base text-white mb-3">{sec.title}</h4>
@@ -309,11 +316,11 @@ export default function Agreement() {
             I, <strong>{clientName || '[Client Name]'}</strong>, confirm that:
           </p>
           <ul className="list-disc pl-5 space-y-2 text-sm text-white/60 font-body mb-6">
-            <li>I have read and understood all 20 sections of this Agreement.</li>
+            <li>I have read and understood all sections of this Agreement including the Entire Agreement clause, Browser Support, and Digital Acceptance.</li>
             <li>All information I have provided is accurate and complete.</li>
             <li>I agree to the payment terms including the {advancePct || '50'}% advance payment.</li>
             <li>I agree to provide all required content and assets within agreed timelines.</li>
-            <li>I acknowledge that this Agreement is legally binding.</li>
+            <li>I acknowledge that this Agreement is legally binding and accept the Digital Acceptance clause.</li>
           </ul>
           <label className="flex items-start gap-3 cursor-pointer">
             <input type="checkbox" checked={declaration} onChange={(e) => setDeclaration(e.target.checked)} className="mt-0.5 accent-accent" />
@@ -338,7 +345,7 @@ export default function Agreement() {
           {!canGenerate && (
             <p className="text-xs text-red-400 font-body text-center mt-2">
               {!clientName.trim() && '• Enter client name. '}
-              {!allChecked && '• Accept all 21 sections. '}
+              {!allChecked && '• Accept all 23 sections. '}
               {!declaration && '• Check the declaration.'}
             </p>
           )}

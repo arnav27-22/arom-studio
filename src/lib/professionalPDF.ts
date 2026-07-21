@@ -636,6 +636,7 @@ export function generateAgreementPDF(data: {
     `Payment schedule: ${data.advancePercentage || '50'}% Advance before project commencement. ${data.finalPercentage || '50'}% Final Payment before final website delivery or deployment.`,
     'Additional work requested after project approval will be charged separately.',
     'Payments are due within the agreed payment period.',
+    'If payment is delayed by more than 7 days, AROM Studio may pause work until payment is received.',
   ], layout, true)
 
   // 5. Client Responsibilities
@@ -653,14 +654,17 @@ export function generateAgreementPDF(data: {
   y = writeSection(doc, y, '6. Project Communication', [
     'The Client should provide timely feedback and approvals to avoid unnecessary delays.',
     'Preferred communication methods include: Email, WhatsApp, Google Meet, Zoom, Phone Call.',
+    'If the Client does not respond within 10 business days, the project may be placed on hold until communication resumes.',
   ], layout, true)
 
   // 7. Revisions
   y = writeSection(doc, y, '7. Revisions', [
-    'Unless otherwise agreed in writing:',
-    '  • Minor revisions are included within the agreed revision limit.',
-    '  • Requests outside the original scope may require additional charges.',
-    '  • Major redesigns after approval are treated as new work.',
+    'Revision limits are defined per project tier:',
+    '  • Basic: 2 revision rounds',
+    '  • Standard: 3 revision rounds',
+    '  • Premium: Unlimited until design approval',
+    'Requests outside the original scope or beyond the revision limit may require additional charges.',
+    'Major redesigns after approval are treated as new work.',
   ], layout, true)
 
   // 8. Change Requests
@@ -696,8 +700,9 @@ export function generateAgreementPDF(data: {
     ]],
     ['15. Support', [
       `After website delivery, the included support period is ${data.supportPeriod || '30'} days.`,
+      'The warranty covers defects in delivered work.',
       'Support includes: Bug Fixes, Minor Technical Assistance.',
-      'Support does not include: New Features, Major Design Changes, Additional Pages, Third-party software issues.',
+      'Support does not include: Client modifications, Third-party plugin updates, New Features, Major Design Changes, Additional Pages, Third-party software issues.',
     ]],
     ['16. Limitation of Liability', [
       'AROM Studio shall not be responsible for third-party hosting failures, domain provider issues, payment gateway outages, search engine ranking changes, client-added errors after handover, or cyberattacks beyond our control.',
@@ -712,8 +717,25 @@ export function generateAgreementPDF(data: {
       'This Agreement shall be governed by the applicable laws of India.',
       'Any disputes shall first be attempted to be resolved through mutual discussion before pursuing legal remedies.',
     ]],
-    ['20. Acceptance', [
-      'By proceeding with the project and making the agreed advance payment after accepting the proposal, the Client acknowledges that they have read, understood, and accepted the terms of this Agreement.',
+    ['20. Digital Acceptance', [
+      'By clicking "I Agree" in the AROM Studio Client Portal or by making the agreed advance payment after accepting the proposal, the Client acknowledges that they have read, understood, and accepted the terms of this Agreement.',
+      'This constitutes a legally binding digital acceptance. No handwritten signature is required.',
+    ]],
+    ['21. Entire Agreement', [
+      'This Agreement, together with the approved Project Proposal, constitutes the entire agreement between the parties.',
+      'It supersedes any prior discussions, negotiations, or communications, whether written or oral.',
+    ]],
+    ['22. Browser Support', [
+      'AROM Studio officially supports the latest two versions of the following browsers:',
+      '  • Google Chrome',
+      '  • Mozilla Firefox',
+      '  • Apple Safari',
+      '  • Microsoft Edge',
+      'The website may not function as intended on older or unsupported browsers.',
+    ]],
+    ['23. Digital Acceptance', [
+      'By clicking "I Agree" in the AROM Studio Client Portal or by making the agreed advance payment, the client accepts this Agreement as a legally binding document.',
+      'No handwritten signature is required.',
     ]],
   ]
 
@@ -757,8 +779,8 @@ export function generateAgreementPDF(data: {
   // Client Declaration
   y = writeSection(doc, y, 'Client Declaration', [
     `I, ${data.clientName || '[Client Name]'}, hereby declare that:`,
-    `  • I have read, understood, and agree to all 20 sections of this Website Development Agreement.`,
-    '  • I have read, understood, and agree to the Privacy Policy, Terms & Conditions, and Refund Policy as outlined in Section 21.',
+    `  • I have read, understood, and agree to all sections of this Website Development Agreement including the Entire Agreement clause, Browser Support, and Digital Acceptance.`,
+    '  • I have read, understood, and agree to the Privacy Policy, Terms & Conditions, and Refund Policy as outlined in the Legal section.',
     `  • All information provided by me is accurate and complete.`,
     `  • I agree to the payment terms including the ${data.advancePercentage || '50'}% advance payment.`,
     '  • I agree to provide all required content and assets within agreed timelines.',

@@ -30,10 +30,6 @@ export default function ProjectTimeline() {
   const [editing, setEditing] = useState<number | null>(null)
   const [editPhase, setEditPhase] = useState<Phase | null>(null)
 
-  const completed = phases.filter((p) => p.status === 'completed').length
-  const total = phases.length
-  const progress = total > 0 ? (completed / total) * 100 : 0
-
   const addPhase = () => {
     setPhases((prev) => [...prev, { name: 'New Phase', status: 'upcoming', duration: 'Week ?', desc: 'Description', details: '' }])
   }
@@ -65,27 +61,6 @@ export default function ProjectTimeline() {
         <button onClick={addPhase} className="flex items-center gap-1.5 text-xs text-accent hover:text-accent/80 font-body font-medium whitespace-nowrap">
           <Plus className="h-3.5 w-3.5" /> Add Phase
         </button>
-      </div>
-
-      {/* Overall progress */}
-      <div className="glass rounded-[24px] p-6 mb-8">
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-sm text-white/70 font-body">Overall Progress</span>
-          <span className="text-sm text-accent font-heading">{Math.round(progress)}%</span>
-        </div>
-        <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-          <motion.div
-            className="h-full bg-gradient-to-r from-accent to-blue-400 rounded-full"
-            initial={{ width: 0 }}
-            animate={{ width: `${progress}%` }}
-            transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1] }}
-          />
-        </div>
-        <div className="flex items-center gap-4 mt-3 text-xs text-white/40 font-body">
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-400" /> Completed</span>
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-accent" /> Active</span>
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-white/20" /> Upcoming</span>
-        </div>
       </div>
 
       {/* Timeline */}
