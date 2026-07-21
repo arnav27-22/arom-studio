@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowUpRight, Check, Shield, Zap, Globe } from 'lucide-react'
+import { ArrowUpRight, Check, Shield, Zap, Globe, MapPin } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { useUserCity } from '../../../hooks/useUserCity'
 
 function TypeWriter({ texts, typingSpeed = 80, deletingSpeed = 50, pauseDuration = 2000 }: { texts: string[]; typingSpeed?: number; deletingSpeed?: number; pauseDuration?: number }) {
   const [displayText, setDisplayText] = useState('')
@@ -86,6 +87,8 @@ function BlurText({ text, delay = 0 }: { text: string; delay?: number }) {
 }
 
 export function HeroSection() {
+  const { city, loading } = useUserCity()
+
   return (
     <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
 
@@ -99,7 +102,13 @@ export function HeroSection() {
         >
           <div className="glass inline-flex items-center gap-2 rounded-full px-4 py-1.5">
             <span className="bg-white text-black text-xs font-semibold px-3 py-0.5 rounded-full">Premium</span>
-            <span className="text-xs text-white/80 font-body font-light">Web Design & Development Agency — India</span>
+            <span className="text-xs text-white/80 font-body font-light inline-flex items-center gap-1">
+              {!loading && city ? (
+                <><MapPin className="h-3 w-3 text-accent" /> Web Design & Development — {city}</>
+              ) : (
+                'Web Design & Development Agency — India'
+              )}
+            </span>
           </div>
         </motion.div>
 
