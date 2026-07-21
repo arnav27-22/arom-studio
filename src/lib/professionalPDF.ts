@@ -237,7 +237,7 @@ export function writeSection(
   doc.setFontSize(9)
   doc.setTextColor(BRAND.mid.r, BRAND.mid.g, BRAND.mid.b)
 
-  const lineH = checkboxes ? 7 : 5
+  const lineH = checkboxes ? 9 : 6
 
   for (const line of bodyLines) {
     if (line.startsWith('  -') || line.startsWith('  •')) {
@@ -246,19 +246,21 @@ export function writeSection(
       const totalNeeded = split.length * lineH + 40
       y = checkPage(doc, y, totalNeeded)
       if (checkboxes) {
+        const bx = layout.marginLeft + 5
+        const by = y - 1
         doc.setDrawColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
         doc.setLineWidth(0.4)
-        doc.rect(layout.marginLeft + 5, y - 1, 3.5, 3.5, 'S')
-        doc.setFontSize(7)
-        doc.setTextColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
-        doc.text('✓', layout.marginLeft + 5.8, y + 2.2)
+        doc.rect(bx, by, 3.5, 3.5, 'S')
+        doc.setLineWidth(0.5)
+        doc.line(bx + 0.8, by + 2.2, bx + 1.5, by + 2.8)
+        doc.line(bx + 1.5, by + 2.8, bx + 2.8, by + 0.5)
         doc.setFontSize(9)
         doc.setTextColor(BRAND.mid.r, BRAND.mid.g, BRAND.mid.b)
         for (const s of split) {
           doc.text(s, layout.marginLeft + 12, y)
           y += lineH
         }
-        y += 34
+        y += 42
       } else {
         doc.setFontSize(5)
         doc.setTextColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
