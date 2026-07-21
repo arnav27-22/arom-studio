@@ -1,0 +1,55 @@
+export const indianCities = [
+  'Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Ahmedabad', 'Chennai', 'Kolkata',
+  'Pune', 'Jaipur', 'Lucknow', 'Surat', 'Indore', 'Bhopal', 'Chandigarh',
+  'Gurugram', 'Noida', 'Nagpur', 'Patna', 'Ranchi', 'Bhubaneswar', 'Kochi',
+  'Coimbatore', 'Kozhikode', 'Thiruvananthapuram', 'Visakhapatnam', 'Vijayawada',
+  'Madurai', 'Mysore', 'Raipur', 'Guwahati', 'Agra', 'Varanasi', 'Ludhiana',
+  'Amritsar', 'Jodhpur', 'Udaipur', 'Dehradun', 'Shimla', 'Srinagar', 'Jammu',
+  'Panaji', 'Pondicherry', 'Thane', 'Nashik', 'Aurangabad', 'Solapur',
+  'Kolhapur', 'Vadodara', 'Rajkot', 'Bhavnagar', 'Jamnagar', 'Gandhinagar',
+  'Faridabad', 'Meerut', 'Ghaziabad', 'Kanpur', 'Allahabad', 'Gorakhpur',
+  'Moradabad', 'Jhansi', 'Gwalior', 'Ujjain', 'Jabalpur', 'Bilaspur',
+  'Korba', 'Durgapur', 'Asansol', 'Siliguri', 'Berhampur', 'Rourkela',
+  'Cuttack', 'Tirupati', 'Guntur', 'Warangal', 'Kurnool', 'Kakinada',
+  'Mangalore', 'Hubli', 'Belgaum', 'Davanagere', 'Bellary', 'Tumkur',
+  'Salem', 'Tiruchirappalli', 'Erode', 'Tirunelveli', 'Vellore', 'Thoothukudi',
+  'Thrissur', 'Kollam', 'Alappuzha', 'Palakkad', 'Malappuram', 'Kannur',
+  'Imphal', 'Shillong', 'Aizawl', 'Kohima', 'Itanagar', 'Gangtok', 'Agartala',
+  'Dimapur', 'Diphu', 'Tinsukia', 'Jorhat', 'Sambalpur', 'Bokaro', 'Dhanbad',
+  'Haldwani', 'Haridwar', 'Rishikesh', 'Navi Mumbai', 'Vasai-Virar',
+  'Bangalore Rural', 'Sri Ganganagar', 'Bikaner', 'Ajmer', 'Kota', 'Bhilwara',
+  'Alwar', 'Bharatpur', 'Sikar', 'Pali', 'Tonk', 'Dewas', 'Mandsaur',
+  'Ratlam', 'Rewa', 'Satna', 'Burhanpur', 'Khandwa', 'Chhindwara',
+  'Raigarh', 'Ambikapur', 'Bilaspur', 'Dhamtari', 'Jagdalpur',
+  'Bardhaman', 'Kharagpur', 'Haldia', 'Krishnanagar', 'Basirhat',
+  'Balurghat', 'Jalpaiguri', 'Cooch Behar', 'Malda', 'Murshidabad',
+  'Nabadwip', 'Ranaghat', 'Srirampur', 'Uttarpara', 'Chandannagar',
+  'Bally', 'Dum Dum', 'Baranagar', 'Titagarh', 'Kanchrapara',
+  'English Bazar', 'Rampurhat', 'Sainthia', 'Siuri', 'Baharampur',
+  'Jangipur', 'Dhulian', 'Jiaganj', 'Lalgola', 'Nalhati', 'Raghunathpur',
+  'Dalkhola', 'Islampur', 'Karimpur', 'Katwa', 'Nabadwip', 'Nadia',
+  'Tehatta', 'Tufanganj', 'Mathabhanga', 'Mekhliganj', 'Dinhata',
+  'Haldibari', 'Gorakhpur', 'Pauri', 'Rudrapur', 'Kashipur', 'Roorkee',
+  'Manglaur', 'Nagar', 'Najibabad', 'Saharanpur', 'Muzaffarnagar',
+  'Shamli', 'Bagpat', 'Baraut', 'Bijnor', 'Chandpur', 'Hapur',
+  'Kairana', 'Kandhla', 'Khatauli', 'Mawana', 'Mohan', 'Nakur',
+  'Pilkhuwa', 'Puranpur', 'Rampur', 'Sambhal', 'Seohara', 'Sherkot',
+  'Shikarpur', 'Siana', 'Sitapur', 'Soron', 'Suar', 'Thakurdwara',
+  'Tilhar', 'Tirora', 'Tulsipur', 'Ujhani', 'Unnao', 'Usawan',
+  'Utraula', 'Vrindavan', 'Wazirganj', 'Zaidpur', 'Zamania',
+  'Angul', 'Balangir', 'Baleswar', 'Baragarh', 'Baripada',
+  'Bhadrak', 'Bhuban', 'Birmaharajpur', 'Boudh', 'Brahmapur',
+  'Chandbali', 'Chhatrapur', 'Debagarh', 'Dhenkanal', 'Gajapati',
+  'Ganjam', 'Jagatsinghpur', 'Jajpur', 'Jharsuguda', 'Kalahandi',
+  'Kendrapara', 'Keonjhar', 'Khordha', 'Koraput', 'Malkangiri',
+  'Nabarangpur', 'Nayagarh', 'Nuapada', 'Puri', 'Rayagada',
+  'Sonepur', 'Sundargarh', 'Titlagarh',
+]
+
+export function slugifyCity(city: string): string {
+  return city.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
+}
+
+export function getCityFromSlug(slug: string): string | undefined {
+  return indianCities.find(c => slugifyCity(c) === slug)
+}
