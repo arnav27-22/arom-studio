@@ -206,7 +206,6 @@ export function addFooter(doc: jsPDF) {
 export function checkPage(doc: jsPDF, y: number, needed: number = 20): number {
   const ph = doc.internal.pageSize.getHeight()
   if (y + needed > ph - 22) {
-    addFooter(doc)
     doc.addPage()
     addHeader(doc, '')
     return 25
@@ -430,14 +429,22 @@ export function writeContactFooter(doc: jsPDF, y: number, layout: PageStyles): n
 }
 
 export function finalizeDoc(doc: jsPDF) {
-  // Add footer to all pages
   const pageCount = doc.getNumberOfPages()
+  const pw = doc.internal.pageSize.getWidth()
+  const ph = doc.internal.pageSize.getHeight()
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i)
-    // Skip cover page (page 1 is cover, so we start from page 2)
-    if (i > 1) {
-      addFooter(doc)
-    }
+    if (i === 1) continue
+    const contentNum = i - 1
+    const totalContent = pageCount - 1
+    doc.setDrawColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
+    doc.setLineWidth(0.3)
+    doc.line(15, ph - 16, pw - 15, ph - 16)
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(6.5)
+    doc.setTextColor(BRAND.light.r, BRAND.light.g, BRAND.light.b)
+    doc.text(`${BRAND.nameUpper}  |  ${BRAND.email}  |  ${BRAND.url}`, 15, ph - 9)
+    doc.text(`Page ${contentNum} of ${totalContent}`, pw - 15, ph - 9, { align: 'right' })
   }
 }
 
