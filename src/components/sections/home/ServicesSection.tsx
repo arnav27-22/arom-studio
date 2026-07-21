@@ -57,7 +57,7 @@ export function ServicesSection() {
                 <h3 className="font-heading text-2xl md:text-3xl text-white tracking-[-1px] leading-none mb-3">
                   {service.title}
                 </h3>
-                <p className="text-sm md:text-base text-white/60 font-body font-light leading-relaxed flex-1">
+                <p className="text-sm md:text-base text-white/75 font-body font-light leading-relaxed flex-1">
                   {service.description}
                 </p>
                 <div className="flex items-center justify-end mt-5 pt-4 border-t border-white/5">

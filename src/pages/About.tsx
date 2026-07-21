@@ -50,7 +50,7 @@ export default function About() {
                 <br />
                 <span className="text-accent">AROM STUDIO</span>
               </h1>
-              <p className="text-base text-white/60 font-body font-light max-w-2xl leading-relaxed">
+              <p className="text-base text-white/75 font-body font-light max-w-2xl leading-relaxed">
                 AROM STUDIO was founded with a simple belief: every business deserves a premium digital presence. 
                 We combine technical excellence with creative vision to build websites that don't just look good — they deliver results.
               </p>
@@ -74,7 +74,7 @@ export default function About() {
                   </h2>
                   <p className="text-sm text-accent font-body font-medium mb-6">Founder & Solo Developer</p>
                   
-                  <div className="space-y-4 text-base text-white/60 font-body font-light leading-relaxed max-w-3xl">
+                  <div className="space-y-4 text-base text-white/75 font-body font-light leading-relaxed max-w-3xl">
                     <p>
                       AROM STUDIO was founded by Arnav Pagare, a web developer and digital designer passionate about
                       creating premium websites that help businesses establish a strong online presence. Every project
@@ -163,7 +163,7 @@ export default function About() {
               <GlassCard hover={false}>
                 <Target className="h-8 w-8 text-accent mb-4" />
                 <h2 className="font-heading text-3xl text-white mb-3">Our Mission</h2>
-                <p className="text-sm text-white/60 font-body font-light leading-relaxed">
+                <p className="text-sm text-white/75 font-body font-light leading-relaxed">
                   To help businesses succeed online by building premium, high-performance websites and digital products
                   that combine exceptional design, modern technology, and measurable business results. Every project includes 
                   1 Year Support and Free Domain to ensure long-term success.
@@ -174,7 +174,7 @@ export default function About() {
               <GlassCard hover={false}>
                 <Eye className="h-8 w-8 text-accent mb-4" />
                 <h2 className="font-heading text-3xl text-white mb-3">Our Vision</h2>
-                <p className="text-sm text-white/60 font-body font-light leading-relaxed">
+                <p className="text-sm text-white/75 font-body font-light leading-relaxed">
                   To establish AROM STUDIO as one of India's most trusted premium digital agencies, recognized for
                   craftsmanship, innovation, reliability, and long-term client partnerships. We're building a studio that 
                   clients recommend without hesitation.
@@ -197,7 +197,7 @@ export default function About() {
                     {v.icon}
                   </div>
                   <h3 className="font-heading text-lg text-white mb-2">{v.title}</h3>
-                  <p className="text-xs text-white/55 font-body font-light leading-relaxed">{v.description}</p>
+                  <p className="text-xs text-white/75 font-body font-light leading-relaxed">{v.description}</p>
                 </GlassCard>
               </StaggerItem>
             ))}
@@ -218,7 +218,7 @@ export default function About() {
               <GlassCard key={item.title}>
                 <div className="w-11 h-11 rounded-[12px] glass flex items-center justify-center text-accent mb-5">{item.icon}</div>
                 <h3 className="font-heading text-xl text-white mb-2">{item.title}</h3>
-                <p className="text-sm text-white/55 font-body font-light leading-relaxed">{item.desc}</p>
+                <p className="text-sm text-white/75 font-body font-light leading-relaxed">{item.desc}</p>
               </GlassCard>
             ))}
           </div>

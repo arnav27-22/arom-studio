@@ -75,7 +75,7 @@ export default function Services() {
                     <p className="text-[11px] text-accent/70 font-body font-medium mb-2">{service.idealFor}</p>
                   )}
 
-                  <p className="text-sm md:text-base text-white/55 font-body font-light leading-relaxed line-clamp-3">
+                  <p className="text-sm md:text-base text-white/75 font-body font-light leading-relaxed line-clamp-3">
                     {expandedService === service.slug && service.longDescription ? service.longDescription : service.description}
                   </p>
 
@@ -134,7 +134,7 @@ export default function Services() {
                   {item.icon}
                 </div>
                 <h3 className="font-heading text-lg text-white mb-2">{item.title}</h3>
-                <p className="text-xs md:text-sm text-white/55 font-body font-light leading-relaxed">{item.desc}</p>
+                <p className="text-xs md:text-sm text-white/75 font-body font-light leading-relaxed">{item.desc}</p>
               </GlassCard>
             ))}
           </div>

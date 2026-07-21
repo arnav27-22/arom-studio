@@ -32,12 +32,7 @@ export default function Contact() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    phone: '',
-    service: '',
-    budget: '',
     message: '',
-    customService: '',
-    customBudget: '',
   })
   const [errors, setErrors] = useState<ValidationErrors>({})
   const [showModal, setShowModal] = useState(false)
@@ -66,9 +61,6 @@ export default function Contact() {
         {
           from_name: formData.name,
           from_email: formData.email,
-          phone: formData.phone,
-          service: formData.service === 'other' ? formData.customService : formData.service,
-          budget: formData.budget === 'custom' ? formData.customBudget : formData.budget,
           message: formData.message,
         },
         EMAILJS_CONFIG.PUBLIC_KEY,
@@ -98,7 +90,7 @@ export default function Contact() {
               <br />
               <span className="text-accent">something great</span>
             </h1>
-            <p className="text-base text-white/60 font-body font-light max-w-xl">
+            <p className="text-base text-white/75 font-body font-light max-w-xl">
               Tell us about your project. We&apos;ll get back to you within 24 hours with a personalized proposal.
             </p>
           </div>
@@ -111,7 +103,7 @@ export default function Contact() {
                     <form onSubmit={handleSubmit} noValidate className="space-y-5">
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                         <div>
-                          <label className="block text-xs text-white/50 font-body mb-2">Name *</label>
+                          <label className="block text-xs text-white/70 font-body mb-2">Name *</label>
                           <input
                             type="text"
                             name="name"
@@ -130,7 +122,7 @@ export default function Contact() {
                           )}
                         </div>
                         <div>
-                          <label className="block text-xs text-white/50 font-body mb-2">Email *</label>
+                          <label className="block text-xs text-white/70 font-body mb-2">Email *</label>
                           <input
                             type="email"
                             name="email"
@@ -149,90 +141,8 @@ export default function Contact() {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                        <div>
-                          <label className="block text-xs text-white/50 font-body mb-2">Phone</label>
-                          <input
-                            type="tel"
-                            name="phone"
-                            value={formData.phone}
-                            onChange={handleChange}
-                            className={inputClass('phone')}
-                            placeholder="+91 98765 43210"
-                            autoComplete="tel"
-                          />
-                          {errors.phone && (
-                            <p className="flex items-center gap-1 text-[11px] text-red-400 font-body mt-1.5">
-                              <AlertCircle className="h-3 w-3" /> {errors.phone}
-                            </p>
-                          )}
-                        </div>
-                        <div>
-                          <label className="block text-xs text-white/50 font-body mb-2">Service Needed *</label>
-                          <select
-                            name="service"
-                            required
-                            value={formData.service}
-                            onChange={handleChange}
-                            className={inputClass('service') + ' appearance-none'}
-                          >
-                            <option value="" className="bg-bg">Select a service</option>
-                            <option value="business-website" className="bg-bg">Business Website</option>
-                            <option value="ecommerce" className="bg-bg">E-commerce</option>
-                            <option value="web-application" className="bg-bg">Web Application</option>
-                            <option value="saas" className="bg-bg">SaaS Platform</option>
-                            <option value="ui-ux" className="bg-bg">UI/UX Design</option>
-                            <option value="redesign" className="bg-bg">Website Redesign</option>
-                            <option value="seo" className="bg-bg">SEO Optimization</option>
-                            <option value="other" className="bg-bg">Other</option>
-                          </select>
-                          {formData.service === 'other' && (
-                            <input
-                              type="text"
-                              name="customService"
-                              value={formData.customService}
-                              onChange={handleChange}
-                              placeholder="Please specify your service..."
-                              className="w-full bg-white/5 border border-white/10 rounded-[18px] px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-accent/50 transition-colors font-body mt-2"
-                            />
-                          )}
-                          {errors.service && (
-                            <p className="flex items-center gap-1 text-[11px] text-red-400 font-body mt-1.5">
-                              <AlertCircle className="h-3 w-3" /> {errors.service}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-
                       <div>
-                        <label className="block text-xs text-white/50 font-body mb-2">Budget Range</label>
-                        <select
-                          name="budget"
-                          value={formData.budget}
-                          onChange={handleChange}
-                          className="w-full bg-white/5 border border-white/10 rounded-[18px] px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-accent/50 transition-colors font-body appearance-none"
-                        >
-                          <option value="" className="bg-bg">Select budget range</option>
-                          <option value="12000-25000" className="bg-bg">₹12,000 - ₹25,000</option>
-                          <option value="25000-45000" className="bg-bg">₹25,000 - ₹45,000</option>
-                          <option value="45000-75000" className="bg-bg">₹45,000 - ₹75,000</option>
-                          <option value="75000-plus" className="bg-bg">₹75,000+</option>
-                          <option value="custom" className="bg-bg">Custom / Enterprise</option>
-                        </select>
-                        {formData.budget === 'custom' && (
-                          <input
-                            type="text"
-                            name="customBudget"
-                            value={formData.customBudget}
-                            onChange={handleChange}
-                            placeholder="Enter your budget..."
-                            className="w-full bg-white/5 border border-white/10 rounded-[18px] px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-accent/50 transition-colors font-body mt-2"
-                          />
-                        )}
-                      </div>
-
-                      <div>
-                        <label className="block text-xs text-white/50 font-body mb-2">Message *</label>
+                        <label className="block text-xs text-white/70 font-body mb-2">Project Details *</label>
                         <textarea
                           name="message"
                           required
@@ -268,7 +178,7 @@ export default function Contact() {
                 <GlassCard hover={false}>
                   <FileText className="h-5 w-5 text-accent mb-3" />
                   <h3 className="font-heading text-sm text-white mb-1">Client Inquiry Form</h3>
-                  <p className="text-xs text-white/60 font-body font-light mb-4">
+                  <p className="text-xs text-white/75 font-body font-light mb-4">
                     Prefer a structured form? Fill out our detailed inquiry form and we'll get back to you within 24–48 hours.
                   </p>
                   <a
@@ -294,7 +204,7 @@ export default function Contact() {
                 <GlassCard hover={false}>
                   <MailIcon className="h-5 w-5 text-accent mb-3" />
                   <h3 className="font-heading text-lg text-white mb-1">Email</h3>
-                  <a href={SOCIAL_LINKS.email} className="text-sm text-white/60 hover:text-accent transition-colors font-body">
+                  <a href={SOCIAL_LINKS.email} className="text-sm text-white/70 hover:text-accent transition-colors font-body">
                     aromstudio27@gmail.com
                   </a>
                 </GlassCard>
@@ -308,7 +218,7 @@ export default function Contact() {
                     href={SOCIAL_LINKS.whatsapp}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm text-white/60 hover:text-whatsapp transition-colors font-body"
+                    className="text-sm text-white/70 hover:text-whatsapp transition-colors font-body"
                   >
                     Chat with Arnav
                   </a>
@@ -319,7 +229,7 @@ export default function Contact() {
                 <GlassCard hover={false}>
                   <Clock className="h-5 w-5 text-accent mb-3" />
                   <h3 className="font-heading text-lg text-white mb-1">Response Time</h3>
-                  <p className="text-sm text-white/60 font-body font-light">
+                  <p className="text-sm text-white/75 font-body font-light">
                     We typically respond within 24 hours on business days.
                   </p>
                 </GlassCard>
@@ -344,13 +254,13 @@ export default function Contact() {
                 <Send className="h-8 w-8 text-accent" />
               </div>
               <h2 className="font-heading text-3xl text-white mb-2">Message Sent!</h2>
-              <p className="text-sm text-white/60 font-body font-light mb-6">
+              <p className="text-sm text-white/75 font-body font-light mb-6">
                 Your details have been sent to Arnav. Choose how to follow up:
               </p>
               <div className="space-y-3">
                 <a
                   href={`https://wa.me/918767990061?text=${encodeURIComponent(
-                    `Hi Arnav,\n\nI just submitted an inquiry on your website.\n\nName: ${sanitize(formData.name)}\nEmail: ${sanitize(formData.email)}\nService: ${sanitize(formData.service === 'other' ? formData.customService : formData.service)}\nBudget: ${sanitize(formData.budget === 'custom' ? formData.customBudget : formData.budget)}\nMessage: ${sanitize(formData.message)}`
+                    `Hi Arnav,\n\nI just submitted an inquiry on your website.\n\nName: ${sanitize(formData.name)}\nEmail: ${sanitize(formData.email)}\nMessage: ${sanitize(formData.message)}`
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -361,7 +271,7 @@ export default function Contact() {
                 </a>
                 <a
                   href={`mailto:aromstudio27@gmail.com?subject=${encodeURIComponent(`Project Inquiry from ${sanitize(formData.name)}`)}&body=${encodeURIComponent(
-                    `Hi Arnav,\n\nI just submitted an inquiry on your website.\n\nName: ${sanitize(formData.name)}\nEmail: ${sanitize(formData.email)}\nPhone: ${sanitize(formData.phone)}\nService: ${sanitize(formData.service === 'other' ? formData.customService : formData.service)}\nBudget: ${sanitize(formData.budget === 'custom' ? formData.customBudget : formData.budget)}\nMessage: ${sanitize(formData.message)}`
+                    `Hi Arnav,\n\nI just submitted an inquiry on your website.\n\nName: ${sanitize(formData.name)}\nEmail: ${sanitize(formData.email)}\nMessage: ${sanitize(formData.message)}`
                   )}`}
                   className="flex items-center justify-center gap-2 w-full bg-accent/10 hover:bg-accent/20 text-accent text-sm font-body font-medium rounded-full px-5 py-3 transition-all duration-300"
                 >
