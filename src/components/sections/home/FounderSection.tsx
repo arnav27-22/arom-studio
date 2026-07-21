@@ -12,12 +12,7 @@ export function FounderSection() {
             <div className="absolute top-0 right-0 w-64 h-64 bg-accent/5 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2" />
 
             <div className="relative z-10 flex flex-col lg:flex-row items-start gap-10 lg:gap-16">
-              {/* Avatar */}
-              <div className="shrink-0">
-                <div className="w-24 h-24 md:w-32 md:h-32 rounded-full glass flex items-center justify-center">
-                  <span className="font-heading text-3xl md:text-4xl text-accent">AP</span>
-                </div>
-              </div>
+
 
               {/* Content */}
               <div className="flex-1">
