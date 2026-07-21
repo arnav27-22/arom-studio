@@ -23,7 +23,7 @@ export default function ProjectProposal() {
           href="https://forms.gle/MAvyrJpvwaEG9kiw8"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 bg-accent hover:bg-accent/80 text-white text-sm font-body font-medium rounded-full px-8 py-3.5 transition-all"
+          className="inline-flex items-center gap-2 bg-transparent border border-accent/50 hover:bg-accent/10 text-white text-sm font-body font-medium rounded-full px-8 py-3.5 transition-all"
         >
           <FileText className="h-4 w-4" /> Open Project Proposal Form <ExternalLink className="h-3.5 w-3.5" />
         </a>
