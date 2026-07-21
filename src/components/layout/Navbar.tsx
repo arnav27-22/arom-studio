@@ -4,11 +4,9 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, ArrowUpRight } from 'lucide-react'
 import { cn } from '../../lib/cn'
 import { NAV_LINKS } from '../../constants/navigation'
-import { useScrollPosition } from '../../hooks/useScrollPosition'
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
-  const { isScrolled } = useScrollPosition()
   const location = useLocation()
   const navigate = useNavigate()
 
@@ -31,10 +29,7 @@ export function Navbar() {
         <div className="flex justify-center pt-4 px-4">
           <div
             className={cn(
-              'inline-flex items-center rounded-full px-2 py-2 transition-all duration-500',
-              isScrolled
-                ? 'bg-white/5 backdrop-blur-xl shadow-lg shadow-black/20 border border-white/10'
-                : 'bg-transparent',
+              'inline-flex items-center rounded-full px-2 py-2 transition-all duration-500 bg-white/5 backdrop-blur-xl shadow-lg shadow-black/20 border border-white/10',
             )}
           >
             {/* Logo */}

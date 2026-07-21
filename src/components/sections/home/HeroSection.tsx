@@ -157,7 +157,7 @@ export function HeroSection() {
         >
           <Link
             to="/contact"
-            className="bg-accent/90 hover:bg-accent text-white text-sm md:text-base font-body font-semibold rounded-full px-7 py-3 md:px-9 md:py-3.5 inline-flex items-center gap-2 transition-all duration-300 hover:shadow-[0_0_30px_6px_rgba(78,133,191,0.45)] hover:scale-[1.03] active:scale-[0.97]"
+            className="glass-strong text-sm md:text-base font-body font-semibold text-white rounded-full px-7 py-3 md:px-9 md:py-3.5 inline-flex items-center gap-2 hover:shadow-[0_0_24px_4px_rgba(78,133,191,0.35)] transition-all duration-300 hover:scale-[1.03] active:scale-[0.97]"
           >
             Start Your Project
             <ArrowUpRight className="h-4 w-4" />
