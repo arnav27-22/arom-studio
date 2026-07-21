@@ -8,13 +8,13 @@ import {
 import { cn } from '../../lib/cn'
 
 const sidebarLinks = [
-  { label: 'Client Inquiry Form', href: '/portal/inquiry', icon: PenSquare },
-  { label: 'Project Proposal', href: '/portal/proposal', icon: FileCheck },
-  { label: 'Website Agreement', href: '/portal/agreement', icon: ScrollText },
-  { label: 'Discovery Questionnaire', href: '/portal/questionnaire', icon: ClipboardCheck },
-  { label: 'Project Timeline', href: '/portal/timeline', icon: Clock },
-  { label: 'Assets Upload', href: '/portal/assets', icon: Upload },
-  { label: 'Handover', href: '/portal/handover', icon: Handshake },
+  { label: 'Client Inquiry Form', href: '/clientportal/inquiry', icon: PenSquare },
+  { label: 'Project Proposal', href: '/clientportal/proposal', icon: FileCheck },
+  { label: 'Website Agreement', href: '/clientportal/agreement', icon: ScrollText },
+  { label: 'Discovery Questionnaire', href: '/clientportal/questionnaire', icon: ClipboardCheck },
+  { label: 'Project Timeline', href: '/clientportal/timeline', icon: Clock },
+  { label: 'Assets Upload', href: '/clientportal/assets', icon: Upload },
+  { label: 'Handover', href: '/clientportal/handover', icon: Handshake },
 ]
 
 export default function ClientPortal() {

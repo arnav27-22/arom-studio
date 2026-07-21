@@ -62,7 +62,7 @@ export default function App() {
           <Route path="/inquiry" element={<Inquiry />} />
           <Route path="/questionnaire" element={<Questionnaire />} />
           <Route path="/proposal" element={<Proposal />} />
-          <Route path="/portal" element={<ClientPortal />}>
+          <Route path="/clientportal" element={<ClientPortal />}>
             <Route index element={<ClientInquiry />} />
             <Route path="inquiry" element={<ClientInquiry />} />
             <Route path="proposal" element={<ProjectProposal />} />
