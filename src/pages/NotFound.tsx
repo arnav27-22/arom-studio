@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import { SEO } from '../components/ui/SEO'
-import { SiteBackground } from '../components/ui/SiteBackground'
 
 export default function NotFound() {
   return (
@@ -11,7 +10,6 @@ export default function NotFound() {
         description="The page you're looking for doesn't exist or has been moved. Return to AROM STUDIO homepage."
       />
       <div className="relative min-h-screen flex flex-col items-center justify-center px-6 text-center">
-        <SiteBackground />
         <div className="relative z-10">
           <span className="text-[120px] sm:text-[180px] md:text-[220px] font-black text-white/10 leading-none tracking-tighter select-none">
             404

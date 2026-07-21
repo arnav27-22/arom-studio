@@ -8,8 +8,12 @@ const footerLinks = {
     { label: 'Business Websites', href: '/services/business-websites' },
     { label: 'E-commerce', href: '/services/ecommerce' },
     { label: 'Web Applications', href: '/services/web-applications' },
+    { label: 'SaaS Platforms', href: '/services/saas-platforms' },
     { label: 'UI/UX Design', href: '/services/ui-ux-design' },
+    { label: 'Website Redesign', href: '/services/website-redesign' },
     { label: 'SEO Optimization', href: '/services/seo-optimization' },
+    { label: 'Performance Optimization', href: '/services/performance-optimization' },
+    { label: 'AI Integration', href: '/services/ai-integration' },
     { label: 'All Services', href: '/services' },
   ],
   Company: [

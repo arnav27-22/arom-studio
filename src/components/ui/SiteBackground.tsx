@@ -6,7 +6,7 @@ export function SiteBackground() {
         muted
         loop
         playsInline
-        preload="auto"
+        preload="metadata"
         className="w-full h-full object-cover opacity-40"
       >
         <source

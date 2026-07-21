@@ -1,6 +1,8 @@
 import type React from 'react'
 import { useState } from 'react'
 import { Clock, Send, AlertCircle, FileText, X, ExternalLink } from 'lucide-react'
+import emailjs from '@emailjs/browser'
+import { EMAILJS_CONFIG } from '../lib/emailjs'
 
 function MailIcon({ className }: { className?: string }) {
   return (
@@ -47,13 +49,31 @@ export default function Contact() {
     }
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     const validationErrors = validateContactForm(formData)
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors)
       return
+    }
+
+    try {
+      await emailjs.send(
+        EMAILJS_CONFIG.SERVICE_ID,
+        EMAILJS_CONFIG.TEMPLATE_ID,
+        {
+          from_name: formData.name,
+          from_email: formData.email,
+          phone: formData.phone,
+          service: formData.service === 'other' ? formData.customService : formData.service,
+          budget: formData.budget === 'custom' ? formData.customBudget : formData.budget,
+          message: formData.message,
+        },
+        EMAILJS_CONFIG.PUBLIC_KEY,
+      )
+    } catch {
+      // Email send is non-blocking — modal appears either way
     }
 
     setShowModal(true)

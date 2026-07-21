@@ -18,7 +18,7 @@ function useMousePosition(): MousePosition {
       setMousePosition({ x: event.clientX, y: event.clientY })
     }
 
-    window.addEventListener("mousemove", handleMouseMove)
+    window.addEventListener("mousemove", handleMouseMove, { passive: true })
 
     return () => {
       window.removeEventListener("mousemove", handleMouseMove)
@@ -99,7 +99,7 @@ export const Particles: React.FC<ParticlesProps> = ({
     }
     initCanvas()
     animate()
-    window.addEventListener("resize", initCanvas)
+    window.addEventListener("resize", initCanvas, { passive: true })
 
     return () => {
       window.removeEventListener("resize", initCanvas)
@@ -257,7 +257,9 @@ export const Particles: React.FC<ParticlesProps> = ({
         drawCircle(newCircle)
       }
     })
-    animationRef.current = window.requestAnimationFrame(animate)
+    if (!document.hidden) {
+      animationRef.current = window.requestAnimationFrame(animate)
+    }
   }
 
   return (
