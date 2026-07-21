@@ -30,6 +30,8 @@ export function addCoverPage(
     title: string
     subtitle?: string
     clientName?: string
+    clientEmail?: string
+    clientPhone?: string
     date?: string
     reference?: string
   }
@@ -82,24 +84,33 @@ export function addCoverPage(
   }
 
   // Info box
+  const contactStr = [opts.clientEmail, opts.clientPhone].filter(Boolean).join(' | ')
+  let rowCount = 2 // agency + date always
+  if (opts.clientName) rowCount++
+  if (contactStr) rowCount++
+  const boxHeight = rowCount * 12 + 4
+
   const boxY = 140
   doc.setFillColor(255, 255, 255)
   doc.setDrawColor(BRAND.muted.r, BRAND.muted.g, BRAND.muted.b)
   doc.setLineWidth(0.3)
-  doc.roundedRect(pw / 2 - 65, boxY, 130, opts.clientName ? 45 : 30, 4, 4, 'FD')
+  doc.roundedRect(pw / 2 - 65, boxY, 130, boxHeight, 4, 4, 'FD')
 
   let infoY = boxY + 8
+
+  // Agency
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(9)
   doc.setTextColor(BRAND.mid.r, BRAND.mid.g, BRAND.mid.b)
-  doc.text('DATE', pw / 2 - 55, infoY)
+  doc.text('AGENCY', pw / 2 - 55, infoY)
   doc.setFont('helvetica', 'normal')
   doc.setTextColor(BRAND.dark.r, BRAND.dark.g, BRAND.dark.b)
   doc.setFontSize(10)
-  doc.text(opts.date || new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }), pw / 2 + 10, infoY)
+  doc.text(BRAND.name, pw / 2 + 10, infoY)
+  infoY += 12
 
+  // Client
   if (opts.clientName) {
-    infoY += 10
     doc.setFont('helvetica', 'bold')
     doc.setFontSize(9)
     doc.setTextColor(BRAND.mid.r, BRAND.mid.g, BRAND.mid.b)
@@ -108,19 +119,31 @@ export function addCoverPage(
     doc.setFontSize(10)
     doc.setTextColor(BRAND.dark.r, BRAND.dark.g, BRAND.dark.b)
     doc.text(opts.clientName, pw / 2 + 10, infoY)
-
-    if (opts.reference) {
-      infoY += 10
-      doc.setFont('helvetica', 'bold')
-      doc.setFontSize(9)
-      doc.setTextColor(BRAND.mid.r, BRAND.mid.g, BRAND.mid.b)
-      doc.text('REFERENCE', pw / 2 - 55, infoY)
-      doc.setFont('helvetica', 'normal')
-      doc.setFontSize(10)
-      doc.setTextColor(BRAND.dark.r, BRAND.dark.g, BRAND.dark.b)
-      doc.text(opts.reference, pw / 2 + 10, infoY)
-    }
+    infoY += 12
   }
+
+  // Contact
+  if (contactStr) {
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(9)
+    doc.setTextColor(BRAND.mid.r, BRAND.mid.g, BRAND.mid.b)
+    doc.text('CONTACT', pw / 2 - 55, infoY)
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(10)
+    doc.setTextColor(BRAND.dark.r, BRAND.dark.g, BRAND.dark.b)
+    doc.text(contactStr, pw / 2 + 10, infoY)
+    infoY += 12
+  }
+
+  // Date
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(9)
+  doc.setTextColor(BRAND.mid.r, BRAND.mid.g, BRAND.mid.b)
+  doc.text('DATE', pw / 2 - 55, infoY)
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(10)
+  doc.setTextColor(BRAND.dark.r, BRAND.dark.g, BRAND.dark.b)
+  doc.text(opts.date || new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }), pw / 2 + 10, infoY)
 
   // Bottom bar
   doc.setFillColor(BRAND.dark.r, BRAND.dark.g, BRAND.dark.b)
@@ -196,7 +219,8 @@ export function writeSection(
   y: number,
   title: string,
   bodyLines: string[],
-  layout: PageStyles
+  layout: PageStyles,
+  checkboxes?: boolean
 ): number {
   y = checkPage(doc, y, 20)
 
@@ -215,29 +239,31 @@ export function writeSection(
 
   for (const line of bodyLines) {
     if (line.startsWith('  -') || line.startsWith('  •')) {
-      const text = line.trim().replace(/^[-•]\s*/, '')
-      y = checkPage(doc, y, 6)
-      // Bullet point
-      doc.setFontSize(5)
-      doc.setTextColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
-      doc.text('●', layout.marginLeft + 5, y + 1)
-      doc.setFontSize(9)
-      doc.setTextColor(BRAND.mid.r, BRAND.mid.g, BRAND.mid.b)
+      const text = line.trim().replace(/^[-•]\s*/, '').replace(/\*\*/g, '')
       const split = doc.splitTextToSize(text, layout.contentWidth - 25)
-      for (const s of split) {
-        doc.text(s, layout.marginLeft + 10, y)
-        y += 5
+      const totalNeeded = split.length * 5 + 2
+      y = checkPage(doc, y, totalNeeded)
+      if (checkboxes) {
+        doc.setDrawColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
+        doc.setLineWidth(0.4)
+        doc.rect(layout.marginLeft + 5, y - 1, 3.5, 3.5, 'S')
+        doc.setFontSize(9)
+        doc.setTextColor(BRAND.mid.r, BRAND.mid.g, BRAND.mid.b)
+        for (const s of split) {
+          doc.text(s, layout.marginLeft + 12, y)
+          y += 5
+        }
+      } else {
+        doc.setFontSize(5)
+        doc.setTextColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
+        doc.text('●', layout.marginLeft + 5, y + 1)
+        doc.setFontSize(9)
+        doc.setTextColor(BRAND.mid.r, BRAND.mid.g, BRAND.mid.b)
+        for (const s of split) {
+          doc.text(s, layout.marginLeft + 10, y)
+          y += 5
+        }
       }
-    } else if (line.startsWith('**') && line.endsWith('**')) {
-      // Bold subheading
-      const text = line.replace(/\*\*/g, '')
-      y = checkPage(doc, y, 6)
-      doc.setFont('helvetica', 'bold')
-      doc.setFontSize(9)
-      doc.setTextColor(BRAND.dark.r, BRAND.dark.g, BRAND.dark.b)
-      doc.text(text, layout.marginLeft, y)
-      doc.setFont('helvetica', 'normal')
-      y += 6
     } else if (line.startsWith('___')) {
       // Divider
       y = checkPage(doc, y, 6)
@@ -248,8 +274,10 @@ export function writeSection(
     } else if (line === '') {
       y += 3
     } else {
-      y = checkPage(doc, y, 6)
-      const split = doc.splitTextToSize(line, layout.contentWidth)
+      const clean = line.replace(/\*\*/g, '')
+      const split = doc.splitTextToSize(clean, layout.contentWidth)
+      const totalNeeded = split.length * 5 + 2
+      y = checkPage(doc, y, totalNeeded)
       for (const s of split) {
         doc.text(s, layout.marginLeft, y)
         y += 5
@@ -351,10 +379,6 @@ export function writeSignatureBlock(
   doc.setTextColor(BRAND.dark.r, BRAND.dark.g, BRAND.dark.b)
   doc.text(clientName || '_________________________', layout.marginLeft, y + 2)
   y += 7
-  doc.setFont('helvetica', 'normal')
-  doc.setFontSize(8)
-  doc.setTextColor(BRAND.light.r, BRAND.light.g, BRAND.light.b)
-  doc.text('Date: _______________', layout.marginLeft, y + 2)
 
   // AROM Studio
   const rightX = layout.marginLeft + halfWidth + 10
@@ -539,6 +563,8 @@ export function generateAgreementPDF(data: {
     title: 'Website Development Agreement',
     subtitle: 'Professional Web Development Services',
     clientName: data.clientName || '[Client Name]',
+    clientEmail: data.clientEmail,
+    clientPhone: data.clientPhone,
     date: data.effectiveDate
       ? new Date(data.effectiveDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
       : new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
@@ -563,19 +589,19 @@ export function generateAgreementPDF(data: {
   y = writeSection(doc, y, 'Parties', [
     'This Website Development Agreement ("Agreement") is entered into between:',
     '',
-    `**Agency:** AROM Studio`,
-    `**Client:** ${data.clientName || '[Client Name]'}`,
+    `Agency: AROM Studio`,
+    `Client: ${data.clientName || '[Client Name]'}`,
     ...(data.clientAddress ? [`Address: ${data.clientAddress}`] : []),
     ...(data.clientEmail || data.clientPhone ? [`Contact: ${[data.clientEmail, data.clientPhone].filter(Boolean).join(' | ')}`] : []),
     '',
     `This Agreement becomes effective from ${effDate}.`,
-  ], layout)
+  ], layout, true)
 
   // 1. Project Overview
   y = writeSection(doc, y, '1. Project Overview', [
     'The Client has requested AROM Studio to design and/or develop a website.',
     `The specific project requirements, deliverables, pricing, and timeline will be defined in the approved Project Proposal.${data.projectDescription ? `\n\nProject Description: ${data.projectDescription}` : ''}`,
-  ], layout)
+  ], layout, true)
 
   // 2. Scope of Work
   y = writeSection(doc, y, '2. Scope of Work', [
@@ -584,7 +610,7 @@ export function generateAgreementPDF(data: {
     ...services.map((s) => `  • ${s}`),
     '',
     'Any work outside the agreed scope shall be considered additional work and may require a separate quotation.',
-  ], layout)
+  ], layout, true)
 
   // 3. Timeline
   y = writeSection(doc, y, '3. Project Timeline', [
@@ -595,14 +621,14 @@ export function generateAgreementPDF(data: {
     '  • Project requirements change.',
     '  • Third-party services cause delays.',
     'AROM Studio will communicate any timeline changes as early as possible.',
-  ], layout)
+  ], layout, true)
 
   // 4. Payment Terms
   y = writeSection(doc, y, '4. Payment Terms', [
     `Payment schedule: ${data.advancePercentage || '50'}% Advance before project commencement. ${data.finalPercentage || '50'}% Final Payment before final website delivery or deployment.`,
     'Additional work requested after project approval will be charged separately.',
     'Payments are due within the agreed payment period.',
-  ], layout)
+  ], layout, true)
 
   // 5. Client Responsibilities
   y = writeSection(doc, y, '5. Client Responsibilities', [
@@ -613,13 +639,13 @@ export function generateAgreementPDF(data: {
     '  • Domain Details (if applicable)',
     '  • Hosting Details (if applicable)',
     'The Client is responsible for ensuring that all supplied content is accurate and legally owned or licensed.',
-  ], layout)
+  ], layout, true)
 
   // 6. Communication
   y = writeSection(doc, y, '6. Project Communication', [
     'The Client should provide timely feedback and approvals to avoid unnecessary delays.',
     'Preferred communication methods include: Email, WhatsApp, Google Meet, Phone Call.',
-  ], layout)
+  ], layout, true)
 
   // 7. Revisions
   y = writeSection(doc, y, '7. Revisions', [
@@ -627,13 +653,13 @@ export function generateAgreementPDF(data: {
     '  • Minor revisions are included within the agreed revision limit.',
     '  • Requests outside the original scope may require additional charges.',
     '  • Major redesigns after approval are treated as new work.',
-  ], layout)
+  ], layout, true)
 
   // 8. Change Requests
   y = writeSection(doc, y, '8. Change Requests', [
     'If the Client requests additional pages, new features, major design changes, third-party integrations, or functional changes:',
     'AROM Studio will provide a revised quotation before starting the additional work.',
-  ], layout)
+  ], layout, true)
 
   // 9-20. Remaining sections (compact)
   const remainingSections: [string, string[]][] = [
@@ -684,8 +710,52 @@ export function generateAgreementPDF(data: {
   ]
 
   for (const [title, lines] of remainingSections) {
-    y = writeSection(doc, y, title, lines, layout)
+    y = writeSection(doc, y, title, lines, layout, true)
   }
+
+  // 21. Legal
+  y = writeSection(doc, y, '21. Legal', [
+    'The following legal policies apply to all services provided by AROM Studio.',
+    '',
+  ], layout, true)
+
+  y = writeSection(doc, y, 'Privacy Policy', [
+    '  • Information We Collect: We collect information you provide directly, such as your name, email address, phone number, and project details when you fill out our contact form or book a consultation.',
+    '  • How We Use Your Information: We respond to inquiries, provide services, improve our website, and send relevant communications about your projects.',
+    '  • Data Protection: We implement appropriate security measures to protect your personal information. We do not sell, trade, or transfer your information to third parties without your consent.',
+    '  • Cookies: Our website may use cookies to enhance your browsing experience. You can choose to disable cookies in your browser settings.',
+    '  • Contact: If you have any questions about this Privacy Policy, please contact us at aromstudio27@gmail.com.',
+    '',
+  ], layout, true)
+
+  y = writeSection(doc, y, 'Terms & Conditions', [
+    '  • Acceptance of Terms: By accessing or using the AROM STUDIO website, you agree to be bound by these Terms and Conditions.',
+    '  • Services: AROM STUDIO provides web design, development, and related digital services. The scope, timeline, and terms of each project will be outlined in a separate agreement.',
+    '  • Intellectual Property: Upon full payment, clients retain ownership of the final delivered work.',
+    '  • Payment Terms: Payment terms are outlined in the project proposal. Late payments may result in project delays.',
+    '  • Limitation of Liability: AROM STUDIO shall not be liable for any indirect, incidental, or consequential damages arising from the use of our services.',
+    '',
+  ], layout, true)
+
+  y = writeSection(doc, y, 'Refund Policy', [
+    '  • Project Deposits: The initial advance payment is non-refundable as it covers the discovery, research, and design phase work already performed.',
+    '  • Project Cancellation: If a project is cancelled after the design phase has begun, the advance payment is retained. Any work completed beyond the deposit will be billed at an hourly rate.',
+    '  • Completed Projects: Once a project is completed and delivered, all payments are final. Refunds are not issued for completed work that meets the agreed-upon specifications.',
+    '  • Maintenance & Support: Monthly maintenance fees are non-refundable but can be cancelled with 30 days notice.',
+    '  • Dispute Resolution: In the event of a dispute, both parties will work in good faith to find a fair resolution.',
+    '',
+  ], layout, true)
+
+  // Client Declaration
+  y = writeSection(doc, y, 'Client Declaration', [
+    `I, ${data.clientName || '[Client Name]'}, hereby declare that:`,
+    `  • I have read, understood, and agree to all 20 sections of this Website Development Agreement.`,
+    '  • I have read, understood, and agree to the Privacy Policy, Terms & Conditions, and Refund Policy as outlined in Section 21.',
+    `  • All information provided by me is accurate and complete.`,
+    `  • I agree to the payment terms including the ${data.advancePercentage || '50'}% advance payment.`,
+    '  • I agree to provide all required content and assets within agreed timelines.',
+    '  • I acknowledge that this Agreement is legally binding once accepted.',
+  ], layout, true)
 
   // Signature
   y = writeSignatureBlock(doc, y, layout, data.clientName, new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }))
