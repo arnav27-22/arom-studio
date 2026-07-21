@@ -76,7 +76,7 @@ export default function Pricing() {
                   <p className="text-xs text-white/50 font-body mb-5">{plan.description}</p>
                   <ul className="space-y-2.5 flex-1 mb-4">
                     {plan.features.map((f) => (
-                      <li key={f} className="flex items-start gap-2 text-sm text-white/65 font-body font-light">
+                      <li key={f} className="flex items-start gap-2 text-sm md:text-base text-white/65 font-body font-light">
                         <Check className="h-4 w-4 text-accent shrink-0 mt-0.5" /> {f}
                       </li>
                     ))}
@@ -84,10 +84,10 @@ export default function Pricing() {
                   <PriceDisplay price={plan.price} />
                   <Link
                     to="/contact"
-                    className={`text-sm font-body font-medium rounded-full px-5 py-2.5 inline-flex items-center justify-center gap-1.5 transition-all duration-300 mt-auto ${
+                    className={`text-sm md:text-base font-body font-medium rounded-full px-6 py-3 inline-flex items-center justify-center gap-1.5 transition-all duration-300 mt-auto hover:scale-[1.03] active:scale-[0.97] ${
                       plan.highlighted
-                        ? 'glass-strong text-white hover:shadow-[0_0_20px_2px_rgba(78,133,191,0.3)]'
-                        : 'glass text-white/80 hover:text-white'
+                        ? 'bg-accent text-white shadow-[0_0_20px_4px_rgba(78,133,191,0.3)] hover:shadow-[0_0_30px_6px_rgba(78,133,191,0.5)]'
+                        : 'glass-strong text-white border border-white/15'
                     }`}
                   >
                     Get Started <ArrowUpRight className="h-3.5 w-3.5" />
@@ -106,7 +106,7 @@ export default function Pricing() {
                   <p className="text-xs text-white/50 font-body mb-5">{plan.description}</p>
                   <ul className="grid grid-cols-2 gap-2.5 flex-1 mb-4">
                     {plan.features.map((f) => (
-                      <li key={f} className="flex items-start gap-2 text-sm text-white/65 font-body font-light">
+                      <li key={f} className="flex items-start gap-2 text-sm md:text-base text-white/65 font-body font-light">
                         <Check className="h-4 w-4 text-accent shrink-0 mt-0.5" /> {f}
                       </li>
                     ))}
@@ -114,7 +114,7 @@ export default function Pricing() {
                   <PriceDisplay price={plan.price} />
                   <Link
                     to="/contact"
-                    className="glass-strong text-sm font-body font-medium text-white rounded-full px-5 py-2.5 inline-flex items-center justify-center gap-1.5 transition-all duration-300"
+                    className="bg-accent text-white text-sm md:text-base font-body font-semibold rounded-full px-6 py-3 inline-flex items-center justify-center gap-1.5 shadow-[0_0_20px_4px_rgba(78,133,191,0.3)] hover:shadow-[0_0_30px_6px_rgba(78,133,191,0.5)] transition-all duration-300 hover:scale-[1.03] active:scale-[0.97]"
                   >
                     Contact Us <ArrowUpRight className="h-3.5 w-3.5" />
                   </Link>

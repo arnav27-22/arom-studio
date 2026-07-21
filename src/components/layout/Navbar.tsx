@@ -63,7 +63,7 @@ export function Navbar() {
                 href="https://forms.gle/fGwvkaTRdtb5ZH3x6"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="glass-strong text-sm font-body font-medium text-white rounded-full px-5 py-2 hover:shadow-[0_0_20px_2px_rgba(255,255,255,0.1)] transition-all duration-200 inline-flex items-center gap-1.5"
+                className="bg-accent text-white text-sm font-body font-semibold rounded-full px-5 py-2 shadow-[0_0_12px_3px_rgba(78,133,191,0.25)] hover:shadow-[0_0_20px_5px_rgba(78,133,191,0.4)] transition-all duration-200 inline-flex items-center gap-1.5"
               >
                 Book Consultation
                 <ArrowUpRight className="h-3.5 w-3.5" />
@@ -123,7 +123,7 @@ export function Navbar() {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => setMobileOpen(false)}
-                className="glass-strong text-base font-body font-medium text-white rounded-full px-8 py-4 inline-flex items-center gap-2"
+                className="bg-accent text-white text-base font-body font-semibold rounded-full px-8 py-4 inline-flex items-center gap-2 shadow-[0_0_20px_4px_rgba(78,133,191,0.3)]"
               >
                 Book Consultation
                 <ArrowUpRight className="h-4 w-4" />

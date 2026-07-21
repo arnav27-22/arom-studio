@@ -89,7 +89,7 @@ export default function ServiceDetail() {
               </div>
               <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {service.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2 text-sm text-white/65 font-body font-light">
+                  <li key={f} className="flex items-start gap-2 text-sm md:text-base text-white/65 font-body font-light">
                     <Check className="h-4 w-4 text-accent shrink-0 mt-0.5" /> {f}
                   </li>
                 ))}
@@ -109,7 +109,7 @@ export default function ServiceDetail() {
                 <span className="font-heading text-3xl text-accent shrink-0 w-10">{String(step.step).padStart(2, '0')}</span>
                 <div>
                   <h3 className="font-heading text-xl text-white mb-1">{step.title}</h3>
-                  <p className="text-sm text-white/55 font-body font-light">{step.description}</p>
+                  <p className="text-sm md:text-base text-white/55 font-body font-light">{step.description}</p>
                 </div>
               </GlassCard>
             ))}

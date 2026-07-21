@@ -33,7 +33,7 @@ export function CTABanner() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
             <Link
               to="/contact"
-              className="glass-strong text-sm md:text-base font-body font-medium text-white rounded-full px-8 py-3.5 inline-flex items-center gap-2 hover:shadow-[0_0_24px_4px_rgba(78,133,191,0.35)] transition-all duration-300 hover:scale-[1.03] active:scale-[0.97]"
+              className="bg-accent text-white text-sm md:text-base font-body font-semibold rounded-full px-8 py-3.5 md:px-10 md:py-4 inline-flex items-center gap-2 shadow-[0_0_20px_4px_rgba(78,133,191,0.3)] hover:shadow-[0_0_30px_6px_rgba(78,133,191,0.5)] transition-all duration-300 hover:scale-[1.03] active:scale-[0.97]"
             >
               Book Free Consultation
               <ArrowUpRight className="h-4 w-4" />
@@ -42,7 +42,7 @@ export function CTABanner() {
               href={SOCIAL_LINKS.whatsapp}
               target="_blank"
               rel="noopener noreferrer"
-              className="glass text-sm md:text-base font-body font-medium text-white rounded-full px-8 py-3.5 inline-flex items-center gap-2 transition-all duration-300 hover:scale-[1.03] active:scale-[0.97]"
+              className="glass-strong text-sm md:text-base font-body font-medium text-white rounded-full px-8 py-3.5 inline-flex items-center gap-2 border border-white/15 transition-all duration-300 hover:scale-[1.03] active:scale-[0.97]"
             >
               <WhatsAppIcon className="h-4 w-4 text-whatsapp" />
               WhatsApp Us

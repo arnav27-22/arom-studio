@@ -44,7 +44,7 @@ export function TestimonialsSection() {
           {testimonials.map((t) => (
             <GlassCard key={t.id} className="flex flex-col" hover>
               <Stars rating={t.rating} />
-              <blockquote className="text-sm text-white/75 font-body font-light leading-relaxed flex-1 mb-6 italic">
+              <blockquote className="text-sm md:text-base text-white/75 font-body font-light leading-relaxed flex-1 mb-6 italic">
                 &ldquo;{t.quote}&rdquo;
               </blockquote>
               <div>
