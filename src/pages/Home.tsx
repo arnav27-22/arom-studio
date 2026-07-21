@@ -6,6 +6,7 @@ import { TechStackSection } from '../components/sections/home/TechStackSection'
 import { FounderSection } from '../components/sections/home/FounderSection'
 import { TestimonialsSection } from '../components/sections/home/TestimonialsSection'
 import { PricingPreview } from '../components/sections/home/PricingPreview'
+import { CityLinksSection } from '../components/sections/home/CityLinksSection'
 import { CTABanner } from '../components/sections/shared/CTABanner'
 
 const homeSchema = {
@@ -36,6 +37,7 @@ export default function Home() {
       <FounderSection />
       <TestimonialsSection />
       <PricingPreview />
+      <CityLinksSection />
       <CTABanner />
     </main>
   )

@@ -18,6 +18,23 @@ import Terms from './pages/Terms'
 import Refund from './pages/Refund'
 import Brand from './pages/Brand'
 import NotFound from './pages/NotFound'
+import Inquiry from './pages/pre-portal/Inquiry'
+import Questionnaire from './pages/pre-portal/Questionnaire'
+import Proposal from './pages/pre-portal/Proposal'
+import ClientPortal from './pages/portal/ClientPortal'
+import Dashboard from './pages/portal/Dashboard'
+import AssetsUpload from './pages/portal/AssetsUpload'
+import ContentCollection from './pages/portal/ContentCollection'
+import ProjectTimeline from './pages/portal/ProjectTimeline'
+import DesignApproval from './pages/portal/DesignApproval'
+import RevisionRequests from './pages/portal/RevisionRequests'
+import Chat from './pages/portal/Chat'
+import Payments from './pages/portal/Payments'
+import Invoices from './pages/portal/Invoices'
+import Downloads from './pages/portal/Downloads'
+import Handover from './pages/portal/Handover'
+import Feedback from './pages/portal/Feedback'
+import Settings from './pages/portal/Settings'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -48,6 +65,24 @@ export default function App() {
           <Route path="/terms" element={<Terms />} />
           <Route path="/refund" element={<Refund />} />
           <Route path="/brand" element={<Brand />} />
+          <Route path="/inquiry" element={<Inquiry />} />
+          <Route path="/questionnaire" element={<Questionnaire />} />
+          <Route path="/proposal" element={<Proposal />} />
+          <Route path="/portal" element={<ClientPortal />}>
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="assets" element={<AssetsUpload />} />
+            <Route path="content" element={<ContentCollection />} />
+            <Route path="timeline" element={<ProjectTimeline />} />
+            <Route path="design" element={<DesignApproval />} />
+            <Route path="revisions" element={<RevisionRequests />} />
+            <Route path="chat" element={<Chat />} />
+            <Route path="payments" element={<Payments />} />
+            <Route path="invoices" element={<Invoices />} />
+            <Route path="downloads" element={<Downloads />} />
+            <Route path="handover" element={<Handover />} />
+            <Route path="feedback" element={<Feedback />} />
+            <Route path="settings" element={<Settings />} />
+          </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Footer />
