@@ -1,6 +1,6 @@
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Download, CheckCircle2, Mail, Edit, Eye } from 'lucide-react'
+import { Download, Mail, CheckCircle2 } from 'lucide-react'
 import { GlassCard } from '../../components/ui/GlassCard'
 import Button from '../../components/ui/Button'
 import { generateAgreementPDF } from '../../lib/professionalPDF'
@@ -14,37 +14,29 @@ function WhatsAppIcon({ className }: { className?: string }) {
   )
 }
 
-type SupportPeriod = '7' | '15' | '30'
-
-interface AgreementData {
-  clientName: string
-  clientAddress: string
-  clientEmail: string
-  clientPhone: string
-  effectiveDate: string
-  projectDescription: string
-  scopeItems: string[]
-  timeline: string
-  advancePercentage: string
-  finalPercentage: string
-  supportPeriod: SupportPeriod
-  selectedServices: string[]
-}
-
-const defaultData: AgreementData = {
-  clientName: '',
-  clientAddress: '',
-  clientEmail: '',
-  clientPhone: '',
-  effectiveDate: new Date().toISOString().split('T')[0],
-  projectDescription: '',
-  scopeItems: ['Website Design', 'Website Development', 'Responsive Design'],
-  timeline: '4-6 Weeks',
-  advancePercentage: '50',
-  finalPercentage: '50',
-  supportPeriod: '30',
-  selectedServices: [],
-}
+const sectionCheckboxes = [
+  { id: 'parties', label: 'I have read and agree to the Parties section' },
+  { id: 'overview', label: 'I have read and agree to Section 1: Project Overview' },
+  { id: 'scope', label: 'I have read and agree to Section 2: Scope of Work' },
+  { id: 'timeline', label: 'I have read and agree to Section 3: Project Timeline' },
+  { id: 'payment', label: 'I have read and agree to Section 4: Payment Terms' },
+  { id: 'responsibilities', label: 'I have read and agree to Section 5: Client Responsibilities' },
+  { id: 'communication', label: 'I have read and agree to Section 6: Project Communication' },
+  { id: 'revisions', label: 'I have read and agree to Section 7: Revisions' },
+  { id: 'changes', label: 'I have read and agree to Section 8: Change Requests' },
+  { id: 'domain', label: 'I have read and agree to Section 9: Domain & Hosting' },
+  { id: 'ownership', label: 'I have read and agree to Section 10: Content Ownership' },
+  { id: 'ip', label: 'I have read and agree to Section 11: Intellectual Property' },
+  { id: 'confidentiality', label: 'I have read and agree to Section 12: Confidentiality' },
+  { id: 'cancellation', label: 'I have read and agree to Section 13: Cancellation' },
+  { id: 'launch', label: 'I have read and agree to Section 14: Website Launch' },
+  { id: 'support', label: 'I have read and agree to Section 15: Support' },
+  { id: 'liability', label: 'I have read and agree to Section 16: Limitation of Liability' },
+  { id: 'portfolio', label: 'I have read and agree to Section 17: Portfolio Rights' },
+  { id: 'force', label: 'I have read and agree to Section 18: Force Majeure' },
+  { id: 'law', label: 'I have read and agree to Section 19: Governing Law' },
+  { id: 'acceptance', label: 'I have read and agree to Section 20: Acceptance' },
+]
 
 const availableServices = [
   'Website Design', 'Website Development', 'Responsive Design',
@@ -53,345 +45,319 @@ const availableServices = [
 ]
 
 export default function Agreement() {
-  const [data, setData] = useState<AgreementData>(defaultData)
-  const [mode, setMode] = useState<'edit' | 'preview'>('edit')
+  const [clientName, setClientName] = useState('')
+  const [clientAddress, setClientAddress] = useState('')
+  const [clientEmail, setClientEmail] = useState('')
+  const [clientPhone, setClientPhone] = useState('')
+  const [effectiveDate, setEffectiveDate] = useState(new Date().toISOString().split('T')[0])
+  const [projectDescription, setProjectDescription] = useState('')
+  const [timeline, setTimeline] = useState('4-6 Weeks')
+  const [advancePct, setAdvancePct] = useState('50')
+  const [finalPct, setFinalPct] = useState('50')
+  const [supportPeriod, setSupportPeriod] = useState<'7' | '15' | '30'>('30')
+  const [selectedServices, setSelectedServices] = useState<string[]>([])
+  const [checkedSections, setCheckedSections] = useState<Record<string, boolean>>({})
+  const [declaration, setDeclaration] = useState(false)
   const [generated, setGenerated] = useState(false)
-  const previewRef = useRef<HTMLDivElement>(null)
 
-  const update = (field: keyof AgreementData, value: string | string[]) => {
-    setData((prev) => ({ ...prev, [field]: value }))
+  const toggleService = (s: string) => {
+    setSelectedServices((prev) => prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s])
   }
 
-  const toggleService = (service: string) => {
-    setData((prev) => ({
-      ...prev,
-      selectedServices: prev.selectedServices.includes(service)
-        ? prev.selectedServices.filter((s) => s !== service)
-        : [...prev.selectedServices, service],
-    }))
+  const toggleSection = (id: string) => {
+    setCheckedSections((prev) => ({ ...prev, [id]: !prev[id] }))
   }
+
+  const allChecked = sectionCheckboxes.every((s) => checkedSections[s.id])
+  const canGenerate = clientName.trim() && allChecked && declaration
 
   const handleGeneratePDF = () => {
+    if (!canGenerate) return
     generateAgreementPDF({
-      clientName: data.clientName,
-      clientAddress: data.clientAddress,
-      clientEmail: data.clientEmail,
-      clientPhone: data.clientPhone,
-      effectiveDate: data.effectiveDate,
-      projectDescription: data.projectDescription,
-      selectedServices: data.selectedServices,
-      timeline: data.timeline,
-      advancePercentage: data.advancePercentage,
-      finalPercentage: data.finalPercentage,
-      supportPeriod: data.supportPeriod,
+      clientName,
+      clientAddress,
+      clientEmail,
+      clientPhone,
+      effectiveDate,
+      projectDescription,
+      selectedServices,
+      timeline,
+      advancePercentage: advancePct,
+      finalPercentage: finalPct,
+      supportPeriod,
     })
     setGenerated(true)
   }
 
-  const effDateStr = data.effectiveDate
-    ? new Date(data.effectiveDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
-    : '____'
+  const effDateStr = effectiveDate
+    ? new Date(effectiveDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+    : '_______________'
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
-        <div>
-          <h1 className="font-heading text-3xl md:text-4xl text-white tracking-[-1px]">Website Development Agreement</h1>
-          <p className="text-sm text-white/50 font-body font-light mt-1">Fill in your details, review, and download as PDF.</p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant={mode === 'edit' ? 'secondary' : 'outline'} size="sm" onClick={() => setMode('edit')}>
-            <Edit className="h-4 w-4" /> Edit
-          </Button>
-          <Button variant={mode === 'preview' ? 'secondary' : 'outline'} size="sm" onClick={() => setMode('preview')}>
-            <Eye className="h-4 w-4" /> Preview
-          </Button>
-        </div>
+      <div className="mb-8">
+        <h1 className="font-heading text-3xl md:text-4xl text-white tracking-[-1px]">Website Development Agreement</h1>
+        <p className="text-sm text-white/50 font-body font-light mt-1">Review, acknowledge each section, and download the signed agreement.</p>
       </div>
 
-      {mode === 'edit' && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-          <GlassCard hover={false} className="p-6 md:p-8 mb-6">
-            <h3 className="font-heading text-xl text-white mb-6">Client Information</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-              <div>
-                <label className="text-xs text-white/50 font-body mb-1 block">Client / Company Name *</label>
-                <input value={data.clientName} onChange={(e) => update('clientName', e.target.value)} placeholder="e.g. ABC Corporation" className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-accent/40 font-body" />
-              </div>
-              <div>
-                <label className="text-xs text-white/50 font-body mb-1 block">Effective Date</label>
-                <input type="date" value={data.effectiveDate} onChange={(e) => update('effectiveDate', e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white focus:outline-none focus:border-accent/40 font-body" />
-              </div>
-              <div>
-                <label className="text-xs text-white/50 font-body mb-1 block">Email</label>
-                <input type="email" value={data.clientEmail} onChange={(e) => update('clientEmail', e.target.value)} placeholder="client@email.com" className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-accent/40 font-body" />
-              </div>
-              <div>
-                <label className="text-xs text-white/50 font-body mb-1 block">Phone</label>
-                <input type="tel" value={data.clientPhone} onChange={(e) => update('clientPhone', e.target.value)} placeholder="+91 98765 43210" className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-accent/40 font-body" />
-              </div>
-              <div className="sm:col-span-2">
-                <label className="text-xs text-white/50 font-body mb-1 block">Address</label>
-                <input value={data.clientAddress} onChange={(e) => update('clientAddress', e.target.value)} placeholder="Client's address" className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-accent/40 font-body" />
-              </div>
+      <div className="space-y-6">
+        {/* Client Info */}
+        <GlassCard hover={false} className="p-6 md:p-8">
+          <h3 className="font-heading text-xl text-white mb-6 border-b border-white/10 pb-3">Client Information</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="text-xs text-white/50 font-body mb-1 block">Client / Company Name *</label>
+              <input value={clientName} onChange={(e) => setClientName(e.target.value)} placeholder="e.g. ABC Corporation" className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-accent/40 font-body" />
             </div>
-
-            <h3 className="font-heading text-xl text-white mb-4">Project Details</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-              <div className="sm:col-span-2">
-                <label className="text-xs text-white/50 font-body mb-1 block">Project Description</label>
-                <textarea value={data.projectDescription} onChange={(e) => update('projectDescription', e.target.value)} placeholder="Briefly describe the project..." rows={3} className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-accent/40 font-body resize-none" />
-              </div>
-              <div>
-                <label className="text-xs text-white/50 font-body mb-1 block">Estimated Timeline</label>
-                <input value={data.timeline} onChange={(e) => update('timeline', e.target.value)} placeholder="e.g. 4-6 Weeks" className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-accent/40 font-body" />
-              </div>
+            <div>
+              <label className="text-xs text-white/50 font-body mb-1 block">Effective Date</label>
+              <input type="date" value={effectiveDate} onChange={(e) => setEffectiveDate(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white focus:outline-none focus:border-accent/40 font-body" />
             </div>
-
-            <h3 className="font-heading text-xl text-white mb-4">Services Included</h3>
-            <div className="flex flex-wrap gap-2 mb-6">
-              {availableServices.map((service) => (
-                <button
-                  key={service}
-                  onClick={() => toggleService(service)}
-                  className={`text-xs px-3 py-1.5 rounded-full border font-body transition-all ${
-                    data.selectedServices.includes(service)
-                      ? 'bg-accent/20 border-accent/50 text-accent'
-                      : 'border-white/10 text-white/50 hover:border-white/30'
-                  }`}
-                >
-                  {data.selectedServices.includes(service) && <CheckCircle2 className="h-3 w-3 inline mr-1" />}
-                  {service}
-                </button>
-              ))}
+            <div>
+              <label className="text-xs text-white/50 font-body mb-1 block">Email</label>
+              <input type="email" value={clientEmail} onChange={(e) => setClientEmail(e.target.value)} placeholder="client@email.com" className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-accent/40 font-body" />
             </div>
-
-            <h3 className="font-heading text-xl text-white mb-4">Payment Terms</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-              <div>
-                <label className="text-xs text-white/50 font-body mb-1 block">Advance Payment (%)</label>
-                <input value={data.advancePercentage} onChange={(e) => update('advancePercentage', e.target.value)} placeholder="50" className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-accent/40 font-body" />
-              </div>
-              <div>
-                <label className="text-xs text-white/50 font-body mb-1 block">Final Payment (%)</label>
-                <input value={data.finalPercentage} onChange={(e) => update('finalPercentage', e.target.value)} placeholder="50" className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-accent/40 font-body" />
-              </div>
+            <div>
+              <label className="text-xs text-white/50 font-body mb-1 block">Phone</label>
+              <input type="tel" value={clientPhone} onChange={(e) => setClientPhone(e.target.value)} placeholder="+91 98765 43210" className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-accent/40 font-body" />
             </div>
-
-            <h3 className="font-heading text-xl text-white mb-4">Support Period</h3>
-            <div className="flex gap-3 mb-6">
-              {(['7', '15', '30'] as SupportPeriod[]).map((days) => (
-                <button
-                  key={days}
-                  onClick={() => update('supportPeriod', days)}
-                  className={`text-sm px-5 py-2.5 rounded-full border font-body transition-all ${
-                    data.supportPeriod === days
-                      ? 'bg-accent/20 border-accent/50 text-accent'
-                      : 'border-white/10 text-white/50 hover:border-white/30'
-                  }`}
-                >
-                  {days} Days
-                </button>
-              ))}
+            <div className="sm:col-span-2">
+              <label className="text-xs text-white/50 font-body mb-1 block">Address</label>
+              <input value={clientAddress} onChange={(e) => setClientAddress(e.target.value)} placeholder="Client's address" className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-accent/40 font-body" />
             </div>
+          </div>
+        </GlassCard>
 
-            <Button variant="secondary" size="lg" onClick={handleGeneratePDF} className="w-full">
-              <Download className="h-4 w-4" /> Download Agreement as PDF
-            </Button>
+        {/* Project Details */}
+        <GlassCard hover={false} className="p-6 md:p-8">
+          <h3 className="font-heading text-xl text-white mb-6 border-b border-white/10 pb-3">Project Details</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="sm:col-span-2">
+              <label className="text-xs text-white/50 font-body mb-1 block">Project Description</label>
+              <textarea value={projectDescription} onChange={(e) => setProjectDescription(e.target.value)} placeholder="Briefly describe the project..." rows={3} className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-accent/40 font-body resize-none" />
+            </div>
+            <div>
+              <label className="text-xs text-white/50 font-body mb-1 block">Estimated Timeline</label>
+              <input value={timeline} onChange={(e) => setTimeline(e.target.value)} placeholder="e.g. 4-6 Weeks" className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-accent/40 font-body" />
+            </div>
+          </div>
 
-            {generated && (
-              <div className="mt-6 pt-6 border-t border-white/10">
-                <p className="text-sm text-white/60 font-body text-center mb-4">Share this agreement via:</p>
-                <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <a
-                    href={`https://wa.me/918767990061?text=${encodeURIComponent(
-                      `Hi Arnav,\n\nI've reviewed the Website Development Agreement. Here are my details:\n\nClient: ${data.clientName}\nEmail: ${data.clientEmail}\nDate: ${effDateStr}\n\nPlease find the signed PDF attached.`
-                    )}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 bg-whatsapp/20 hover:bg-whatsapp/30 text-whatsapp text-sm font-body font-medium rounded-full px-5 py-3 transition-all"
-                  >
-                    <WhatsAppIcon className="h-5 w-5" />
-                    Share on WhatsApp
-                  </a>
-                  <a
-                    href={`mailto:aromstudio27@gmail.com?subject=${encodeURIComponent(`Website Development Agreement - ${data.clientName || 'Client'}`)}&body=${encodeURIComponent(
-                      `Hi Arnav,\n\nI've reviewed and accepted the Website Development Agreement.\n\nClient: ${data.clientName}\nEmail: ${data.clientEmail}\nPhone: ${data.clientPhone}\nDate: ${effDateStr}\n\nPlease find the signed PDF attached.\n\nThanks!`
-                    )}`}
-                    className="flex items-center justify-center gap-2 bg-accent/10 hover:bg-accent/20 text-accent text-sm font-body font-medium rounded-full px-5 py-3 transition-all"
-                  >
-                    <Mail className="h-5 w-5" />
-                    Share via Email
-                  </a>
-                </div>
-              </div>
-            )}
-          </GlassCard>
-        </motion.div>
-      )}
+          <h4 className="font-heading text-base text-white mt-6 mb-3">Services Included</h4>
+          <div className="flex flex-wrap gap-2 mb-6">
+            {availableServices.map((s) => (
+              <button key={s} onClick={() => toggleService(s)} className={`text-xs px-3 py-1.5 rounded-full border font-body transition-all ${selectedServices.includes(s) ? 'bg-accent/20 border-accent/50 text-accent' : 'border-white/10 text-white/50 hover:border-white/30'}`}>
+                {selectedServices.includes(s) && <CheckCircle2 className="h-3 w-3 inline mr-1" />}{s}
+              </button>
+            ))}
+          </div>
 
-      {mode === 'preview' && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} ref={previewRef}>
-          <GlassCard hover={false} className="p-8 md:p-10 mb-6 text-sm leading-relaxed text-white/80 font-body">
-            <div className="max-w-none">
-              <div className="border-b-2 border-accent pb-4 mb-6">
-                <h2 className="font-heading text-2xl text-accent">AROM Studio</h2>
-                <p className="text-sm text-white/50">Website Development Agreement</p>
-              </div>
+          <h4 className="font-heading text-base text-white mb-3">Payment Terms</h4>
+          <p className="text-xs text-white/40 font-body mb-3">Minimum advance payment: 27%. Recommended: 50%</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="text-xs text-white/50 font-body mb-1 block">Advance Payment (%) — minimum 27%</label>
+              <input type="number" min={27} max={100} value={advancePct} onChange={(e) => setAdvancePct(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white focus:outline-none focus:border-accent/40 font-body" />
+            </div>
+            <div>
+              <label className="text-xs text-white/50 font-body mb-1 block">Final Payment (%)</label>
+              <input type="number" min={0} max={100} value={finalPct} onChange={(e) => setFinalPct(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white focus:outline-none focus:border-accent/40 font-body" />
+            </div>
+          </div>
 
-              <h3 className="font-heading text-lg text-white mb-3">Parties</h3>
+          <h4 className="font-heading text-base text-white mt-6 mb-3">Support Period</h4>
+          <div className="flex gap-3">
+            {(['7', '15', '30'] as const).map((days) => (
+              <button key={days} onClick={() => setSupportPeriod(days)} className={`text-sm px-5 py-2.5 rounded-full border font-body transition-all ${supportPeriod === days ? 'bg-accent/20 border-accent/50 text-accent' : 'border-white/10 text-white/50 hover:border-white/30'}`}>
+                {days} Days
+              </button>
+            ))}
+          </div>
+        </GlassCard>
+
+        {/* Full Agreement Text with Checkboxes */}
+        <GlassCard hover={false} className="p-6 md:p-8">
+          <h3 className="font-heading text-xl text-white mb-6 border-b border-white/10 pb-3">Agreement Terms</h3>
+          <p className="text-xs text-white/40 font-body mb-6">Please read each section carefully and check the box to confirm your acceptance. All sections are required.</p>
+
+          <div className="text-sm leading-relaxed text-white/80 font-body space-y-8">
+            {/* Parties */}
+            <div className="glass rounded-[16px] p-5 border-l-2 border-accent">
+              <h4 className="font-heading text-base text-white mb-3">Parties</h4>
               <p className="mb-2">This Website Development Agreement ("Agreement") is entered into between:</p>
               <p className="mb-1"><strong>Agency:</strong> AROM Studio</p>
-              <p className="mb-1"><strong>Client:</strong> {data.clientName || <span className="text-white/30 italic">[Client Name]</span>}</p>
-              {data.clientAddress && <p className="mb-1">Address: {data.clientAddress}</p>}
-              {(data.clientEmail || data.clientPhone) && <p className="mb-3">Contact: {data.clientEmail}{data.clientEmail && data.clientPhone ? ' | ' : ''}{data.clientPhone}</p>}
-              <p className="mb-6">This Agreement becomes effective from <strong>{effDateStr}</strong>.</p>
+              <p className="mb-1"><strong>Client:</strong> {clientName || <span className="text-white/30 italic">[Client Name]</span>}</p>
+              {clientAddress && <p className="mb-1">Address: {clientAddress}</p>}
+              {(clientEmail || clientPhone) && <p className="mb-3">Contact: {[clientEmail, clientPhone].filter(Boolean).join(' | ')}</p>}
+              <p className="mb-3">This Agreement becomes effective from <strong>{effDateStr}</strong>.</p>
+              <label className="flex items-start gap-3 cursor-pointer mt-3 pt-3 border-t border-white/10">
+                <input type="checkbox" checked={!!checkedSections['parties']} onChange={() => toggleSection('parties')} className="mt-0.5 accent-accent" />
+                <span className="text-xs text-white/60 font-body">I confirm that the party information above is accurate and I have read the Parties section.</span>
+              </label>
+            </div>
 
-              <h3 className="font-heading text-lg text-white mb-3">1. Project Overview</h3>
+            {/* Section 1 */}
+            <div className="glass rounded-[16px] p-5 border-l-2 border-accent">
+              <h4 className="font-heading text-base text-white mb-3">1. Project Overview</h4>
               <p className="mb-2">The Client has requested AROM Studio to design and/or develop a website.</p>
-              <p className="mb-6">The specific project requirements, deliverables, pricing, and timeline will be defined in the approved Project Proposal.{data.projectDescription ? <span className="block mt-1">Project Description: {data.projectDescription}</span> : ''}</p>
+              <p className="mb-3">The specific project requirements, deliverables, pricing, and timeline will be defined in the approved Project Proposal.</p>
+              {projectDescription && <p className="mb-3 text-white/60">Project Description: {projectDescription}</p>}
+              <label className="flex items-start gap-3 cursor-pointer mt-3 pt-3 border-t border-white/10">
+                <input type="checkbox" checked={!!checkedSections['overview']} onChange={() => toggleSection('overview')} className="mt-0.5 accent-accent" />
+                <span className="text-xs text-white/60 font-body">I have read and agree to Section 1: Project Overview</span>
+              </label>
+            </div>
 
-              <h3 className="font-heading text-lg text-white mb-3">2. Scope of Work</h3>
+            {/* Section 2 */}
+            <div className="glass rounded-[16px] p-5 border-l-2 border-accent">
+              <h4 className="font-heading text-base text-white mb-3">2. Scope of Work</h4>
               <p className="mb-2">AROM Studio agrees to provide the services specified in the approved Project Proposal.</p>
               <p className="mb-2">Services may include:</p>
-              <ul className="list-disc pl-5 mb-2 space-y-1">
-                {(data.selectedServices.length > 0 ? data.selectedServices : availableServices).map((s) => <li key={s}>{s}</li>)}
+              <ul className="list-disc pl-5 mb-2 space-y-1 text-white/70">
+                {(selectedServices.length > 0 ? selectedServices : availableServices).map((s) => <li key={s}>{s}</li>)}
               </ul>
-              <p className="mb-6">Any work outside the agreed scope shall be considered additional work and may require a separate quotation.</p>
+              <p className="mb-3">Any work outside the agreed scope shall be considered additional work and may require a separate quotation.</p>
+              <label className="flex items-start gap-3 cursor-pointer mt-3 pt-3 border-t border-white/10">
+                <input type="checkbox" checked={!!checkedSections['scope']} onChange={() => toggleSection('scope')} className="mt-0.5 accent-accent" />
+                <span className="text-xs text-white/60 font-body">I have read and agree to Section 2: Scope of Work</span>
+              </label>
+            </div>
 
-              <h3 className="font-heading text-lg text-white mb-3">3. Project Timeline</h3>
-              <p className="mb-2">The estimated project duration is <strong>{data.timeline || '[Timeline]'}</strong>.</p>
+            {/* Section 3 */}
+            <div className="glass rounded-[16px] p-5 border-l-2 border-accent">
+              <h4 className="font-heading text-base text-white mb-3">3. Project Timeline</h4>
+              <p className="mb-2">The estimated project duration will be defined in the Project Proposal. Current estimate: <strong>{timeline}</strong>.</p>
               <p className="mb-1">The timeline may change if:</p>
-              <ul className="list-disc pl-5 mb-1 space-y-1">
+              <ul className="list-disc pl-5 mb-2 space-y-1 text-white/70">
                 <li>Client delays providing content or assets.</li>
                 <li>Additional features are requested.</li>
                 <li>Project requirements change.</li>
                 <li>Third-party services cause delays.</li>
               </ul>
-              <p className="mb-6">AROM Studio will communicate any timeline changes as early as possible.</p>
-
-              <h3 className="font-heading text-lg text-white mb-3">4. Payment Terms</h3>
-              <p className="mb-2">Payment schedule: <strong>{data.advancePercentage || '50'}%</strong> Advance before project commencement. <strong>{data.finalPercentage || '50'}%</strong> Final Payment before final website delivery or deployment.</p>
-              <p className="mb-2">Additional work requested after project approval will be charged separately.</p>
-              <p className="mb-6">Payments are due within the agreed payment period.</p>
-
-              <h3 className="font-heading text-lg text-white mb-3">5. Client Responsibilities</h3>
-              <p className="mb-2">The Client agrees to provide:</p>
-              <ul className="list-disc pl-5 mb-1 space-y-1">
-                <li>Logo, Brand Colors, Images, Videos</li>
-                <li>Website Content, Contact Information, Social Media Links</li>
-                <li>Domain Details (if applicable), Hosting Details (if applicable)</li>
-              </ul>
-              <p className="mb-6">The Client is responsible for ensuring that all supplied content is accurate and legally owned or licensed.</p>
-
-              <h3 className="font-heading text-lg text-white mb-3">6. Project Communication</h3>
-              <p className="mb-2">The Client should provide timely feedback and approvals to avoid unnecessary delays.</p>
-              <p className="mb-6">Preferred communication methods include: Email, WhatsApp, Google Meet, Phone Call.</p>
-
-              <h3 className="font-heading text-lg text-white mb-3">7. Revisions</h3>
-              <p className="mb-1">Unless otherwise agreed in writing:</p>
-              <ul className="list-disc pl-5 mb-1 space-y-1">
-                <li>Minor revisions are included within the agreed revision limit.</li>
-                <li>Requests outside the original scope may require additional charges.</li>
-                <li>Major redesigns after approval are treated as new work.</li>
-              </ul>
-              <p className="mb-6">&nbsp;</p>
-
-              <h3 className="font-heading text-lg text-white mb-3">8. Change Requests</h3>
-              <p className="mb-2">If the Client requests additional pages, new features, major design changes, third-party integrations, or functional changes, AROM Studio will provide a revised quotation before starting the additional work.</p>
-              <p className="mb-6">&nbsp;</p>
-
-              <h3 className="font-heading text-lg text-white mb-3">9. Domain & Hosting</h3>
-              <p className="mb-2">Unless specifically included in the proposal, domain registration and hosting purchase are the Client's responsibility.</p>
-              <p className="mb-6">If AROM Studio assists with these services, any third-party costs will be billed separately.</p>
-
-              <h3 className="font-heading text-lg text-white mb-3">10. Content Ownership</h3>
-              <p className="mb-2">The Client retains ownership of: Logos, Images, Videos, Written Content, Brand Assets.</p>
-              <p className="mb-6">The Client confirms they have permission to use all provided materials.</p>
-
-              <h3 className="font-heading text-lg text-white mb-3">11. Intellectual Property</h3>
-              <p className="mb-2">After full payment has been received, the Client owns the completed website and receives all agreed project files.</p>
-              <p className="mb-6">AROM Studio retains ownership of its internal tools, reusable code libraries, templates, frameworks, and development methodologies unless otherwise agreed.</p>
-
-              <h3 className="font-heading text-lg text-white mb-3">12. Confidentiality</h3>
-              <p className="mb-2">Both parties agree to keep confidential information private.</p>
-              <p className="mb-6">Business information, passwords, source files, and sensitive project information shall not be shared with third parties without permission, unless required by law.</p>
-
-              <h3 className="font-heading text-lg text-white mb-3">13. Cancellation</h3>
-              <p className="mb-2">Either party may cancel the project. If cancelled, work completed up to the cancellation date must be paid for. Advance payments are generally non-refundable. Completed deliverables may be provided after outstanding payments are settled.</p>
-              <p className="mb-6">&nbsp;</p>
-
-              <h3 className="font-heading text-lg text-white mb-3">14. Website Launch</h3>
-              <p className="mb-6">The website will be deployed after final approval, final payment, and required domain/hosting access (if applicable).</p>
-
-              <h3 className="font-heading text-lg text-white mb-3">15. Support</h3>
-              <p className="mb-2">After website delivery, the included support period is <strong>{data.supportPeriod || '30'} days</strong>.</p>
-              <p className="mb-1">Support includes: Bug Fixes, Minor Technical Assistance.</p>
-              <p className="mb-6">Support does not include: New Features, Major Design Changes, Additional Pages, Third-party software issues.</p>
-
-              <h3 className="font-heading text-lg text-white mb-3">16. Limitation of Liability</h3>
-              <p className="mb-6">AROM Studio shall not be responsible for third-party hosting failures, domain provider issues, payment gateway outages, search engine ranking changes, client-added errors after handover, or cyberattacks beyond our control.</p>
-
-              <h3 className="font-heading text-lg text-white mb-3">17. Portfolio Rights</h3>
-              <p className="mb-6">Unless the Client specifically requests confidentiality in writing, AROM Studio may showcase the completed project in its portfolio, website, and social media for promotional purposes.</p>
-
-              <h3 className="font-heading text-lg text-white mb-3">18. Force Majeure</h3>
-              <p className="mb-6">Neither party shall be liable for delays caused by events beyond reasonable control, including natural disasters, government actions, internet outages, pandemics, or other unforeseen circumstances.</p>
-
-              <h3 className="font-heading text-lg text-white mb-3">19. Governing Law</h3>
-              <p className="mb-2">This Agreement shall be governed by the applicable laws of India.</p>
-              <p className="mb-6">Any disputes shall first be attempted to be resolved through mutual discussion before pursuing legal remedies.</p>
-
-              <h3 className="font-heading text-lg text-white mb-3">20. Acceptance</h3>
-              <p className="mb-6">By proceeding with the project and making the agreed advance payment after accepting the proposal, the Client acknowledges that they have read, understood, and accepted the terms of this Agreement.</p>
-
-              <div className="border-t border-white/20 pt-6 mt-8">
-                <p className="font-heading text-lg text-white mb-4">Accepted and agreed by:</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                  <div>
-                    <p className="text-xs text-white/40 mb-1">Client</p>
-                    <div className="border-b border-white/20 pb-1 mb-1"><p className="text-white">{data.clientName || <span className="text-white/30 italic">[Sign here]</span>}</p></div>
-                    <p className="text-xs text-white/40">Date: _______________</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-white/40 mb-1">AROM Studio</p>
-                    <div className="border-b border-white/20 pb-1 mb-1"><p className="text-white">Arnav (Founder)</p></div>
-                    <p className="text-xs text-white/40">Date: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="border-t border-white/10 pt-4 mt-6 text-xs text-white/40">
-                <p className="font-heading text-sm text-white/60 mb-1">Contact Information</p>
-                <p>AROM Studio | Website: https://arom-studio.vercel.app | Email: aromstudio27@gmail.com | Phone: +91 8767990061</p>
-              </div>
+              <p className="mb-3">AROM Studio will communicate any timeline changes as early as possible.</p>
+              <label className="flex items-start gap-3 cursor-pointer mt-3 pt-3 border-t border-white/10">
+                <input type="checkbox" checked={!!checkedSections['timeline']} onChange={() => toggleSection('timeline')} className="mt-0.5 accent-accent" />
+                <span className="text-xs text-white/60 font-body">I have read and agree to Section 3: Project Timeline</span>
+              </label>
             </div>
-          </GlassCard>
 
-          <Button variant="secondary" size="lg" onClick={handleGeneratePDF} className="w-full mb-4">
-            <Download className="h-4 w-4" /> Download Agreement as PDF
+            {/* Section 4 */}
+            <div className="glass rounded-[16px] p-5 border-l-2 border-accent">
+              <h4 className="font-heading text-base text-white mb-3">4. Payment Terms</h4>
+              <p className="mb-2">Payment schedule:</p>
+              <p className="mb-1"><strong>{advancePct || '50'}%</strong> Advance before project commencement.</p>
+              <p className="mb-2"><strong>{finalPct || '50'}%</strong> Final Payment before final website delivery or deployment.</p>
+              <p className="mb-2">Additional work requested after project approval will be charged separately.</p>
+              <p className="mb-3">Payments are due within the agreed payment period.</p>
+              <label className="flex items-start gap-3 cursor-pointer mt-3 pt-3 border-t border-white/10">
+                <input type="checkbox" checked={!!checkedSections['payment']} onChange={() => toggleSection('payment')} className="mt-0.5 accent-accent" />
+                <span className="text-xs text-white/60 font-body">I have read and agree to Section 4: Payment Terms</span>
+              </label>
+            </div>
+
+            {/* Section 5 */}
+            <div className="glass rounded-[16px] p-5 border-l-2 border-accent">
+              <h4 className="font-heading text-base text-white mb-3">5. Client Responsibilities</h4>
+              <p className="mb-2">The Client agrees to provide:</p>
+              <ul className="list-disc pl-5 mb-2 space-y-1 text-white/70">
+                <li>Logo, Brand Colors, Images, Videos</li>
+                <li>Website Content, Contact Information</li>
+                <li>Social Media Links</li>
+                <li>Domain Details (if applicable)</li>
+                <li>Hosting Details (if applicable)</li>
+              </ul>
+              <p className="mb-3">The Client is responsible for ensuring that all supplied content is accurate and legally owned or licensed.</p>
+              <label className="flex items-start gap-3 cursor-pointer mt-3 pt-3 border-t border-white/10">
+                <input type="checkbox" checked={!!checkedSections['responsibilities']} onChange={() => toggleSection('responsibilities')} className="mt-0.5 accent-accent" />
+                <span className="text-xs text-white/60 font-body">I have read and agree to Section 5: Client Responsibilities</span>
+              </label>
+            </div>
+
+            {/* Sections 6-20 in compact format */}
+            {[
+              { id: 'communication', title: '6. Project Communication', content: 'The Client should provide timely feedback and approvals to avoid unnecessary delays. Preferred communication methods include: Email, WhatsApp, Google Meet, Phone Call.' },
+              { id: 'revisions', title: '7. Revisions', content: 'Unless otherwise agreed in writing: Minor revisions are included within the agreed revision limit. Requests outside the original scope may require additional charges. Major redesigns after approval are treated as new work.' },
+              { id: 'changes', title: '8. Change Requests', content: 'If the Client requests additional pages, new features, major design changes, third-party integrations, or functional changes, AROM Studio will provide a revised quotation before starting the additional work.' },
+              { id: 'domain', title: '9. Domain & Hosting', content: 'Unless specifically included in the proposal, domain registration and hosting purchase are the Client\'s responsibility. If AROM Studio assists with these services, any third-party costs will be billed separately.' },
+              { id: 'ownership', title: '10. Content Ownership', content: 'The Client retains ownership of: Logos, Images, Videos, Written Content, Brand Assets. The Client confirms they have permission to use all provided materials.' },
+              { id: 'ip', title: '11. Intellectual Property', content: 'After full payment has been received, the Client owns the completed website and receives all agreed project files. AROM Studio retains ownership of its internal tools, reusable code libraries, templates, frameworks, and development methodologies unless otherwise agreed.' },
+              { id: 'confidentiality', title: '12. Confidentiality', content: 'Both parties agree to keep confidential information private. Business information, passwords, source files, and sensitive project information shall not be shared with third parties without permission, unless required by law.' },
+              { id: 'cancellation', title: '13. Cancellation', content: 'Either party may cancel the project. If cancelled: Work completed up to the cancellation date must be paid for. Advance payments cover work already performed and are generally non-refundable. Completed deliverables up to the cancellation date may be provided after outstanding payments are settled.' },
+              { id: 'launch', title: '14. Website Launch', content: 'The website will be deployed after: Final approval, Final payment received, Required domain and hosting access provided (if applicable).' },
+              { id: 'support', title: '15. Support', content: `After website delivery, the included support period is ${supportPeriod || '30'} days. Support includes: Bug Fixes, Minor Technical Assistance. Support does not include: New Features, Major Design Changes, Additional Pages, Third-party software issues.` },
+              { id: 'liability', title: '16. Limitation of Liability', content: 'AROM Studio shall not be responsible for: Third-party hosting failures, Domain provider issues, Payment gateway outages, Search engine ranking changes, Client-added errors after handover, Cyberattacks or data loss caused by third-party systems beyond AROM Studio\'s control.' },
+              { id: 'portfolio', title: '17. Portfolio Rights', content: 'Unless the Client specifically requests confidentiality in writing, AROM Studio may showcase the completed project in its portfolio, website, and social media for promotional purposes. If confidentiality is requested and agreed upon, AROM Studio will not publicly display the project.' },
+              { id: 'force', title: '18. Force Majeure', content: 'Neither party shall be liable for delays caused by events beyond reasonable control, including natural disasters, government actions, internet outages, pandemics, or other unforeseen circumstances.' },
+              { id: 'law', title: '19. Governing Law', content: 'This Agreement shall be governed by the applicable laws of India. Any disputes shall first be attempted to be resolved through mutual discussion before pursuing legal remedies.' },
+              { id: 'acceptance', title: '20. Acceptance', content: 'By proceeding with the project and making the agreed advance payment after accepting the proposal, the Client acknowledges that they have read, understood, and accepted the terms of this Agreement.' },
+            ].map((sec) => (
+              <div key={sec.id} className="glass rounded-[16px] p-5 border-l-2 border-accent">
+                <h4 className="font-heading text-base text-white mb-3">{sec.title}</h4>
+                <p className="mb-3 text-white/70">{sec.content}</p>
+                <label className="flex items-start gap-3 cursor-pointer mt-3 pt-3 border-t border-white/10">
+                  <input type="checkbox" checked={!!checkedSections[sec.id]} onChange={() => toggleSection(sec.id)} className="mt-0.5 accent-accent" />
+                  <span className="text-xs text-white/60 font-body">I have read and agree to {sec.title}</span>
+                </label>
+              </div>
+            ))}
+          </div>
+        </GlassCard>
+
+        {/* Client Declaration */}
+        <GlassCard hover={false} className="p-6 md:p-8 border border-accent/30">
+          <h3 className="font-heading text-xl text-white mb-4">Client Declaration</h3>
+          <p className="text-sm text-white/70 font-body mb-4">
+            I, <strong>{clientName || '[Client Name]'}</strong>, confirm that:
+          </p>
+          <ul className="list-disc pl-5 space-y-2 text-sm text-white/60 font-body mb-6">
+            <li>I have read and understood all 20 sections of this Agreement.</li>
+            <li>All information I have provided is accurate and complete.</li>
+            <li>I agree to the payment terms including the {advancePct || '50'}% advance payment.</li>
+            <li>I agree to provide all required content and assets within agreed timelines.</li>
+            <li>I acknowledge that this Agreement is legally binding.</li>
+          </ul>
+          <label className="flex items-start gap-3 cursor-pointer">
+            <input type="checkbox" checked={declaration} onChange={(e) => setDeclaration(e.target.checked)} className="mt-0.5 accent-accent" />
+            <span className="text-sm text-white font-body">I hereby declare that I have read, understood, and agree to all terms and conditions of this Website Development Agreement. This declaration is required to proceed. *</span>
+          </label>
+        </GlassCard>
+
+        {/* Progress & Generate */}
+        <GlassCard hover={false} className="p-6">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-sm text-white/70 font-body">Section Acceptance Progress</span>
+            <span className="text-sm text-accent font-heading">{Object.keys(checkedSections).length}/{sectionCheckboxes.length}</span>
+          </div>
+          <div className="h-2 bg-white/10 rounded-full overflow-hidden mb-6">
+            <motion.div className="h-full bg-gradient-to-r from-accent to-blue-400 rounded-full" initial={{ width: 0 }} animate={{ width: `${(Object.keys(checkedSections).length / sectionCheckboxes.length) * 100}%` }} />
+          </div>
+
+          <Button variant="secondary" size="lg" onClick={handleGeneratePDF} disabled={!canGenerate} className="w-full">
+            <Download className="h-4 w-4" /> {canGenerate ? 'Download Signed Agreement as PDF' : 'Complete all sections & declaration to download'}
           </Button>
 
-          <div className="text-center">
-            <p className="text-sm text-white/50 font-body mb-3">Share this agreement:</p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <a
-                href={`https://wa.me/918767990061?text=${encodeURIComponent(`Hi Arnav,\n\nI've reviewed the Website Development Agreement. Here are my details:\n\nClient: ${data.clientName}\nEmail: ${data.clientEmail}\nDate: ${effDateStr}\n\nPlease find the signed PDF attached.`)}`}
-                target="_blank" rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 bg-whatsapp/20 hover:bg-whatsapp/30 text-whatsapp text-sm font-body font-medium rounded-full px-5 py-3 transition-all"
-              >
-                <WhatsAppIcon className="h-5 w-5" /> Share on WhatsApp
-              </a>
-              <a
-                href={`mailto:aromstudio27@gmail.com?subject=${encodeURIComponent(`Website Development Agreement - ${data.clientName || 'Client'}`)}&body=${encodeURIComponent(`Hi Arnav,\n\nI've reviewed and accepted the Website Development Agreement.\n\nClient: ${data.clientName}\nEmail: ${data.clientEmail}\nPhone: ${data.clientPhone}\nDate: ${effDateStr}\n\nPlease find the signed PDF attached.\n\nThanks!`)}`}
-                className="flex items-center justify-center gap-2 bg-accent/10 hover:bg-accent/20 text-accent text-sm font-body font-medium rounded-full px-5 py-3 transition-all"
-              >
-                <Mail className="h-5 w-5" /> Share via Email
-              </a>
+          {!canGenerate && (
+            <p className="text-xs text-red-400 font-body text-center mt-2">
+              {!clientName.trim() && '• Enter client name. '}
+              {!allChecked && '• Accept all 21 sections. '}
+              {!declaration && '• Check the declaration.'}
+            </p>
+          )}
+
+          {generated && (
+            <div className="mt-6 pt-6 border-t border-white/10">
+              <p className="text-sm text-white/60 font-body text-center mb-4">Share this signed agreement via:</p>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <a href={`https://wa.me/918767990061?text=${encodeURIComponent(`Hi Arnav,\n\nI have reviewed and accepted the Website Development Agreement.\n\nClient: ${clientName}\nEmail: ${clientEmail}\nDate: ${effDateStr}\n\nSigned PDF is attached.`)}`} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 bg-whatsapp/20 hover:bg-whatsapp/30 text-whatsapp text-sm font-body font-medium rounded-full px-5 py-3 transition-all">
+                  <WhatsAppIcon className="h-5 w-5" /> Share on WhatsApp
+                </a>
+                <a href={`mailto:aromstudio27@gmail.com?subject=${encodeURIComponent(`Website Development Agreement - ${clientName || 'Client'}`)}&body=${encodeURIComponent(`Hi Arnav,\n\nI have reviewed and accepted the Website Development Agreement.\n\nClient: ${clientName}\nEmail: ${clientEmail}\nPhone: ${clientPhone}\nDate: ${effDateStr}\n\nSigned PDF is attached.\n\nThanks!`)}`} className="flex items-center justify-center gap-2 bg-accent/10 hover:bg-accent/20 text-accent text-sm font-body font-medium rounded-full px-5 py-3 transition-all">
+                  <Mail className="h-5 w-5" /> Share via Email
+                </a>
+              </div>
             </div>
-          </div>
-        </motion.div>
-      )}
+          )}
+        </GlassCard>
+      </div>
     </div>
   )
 }

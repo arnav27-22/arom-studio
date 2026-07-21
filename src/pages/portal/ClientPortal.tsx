@@ -2,22 +2,18 @@ import { useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  LayoutDashboard, Upload, Clock, Palette, RefreshCw,
-  Download, Handshake, ChevronLeft, ChevronRight, Menu, X,
-  PenSquare, FileCheck, ScrollText
+  Upload, Clock, Handshake, ChevronLeft, ChevronRight, Menu, X,
+  PenSquare, FileCheck, ScrollText, ClipboardCheck
 } from 'lucide-react'
 import { cn } from '../../lib/cn'
 
 const sidebarLinks = [
-  { label: 'Dashboard', href: '/portal/dashboard', icon: LayoutDashboard },
   { label: 'Client Inquiry Form', href: '/portal/inquiry', icon: PenSquare },
   { label: 'Project Proposal', href: '/portal/proposal', icon: FileCheck },
   { label: 'Website Agreement', href: '/portal/agreement', icon: ScrollText },
+  { label: 'Discovery Questionnaire', href: '/portal/questionnaire', icon: ClipboardCheck },
   { label: 'Project Timeline', href: '/portal/timeline', icon: Clock },
-  { label: 'Design Approval', href: '/portal/design', icon: Palette },
   { label: 'Assets Upload', href: '/portal/assets', icon: Upload },
-  { label: 'Revision Requests', href: '/portal/revisions', icon: RefreshCw },
-  { label: 'Downloads', href: '/portal/downloads', icon: Download },
   { label: 'Handover', href: '/portal/handover', icon: Handshake },
 ]
 

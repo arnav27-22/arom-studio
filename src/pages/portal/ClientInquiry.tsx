@@ -140,6 +140,18 @@ export default function ClientInquiry() {
       </div>
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+        <GlassCard hover={false} className="mb-6 p-4 text-center">
+          <p className="text-sm text-white/70 font-body mb-3">Prefer to use a structured Google Form?</p>
+          <a
+            href="https://forms.gle/HzNK1fmq34sQDnb16"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 bg-accent/20 hover:bg-accent/30 text-accent text-sm font-body font-medium rounded-full px-6 py-3 transition-all"
+          >
+            <FileText className="h-4 w-4" /> Open Client Inquiry Form
+          </a>
+        </GlassCard>
+
         <GlassCard hover={false}>
           <form onSubmit={handleSubmit} noValidate className="space-y-5">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">

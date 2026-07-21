@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Download, Edit, Plus, X } from 'lucide-react'
+import { Download, Edit, Plus, X, FileText, ExternalLink } from 'lucide-react'
 import { GlassCard } from '../../components/ui/GlassCard'
 import Button from '../../components/ui/Button'
 import { generateProposalPDF } from '../../lib/professionalPDF'
@@ -206,6 +206,19 @@ export default function ProjectProposal() {
       </div>
 
       <div className="space-y-6">
+        {/* Google Form Banner */}
+        <GlassCard hover={false} className="p-5 text-center">
+          <p className="text-sm text-white/70 font-body mb-2">Fill real client information in our structured form to generate accurate proposals.</p>
+          <a
+            href="https://forms.gle/MAvyrJpvwaEG9kiw8"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 bg-accent/20 hover:bg-accent/30 text-accent text-sm font-body font-medium rounded-full px-6 py-3 transition-all"
+          >
+            <FileText className="h-4 w-4" /> Open Project Proposal Form <ExternalLink className="h-3 w-3" />
+          </a>
+        </GlassCard>
+
         {/* Basic Info */}
         <GlassCard hover={false} className="p-6 md:p-8">
           <h3 className="font-heading text-lg text-white mb-4">Client & Project</h3>

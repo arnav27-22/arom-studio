@@ -22,15 +22,12 @@ import Inquiry from './pages/pre-portal/Inquiry'
 import Questionnaire from './pages/pre-portal/Questionnaire'
 import Proposal from './pages/pre-portal/Proposal'
 import ClientPortal from './pages/portal/ClientPortal'
-import Dashboard from './pages/portal/Dashboard'
 import ClientInquiry from './pages/portal/ClientInquiry'
 import ProjectProposal from './pages/portal/ProjectProposal'
 import Agreement from './pages/portal/Agreement'
+import DiscoveryQuestionnaire from './pages/portal/DiscoveryQuestionnaire'
 import AssetsUpload from './pages/portal/AssetsUpload'
 import ProjectTimeline from './pages/portal/ProjectTimeline'
-import DesignApproval from './pages/portal/DesignApproval'
-import RevisionRequests from './pages/portal/RevisionRequests'
-import Downloads from './pages/portal/Downloads'
 import Handover from './pages/portal/Handover'
 
 function ScrollToTop() {
@@ -66,15 +63,13 @@ export default function App() {
           <Route path="/questionnaire" element={<Questionnaire />} />
           <Route path="/proposal" element={<Proposal />} />
           <Route path="/portal" element={<ClientPortal />}>
-            <Route path="dashboard" element={<Dashboard />} />
+            <Route index element={<ClientInquiry />} />
             <Route path="inquiry" element={<ClientInquiry />} />
             <Route path="proposal" element={<ProjectProposal />} />
             <Route path="agreement" element={<Agreement />} />
+            <Route path="questionnaire" element={<DiscoveryQuestionnaire />} />
             <Route path="timeline" element={<ProjectTimeline />} />
-            <Route path="design" element={<DesignApproval />} />
             <Route path="assets" element={<AssetsUpload />} />
-            <Route path="revisions" element={<RevisionRequests />} />
-            <Route path="downloads" element={<Downloads />} />
             <Route path="handover" element={<Handover />} />
           </Route>
           <Route path="*" element={<NotFound />} />
