@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Send, CheckCircle2, ArrowRight, Building2, Mail, Phone, User } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { Section, Container, SectionHeader } from '../../components/ui/Section'
 import { SEO } from '../../components/ui/SEO'
 import Button from '../../components/ui/Button'
@@ -81,8 +82,8 @@ export default function Inquiry() {
                 <p><span className="text-white/80">Email:</span> {form.email}</p>
               </div>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <a href="https://wa.me/918767990061" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm font-body font-medium text-white glass-strong rounded-full px-6 py-3 hover:shadow-lg transition-all">Chat on WhatsApp</a>
-                <a href="mailto:aromstudio27@gmail.com" className="inline-flex items-center gap-2 text-sm font-body font-medium text-white/70 hover:text-white transition-colors rounded-full px-6 py-3">Email Us <ArrowRight className="h-4 w-4" /></a>
+                <Link to="/proposal" className="inline-flex items-center gap-2 text-sm font-body font-medium text-white glass-strong rounded-full px-6 py-3 hover:shadow-lg transition-all">View Proposal <ArrowRight className="h-4 w-4" /></Link>
+                <a href="https://wa.me/918767990061" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm font-body font-medium text-white/70 hover:text-white transition-colors rounded-full px-6 py-3">Chat on WhatsApp</a>
               </div>
             </motion.div>
           </Container>
