@@ -1,0 +1,33 @@
+# AROM STUDIO
+
+> AROM STUDIO is a premium web design and development agency based in India. We build high-performance websites, web applications, SaaS platforms, and digital experiences for startups, growing businesses, and enterprises.
+
+AROM STUDIO was founded by Arnav Pagare. Every project targets Lighthouse 95+ scores and includes 1 Year Support. The agency serves clients across India and globally using Next.js, React, TypeScript, and Tailwind CSS.
+
+## Services
+
+- [Business Websites](https://aromstudio.vercel.app/services/business-websites): Custom business websites with CMS integration and SEO optimization.
+- [E-commerce Websites](https://aromstudio.vercel.app/services/ecommerce): Scalable online stores with payment integration and inventory management.
+- [Web Applications](https://aromstudio.vercel.app/services/web-applications): Tailored web applications with full-stack development and cloud deployment.
+- [SaaS Platforms](https://aromstudio.vercel.app/services/saas-platforms): Multi-tenant SaaS platforms with subscription billing and scalable infrastructure.
+- [UI/UX Design](https://aromstudio.vercel.app/services/ui-ux-design): User-centered design with wireframing, prototyping, and design systems.
+- [Website Redesign](https://aromstudio.vercel.app/services/website-redesign): Modern upgrades for existing websites with performance and SEO improvements.
+- [SEO Optimization](https://aromstudio.vercel.app/services/seo-optimization): Technical and on-page SEO to improve search rankings and organic traffic.
+- [Performance Optimization](https://aromstudio.vercel.app/services/performance-optimization): Speed optimization targeting Lighthouse 95+ scores and Core Web Vitals.
+- [AI Integration](https://aromstudio.vercel.app/services/ai-integration): AI-powered features including chatbots, personalization, and smart search.
+
+## Plans
+
+- [Plans Overview](https://aromstudio.vercel.app/pricing): Transparent pricing from starter websites to enterprise solutions.
+
+## Company
+
+- [About](https://aromstudio.vercel.app/about): Learn about the founder, mission, and values.
+- [Contact](https://aromstudio.vercel.app/contact): Get in touch for project inquiries and consultations.
+- [FAQ](https://aromstudio.vercel.app/faq): Frequently asked questions about services, process, and support.
+
+## Legal
+
+- [Privacy Policy](https://aromstudio.vercel.app/privacy): How we collect, use, and protect your information.
+- [Terms & Conditions](https://aromstudio.vercel.app/terms): Terms governing the use of our services.
+- [Refund Policy](https://aromstudio.vercel.app/refund): Refund and cancellation terms for projects.
