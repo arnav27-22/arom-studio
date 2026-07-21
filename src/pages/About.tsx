@@ -66,11 +66,7 @@ export default function About() {
             <div className="glass rounded-[32px] p-8 md:p-12 lg:p-16 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-accent/5 rounded-full blur-[80px]" />
               <div className="relative z-10 flex flex-col lg:flex-row items-start gap-8 lg:gap-16">
-                <div className="shrink-0">
-                  <div className="w-28 h-28 md:w-36 md:h-36 rounded-full glass flex items-center justify-center">
-                    <span className="font-heading text-4xl md:text-5xl text-accent">AP</span>
-                  </div>
-                </div>
+
                 <div className="flex-1">
                   <span className="text-xs text-white/40 font-body uppercase tracking-[0.2em]">Founder & Solo Developer</span>
                   <h2 className="font-heading text-4xl md:text-5xl lg:text-6xl text-white tracking-[-1px] leading-none mt-2 mb-1">
