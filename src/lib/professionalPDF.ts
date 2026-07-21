@@ -237,22 +237,28 @@ export function writeSection(
   doc.setFontSize(9)
   doc.setTextColor(BRAND.mid.r, BRAND.mid.g, BRAND.mid.b)
 
+  const lineH = checkboxes ? 7 : 5
+
   for (const line of bodyLines) {
     if (line.startsWith('  -') || line.startsWith('  •')) {
       const text = line.trim().replace(/^[-•]\s*/, '').replace(/\*\*/g, '')
       const split = doc.splitTextToSize(text, layout.contentWidth - 25)
-      const totalNeeded = split.length * 5 + 2
+      const totalNeeded = split.length * lineH + 40
       y = checkPage(doc, y, totalNeeded)
       if (checkboxes) {
         doc.setDrawColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
         doc.setLineWidth(0.4)
         doc.rect(layout.marginLeft + 5, y - 1, 3.5, 3.5, 'S')
+        doc.setFontSize(7)
+        doc.setTextColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
+        doc.text('✓', layout.marginLeft + 5.8, y + 2.2)
         doc.setFontSize(9)
         doc.setTextColor(BRAND.mid.r, BRAND.mid.g, BRAND.mid.b)
         for (const s of split) {
           doc.text(s, layout.marginLeft + 12, y)
-          y += 5
+          y += lineH
         }
+        y += 34
       } else {
         doc.setFontSize(5)
         doc.setTextColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
@@ -261,7 +267,7 @@ export function writeSection(
         doc.setTextColor(BRAND.mid.r, BRAND.mid.g, BRAND.mid.b)
         for (const s of split) {
           doc.text(s, layout.marginLeft + 10, y)
-          y += 5
+          y += lineH
         }
       }
     } else if (line.startsWith('___')) {
@@ -272,19 +278,19 @@ export function writeSection(
       doc.line(layout.marginLeft, y, layout.marginLeft + layout.contentWidth, y)
       y += 4
     } else if (line === '') {
-      y += 3
+      y += 4
     } else {
       const clean = line.replace(/\*\*/g, '')
       const split = doc.splitTextToSize(clean, layout.contentWidth)
-      const totalNeeded = split.length * 5 + 2
+      const totalNeeded = split.length * lineH + 4
       y = checkPage(doc, y, totalNeeded)
       for (const s of split) {
         doc.text(s, layout.marginLeft, y)
-        y += 5
+        y += lineH
       }
     }
   }
-  y += 4
+  y += 6
   return y
 }
 
