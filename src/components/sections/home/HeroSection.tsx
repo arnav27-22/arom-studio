@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowUpRight, Play, Check, Shield, Zap, Globe } from 'lucide-react'
+import { ArrowUpRight, Check, Shield, Zap, Globe } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 function TypeWriter({ texts, typingSpeed = 80, deletingSpeed = 50, pauseDuration = 2000 }: { texts: string[]; typingSpeed?: number; deletingSpeed?: number; pauseDuration?: number }) {
@@ -70,7 +70,7 @@ function BlurText({ text, delay = 0 }: { text: string; delay?: number }) {
           className="inline-block"
           style={{ marginRight: '0.28em' }}
           initial={{ filter: 'blur(10px)', opacity: 0, y: 50 }}
-          animate={triggered ? { filter: ['blur(10px)', 'blur(5px)', 'blur(0px)'], opacity: [0, 0.5, 1], y: [50, -5, 0] } : {}}
+          animate={triggered ? { filter: ['blur(20px)', 'blur(8px)', 'blur(0px)'], opacity: [0, 0.5, 1], y: [50, -5, 0] } : {}}
           transition={{
             duration: 0.7,
             times: [0, 0.5, 1],
@@ -108,7 +108,7 @@ export function HeroSection() {
           initial={{ filter: 'blur(10px)', opacity: 0, y: 20 }}
           animate={{ filter: 'blur(0px)', opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.5, ease: 'easeOut' }}
-          className="flex flex-wrap items-center justify-center gap-2 mb-6"
+          className="flex items-center justify-center gap-3 mb-8"
         >
           {[
             { icon: <Check className="h-3 w-3" />, text: '3+ Years Experience' },
@@ -116,7 +116,7 @@ export function HeroSection() {
             { icon: <Zap className="h-3 w-3" />, text: 'Lighthouse 95+' },
             { icon: <Globe className="h-3 w-3" />, text: 'Custom Domain Setup' },
           ].map((badge) => (
-            <span key={badge.text} className="glass inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm text-white/60 font-body">
+            <span key={badge.text} className="glass inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs text-white/60 font-body whitespace-nowrap">
               <span className="text-accent">{badge.icon}</span>
               {badge.text}
             </span>
@@ -143,9 +143,9 @@ export function HeroSection() {
           initial={{ filter: 'blur(10px)', opacity: 0, y: 20 }}
           animate={{ filter: 'blur(0px)', opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.2, ease: 'easeOut' }}
-          className="mt-6 text-sm md:text-base text-white/70 max-w-xl font-body font-light leading-relaxed"
+          className="mt-6 text-sm md:text-base text-white/80 max-w-2xl font-body font-light leading-relaxed"
         >
-          We build high-performance websites and digital products for startups, growing businesses, and enterprises — combining exceptional design with engineering excellence. Backed by <span className="text-accent font-medium">3+ Years Experience</span> and <span className="text-accent font-medium">Free Domain</span>.
+          We build high-performance websites and digital products for startups, growing businesses, and enterprises — combining exceptional design with engineering excellence.
         </motion.p>
 
         {/* CTA Buttons */}
@@ -156,19 +156,20 @@ export function HeroSection() {
           className="flex flex-wrap items-center justify-center gap-4 mt-8"
         >
           <Link
+            to="/contact"
+            className="bg-accent/90 hover:bg-accent text-white text-sm md:text-base font-body font-semibold rounded-full px-7 py-3 md:px-9 md:py-3.5 inline-flex items-center gap-2 transition-all duration-300 hover:shadow-[0_0_30px_6px_rgba(78,133,191,0.45)] hover:scale-[1.03] active:scale-[0.97]"
+          >
+            Start Your Project
+            <ArrowUpRight className="h-4 w-4" />
+          </Link>
+          <Link
             to="/pricing"
             className="glass-strong text-sm md:text-base font-body font-medium text-white rounded-full px-6 py-3 md:px-8 md:py-3.5 inline-flex items-center gap-2 hover:shadow-[0_0_24px_4px_rgba(78,133,191,0.35)] transition-all duration-300 hover:scale-[1.03] active:scale-[0.97]"
           >
             View Plans
             <ArrowUpRight className="h-4 w-4" />
           </Link>
-          <Link
-            to="/contact"
-            className="text-sm md:text-base text-white/70 hover:text-white transition-colors duration-200 font-body font-light inline-flex items-center gap-2"
-          >
-            <Play className="h-4 w-4 fill-current" />
-            Start Your Project
-          </Link>
+          <span className="hidden sm:inline text-white/20 font-body font-light text-sm">|</span>
           <a
             href="https://forms.gle/fGwvkaTRdtb5ZH3x6"
             target="_blank"

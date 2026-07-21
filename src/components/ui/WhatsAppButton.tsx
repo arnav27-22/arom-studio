@@ -18,7 +18,7 @@ export function WhatsAppButton() {
       href={SOCIAL_LINKS.whatsapp}
       target="_blank"
       rel="noopener noreferrer"
-      className="fixed bottom-6 right-6 z-40 flex items-center gap-3 rounded-full bg-whatsapp text-white shadow-lg"
+      className="fixed bottom-6 right-4 md:right-8 z-40 flex items-center gap-3 rounded-full bg-whatsapp text-white shadow-lg"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       animate={{

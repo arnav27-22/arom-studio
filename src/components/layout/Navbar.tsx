@@ -38,14 +38,14 @@ export function Navbar() {
             )}
           >
             {/* Logo */}
-            <a href="/" onClick={handleLogoClick} className="flex items-center gap-2 px-3 cursor-pointer">
+            <a href="/" onClick={handleLogoClick} className="flex items-center gap-2 px-2 cursor-pointer">
               <span className="font-heading text-white text-lg md:text-xl tracking-tight">
                 AROM STUDIO
               </span>
             </a>
 
             {/* Desktop Nav */}
-            <div className="hidden md:flex items-center gap-1 ml-2">
+            <div className="hidden md:flex items-center gap-1">
               {NAV_LINKS.map((link) => (
                 <Link
                   key={link.href}
