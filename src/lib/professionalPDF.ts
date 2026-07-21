@@ -640,9 +640,7 @@ export function generateAgreementPDF(data: {
 
   // 4. Payment Terms
   y = writeSection(doc, y, '4. Payment Terms', [
-    `Payment schedule: ${data.advancePercentage || '27'}% Advance before project commencement.`,
-    `${Math.max(0, 100 - Number(data.advancePercentage || 27) - Number(data.finalPercentage || 50))}% Milestone payment upon design approval.`,
-    `${data.finalPercentage || '50'}% Final Payment before final website delivery or deployment.`,
+    `Payment schedule: ${data.advancePercentage || '27'}% Advance before project commencement, ${data.finalPercentage || '50'}% Final Payment before final website delivery or deployment.`,
     'Additional work requested after project approval will be charged separately.',
     'Payments are due within the agreed payment period.',
     'If payment is delayed by more than 7 days, AROM Studio may pause work until payment is received.',

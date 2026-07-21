@@ -46,21 +46,23 @@ const availableServices = [
   'CMS Integration', 'SEO Optimization', 'Website Deployment',
 ]
 
+function todayStr() { return new Date().toISOString().split('T')[0] }
+
 export default function Agreement() {
   const [clientName, setClientName] = useState('')
   const [clientAddress, setClientAddress] = useState('')
   const [clientEmail, setClientEmail] = useState('')
   const [clientPhone, setClientPhone] = useState('')
-  const [effectiveDate, setEffectiveDate] = useState(new Date().toISOString().split('T')[0])
   const [projectDescription, setProjectDescription] = useState('')
   const [timeline, setTimeline] = useState('4-6 Weeks')
   const [advancePct, setAdvancePct] = useState('50')
-  const [finalPct, setFinalPct] = useState('50')
   const [supportPeriod, setSupportPeriod] = useState<'7' | '15' | '30'>('30')
   const [selectedServices, setSelectedServices] = useState<string[]>([])
   const [checkedSections, setCheckedSections] = useState<Record<string, boolean>>({})
   const [declaration, setDeclaration] = useState(false)
   const [generated, setGenerated] = useState(false)
+
+  const finalPct = String(100 - Number(advancePct))
 
   const toggleService = (s: string) => {
     setSelectedServices((prev) => prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s])
@@ -80,7 +82,7 @@ export default function Agreement() {
       clientAddress,
       clientEmail,
       clientPhone,
-      effectiveDate,
+      effectiveDate: todayStr(),
       projectDescription,
       selectedServices,
       timeline,
@@ -91,9 +93,7 @@ export default function Agreement() {
     setGenerated(true)
   }
 
-  const effDateStr = effectiveDate
-    ? new Date(effectiveDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
-    : '_______________'
+  const effDateStr = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -113,7 +113,7 @@ export default function Agreement() {
             </div>
             <div>
               <label className="text-xs text-white/50 font-body mb-1 block">Effective Date</label>
-              <input type="date" value={effectiveDate} onChange={(e) => setEffectiveDate(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white focus:outline-none focus:border-accent/40 font-body" />
+              <div className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white/80 font-body">{new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
             </div>
             <div>
               <label className="text-xs text-white/50 font-body mb-1 block">Email</label>
@@ -162,7 +162,7 @@ export default function Agreement() {
             </div>
             <div>
               <label className="text-xs text-white/50 font-body mb-1 block">Final Payment (%)</label>
-              <input type="number" min={0} max={100} value={finalPct} onChange={(e) => setFinalPct(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white focus:outline-none focus:border-accent/40 font-body" />
+              <input type="number" min={0} max={100} value={finalPct} readOnly className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white/60 focus:outline-none font-body cursor-not-allowed" />
             </div>
           </div>
 
