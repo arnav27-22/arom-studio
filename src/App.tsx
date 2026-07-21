@@ -35,6 +35,7 @@ import Downloads from './pages/portal/Downloads'
 import Handover from './pages/portal/Handover'
 import Feedback from './pages/portal/Feedback'
 import Settings from './pages/portal/Settings'
+import Specification from './pages/portal/Specification'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -82,6 +83,7 @@ export default function App() {
             <Route path="handover" element={<Handover />} />
             <Route path="feedback" element={<Feedback />} />
             <Route path="settings" element={<Settings />} />
+            <Route path="specification" element={<Specification />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -22,6 +22,7 @@ const sidebarLinks = [
   { label: 'Handover', href: '/portal/handover', icon: Handshake },
   { label: 'Feedback', href: '/portal/feedback', icon: Star },
   { label: 'Settings', href: '/portal/settings', icon: Settings },
+  { label: 'Specification', href: '/portal/specification', icon: FileText },
 ]
 
 export default function ClientPortal() {
