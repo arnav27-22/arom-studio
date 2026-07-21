@@ -23,7 +23,7 @@ export default function Handover() {
   const [selectedDomain, setSelectedDomain] = useState(freeDomains[0].url)
 
   const handleDownloadPDF = () => {
-    const projectSlug = selectedDomain.match(/https:\/\/(.+?)\.(vercel|netlify|github)/)?.[1] || 'yoursite'
+    const projectSlug = selectedDomain.match(/https:\/\/(.+?)\.(vercel|netlify)/)?.[1] || 'yoursite'
     generateHandoverPDF({
       clientName: 'Client',
       projectName: 'Website Project',
@@ -41,21 +41,16 @@ export default function Handover() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <div className="flex flex-wrap items-start justify-between gap-4 mb-8">
-        <div>
-          <h1 className="font-heading text-3xl md:text-4xl text-white tracking-[-1px]">Website Handover</h1>
-          <p className="text-sm text-white/50 font-body font-light mt-1">All project details in one place. Estimated handover: 2-4 weeks from project start.</p>
-        </div>
-        <Button variant="secondary" size="sm" onClick={handleDownloadPDF}>
-          <Download className="h-4 w-4" /> Handover PDF
-        </Button>
+      <div className="mb-8">
+        <h1 className="font-heading text-3xl md:text-4xl text-white tracking-[-1px]">Website Handover</h1>
+        <p className="text-sm text-white/50 font-body font-light mt-1">All project details in one place. Estimated handover: 2-4 weeks from project start.</p>
       </div>
 
       {/* Free Domain Selection */}
       <div className="glass rounded-[24px] p-6 md:p-8 mb-6">
-        <h3 className="font-heading text-lg text-white mb-4">Free Domain (Subdomain)</h3>
+        <h3 className="font-heading text-lg text-white mb-4">Free Domain (Subdomain) for 1 year</h3>
         <p className="text-xs text-white/40 font-body mb-4">Choose a free subdomain for your staging or production site:</p>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {freeDomains.map((d) => (
             <button
               key={d.url}
@@ -76,7 +71,7 @@ export default function Handover() {
             </button>
           ))}
         </div>
-        <p className="text-[10px] text-white/30 font-body mt-3">You can also use a custom domain (e.g., yoursite.com) — just provide the domain details.</p>
+        <p className="text-[10px] text-white/30 font-body mt-3">Free for 1 year. You can also use a custom domain (e.g., yoursite.com) — just provide the domain details.</p>
       </div>
 
       {/* Hosting Provider Selection */}
@@ -103,6 +98,13 @@ export default function Handover() {
             </button>
           ))}
         </div>
+      </div>
+
+      {/* Handover PDF Button */}
+      <div className="mb-6">
+        <Button variant="secondary" size="lg" onClick={handleDownloadPDF} className="w-full">
+          <Download className="h-4 w-4" /> Handover PDF
+        </Button>
       </div>
 
       {/* Handover Details Cards */}
@@ -160,15 +162,6 @@ export default function Handover() {
             </motion.div>
           )
         })}
-      </div>
-
-      <div className="flex flex-wrap gap-3">
-        <Button variant="secondary" size="sm">
-          <Download className="h-4 w-4" /> Download Source ZIP
-        </Button>
-        <Button variant="secondary" size="sm">
-          <Download className="h-4 w-4" /> Download User Guide
-        </Button>
       </div>
     </div>
   )
