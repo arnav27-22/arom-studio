@@ -56,10 +56,10 @@ export default function ServiceDetail() {
                 </span>
               )}
 
-              <p className="text-base text-white/75 font-body font-light leading-relaxed mb-6">{service.description}</p>
+              <p className="text-base text-white/60 font-body font-light leading-relaxed mb-6">{service.description}</p>
 
               {service.longDescription && (
-                <p className="text-sm text-white/70 font-body font-light leading-relaxed mb-6">{service.longDescription}</p>
+                <p className="text-sm text-white/50 font-body font-light leading-relaxed mb-6">{service.longDescription}</p>
               )}
 
               {service.techTags && (
@@ -89,7 +89,7 @@ export default function ServiceDetail() {
               </div>
               <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {service.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2 text-sm md:text-base text-white/85 font-body font-light">
+                  <li key={f} className="flex items-start gap-2 text-sm md:text-base text-white/65 font-body font-light">
                     <Check className="h-4 w-4 text-accent shrink-0 mt-0.5" /> {f}
                   </li>
                 ))}
@@ -109,7 +109,7 @@ export default function ServiceDetail() {
                 <span className="font-heading text-3xl text-accent shrink-0 w-10">{String(step.step).padStart(2, '0')}</span>
                 <div>
                   <h3 className="font-heading text-xl text-white mb-1">{step.title}</h3>
-                  <p className="text-sm md:text-base text-white/75 font-body font-light">{step.description}</p>
+                  <p className="text-sm md:text-base text-white/55 font-body font-light">{step.description}</p>
                 </div>
               </GlassCard>
             ))}
@@ -144,7 +144,7 @@ export default function ServiceDetail() {
                   >
                     <div className="px-5 md:px-6 pb-5 md:pb-6 pt-3">
                       <div className="w-8 h-[1.5px] bg-accent/30 mb-3" />
-                      <p className="text-sm text-white/75 font-body font-light leading-relaxed">{faq.answer}</p>
+                      <p className="text-sm text-white/55 font-body font-light leading-relaxed">{faq.answer}</p>
                     </div>
                   </div>
                 </div>

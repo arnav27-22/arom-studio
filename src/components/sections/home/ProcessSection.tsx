@@ -46,7 +46,7 @@ export function ProcessSection() {
                   </h3>
                   <span className="text-[10px] text-accent/80 font-body font-medium whitespace-nowrap ml-2 mt-1">{step.time}</span>
                 </div>
-                <p className="text-sm md:text-base text-white/75 font-body font-light leading-relaxed flex-1">
+                <p className="text-sm md:text-base text-white/55 font-body font-light leading-relaxed flex-1">
                   {step.description}
                 </p>
               </div>

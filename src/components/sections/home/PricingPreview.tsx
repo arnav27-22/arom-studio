@@ -32,12 +32,12 @@ export function PricingPreview() {
                 )}
                 <div className="mb-5">
                   <h3 className="font-heading text-2xl text-white mb-1">{plan.name}</h3>
-                  <p className="text-xs text-white/70 font-body mt-2">{plan.description}</p>
+                  <p className="text-xs text-white/50 font-body mt-2">{plan.description}</p>
                 </div>
 
                 <ul className="space-y-2.5 flex-1 mb-6">
                   {plan.features.slice(0, 5).map((f) => (
-                    <li key={f} className="flex items-start gap-2 text-sm text-white/85 font-body font-light">
+                    <li key={f} className="flex items-start gap-2 text-sm text-white/65 font-body font-light">
                       <Check className="h-4 w-4 text-accent shrink-0 mt-0.5" />
                       {f}
                     </li>
@@ -60,7 +60,7 @@ export function PricingPreview() {
         </div>
 
         <FadeIn delay={0.3} className="text-center mt-10">
-          <p className="text-sm text-white/60 font-body mb-4">Need a custom solution? Let&apos;s discuss your project.</p>
+          <p className="text-sm text-white/40 font-body mb-4">Need a custom solution? Let&apos;s discuss your project.</p>
           <Link
             to="/contact"
             className="glass inline-flex items-center gap-2 text-sm font-body font-medium text-white rounded-full px-6 py-3 transition-all duration-300 hover:scale-[1.02]"

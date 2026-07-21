@@ -81,7 +81,7 @@ export function SectionHeader({ badge, title, highlightWord, description, align 
       </HeadingTag>
       {description && (
         <p
-          className="mt-6 text-base md:text-lg text-white/85 font-body font-light leading-relaxed"
+          className="mt-6 text-base md:text-lg text-white/65 font-body font-light leading-relaxed"
           style={{
             opacity: isInView ? 1 : 0,
             transform: isInView ? 'translateY(0)' : 'translateY(20px)',

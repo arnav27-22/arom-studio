@@ -47,10 +47,10 @@ export function HeroSection() {
           transition={{ duration: 0.8, delay: 0.6, ease: 'easeOut' }}
           className="font-heading text-[clamp(32px,7vw,80px)] text-white leading-[0.85] tracking-[-1.5px] max-w-4xl"
         >
-          High-Performance{' '}
-          <span className="text-accent">Websites</span>
+          We Build{' '}
+          <span className="text-accent">Business Websites</span>
           <div className="h-2" />
-          <span className="text-[clamp(28px,6vw,70px)] text-white/80">That Grow Your Business</span>
+          <span className="text-[clamp(28px,6vw,70px)] text-white/80">That Grow Businesses</span>
         </motion.h1>
 
         {/* Subheading */}

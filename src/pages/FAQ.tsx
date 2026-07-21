@@ -93,7 +93,7 @@ export default function FAQ() {
                 >
                   <div className="px-5 md:px-6 pb-5 md:pb-6 pt-0">
                     <div className="w-8 h-[1.5px] bg-accent/30 mb-4" />
-                    <p className="text-sm text-white/75 font-body font-light leading-relaxed">
+                    <p className="text-sm text-white/55 font-body font-light leading-relaxed">
                       {faq.answer}
                     </p>
                   </div>

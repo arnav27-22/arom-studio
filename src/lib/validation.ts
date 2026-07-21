@@ -25,12 +25,16 @@ export function validateName(name: string): boolean {
 export interface ValidationErrors {
   name?: string
   email?: string
+  phone?: string
+  service?: string
   message?: string
 }
 
 export function validateContactForm(data: {
   name: string
   email: string
+  phone: string
+  service: string
   message: string
 }): ValidationErrors {
   const errors: ValidationErrors = {}
@@ -45,6 +49,14 @@ export function validateContactForm(data: {
     errors.email = 'Email is required'
   } else if (!validateEmail(data.email)) {
     errors.email = 'Please enter a valid email'
+  }
+
+  if (data.phone && !validatePhone(data.phone)) {
+    errors.phone = 'Please enter a valid phone number'
+  }
+
+  if (!validateRequired(data.service)) {
+    errors.service = 'Please select a service'
   }
 
   if (!validateRequired(data.message)) {

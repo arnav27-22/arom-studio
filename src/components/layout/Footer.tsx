@@ -40,7 +40,7 @@ export function Footer() {
             <Link to="/" className="inline-flex items-center gap-2 mb-4">
               <span className="font-heading text-white text-xl">AROM STUDIO</span>
             </Link>
-            <p className="text-sm text-white/70 font-body font-light leading-relaxed max-w-xs">
+            <p className="text-sm text-white/50 font-body font-light leading-relaxed max-w-xs">
               Crafting premium digital experiences for ambitious businesses. Based in India, serving globally.
             </p>
             <div className="flex items-center gap-3 mt-6">
@@ -90,7 +90,7 @@ export function Footer() {
                   <li key={link.href}>
                     <Link
                       to={link.href}
-                      className="text-sm text-white/70 hover:text-white transition-colors duration-200 font-body font-light"
+                      className="text-sm text-white/60 hover:text-white transition-colors duration-200 font-body font-light"
                     >
                       {link.label}
                     </Link>
@@ -113,7 +113,7 @@ export function Footer() {
               <li>
                 <a
                   href={SOCIAL_LINKS.email}
-                  className="text-sm text-white/70 hover:text-white transition-colors duration-200 font-body font-light"
+                  className="text-sm text-white/60 hover:text-white transition-colors duration-200 font-body font-light"
                 >
                   aromstudio27@gmail.com
                 </a>
@@ -123,7 +123,7 @@ export function Footer() {
                   href={SOCIAL_LINKS.whatsapp}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm text-white/70 hover:text-whatsapp transition-colors duration-200 font-body font-light inline-flex items-center gap-1"
+                  className="text-sm text-white/60 hover:text-whatsapp transition-colors duration-200 font-body font-light inline-flex items-center gap-1"
                 >
                   WhatsApp
                   <ArrowUpRight className="h-3 w-3" />

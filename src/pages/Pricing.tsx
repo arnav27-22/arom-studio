@@ -73,10 +73,10 @@ export default function Pricing() {
                     </span>
                   )}
                   <h3 className="font-heading text-2xl text-white mb-4">{plan.name}</h3>
-                  <p className="text-xs text-white/70 font-body mb-5">{plan.description}</p>
+                  <p className="text-xs text-white/50 font-body mb-5">{plan.description}</p>
                   <ul className="space-y-2.5 flex-1 mb-4">
                     {plan.features.map((f) => (
-                      <li key={f} className="flex items-start gap-2 text-sm md:text-base text-white/85 font-body font-light">
+                      <li key={f} className="flex items-start gap-2 text-sm md:text-base text-white/65 font-body font-light">
                         <Check className="h-4 w-4 text-accent shrink-0 mt-0.5" /> {f}
                       </li>
                     ))}
@@ -103,10 +103,10 @@ export default function Pricing() {
               {plans.slice(3).map((plan) => (
                 <GlassCard key={plan.name} className="flex flex-col border border-accent/20">
                   <h3 className="font-heading text-2xl text-white mb-4">{plan.name}</h3>
-                  <p className="text-xs text-white/70 font-body mb-5">{plan.description}</p>
+                  <p className="text-xs text-white/50 font-body mb-5">{plan.description}</p>
                   <ul className="grid grid-cols-2 gap-2.5 flex-1 mb-4">
                     {plan.features.map((f) => (
-                      <li key={f} className="flex items-start gap-2 text-sm md:text-base text-white/85 font-body font-light">
+                      <li key={f} className="flex items-start gap-2 text-sm md:text-base text-white/65 font-body font-light">
                         <Check className="h-4 w-4 text-accent shrink-0 mt-0.5" /> {f}
                       </li>
                     ))}
@@ -141,7 +141,7 @@ export default function Pricing() {
                 <tbody>
                   {comparisonFeatures.map((feature) => (
                     <tr key={feature.name} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
-                      <td className="py-3.5 pr-8 text-white/75 font-light text-sm">{feature.name}</td>
+                      <td className="py-3.5 pr-8 text-white/60 font-light text-sm">{feature.name}</td>
                       {feature.tiers.map((has, i) => (
                         <td key={i} className="text-center py-3.5 px-3">
                           {has ? (
@@ -180,7 +180,7 @@ export default function Pricing() {
             ].map((addon) => (
               <GlassCard key={addon.title} className="flex flex-col">
                 <h3 className="font-heading text-xl text-white mb-1">{addon.title}</h3>
-                <p className="text-xs text-white/75 font-body font-light flex-1 mb-4">{addon.desc}</p>
+                <p className="text-xs text-white/55 font-body font-light flex-1 mb-4">{addon.desc}</p>
                 <Link
                   to="/contact"
                   className="mt-auto text-xs text-accent font-body font-medium inline-flex items-center gap-1 hover:gap-2 transition-all"
