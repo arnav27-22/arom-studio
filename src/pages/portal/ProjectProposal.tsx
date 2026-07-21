@@ -1,8 +1,6 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
-import { Check, ArrowRight, Calendar, DollarSign, Shield, Clock, FileText, Star, Download, Edit, Plus, X } from 'lucide-react'
+import { Download, Edit, Plus, X } from 'lucide-react'
 import { GlassCard } from '../../components/ui/GlassCard'
-import { FadeIn } from '../../components/motion/FadeIn'
 import Button from '../../components/ui/Button'
 import { generateProposalPDF } from '../../lib/professionalPDF'
 
@@ -108,7 +106,6 @@ export default function ProjectProposal() {
   const [data, setData] = useState<ProposalData>(defaultData)
   const [showEdit, setShowEdit] = useState(false)
   const [newItem, setNewItem] = useState('')
-  const [editingList, setEditingList] = useState<'objectives' | 'scope' | 'deliverables' | 'assumptions' | 'exclusions' | null>(null)
 
   const update = (field: keyof ProposalData, value: any) => setData((p) => ({ ...p, [field]: value }))
 

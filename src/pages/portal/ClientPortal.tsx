@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  LayoutDashboard, Upload, FileText, Clock, Palette, RefreshCw,
+  LayoutDashboard, Upload, Clock, Palette, RefreshCw,
   Download, Handshake, ChevronLeft, ChevronRight, Menu, X,
   PenSquare, FileCheck, ScrollText
 } from 'lucide-react'
