@@ -18,6 +18,7 @@ import Terms from './pages/Terms'
 import Refund from './pages/Refund'
 import Brand from './pages/Brand'
 import NotFound from './pages/NotFound'
+import ClayDashboard from './pages/ClayDashboard'
 import Inquiry from './pages/pre-portal/Inquiry'
 import Questionnaire from './pages/pre-portal/Questionnaire'
 import Proposal from './pages/pre-portal/Proposal'
@@ -45,13 +46,14 @@ function ScrollToTop() {
 }
 
 export default function App() {
+  const location = useLocation()
+  const isClay = location.pathname === '/2722'
+
   return (
     <>
       <ScrollToTop />
-      <div className="min-h-screen bg-bg text-white font-body overflow-x-hidden relative">
-        <SiteBackground />
-        <Particles quantity={55} color="#4e85bf" size={1.2} vx={0.03} vy={0.03} />
-        <Navbar />
+      <div className={isClay ? '' : 'min-h-screen bg-bg text-white font-body overflow-x-hidden relative'}>
+        {!isClay && <><SiteBackground /><Particles quantity={55} color="#4e85bf" size={1.2} vx={0.03} vy={0.03} /><Navbar /></>}
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/services" element={<Services />} />
@@ -65,6 +67,7 @@ export default function App() {
           <Route path="/terms" element={<Terms />} />
           <Route path="/refund" element={<Refund />} />
           <Route path="/brand" element={<Brand />} />
+          <Route path="/2722" element={<ClayDashboard />} />
           <Route path="/inquiry" element={<Inquiry />} />
           <Route path="/questionnaire" element={<Questionnaire />} />
           <Route path="/proposal" element={<Proposal />} />
@@ -85,8 +88,7 @@ export default function App() {
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
-        <Footer />
-        <WhatsAppButton />
+        {!isClay && <><Footer /><WhatsAppButton /></>}
       </div>
     </>
   )

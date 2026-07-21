@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Send, CheckCircle2, ArrowRight, Building2, Mail, Phone, User } from 'lucide-react'
+import { Send, CheckCircle2, ArrowRight, User, Mail, Phone, Building2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { Section, Container, SectionHeader } from '../../components/ui/Section'
+import { Section, Container } from '../../components/ui/Section'
 import { SEO } from '../../components/ui/SEO'
 import Button from '../../components/ui/Button'
 import emailjs from '@emailjs/browser'
@@ -94,54 +94,58 @@ export default function Inquiry() {
 
   return (
     <main>
-      <SEO title="Start Your Project" description="Tell us about your project and get a custom proposal from AROM STUDIO." />
-      <Section>
+      <SEO title="Client Inquiry" description="Submit your project inquiry to AROM STUDIO." />
+      <Section className="pt-28">
         <Container>
-          <SectionHeader badge="Get Started" title="Tell Us About Your" highlightWord="Project" description="Fill out the form below and we'll respond with a custom proposal within 24 hours." headingLevel="h1" />
+          <div className="max-w-2xl mx-auto mb-8">
+            <span className="text-xs text-accent font-body uppercase tracking-[0.2em]">Client Portal</span>
+            <h1 className="font-heading text-4xl md:text-5xl text-white leading-[0.9] tracking-[-1px] mt-3">
+              Client <span className="text-accent">Inquiry</span>
+            </h1>
+          </div>
 
           <motion.form initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} onSubmit={handleSubmit} className="max-w-2xl mx-auto glass rounded-[32px] p-8 md:p-10">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
-                <label className="text-sm text-white/70 font-body block mb-1.5"><User className="h-3.5 w-3.5 inline mr-1.5" />Name *</label>
-                <input value={form.name} onChange={(e) => update('name', e.target.value)} placeholder="Your name" required className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-accent/40 font-body" />
+                <label className="text-xs text-white/50 font-body mb-2 block"><User className="h-3 w-3 inline mr-1" /> Name *</label>
+                <input value={form.name} onChange={(e) => update('name', e.target.value)} placeholder="Your name" required className="w-full bg-white/5 border border-white/10 rounded-[18px] px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-accent/50 font-body" />
               </div>
               <div>
-                <label className="text-sm text-white/70 font-body block mb-1.5"><Mail className="h-3.5 w-3.5 inline mr-1.5" />Email *</label>
-                <input type="email" value={form.email} onChange={(e) => update('email', e.target.value)} placeholder="you@email.com" required className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-accent/40 font-body" />
-              </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <div>
-                <label className="text-sm text-white/70 font-body block mb-1.5"><Phone className="h-3.5 w-3.5 inline mr-1.5" />Phone</label>
-                <input value={form.phone} onChange={(e) => update('phone', e.target.value)} placeholder="+91 98765 43210" className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-accent/40 font-body" />
-              </div>
-              <div>
-                <label className="text-sm text-white/70 font-body block mb-1.5"><Building2 className="h-3.5 w-3.5 inline mr-1.5" />Company</label>
-                <input value={form.company} onChange={(e) => update('company', e.target.value)} placeholder="Your company name" className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-accent/40 font-body" />
+                <label className="text-xs text-white/50 font-body mb-2 block"><Mail className="h-3 w-3 inline mr-1" /> Email *</label>
+                <input type="email" value={form.email} onChange={(e) => update('email', e.target.value)} placeholder="you@email.com" required className="w-full bg-white/5 border border-white/10 rounded-[18px] px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-accent/50 font-body" />
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
-                <label className="text-sm text-white/70 font-body block mb-1.5">Project Type *</label>
-                <select value={form.projectType} onChange={(e) => update('projectType', e.target.value)} required className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white focus:outline-none focus:border-accent/40 font-body appearance-none">
-                  <option value="" disabled>Select type</option>
-                  {projectTypes.map((t) => <option key={t} value={t}>{t}</option>)}
+                <label className="text-xs text-white/50 font-body mb-2 block"><Phone className="h-3 w-3 inline mr-1" /> Phone</label>
+                <input value={form.phone} onChange={(e) => update('phone', e.target.value)} placeholder="+91 98765 43210" className="w-full bg-white/5 border border-white/10 rounded-[18px] px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-accent/50 font-body" />
+              </div>
+              <div>
+                <label className="text-xs text-white/50 font-body mb-2 block"><Building2 className="h-3 w-3 inline mr-1" /> Company</label>
+                <input value={form.company} onChange={(e) => update('company', e.target.value)} placeholder="Your company name" className="w-full bg-white/5 border border-white/10 rounded-[18px] px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-accent/50 font-body" />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label className="text-xs text-white/50 font-body mb-2 block">Project Type *</label>
+                <select value={form.projectType} onChange={(e) => update('projectType', e.target.value)} required className="w-full bg-white/5 border border-white/10 rounded-[18px] px-4 py-3 text-sm text-white focus:outline-none focus:border-accent/50 font-body appearance-none">
+                  <option value="" className="bg-bg">Select type</option>
+                  {projectTypes.map((t) => <option key={t} className="bg-bg" value={t}>{t}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-sm text-white/70 font-body block mb-1.5">Budget Range</label>
-                <select value={form.budget} onChange={(e) => update('budget', e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white focus:outline-none focus:border-accent/40 font-body appearance-none">
-                  <option value="" disabled>Select range</option>
-                  {budgetRanges.map((b) => <option key={b} value={b}>{b}</option>)}
+                <label className="text-xs text-white/50 font-body mb-2 block">Budget Range</label>
+                <select value={form.budget} onChange={(e) => update('budget', e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-[18px] px-4 py-3 text-sm text-white focus:outline-none focus:border-accent/50 font-body appearance-none">
+                  <option value="" className="bg-bg">Select range</option>
+                  {budgetRanges.map((b) => <option key={b} className="bg-bg" value={b}>{b}</option>)}
                 </select>
               </div>
             </div>
             <div className="mb-6">
-              <label className="text-sm text-white/70 font-body block mb-1.5">Project Description *</label>
-              <textarea value={form.description} onChange={(e) => update('description', e.target.value)} placeholder="Tell us about your project — goals, features, timeline, and anything else we should know." rows={5} required className="w-full bg-white/5 border border-white/10 rounded-[20px] px-5 py-4 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-accent/40 font-body resize-y" />
+              <label className="text-xs text-white/50 font-body mb-2 block">Project Description *</label>
+              <textarea value={form.description} onChange={(e) => update('description', e.target.value)} placeholder="Tell us about your project — goals, features, timeline, and anything else we should know." rows={5} required className="w-full bg-white/5 border border-white/10 rounded-[18px] px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-accent/50 font-body resize-none" />
             </div>
             <Button type="submit" variant="secondary" size="lg" isLoading={sending} className="w-full"><Send className="h-4 w-4" /> {sending ? 'Sending...' : 'Submit Inquiry'}</Button>
-            <p className="text-[10px] text-white/30 font-body text-center mt-4">We respect your privacy. Your information will never be shared.</p>
           </motion.form>
         </Container>
       </Section>
