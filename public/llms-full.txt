@@ -113,19 +113,19 @@ Source: https://aromstudio.vercel.app/services/ai-integration
 
 ## Pricing Plans
 
-### Starter Website — ₹12,000+
+### Starter Website — $180+
 Perfect for small businesses and personal brands. Includes 1-page or 5-page website, responsive design, basic SEO setup, contact form integration, social media links, Google Analytics setup, basic performance optimization, and 1 Year Support.
 
-### Professional Website — ₹25,000+ (Most Popular)
+### Professional Website — $380+ (Most Popular)
 For growing businesses. Includes up to 10 pages, custom UI/UX design, premium typography and branding, SEO optimization (on-page), blog/news section, contact and inquiry forms, WhatsApp integration, performance optimization, 1 Year Support, and Free Domain (1 Year, T&C apply).
 
-### Business Website — ₹45,000+
+### Business Website — $680+
 For established businesses. Includes up to 20 pages, custom premium design system, advanced SEO strategy, CMS integration, e-commerce or booking system, API integrations, custom animations and interactions, advanced performance optimization, 1 Year Support, Free Domain (1 Year, T&C apply), and custom domain setup.
 
-### Premium Website — ₹75,000+
+### Premium Website — $1,140+
 For enterprises and brands. Includes unlimited pages, full custom design and branding, advanced animations (GSAP/Framer), complete SEO package, custom web application features, third-party API integrations, AI-powered features (optional), Lighthouse 95+ performance, 1 Year Support, Free Domain (1 Year, T&C apply), and custom domain setup.
 
-### Enterprise Solution — ₹1,00,000+
+### Enterprise Solution — $1,500+
 For large-scale projects. Includes custom scope and architecture, full-stack development, scalable infrastructure, advanced security implementation, dedicated project manager, ongoing maintenance and support, SLA-backed support, priority response time, long-term partnership, 1 Year Support, Free Domain (1 Year, T&C apply), custom domain setup, team training session, and monthly performance reports.
 
 Source: https://aromstudio.vercel.app/pricing
@@ -170,7 +170,7 @@ Source: https://aromstudio.vercel.app/
 - **Can you redesign an existing website?** Yes.
 
 ### Investment
-- **How much does a website cost?** Plans start from ₹12,000. Contact for a detailed quote.
+- **How much does a website cost?** Plans start from $180. Contact for a detailed quote.
 - **Is there a payment plan?** Yes — typically 50% upfront and 50% on completion.
 
 ### Process

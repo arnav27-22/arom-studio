@@ -19,7 +19,7 @@ About AROM STUDIO — Founder, Mission & Values | Arnav Pagare
 
 ### Pricing
 ```
-Pricing & Plans — AROM STUDIO | Premium Websites from ₹12,000
+Pricing & Plans — AROM STUDIO | Premium Websites from $180
 ```
 
 ### Contact
@@ -76,7 +76,7 @@ Explore AROM STUDIO's full range of web design and development services. Custom 
 
 ### Pricing
 ```
-Transparent pricing from AROM STUDIO. Starter websites from ₹12,000 to enterprise solutions. All plans include 1 Year Support and Free Domain. No hidden fees.
+Transparent pricing from AROM STUDIO. Starter websites from $180 to enterprise solutions. All plans include 1 Year Support and Free Domain. No hidden fees.
 ```
 
 ### Contact

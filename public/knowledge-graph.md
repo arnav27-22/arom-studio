@@ -80,7 +80,7 @@ Startups, Small and Medium Businesses (SMEs), Creators, Freelancers, Agencies, P
 - Modern tech stack (Next.js/React/TypeScript — not outdated CMS)
 - Performance obsession (Lighthouse 95+ target on every project)
 - 1 Year Support included with every project
-- Transparent pricing from ₹12,000
+- Transparent pricing from $180
 - Based in Nashik, serving all India
 - WCAG 2.2 AA accessibility compliance
 

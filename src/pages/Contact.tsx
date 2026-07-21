@@ -213,10 +213,10 @@ export default function Contact() {
                           className="w-full bg-white/5 border border-white/10 rounded-[18px] px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-accent/50 transition-colors font-body appearance-none"
                         >
                           <option value="" className="bg-bg">Select budget range</option>
-                          <option value="12000-25000" className="bg-bg">₹12,000 - ₹25,000</option>
-                          <option value="25000-45000" className="bg-bg">₹25,000 - ₹45,000</option>
-                          <option value="45000-75000" className="bg-bg">₹45,000 - ₹75,000</option>
-                          <option value="75000-plus" className="bg-bg">₹75,000+</option>
+                          <option value="180-380" className="bg-bg">$180 - $380</option>
+                          <option value="380-680" className="bg-bg">$380 - $680</option>
+                          <option value="680-1140" className="bg-bg">$680 - $1,140</option>
+                          <option value="1140-plus" className="bg-bg">$1,140+</option>
                           <option value="custom" className="bg-bg">Custom / Enterprise</option>
                         </select>
                         {formData.budget === 'custom' && (

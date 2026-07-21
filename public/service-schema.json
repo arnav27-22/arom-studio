@@ -11,8 +11,8 @@
       "areaServed": { "@type": "Country", "name": "India" },
       "offers": {
         "@type": "Offer",
-        "price": "12000",
-        "priceCurrency": "INR",
+        "price": "180",
+        "priceCurrency": "USD",
         "priceValidUntil": "2027-12-31"
       },
       "url": "https://aromstudio.vercel.app/services/business-websites"
@@ -27,8 +27,8 @@
       "areaServed": { "@type": "Country", "name": "India" },
       "offers": {
         "@type": "Offer",
-        "price": "25000",
-        "priceCurrency": "INR",
+        "price": "380",
+        "priceCurrency": "USD",
         "priceValidUntil": "2027-12-31"
       },
       "url": "https://aromstudio.vercel.app/services/ecommerce"

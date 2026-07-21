@@ -17,7 +17,7 @@ Key facts:
 - Target Lighthouse score: 95+
 - Support: 1 Year included with every project
 - Accessibility: WCAG 2.2 AA compliance
-- Pricing starts from ₹12,000
+- Pricing starts from $180
 
 ## Founder
 
@@ -28,8 +28,8 @@ Key facts:
 
 ## Services
 
-- [Business Websites](https://aromstudio.vercel.app/services/business-websites) — Custom business websites with CMS integration and SEO optimization. From ₹12,000.
-- [E-commerce Websites](https://aromstudio.vercel.app/services/ecommerce) — Scalable online stores with payment integration and inventory management. From ₹25,000.
+- [Business Websites](https://aromstudio.vercel.app/services/business-websites) — Custom business websites with CMS integration and SEO optimization. From $180.
+- [E-commerce Websites](https://aromstudio.vercel.app/services/ecommerce) — Scalable online stores with payment integration and inventory management. From $380.
 - [Web Applications](https://aromstudio.vercel.app/services/web-applications) — Tailored full-stack applications with database design and cloud deployment.
 - [SaaS Platforms](https://aromstudio.vercel.app/services/saas-platforms) — Multi-tenant platforms with subscription billing and scalable infrastructure.
 - [UI/UX Design](https://aromstudio.vercel.app/services/ui-ux-design) — User-centered design with research, prototyping, and design systems.
@@ -51,7 +51,7 @@ Key facts:
 
 - [Homepage](https://aromstudio.vercel.app/) — Agency overview and portfolio preview
 - [Services](https://aromstudio.vercel.app/services) — All service offerings
-- [Pricing](https://aromstudio.vercel.app/pricing) — Transparent pricing from ₹12,000
+- [Pricing](https://aromstudio.vercel.app/pricing) — Transparent pricing from $180
 - [About](https://aromstudio.vercel.app/about) — Founder story, mission, and values
 - [Contact](https://aromstudio.vercel.app/contact) — Get in touch for project inquiries
 - [FAQ](https://aromstudio.vercel.app/faq) — Frequently asked questions
@@ -79,11 +79,11 @@ Typical timeline: 3-8 weeks.
 
 ## Pricing
 
-- Starter Website: ₹12,000+ — 1-5 pages, responsive, basic SEO
-- Professional Website: ₹25,000+ — Up to 10 pages, custom design, SEO, 1 Year Support, Free Domain
-- Business Website: ₹45,000+ — Up to 20 pages, premium design, advanced SEO, CMS
-- Premium Website: ₹75,000+ — Unlimited pages, full custom branding, advanced features
-- Enterprise Solution: ₹1,00,000+ — Custom scope, full-stack, dedicated support
+- Starter Website: $180+ — 1-5 pages, responsive, basic SEO
+- Professional Website: $380+ — Up to 10 pages, custom design, SEO, 1 Year Support, Free Domain
+- Business Website: $680+ — Up to 20 pages, premium design, advanced SEO, CMS
+- Premium Website: $1,140+ — Unlimited pages, full custom branding, advanced features
+- Enterprise Solution: $1,500+ — Custom scope, full-stack, dedicated support
 
 ## Contact
 
