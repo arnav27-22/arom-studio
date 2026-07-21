@@ -20,6 +20,10 @@ const footerLinks = {
     { label: 'About', href: '/about' },
     { label: 'Plans', href: '/pricing' },
     { label: 'FAQ', href: '/faq' },
+    { label: 'Start Project', href: '/inquiry' },
+    { label: 'Questionnaire', href: '/questionnaire' },
+    { label: 'Proposal', href: '/proposal' },
+    { label: 'Client Portal', href: '/portal/dashboard' },
   ],
   Legal: [
     { label: 'Privacy Policy', href: '/privacy' },
