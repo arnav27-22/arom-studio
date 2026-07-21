@@ -1,32 +1,50 @@
-# React + TypeScript + Vite
+# 🚀 Introducing AROM STUDIO
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Welcome to **AROM STUDIO**, a modern **Web Design & Development Agency** founded by **Arnav Pagare**.
 
-Currently, two official plugins are available:
+🌐 **Official Website:** https://aromstudio.vercel.app
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+At AROM STUDIO, we build premium digital experiences that help startups, businesses, creators, freelancers, and brands establish a powerful online presence.
 
-## React Compiler
+## 💼 What We Do
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Custom Website Development
+- Modern UI/UX Design
+- Business Websites
+- Portfolio Websites
+- Landing Pages
+- E-commerce Websites
+- Web Applications
+- SaaS Development
+- Website Redesign
+- SEO Optimization
+- Performance Optimization
+- Website Maintenance
 
-## Expanding the Oxlint configuration
+## ⚙️ Technologies We Use
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+React • Next.js • TypeScript • Tailwind CSS • Node.js • Firebase • Supabase • Vercel • Cloudflare • HTML • CSS • JavaScript
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
-```
+## 🎯 Our Mission
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Our mission is to create fast, modern, scalable, SEO-friendly, and user-focused websites that help businesses grow and stand out online.
+
+## 🌍 Official Links
+
+🌐 Website: https://aromstudio.vercel.app
+
+📸 Instagram: https://www.instagram.com/aromstudio.web/
+
+📧 Email: aromstudio27@gmail.com
+
+## 📢 About AROM STUDIO
+
+**AROM STUDIO** is an independent web design and development agency founded by **Arnav Pagare**. We specialize in creating premium websites and custom digital solutions with a strong focus on performance, user experience, accessibility, and modern technologies.
+
+If you are searching for **AROM STUDIO**, **Arom Studio**, **Arnav Pagare**, **AROM STUDIO Web Design Agency**, or **AROM STUDIO Web Development**, this is the official business and brand.
+
+We are continuously expanding our portfolio and helping clients transform ideas into high-quality digital products.
+
+Thank you for visiting and supporting AROM STUDIO. 🚀
+
+AROMSTUDIO • AromStudio • ArnavPagare • WebDesign • WebDevelopment • ReactJS • NextJS • TailwindCSS • TypeScript • JavaScript • UIUX • Startup • DigitalAgency • India
