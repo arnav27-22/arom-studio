@@ -89,7 +89,7 @@ export function VideoBackground() {
         muted
         loop={false}
         playsInline
-        className="absolute inset-0 w-full h-full object-cover translate-y-[17%]"
+        className="absolute inset-0 w-full h-full object-cover object-center sm:object-[center_17%]"
         src={VIDEO_URL}
       />
       <div className="absolute inset-0 bg-black/40" />

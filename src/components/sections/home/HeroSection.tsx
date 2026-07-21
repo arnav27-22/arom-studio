@@ -108,7 +108,7 @@ export function HeroSection() {
           initial={{ filter: 'blur(10px)', opacity: 0, y: 20 }}
           animate={{ filter: 'blur(0px)', opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.5, ease: 'easeOut' }}
-          className="flex items-center justify-center gap-3 mb-8"
+          className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-8"
         >
           {[
             { icon: <Check className="h-3 w-3" />, text: '3+ Years Experience' },
@@ -116,7 +116,7 @@ export function HeroSection() {
             { icon: <Zap className="h-3 w-3" />, text: 'Lighthouse 95+' },
             { icon: <Globe className="h-3 w-3" />, text: 'Custom Domain Setup' },
           ].map((badge) => (
-            <span key={badge.text} className="glass inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs text-white/60 font-body whitespace-nowrap">
+            <span key={badge.text} className="glass inline-flex items-center gap-1.5 rounded-full px-2.5 sm:px-3 py-1.5 text-[10px] sm:text-xs text-white/60 font-body">
               <span className="text-accent">{badge.icon}</span>
               {badge.text}
             </span>
@@ -185,28 +185,28 @@ export function HeroSection() {
           initial={{ filter: 'blur(10px)', opacity: 0, y: 20 }}
           animate={{ filter: 'blur(0px)', opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.8, ease: 'easeOut' }}
-          className="flex flex-wrap items-stretch justify-center gap-3 md:gap-4 mt-12"
+          className="grid grid-cols-3 gap-3 md:gap-4 mt-12"
         >
-          <div className="glass rounded-[20px] p-4 md:p-5 w-[160px] md:w-[200px]">
-            <svg className="h-5 w-5 md:h-6 md:w-6 text-white/80 mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <div className="glass rounded-[20px] p-3 sm:p-4 md:p-5">
+            <svg className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-white/80 mb-2 sm:mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
             </svg>
-            <p className="font-heading text-5xl md:text-6xl text-white tracking-[-1px] leading-none">3+</p>
-            <p className="text-sm text-white/60 font-body font-light mt-1.5">Years Experience</p>
+            <p className="font-heading text-3xl sm:text-5xl md:text-6xl text-white tracking-[-1px] leading-none">3+</p>
+            <p className="text-[10px] sm:text-sm text-white/60 font-body font-light mt-1 sm:mt-1.5">Years Experience</p>
           </div>
-          <div className="glass rounded-[20px] p-4 md:p-5 w-[160px] md:w-[200px]">
-            <svg className="h-5 w-5 md:h-6 md:w-6 text-white/80 mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <div className="glass rounded-[20px] p-3 sm:p-4 md:p-5">
+            <svg className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-white/80 mb-2 sm:mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
             </svg>
-            <p className="font-heading text-5xl md:text-6xl text-white tracking-[-1px] leading-none">50+</p>
-            <p className="text-sm text-white/60 font-body font-light mt-1.5">Projects Delivered</p>
+            <p className="font-heading text-3xl sm:text-5xl md:text-6xl text-white tracking-[-1px] leading-none">50+</p>
+            <p className="text-[10px] sm:text-sm text-white/60 font-body font-light mt-1 sm:mt-1.5">Projects Delivered</p>
           </div>
-          <div className="glass rounded-[20px] p-4 md:p-5 w-[160px] md:w-[200px]">
-            <svg className="h-5 w-5 md:h-6 md:w-6 text-white/80 mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <div className="glass rounded-[20px] p-3 sm:p-4 md:p-5">
+            <svg className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-white/80 mb-2 sm:mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
-            <p className="font-heading text-5xl md:text-6xl text-white tracking-[-1px] leading-none">95+</p>
-            <p className="text-sm text-white/60 font-body font-light mt-1.5">Lighthouse Score</p>
+            <p className="font-heading text-3xl sm:text-5xl md:text-6xl text-white tracking-[-1px] leading-none">95+</p>
+            <p className="text-[10px] sm:text-sm text-white/60 font-body font-light mt-1 sm:mt-1.5">Lighthouse Score</p>
           </div>
         </motion.div>
       </div>

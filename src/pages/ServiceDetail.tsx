@@ -138,7 +138,7 @@ export default function ServiceDetail() {
                   <div
                     className="overflow-hidden transition-all duration-300 ease-in-out"
                     style={{
-                      maxHeight: openFaq === i ? '300px' : '0px',
+                      maxHeight: openFaq === i ? '800px' : '0px',
                       opacity: openFaq === i ? 1 : 0,
                     }}
                   >
