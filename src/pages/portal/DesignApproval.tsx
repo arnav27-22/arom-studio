@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { CheckCircle2, XCircle, MessageSquare, Download, Eye } from 'lucide-react'
 import Button from '../../components/ui/Button'
 import { cn } from '../../lib/cn'
+import { generateDesignApprovalPDF } from '../../lib/professionalPDF'
 
 const designs = [
   { id: 1, page: 'Homepage', status: 'pending', preview: 'https://placehold.co/800x450/0a0a0a/4e85bf?text=Homepage+Design', notes: '' },
@@ -30,27 +31,11 @@ export default function DesignApproval() {
   const progress = (approved / items.length) * 100
 
   const handleDownloadPDF = () => {
-    const lines = items.map((d) => {
-      const status = d.status === 'approved' ? 'APPROVED' : d.status === 'changes' ? 'CHANGES REQUESTED' : 'PENDING'
-      return `${d.page}: ${status}${d.notes ? ` — ${d.notes}` : ''}`
-    })
-    const text = [
-      'DESIGN APPROVAL REPORT — AROM STUDIO',
-      '=====================================',
-      `Date: ${new Date().toLocaleDateString('en-IN')}`,
-      '',
-      ...lines,
-      '',
-      '=====================================',
-      `Overall: ${approved}/${items.length} approved`,
-    ].join('\n')
-    const blob = new Blob([text], { type: 'text/plain' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `Design_Approval_${new Date().toISOString().split('T')[0]}.txt`
-    a.click()
-    URL.revokeObjectURL(url)
+    generateDesignApprovalPDF(items.map((d) => ({
+      page: d.page,
+      status: d.status,
+      notes: d.notes || undefined,
+    })))
   }
 
   return (
@@ -65,7 +50,6 @@ export default function DesignApproval() {
         </Button>
       </div>
 
-      {/* Progress */}
       <div className="glass rounded-[24px] p-5 mb-8">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm text-white/70 font-body">{approved} of {items.length} approved</span>
@@ -76,7 +60,6 @@ export default function DesignApproval() {
         </div>
       </div>
 
-      {/* Design cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10">
         {items.map((design, i) => (
           <motion.div
@@ -108,18 +91,10 @@ export default function DesignApproval() {
               <h3 className="font-heading text-lg text-white mb-3">{design.page}</h3>
               {design.notes && <p className="text-xs text-white/50 font-body mb-3 italic">"{design.notes}"</p>}
               <div className="flex gap-2">
-                <Button
-                  variant={design.status === 'approved' ? 'primary' : 'outline'}
-                  size="sm"
-                  onClick={() => handleAction(design.id, 'approved')}
-                >
+                <Button variant={design.status === 'approved' ? 'primary' : 'outline'} size="sm" onClick={() => handleAction(design.id, 'approved')}>
                   <CheckCircle2 className="h-4 w-4" /> Approve
                 </Button>
-                <Button
-                  variant={design.status === 'changes' ? 'primary' : 'outline'}
-                  size="sm"
-                  onClick={() => setCommentModal(design.id)}
-                >
+                <Button variant={design.status === 'changes' ? 'primary' : 'outline'} size="sm" onClick={() => setCommentModal(design.id)}>
                   <XCircle className="h-4 w-4" /> Request Changes
                 </Button>
               </div>
@@ -128,7 +103,6 @@ export default function DesignApproval() {
         ))}
       </div>
 
-      {/* Comment modal */}
       <AnimatePresence>
         {commentModal && (
           <motion.div
@@ -164,7 +138,6 @@ export default function DesignApproval() {
         )}
       </AnimatePresence>
 
-      {/* Approval history */}
       {history.length > 0 && (
         <div className="glass rounded-[24px] p-6">
           <h3 className="font-heading text-lg text-white mb-4">Approval History</h3>

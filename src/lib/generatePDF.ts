@@ -1,11 +1,9 @@
-import jsPDF from 'jspdf'
-
-const BRAND = {
-  name: 'AROM STUDIO',
-  email: 'aromstudio27@gmail.com',
-  url: 'https://aromstudio.vercel.app',
-  color: { r: 78, g: 133, b: 191 },
-}
+import {
+  generateHandoverPDF,
+  generateDesignApprovalPDF,
+  generateRevisionsPDF,
+  generateAssetsPDF,
+} from './professionalPDF'
 
 interface PDFSection {
   title: string
@@ -19,71 +17,73 @@ interface PDFOptions {
 }
 
 export function generatePDF({ filename, title, sections }: PDFOptions) {
-  const doc = new jsPDF()
-  const pageWidth = doc.internal.pageSize.getWidth()
-  let y = 20
-
-  const addFooter = () => {
-    const footerY = doc.internal.pageSize.getHeight() - 15
-    doc.setFontSize(8)
-    doc.setTextColor(150)
-    doc.text(`${BRAND.name}  |  ${BRAND.email}  |  ${BRAND.url}`, pageWidth / 2, footerY, { align: 'center' })
+  if (title.includes('Handover')) {
+    generateHandoverPDF({
+      clientName: 'Client',
+      projectName: 'Website Project',
+      websiteUrl: sections.find((s) => s.title === 'Project Details')?.content.find((c) => c.startsWith('Website URL:'))?.replace('Website URL: ', '') || 'https://yoursite.com',
+      adminUrl: sections.find((s) => s.title === 'Project Details')?.content.find((c) => c.startsWith('Admin Login:'))?.replace('Admin Login: ', '') || 'https://yoursite.com/admin',
+      hostingProvider: sections.find((s) => s.title === 'Project Details')?.content.find((c) => c.startsWith('Hosting Provider:'))?.replace('Hosting Provider: ', '') || 'Vercel + Cloudflare',
+      domainName: sections.find((s) => s.title === 'Project Details')?.content.find((c) => c.startsWith('Domain Name:'))?.replace('Domain Name: ', '') || 'yoursite.com',
+      sourceCode: sections.find((s) => s.title === 'Project Details')?.content.find((c) => c.startsWith('Source Code:'))?.replace('Source Code: ', '') || 'GitHub Repository',
+      documentation: sections.find((s) => s.title === 'Project Details')?.content.find((c) => c.startsWith('Documentation:'))?.replace('Documentation: ', '') || 'Documentation',
+      warrantyPeriod: sections.find((s) => s.title === 'Support & Warranty')?.content.find((c) => c.startsWith('Warranty:'))?.replace('Warranty: ', '') || '30 Days',
+      supportPeriod: sections.find((s) => s.title === 'Support & Warranty')?.content.find((c) => c.startsWith('Support Period:'))?.replace('Support Period: ', '') || '1 Year',
+      maintenancePlan: sections.find((s) => s.title === 'Support & Warranty')?.content.find((c) => c.startsWith('Maintenance Plan:'))?.replace('Maintenance Plan: ', '') || 'Optional',
+    })
+    return
   }
-
-  // Header
-  doc.setFontSize(22)
-  doc.setTextColor(BRAND.color.r, BRAND.color.g, BRAND.color.b)
-  doc.text(BRAND.name, 20, y)
-  y += 10
-
-  doc.setFontSize(10)
-  doc.setTextColor(120)
-  doc.text(new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }), 20, y)
-  y += 12
-
-  // Divider
-  doc.setDrawColor(BRAND.color.r, BRAND.color.g, BRAND.color.b)
-  doc.setLineWidth(0.5)
-  doc.line(20, y, pageWidth - 20, y)
-  y += 10
-
-  // Title
-  doc.setFontSize(16)
-  doc.setTextColor(40)
-  doc.text(title, 20, y)
-  y += 12
-
-  // Sections
-  for (const section of sections) {
-    if (y > 260) {
-      addFooter()
-      doc.addPage()
-      y = 20
-    }
-
-    doc.setFontSize(12)
-    doc.setTextColor(BRAND.color.r, BRAND.color.g, BRAND.color.b)
-    doc.text(section.title, 20, y)
-    y += 8
-
-    doc.setFontSize(10)
-    doc.setTextColor(60)
-    for (const line of section.content) {
-      if (y > 270) {
-        addFooter()
-        doc.addPage()
-        y = 20
-      }
-      const split = doc.splitTextToSize(line, pageWidth - 40)
-      for (const s of split) {
-        doc.text(s, 20, y)
-        y += 5
-      }
-      y += 2
-    }
-    y += 6
+  if (title.includes('Design')) {
+    const items = sections[0]?.content.map((line) => {
+      const [page, rest] = line.split(': ')
+      const status = rest?.includes('APPROVED') ? 'approved' : rest?.includes('CHANGES') ? 'changes' : 'pending'
+      const notes = rest?.includes('—') ? rest.split('—')[1]?.trim() : undefined
+      return { page, status, notes }
+    }) || []
+    generateDesignApprovalPDF(items)
+    return
   }
-
-  addFooter()
-  doc.save(filename)
+  if (title.includes('Revision')) {
+    const revisions = sections
+      .filter((s) => s.title !== 'No Revisions')
+      .map((s) => {
+        const parts = s.title.split(' — ')
+        return {
+          page: parts[0] || '',
+          priority: (parts[1] || 'MEDIUM').toLowerCase(),
+          description: s.content[0] || '',
+          status: (parts[2] || 'PENDING').toLowerCase(),
+        }
+      })
+    generateRevisionsPDF(revisions)
+    return
+  }
+  if (title.includes('Assets')) {
+    generateAssetsPDF({
+      clientName: 'Client',
+      projectName: 'Project',
+      folderLink: sections[0]?.content.find((c) => c.startsWith('Folder Link:'))?.replace('Folder Link: ', '') || '',
+      categories: ['Logo', 'Images', 'Videos', 'Brand Guidelines', 'Fonts', 'PDF Files', 'Documents', 'Social Media Assets', 'Other Resources'],
+    })
+    return
+  }
+  // Fallback: basic text blob
+  const text = [
+    title.toUpperCase(),
+    '='.repeat(title.length),
+    `Generated: ${new Date().toLocaleDateString('en-IN')}`,
+    '',
+    ...sections.flatMap((s) => [s.title, ...s.content, '']),
+    '',
+    'AROM STUDIO',
+    'aromstudio27@gmail.com',
+    'https://aromstudio.vercel.app',
+  ].join('\n')
+  const blob = new Blob([text], { type: 'text/plain' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  a.click()
+  URL.revokeObjectURL(url)
 }

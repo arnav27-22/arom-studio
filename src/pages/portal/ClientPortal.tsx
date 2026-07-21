@@ -2,27 +2,23 @@ import { useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  LayoutDashboard, Upload, FileText, Clock, Palette, RefreshCw, MessageSquare,
-  CreditCard, FileSpreadsheet, Download, Handshake, Star, Settings, ChevronLeft,
-  ChevronRight, Menu, X
+  LayoutDashboard, Upload, FileText, Clock, Palette, RefreshCw,
+  Download, Handshake, ChevronLeft, ChevronRight, Menu, X,
+  PenSquare, FileCheck, ScrollText
 } from 'lucide-react'
 import { cn } from '../../lib/cn'
 
 const sidebarLinks = [
   { label: 'Dashboard', href: '/portal/dashboard', icon: LayoutDashboard },
-  { label: 'Assets Upload', href: '/portal/assets', icon: Upload },
-  { label: 'Content Collection', href: '/portal/content', icon: FileText },
+  { label: 'Client Inquiry Form', href: '/portal/inquiry', icon: PenSquare },
+  { label: 'Project Proposal', href: '/portal/proposal', icon: FileCheck },
+  { label: 'Website Agreement', href: '/portal/agreement', icon: ScrollText },
   { label: 'Project Timeline', href: '/portal/timeline', icon: Clock },
   { label: 'Design Approval', href: '/portal/design', icon: Palette },
+  { label: 'Assets Upload', href: '/portal/assets', icon: Upload },
   { label: 'Revision Requests', href: '/portal/revisions', icon: RefreshCw },
-  { label: 'Chat', href: '/portal/chat', icon: MessageSquare },
-  { label: 'Payments', href: '/portal/payments', icon: CreditCard },
-  { label: 'Invoices', href: '/portal/invoices', icon: FileSpreadsheet },
   { label: 'Downloads', href: '/portal/downloads', icon: Download },
   { label: 'Handover', href: '/portal/handover', icon: Handshake },
-  { label: 'Feedback', href: '/portal/feedback', icon: Star },
-  { label: 'Settings', href: '/portal/settings', icon: Settings },
-  { label: 'Specification', href: '/portal/specification', icon: FileText },
 ]
 
 export default function ClientPortal() {

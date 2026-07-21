@@ -2,7 +2,7 @@ import { motion } from 'framer-motion'
 import { Globe, Lock, Server, Link2, FileText, Shield, Clock, Download, ExternalLink } from 'lucide-react'
 import Button from '../../components/ui/Button'
 import { cn } from '../../lib/cn'
-import { generatePDF } from '../../lib/generatePDF'
+import { generateHandoverPDF } from '../../lib/professionalPDF'
 
 const handoverItems = [
   { label: 'Website URL', value: 'https://yoursite.com', icon: Globe, color: 'from-blue-500/20 to-cyan-500/20' },
@@ -21,13 +21,18 @@ const supportInfo = [
 
 export default function Handover() {
   const handleDownloadPDF = () => {
-    generatePDF({
-      filename: `Handover_${new Date().toISOString().split('T')[0]}.pdf`,
-      title: 'Website Handover',
-      sections: [
-        { title: 'Project Details', content: handoverItems.map((h) => `${h.label}: ${h.value}`) },
-        { title: 'Support & Warranty', content: supportInfo.map((s) => `${s.label}: ${s.value}`) },
-      ],
+    generateHandoverPDF({
+      clientName: 'Client',
+      projectName: 'Website Project',
+      websiteUrl: 'https://yoursite.com',
+      adminUrl: 'https://yoursite.com/admin',
+      hostingProvider: 'Vercel + Cloudflare',
+      domainName: 'yoursite.com',
+      sourceCode: 'GitHub Repository',
+      documentation: 'Project documentation & guides',
+      warrantyPeriod: '30 Days',
+      supportPeriod: '1 Year Included',
+      maintenancePlan: 'Optional — Contact us',
     })
   }
 
@@ -36,14 +41,13 @@ export default function Handover() {
       <div className="flex flex-wrap items-start justify-between gap-4 mb-8">
         <div>
           <h1 className="font-heading text-3xl md:text-4xl text-white tracking-[-1px]">Website Handover</h1>
-          <p className="text-sm text-white/50 font-body font-light mt-1">All project details in one place.</p>
+          <p className="text-sm text-white/50 font-body font-light mt-1">All project details in one place. Estimated handover: 2-4 weeks from project start.</p>
         </div>
         <Button variant="secondary" size="sm" onClick={handleDownloadPDF}>
           <Download className="h-4 w-4" /> Handover PDF
         </Button>
       </div>
 
-      {/* Handover cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
         {handoverItems.map((item, i) => {
           const Icon = item.icon
@@ -69,7 +73,6 @@ export default function Handover() {
         })}
       </div>
 
-      {/* Support info */}
       <h3 className="font-heading text-xl text-white mb-4">Support & Warranty</h3>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-10">
         {supportInfo.map((item, i) => {
@@ -90,7 +93,6 @@ export default function Handover() {
         })}
       </div>
 
-      {/* Download buttons */}
       <div className="flex flex-wrap gap-3">
         <Button variant="secondary" size="sm">
           <Download className="h-4 w-4" /> Download Source ZIP

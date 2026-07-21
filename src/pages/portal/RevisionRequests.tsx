@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, X, Download, Clock, AlertCircle, CheckCircle2, Circle } from 'lucide-react'
 import Button from '../../components/ui/Button'
 import { cn } from '../../lib/cn'
-import { generatePDF } from '../../lib/generatePDF'
+import { generateRevisionsPDF } from '../../lib/professionalPDF'
 
 interface Revision {
   id: number
@@ -45,16 +45,12 @@ export default function RevisionRequests() {
   }
 
   const handleDownloadPDF = () => {
-    generatePDF({
-      filename: `Revisions_${new Date().toISOString().split('T')[0]}.pdf`,
-      title: 'Revision Requests',
-      sections: revisions.length
-        ? revisions.map((r) => ({
-            title: `${r.page} — ${r.priority.toUpperCase()} — ${r.status}`,
-            content: [r.description, r.deadline ? `Due: ${r.deadline}` : ''].filter(Boolean),
-          }))
-        : [{ title: 'No Revisions', content: ['No revision requests yet.'] }],
-    })
+    generateRevisionsPDF(revisions.map((r) => ({
+      page: r.page,
+      priority: r.priority,
+      description: r.description,
+      status: r.status,
+    })))
   }
 
   return (
@@ -74,7 +70,6 @@ export default function RevisionRequests() {
         </div>
       </div>
 
-      {/* New revision form */}
       <AnimatePresence>
         {showForm && (
           <motion.div
@@ -86,27 +81,16 @@ export default function RevisionRequests() {
             <div className="glass rounded-[28px] p-6 md:p-8">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="font-heading text-xl text-white">New Revision Request</h3>
-                <button onClick={() => setShowForm(false)} className="text-white/40 hover:text-white">
-                  <X className="h-5 w-5" />
-                </button>
+                <button onClick={() => setShowForm(false)} className="text-white/40 hover:text-white"><X className="h-5 w-5" /></button>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                 <div>
                   <label className="text-sm text-white/70 font-body block mb-1.5">Page Name</label>
-                  <input
-                    value={form.page}
-                    onChange={(e) => setForm((p) => ({ ...p, page: e.target.value }))}
-                    placeholder="e.g. Homepage, About"
-                    className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-accent/40 font-body"
-                  />
+                  <input value={form.page} onChange={(e) => setForm((p) => ({ ...p, page: e.target.value }))} placeholder="e.g. Homepage, About" className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-accent/40 font-body" />
                 </div>
                 <div>
                   <label className="text-sm text-white/70 font-body block mb-1.5">Priority</label>
-                  <select
-                    value={form.priority}
-                    onChange={(e) => setForm((p) => ({ ...p, priority: e.target.value as 'low' | 'medium' | 'high' }))}
-                    className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white focus:outline-none focus:border-accent/40 font-body appearance-none"
-                  >
+                  <select value={form.priority} onChange={(e) => setForm((p) => ({ ...p, priority: e.target.value as 'low' | 'medium' | 'high' }))} className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white focus:outline-none focus:border-accent/40 font-body appearance-none">
                     <option value="low">Low</option>
                     <option value="medium">Medium</option>
                     <option value="high">High</option>
@@ -115,32 +99,16 @@ export default function RevisionRequests() {
               </div>
               <div className="mb-4">
                 <label className="text-sm text-white/70 font-body block mb-1.5">Description</label>
-                <textarea
-                  value={form.description}
-                  onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
-                  placeholder="Describe the changes needed..."
-                  rows={3}
-                  className="w-full bg-white/5 border border-white/10 rounded-[18px] px-4 py-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-accent/40 font-body resize-none"
-                />
+                <textarea value={form.description} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))} placeholder="Describe the changes needed..." rows={3} className="w-full bg-white/5 border border-white/10 rounded-[18px] px-4 py-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-accent/40 font-body resize-none" />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                 <div>
                   <label className="text-sm text-white/70 font-body block mb-1.5">Screenshot URL (optional)</label>
-                  <input
-                    value={form.screenshot}
-                    onChange={(e) => setForm((p) => ({ ...p, screenshot: e.target.value }))}
-                    placeholder="Paste image link"
-                    className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-accent/40 font-body"
-                  />
+                  <input value={form.screenshot} onChange={(e) => setForm((p) => ({ ...p, screenshot: e.target.value }))} placeholder="Paste image link" className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-accent/40 font-body" />
                 </div>
                 <div>
                   <label className="text-sm text-white/70 font-body block mb-1.5">Deadline</label>
-                  <input
-                    type="date"
-                    value={form.deadline}
-                    onChange={(e) => setForm((p) => ({ ...p, deadline: e.target.value }))}
-                    className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white focus:outline-none focus:border-accent/40 font-body"
-                  />
+                  <input type="date" value={form.deadline} onChange={(e) => setForm((p) => ({ ...p, deadline: e.target.value }))} className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white focus:outline-none focus:border-accent/40 font-body" />
                 </div>
               </div>
               <div className="flex justify-end gap-2">
@@ -152,7 +120,6 @@ export default function RevisionRequests() {
         )}
       </AnimatePresence>
 
-      {/* Revision list */}
       {revisions.length === 0 ? (
         <div className="glass rounded-[24px] p-10 text-center">
           <AlertCircle className="h-10 w-10 text-white/20 mx-auto mb-3" />

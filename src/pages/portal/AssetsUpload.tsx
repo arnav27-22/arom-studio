@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Upload, CheckCircle2, Link2, Download, ArrowUpRight } from 'lucide-react'
 import Button from '../../components/ui/Button'
-import { generatePDF } from '../../lib/generatePDF'
+import { generateAssetsPDF } from '../../lib/professionalPDF'
 
 const assetCategories = [
   'Logo', 'Images', 'Videos', 'Brand Guidelines', 'Fonts',
@@ -31,13 +31,11 @@ export default function AssetsUpload() {
   const projectName = 'Website Project'
 
   const handleDownloadPDF = () => {
-    generatePDF({
-      filename: `Assets_Summary_${new Date().toISOString().split('T')[0]}.pdf`,
-      title: 'Assets Upload Summary',
-      sections: [
-        { title: 'Project Details', content: [`Client: ${clientName}`, `Project: ${projectName}`, `Folder Link: ${folderLink}`, `Date: ${new Date().toLocaleDateString('en-IN')}`] },
-        { title: 'Uploaded Assets Checklist', content: assetCategories.map((c) => `\u2610  ${c}`) },
-      ],
+    generateAssetsPDF({
+      clientName,
+      projectName,
+      folderLink,
+      categories: assetCategories,
     })
   }
 
@@ -67,9 +65,7 @@ export default function AssetsUpload() {
               <CheckCircle2 className="h-10 w-10 text-green-400" />
             </motion.div>
             <h2 className="font-heading text-3xl text-white mb-3">Upload Received!</h2>
-            <p className="text-sm text-white/60 font-body font-light mb-6">
-              Thank you. Your assets have been noted for review.
-            </p>
+            <p className="text-sm text-white/60 font-body font-light mb-6">Thank you. Your assets have been noted for review.</p>
 
             <div className="glass rounded-[20px] p-5 mb-6 text-left">
               <h3 className="font-heading text-lg text-white mb-3">Summary</h3>
@@ -91,24 +87,14 @@ export default function AssetsUpload() {
               <Button variant="secondary" onClick={handleDownloadPDF}>
                 <Download className="h-4 w-4" /> Download Summary
               </Button>
-              <a
-                href="https://wa.me/918767990061"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-sm font-body font-medium text-white glass-strong rounded-full px-6 py-3"
-              >
+              <a href="https://wa.me/918767990061" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm font-body font-medium text-white glass-strong rounded-full px-6 py-3">
                 Send via WhatsApp <ArrowUpRight className="h-4 w-4" />
               </a>
-              <a
-                href="mailto:aromstudio27@gmail.com"
-                className="inline-flex items-center gap-2 text-sm font-body font-medium text-white glass rounded-full px-6 py-3"
-              >
+              <a href="mailto:aromstudio27@gmail.com" className="inline-flex items-center gap-2 text-sm font-body font-medium text-white glass rounded-full px-6 py-3">
                 Send via Email <ArrowUpRight className="h-4 w-4" />
               </a>
             </div>
-            <p className="text-xs text-white/40 font-body mt-4">
-              Please also send this PDF through WhatsApp or Email for confirmation.
-            </p>
+            <p className="text-xs text-white/40 font-body mt-4">Please also send this PDF through WhatsApp or Email for confirmation.</p>
           </motion.div>
         ) : (
           <motion.div
@@ -119,7 +105,6 @@ export default function AssetsUpload() {
           >
             <h2 className="font-heading text-2xl text-white mb-6">Step-by-Step Instructions</h2>
 
-            {/* Step 1 */}
             <div className="glass rounded-[20px] p-5 mb-4">
               <div className="flex items-start gap-3">
                 <span className="w-7 h-7 rounded-full bg-accent/20 text-accent text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">1</span>
@@ -131,7 +116,6 @@ export default function AssetsUpload() {
               </div>
             </div>
 
-            {/* Step 2 */}
             <div className="glass rounded-[20px] p-5 mb-4">
               <div className="flex items-start gap-3">
                 <span className="w-7 h-7 rounded-full bg-accent/20 text-accent text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">2</span>
@@ -148,32 +132,22 @@ export default function AssetsUpload() {
               </div>
             </div>
 
-            {/* Step 3 */}
             <div className="glass rounded-[20px] p-5 mb-6">
               <div className="flex items-start gap-3">
                 <span className="w-7 h-7 rounded-full bg-accent/20 text-accent text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">3</span>
                 <div>
                   <h3 className="font-heading text-lg text-white mb-2">Share the folder</h3>
-                  <p className="text-sm text-white/60 font-body">
-                    Share with: <span className="text-accent font-medium">aromstudio27@gmail.com</span>
-                  </p>
+                  <p className="text-sm text-white/60 font-body">Share with: <span className="text-accent font-medium">aromstudio27@gmail.com</span></p>
                   <p className="text-xs text-white/40 font-body mt-1">Or paste your Google Drive link below.</p>
                 </div>
               </div>
             </div>
 
-            {/* Google Drive link input */}
             <div className="mb-6">
               <label className="text-sm text-white/70 font-body block mb-2">Google Drive Folder Link</label>
               <div className="flex items-center gap-2 glass rounded-[18px] px-4 py-1 border border-white/10 focus-within:border-accent/40 transition-colors">
                 <Link2 className="h-4 w-4 text-white/30 shrink-0" />
-                <input
-                  type="url"
-                  value={folderLink}
-                  onChange={(e) => { setFolderLink(e.target.value); setErrors('') }}
-                  placeholder={driveLink}
-                  className="w-full bg-transparent text-sm text-white placeholder:text-white/20 py-3 focus:outline-none font-body"
-                />
+                <input type="url" value={folderLink} onChange={(e) => { setFolderLink(e.target.value); setErrors('') }} placeholder={driveLink} className="w-full bg-transparent text-sm text-white placeholder:text-white/20 py-3 focus:outline-none font-body" />
               </div>
               {errors && <p className="text-xs text-red-400 mt-1 font-body">{errors}</p>}
             </div>
@@ -183,8 +157,7 @@ export default function AssetsUpload() {
             </Button>
 
             <p className="text-xs text-white/30 font-body text-center mt-4">
-              Already uploaded?{' '}
-              <a href={driveLink} target="_blank" rel="noopener noreferrer" className="text-accent underline">Open Google Drive</a>
+              Already uploaded? <a href={driveLink} target="_blank" rel="noopener noreferrer" className="text-accent underline">Open Google Drive</a>
             </p>
           </motion.div>
         )}
