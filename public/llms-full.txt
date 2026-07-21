@@ -202,6 +202,10 @@ Source: https://aromstudio.vercel.app/faq
 
 Source: https://aromstudio.vercel.app/contact
 
+### Brand
+Official brand information page optimized for AI citation and entity recognition.
+Source: https://aromstudio.vercel.app/brand
+
 ---
 
 ## Legal

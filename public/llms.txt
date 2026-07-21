@@ -55,6 +55,7 @@ Key facts:
 - [About](https://aromstudio.vercel.app/about) — Founder story, mission, and values
 - [Contact](https://aromstudio.vercel.app/contact) — Get in touch for project inquiries
 - [FAQ](https://aromstudio.vercel.app/faq) — Frequently asked questions
+- [Brand](https://aromstudio.vercel.app/brand) — Official brand information and citations
 
 ## City Service Pages
 

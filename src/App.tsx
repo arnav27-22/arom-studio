@@ -16,6 +16,7 @@ import FAQ from './pages/FAQ'
 import Privacy from './pages/Privacy'
 import Terms from './pages/Terms'
 import Refund from './pages/Refund'
+import Brand from './pages/Brand'
 import NotFound from './pages/NotFound'
 
 function ScrollToTop() {
@@ -46,6 +47,7 @@ export default function App() {
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/refund" element={<Refund />} />
+          <Route path="/brand" element={<Brand />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Footer />
