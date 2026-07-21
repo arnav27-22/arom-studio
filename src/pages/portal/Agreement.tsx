@@ -35,10 +35,9 @@ const sectionCheckboxes = [
   { id: 'portfolio', label: 'I have read and agree to Section 17: Portfolio Rights' },
   { id: 'force', label: 'I have read and agree to Section 18: Force Majeure' },
   { id: 'law', label: 'I have read and agree to Section 19: Governing Law' },
-  { id: 'acceptance', label: 'I have read and agree to Section 20: Acceptance' },
+  { id: 'acceptance', label: 'I have read and agree to Section 20: Digital Acceptance' },
   { id: 'entireAgreement', label: 'I have read and agree to Section 21: Entire Agreement' },
   { id: 'browserSupport', label: 'I have read and agree to Section 22: Browser Support' },
-  { id: 'digitalAcceptance', label: 'I have read and agree to Section 23: Digital Acceptance' },
 ]
 
 const availableServices = [
@@ -247,7 +246,8 @@ export default function Agreement() {
             <div className="glass rounded-[16px] p-5 border-l-2 border-accent">
               <h4 className="font-heading text-base text-white mb-3">4. Payment Terms</h4>
               <p className="mb-2">Payment schedule:</p>
-              <p className="mb-1"><strong>{advancePct || '50'}%</strong> Advance before project commencement.</p>
+              <p className="mb-1"><strong>{advancePct || '27'}%</strong> Advance before project commencement.</p>
+              <p className="mb-1"><strong>{Number(100 - Number(advancePct || 27) - Number(finalPct || 50))}%</strong> Milestone payment upon design approval.</p>
               <p className="mb-2"><strong>{finalPct || '50'}%</strong> Final Payment before final website delivery or deployment.</p>
               <p className="mb-2">Additional work requested after project approval will be charged separately.</p>
               <p className="mb-1">Payments are due within the agreed payment period.</p>
@@ -292,10 +292,9 @@ export default function Agreement() {
               { id: 'portfolio', title: '17. Portfolio Rights', content: 'Unless the Client specifically requests confidentiality in writing, AROM Studio may showcase the completed project in its portfolio, website, and social media for promotional purposes. If confidentiality is requested and agreed upon, AROM Studio will not publicly display the project.' },
               { id: 'force', title: '18. Force Majeure', content: 'Neither party shall be liable for delays caused by events beyond reasonable control, including natural disasters, government actions, internet outages, pandemics, or other unforeseen circumstances.' },
               { id: 'law', title: '19. Governing Law', content: 'This Agreement shall be governed by the applicable laws of India. Any disputes shall first be attempted to be resolved through mutual discussion before pursuing legal remedies.' },
-              { id: 'acceptance', title: '20. Digital Acceptance', content: 'By clicking "I Agree" in the AROM Studio Client Portal or by making the agreed advance payment after accepting the proposal, the Client acknowledges that they have read, understood, and accepted the terms of this Agreement. This constitutes a legally binding digital acceptance.' },
+              { id: 'acceptance', title: '20. Digital Acceptance', content: 'By clicking "I Agree" in the AROM Studio Client Portal or by making the agreed advance payment after accepting the proposal, the Client acknowledges that they have read, understood, and accepted the terms of this Agreement. This constitutes a legally binding digital acceptance. No handwritten signature is required.' },
               { id: 'entireAgreement', title: '21. Entire Agreement', content: 'This Agreement, together with the approved Project Proposal, constitutes the entire agreement between the parties and supersedes any prior discussions, negotiations, or communications, whether written or oral.' },
               { id: 'browserSupport', title: '22. Browser Support', content: 'AROM Studio officially supports the latest two versions of: Google Chrome, Mozilla Firefox, Apple Safari, and Microsoft Edge. The website may not function as intended on older or unsupported browsers.' },
-              { id: 'digitalAcceptance', title: '23. Digital Acceptance', content: 'By clicking "I Agree" in the AROM Studio Client Portal or by making the agreed advance payment, the client accepts this Agreement as a legally binding document. No handwritten signature is required.' },
             ].map((sec) => (
               <div key={sec.id} className="glass rounded-[16px] p-5 border-l-2 border-accent">
                 <h4 className="font-heading text-base text-white mb-3">{sec.title}</h4>

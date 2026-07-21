@@ -640,7 +640,9 @@ export function generateAgreementPDF(data: {
 
   // 4. Payment Terms
   y = writeSection(doc, y, '4. Payment Terms', [
-    `Payment schedule: ${data.advancePercentage || '50'}% Advance before project commencement. ${data.finalPercentage || '50'}% Final Payment before final website delivery or deployment.`,
+    `Payment schedule: ${data.advancePercentage || '27'}% Advance before project commencement.`,
+    `${Math.max(0, 100 - Number(data.advancePercentage || 27) - Number(data.finalPercentage || 50))}% Milestone payment upon design approval.`,
+    `${data.finalPercentage || '50'}% Final Payment before final website delivery or deployment.`,
     'Additional work requested after project approval will be charged separately.',
     'Payments are due within the agreed payment period.',
     'If payment is delayed by more than 7 days, AROM Studio may pause work until payment is received.',
@@ -740,18 +742,14 @@ export function generateAgreementPDF(data: {
       '  • Microsoft Edge',
       'The website may not function as intended on older or unsupported browsers.',
     ]],
-    ['23. Digital Acceptance', [
-      'By clicking "I Agree" in the AROM Studio Client Portal or by making the agreed advance payment, the client accepts this Agreement as a legally binding document.',
-      'No handwritten signature is required.',
-    ]],
   ]
 
   for (const [title, lines] of remainingSections) {
     y = writeSection(doc, y, title, lines, layout, true)
   }
 
-  // 21. Legal
-  y = writeSection(doc, y, '21. Legal', [
+  // 23. Legal Policies
+  y = writeSection(doc, y, '23. Legal Policies', [
     'The following legal policies apply to all services provided by AROM Studio.',
     '',
   ], layout, true)
