@@ -59,7 +59,7 @@ Key facts:
 
 ## City Service Pages
 
-AROM STUDIO serves clients across all major Indian cities. Each service is available in 258+ cities. Examples:
+AROM STUDIO serves clients worldwide with a focus on major Indian cities. Each service is available in 258+ cities. Examples:
 - [Business Websites in Mumbai](https://aromstudio.vercel.app/services/business-websites/in/mumbai)
 - [E-commerce in Delhi](https://aromstudio.vercel.app/services/ecommerce/in/delhi)
 - [Web Applications in Bangalore](https://aromstudio.vercel.app/services/web-applications/in/bangalore)
@@ -113,4 +113,4 @@ This file follows the llms.txt standard. AI crawlers are permitted to crawl all 
 
 ## Keywords
 
-web design agency, web development agency, Next.js developer, React developer, UI/UX design, e-commerce website, SaaS platform, custom website, Nashik web designer, Arnav Pagare, premium website, Indian web agency, website redesign, SEO optimization, landing page design, portfolio website
+web design agency, web development agency, Next.js developer, React developer, UI/UX design, e-commerce website, SaaS platform, custom website, Nashik web designer, Arnav Pagare, premium website, web agency, website redesign, SEO optimization, landing page design, portfolio website

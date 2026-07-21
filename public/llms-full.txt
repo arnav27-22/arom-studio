@@ -1,6 +1,6 @@
 # AROM STUDIO — Premium Digital Agency
 
-AROM STUDIO is a premium web design and development agency based in Nashik, India, founded by Arnav Pagare. The agency creates high-performance websites, web applications, SaaS platforms, and digital experiences for startups, businesses, and creators across India. Every project targets Lighthouse 95+ scores and includes 1 Year Support.
+AROM STUDIO is a premium web design and development agency based in Nashik, India, founded by Arnav Pagare. The agency creates high-performance websites, web applications, SaaS platforms, and digital experiences for startups, businesses, and creators worldwide. Every project targets Lighthouse 95+ scores and includes 1 Year Support.
 
 Source: https://aromstudio.vercel.app/
 
@@ -8,13 +8,12 @@ Source: https://aromstudio.vercel.app/
 
 ## Company Overview
 
-AROM STUDIO serves startups, growing businesses, and enterprises across India and globally. The founder, Arnav Pagare, personally oversees every stage — strategy, planning, UI/UX design, frontend and backend development, performance optimization, deployment, and post-launch support.
+AROM STUDIO serves startups, growing businesses, and enterprises worldwide. The founder, Arnav Pagare, personally oversees every stage from anywhere — strategy, planning, UI/UX design, frontend and backend development, performance optimization, deployment, and post-launch support.
 
 ### Quick Facts
 - Founded by Arnav Pagare
 - Founded: 2026
-- Serving clients across India
-- Serving clients across India
+- Global service
 - 1 Year Support included with every project
 - Target Lighthouse score: 95+
 
@@ -161,8 +160,8 @@ Source: https://aromstudio.vercel.app/
 ## FAQ
 
 ### General
-- **What is AROM STUDIO?** A premium web design and development agency based in India creating high-performance websites, web applications, and digital experiences.
-- **Where is AROM STUDIO based?** India, working with clients across the country and globally.
+- **What is AROM STUDIO?** A premium web design and development agency based in Nashik, India creating high-performance websites, web applications, and digital experiences.
+- **Where is AROM STUDIO based?** Nashik, India, working with clients worldwide.
 - **Who is the founder?** Arnav Pagare.
 
 ### Services

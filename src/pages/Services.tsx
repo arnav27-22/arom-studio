@@ -28,7 +28,7 @@ export default function Services() {
     <main className="pt-32">
       <SEO
         title="Services"
-        description="AROM STUDIO offers business websites, e-commerce, web applications, SaaS platforms, UI/UX design, SEO, and more. Premium web development services for Indian businesses."
+        description="AROM STUDIO offers business websites, e-commerce, web applications, SaaS platforms, UI/UX design, SEO, and more. Premium web development services for businesses worldwide."
         jsonLd={{
           '@context': 'https://schema.org',
           '@type': 'WebPage',

@@ -33,7 +33,7 @@ export default function About() {
     <main className="pt-32">
       <SEO
         title="About AROM STUDIO — Founder, Mission & Values | Arnav Pagare"
-        description="Learn about AROM STUDIO — founded by Arnav Pagare. Our story, mission, vision, values, and the process behind creating premium digital experiences for Indian businesses."
+        description="Learn about AROM STUDIO — founded by Arnav Pagare. Our story, mission, vision, values, and the process behind creating premium digital experiences for businesses worldwide."
       />
       {/* Hero */}
       <section className="relative min-h-screen flex items-center overflow-hidden">

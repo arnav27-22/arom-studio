@@ -13,7 +13,7 @@ const iconMap: Record<string, React.ReactNode> = {
 }
 
 const featuredServices = [
-  { slug: 'business-websites', title: 'Business Websites', description: 'High-performance websites that establish credibility and drive leads. Serving clients all over India & Free Domain.', icon: 'Building2' },
+  { slug: 'business-websites', title: 'Business Websites', description: 'High-performance websites that establish credibility and drive leads. Global service with Free Domain.', icon: 'Building2' },
   { slug: 'ecommerce', title: 'E-commerce', description: 'Scalable online stores with seamless checkout and inventory management. Includes payment gateway integration.', icon: 'ShoppingCart' },
   { slug: 'web-applications', title: 'Web Applications', description: 'Custom web applications built to solve complex business problems with modern full-stack technology.', icon: 'AppWindow' },
   { slug: 'saas-platforms', title: 'SaaS Platforms', description: 'Multi-tenant platforms with subscription billing, user management, and scalable cloud infrastructure.', icon: 'Cloud' },
@@ -31,11 +31,11 @@ export function ServicesSection() {
           badge="What We Build"
           title="Expertise that drives"
           highlightWord="results"
-          description="From business websites to custom SaaS platforms, we build digital products that combine premium design with engineering excellence. Serving clients all over India with Free Domain."
+          description="From business websites to custom SaaS platforms, we build digital products that combine premium design with engineering excellence. Global service with Free Domain."
         />
 
         <div className="mb-10 flex flex-wrap items-center justify-center gap-3 text-xs text-white/50 font-body">
-          <span className="flex items-center gap-1"><Check className="h-3 w-3 text-accent" /> Serving All Over India</span>
+          <span className="flex items-center gap-1"><Check className="h-3 w-3 text-accent" /> Global Service</span>
           <span className="text-white/20">|</span>
           <span className="flex items-center gap-1"><Check className="h-3 w-3 text-accent" /> Free Domain (1 Year)</span>
           <span className="text-white/20">|</span>

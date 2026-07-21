@@ -111,7 +111,7 @@ export function HeroSection() {
           className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-8"
         >
           {[
-            { icon: <Check className="h-3 w-3" />, text: 'Serving All Over India' },
+            { icon: <Check className="h-3 w-3" />, text: 'Global Service' },
             { icon: <Shield className="h-3 w-3" />, text: 'Free Domain Included' },
             { icon: <Zap className="h-3 w-3" />, text: 'Lighthouse 95+' },
             { icon: <Globe className="h-3 w-3" />, text: 'Custom Domain Setup' },
@@ -192,14 +192,14 @@ export function HeroSection() {
               <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
             </svg>
             <p className="font-heading text-3xl sm:text-5xl md:text-6xl text-white tracking-[-1px] leading-none">3+</p>
-            <p className="text-[10px] sm:text-sm text-white/60 font-body font-light mt-1 sm:mt-1.5">Nationwide Coverage</p>
+            <p className="text-[10px] sm:text-sm text-white/60 font-body font-light mt-1 sm:mt-1.5">Worldwide</p>
           </div>
           <div className="glass rounded-[20px] p-3 sm:p-4 md:p-5">
             <svg className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-white/80 mb-2 sm:mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
             </svg>
-            <p className="font-heading text-3xl sm:text-5xl md:text-6xl text-white tracking-[-1px] leading-none">All</p>
-            <p className="text-[10px] sm:text-sm text-white/60 font-body font-light mt-1 sm:mt-1.5">Over India</p>
+            <p className="font-heading text-3xl sm:text-5xl md:text-6xl text-white tracking-[-1px] leading-none">Global</p>
+            <p className="text-[10px] sm:text-sm text-white/60 font-body font-light mt-1 sm:mt-1.5">Service</p>
           </div>
           <div className="glass rounded-[20px] p-3 sm:p-4 md:p-5">
             <svg className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-white/80 mb-2 sm:mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">

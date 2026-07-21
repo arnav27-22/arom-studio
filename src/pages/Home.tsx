@@ -13,7 +13,7 @@ const homeSchema = {
   '@type': 'WebSite',
   name: 'AROM STUDIO',
   url: 'https://aromstudio.vercel.app',
-  description: 'Premium web design and development agency based in Nashik, crafting high-performance websites and digital experiences for Indian businesses.',
+  description: 'Premium web design and development agency based in Nashik, crafting high-performance websites and digital experiences for businesses worldwide.',
   potentialAction: {
     '@type': 'SearchAction',
     target: 'https://aromstudio.vercel.app/search?q={search_term_string}',
@@ -26,7 +26,7 @@ export default function Home() {
     <main>
       <SEO
         title="Home"
-        description="AROM STUDIO is a premium web design and development agency based in Nashik, crafting high-performance websites and digital experiences for Indian businesses. Serving clients all over India."
+        description="AROM STUDIO is a premium web design and development agency based in Nashik, crafting high-performance websites and digital experiences for businesses worldwide."
         jsonLd={homeSchema}
       />
       <HeroSection />

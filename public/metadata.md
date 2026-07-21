@@ -61,12 +61,12 @@ Refund Policy — AROM STUDIO
 
 ### Homepage
 ```
-AROM STUDIO is a premium web design and development agency based in Nashik, India. Founded by Arnav Pagare. We build high-performance websites, web applications, and SaaS platforms. Serving clients all over India.
+AROM STUDIO is a premium web design and development agency based in Nashik, India. Founded by Arnav Pagare. We build high-performance websites, web applications, and SaaS platforms. Serving clients worldwide.
 ```
 
 ### About
 ```
-Learn about AROM STUDIO — founded by Arnav Pagare. Our story, mission, vision, values, and the process behind creating premium digital experiences for Indian businesses.
+Learn about AROM STUDIO — founded by Arnav Pagare. Our story, mission, vision, values, and the process behind creating premium digital experiences for businesses worldwide.
 ```
 
 ### Services
@@ -131,7 +131,7 @@ AROM STUDIO offers professional {service name}. Built with Next.js, TypeScript, 
 - professional portfolio website for freelancers
 - website redesign for small businesses India
 - SEO friendly website development agency
-- modern website design for Indian businesses
+- modern website design for businesses worldwide
 
 ## Canonical URLs
 

@@ -2,7 +2,7 @@
 
 ## The Story Behind AROM STUDIO
 
-AROM STUDIO was founded in 2026 by Arnav Pagare with a simple belief: every business deserves a premium digital presence. What started as a solo endeavor rooted in a passion for clean code and thoughtful design has grown into a trusted web design and development agency serving clients across India.
+AROM STUDIO was founded in 2026 by Arnav Pagare with a simple belief: every business deserves a premium digital presence. What started as a solo endeavor rooted in a passion for clean code and thoughtful design has grown into a trusted web design and development agency serving clients worldwide.
 
 The name "AROM" reflects the studio's philosophy — just as an aroma creates a lasting impression, AROM STUDIO builds digital experiences that leave a lasting mark on visitors. Every pixel, every interaction, and every line of code is crafted with intention.
 
@@ -10,7 +10,7 @@ In a landscape flooded with template-based websites and cookie-cutter solutions,
 
 ## The Founder
 
-Arnav Pagare is a web developer and digital designer based in Nashik, Maharashtra. Arnav founded AROM STUDIO with a vision to create premium digital experiences for businesses across India. Specializing in modern web technologies, Arnav brings fresh perspectives and the latest industry best practices to every project.
+Arnav Pagare is a web developer and digital designer based in Nashik, Maharashtra. Arnav founded AROM STUDIO with a vision to create premium digital experiences for businesses worldwide. Specializing in modern web technologies, Arnav brings fresh perspectives and the latest industry best practices to every project.
 
 As a solo developer, Arnav personally oversees every stage of the development process — from strategy, planning, and UI/UX design to frontend and backend development, performance optimization, deployment, and post-launch support. This hands-on approach ensures that every project receives the meticulous attention it deserves.
 
@@ -19,7 +19,7 @@ Arnav believes that exceptional websites are created at the intersection of desi
 ### Quick Facts
 
 - Founded in 2026 by Arnav Pagare
-- Based in Nashik, serving clients across India
+- Based in Nashik, serving clients worldwide
 - Expertise in Next.js, React, TypeScript, and Tailwind CSS
 - Focus on performance, accessibility, and SEO
 - Premium digital experiences for all business sizes
@@ -34,7 +34,7 @@ We believe that a website is not just a digital brochure — it is a 24/7 sales 
 
 To establish AROM STUDIO as one of India's most trusted premium digital agencies, recognized for craftsmanship, innovation, reliability, and long-term client partnerships. We are building a studio that clients recommend without hesitation — a brand synonymous with quality, integrity, and digital excellence.
 
-We envision a future where every Indian business, regardless of size or location, has access to world-class digital experiences that help them compete and thrive in the global marketplace.
+We envision a future where every business, regardless of size or location, has access to world-class digital experiences that help them compete and thrive in the global marketplace.
 
 ## Core Values
 
@@ -159,7 +159,7 @@ Priority support including bug fixes, performance monitoring, security updates, 
 
 AROM STUDIO is committed to continuous growth and evolution. Our roadmap includes expanding service offerings to include mobile app development, advanced AI integration services, and comprehensive digital marketing solutions. We aim to build a team of like-minded craftspeople who share our commitment to quality, while maintaining the founder-led attention to detail that defines our work.
 
-We are exploring partnerships with complementary agencies and tools to offer a more complete ecosystem of digital services. Our ultimate goal remains unchanged: to be the most trusted web design and development partner for Indian businesses building their digital future.
+We are exploring partnerships with complementary agencies and tools to offer a more complete ecosystem of digital services. Our ultimate goal remains unchanged: to be the most trusted web design and development partner for businesses building their digital future.
 
 ---
 
