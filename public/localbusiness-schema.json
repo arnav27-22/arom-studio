@@ -1,0 +1,93 @@
+{
+  "@context": "https://schema.org",
+  "@type": ["LocalBusiness", "ProfessionalService"],
+  "@id": "https://aromstudio.vercel.app/#localbusiness",
+  "name": "AROM STUDIO",
+  "alternateName": "AROM STUDIO Web Design Agency",
+  "url": "https://aromstudio.vercel.app",
+  "logo": "https://aromstudio.vercel.app/favicon.svg",
+  "image": "https://aromstudio.vercel.app/favicon.svg",
+  "description": "Premium web design and development agency based in Nashik, India. Specializing in custom websites, web applications, and digital experiences.",
+  "foundingDate": "2026",
+  "founder": {
+    "@type": "Person",
+    "name": "Arnav Pagare"
+  },
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Nashik",
+    "addressRegion": "Maharashtra",
+    "addressCountry": "IN"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": 19.9975,
+    "longitude": 73.7898
+  },
+  "telephone": "+91-8767990061",
+  "email": "aromstudio27@gmail.com",
+  "priceRange": "₹₹₹",
+  "areaServed": {
+    "@type": "Country",
+    "name": "India"
+  },
+  "serviceArea": [
+    {
+      "@type": "City",
+      "name": "Nashik"
+    },
+    {
+      "@type": "City",
+      "name": "Mumbai"
+    },
+    {
+      "@type": "City",
+      "name": "Pune"
+    }
+  ],
+  "openingHoursSpecification": {
+    "@type": "OpeningHoursSpecification",
+    "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+    "opens": "10:00",
+    "closes": "19:00"
+  },
+  "sameAs": [
+    "https://www.instagram.com/aromstudio.web/",
+    "https://wa.me/918767990061"
+  ],
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "telephone": "+91-8767990061",
+    "contactType": "sales",
+    "email": "aromstudio27@gmail.com",
+    "availableLanguage": ["English", "Hindi", "Marathi"]
+  },
+  "makesOffer": [
+    {
+      "@type": "Offer",
+      "itemOffered": { "@type": "Service", "name": "Custom Website Development" }
+    },
+    {
+      "@type": "Offer",
+      "itemOffered": { "@type": "Service", "name": "UI/UX Design" }
+    },
+    {
+      "@type": "Offer",
+      "itemOffered": { "@type": "Service", "name": "E-commerce Development" }
+    },
+    {
+      "@type": "Offer",
+      "itemOffered": { "@type": "Service", "name": "SaaS Development" }
+    },
+    {
+      "@type": "Offer",
+      "itemOffered": { "@type": "Service", "name": "SEO Optimization" }
+    }
+  ],
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.9",
+    "reviewCount": "25",
+    "bestRating": "5"
+  }
+}

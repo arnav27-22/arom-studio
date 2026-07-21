@@ -22,9 +22,9 @@
       form-action 'self';
     " />
     <title>AROM STUDIO — Premium Digital Agency</title>
-    <meta name="description" content="AROM STUDIO is a premium web design and development agency crafting high-performance websites and digital experiences for Indian businesses." />
+    <meta name="description" content="AROM STUDIO is a premium web design and development agency based in Nashik, crafting high-performance websites and digital experiences for Indian businesses." />
     <meta property="og:title" content="AROM STUDIO — Premium Digital Agency" />
-    <meta property="og:description" content="AROM STUDIO is a premium web design and development agency crafting high-performance websites and digital experiences for Indian businesses." />
+    <meta property="og:description" content="AROM STUDIO is a premium web design and development agency based in Nashik, crafting high-performance websites and digital experiences for Indian businesses." />
     <meta property="og:image" content="https://aromstudio.vercel.app/favicon.svg" />
     <meta property="og:url" content="https://aromstudio.vercel.app/" />
     <meta property="og:type" content="website" />
@@ -46,22 +46,207 @@
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "AROM STUDIO",
-      "url": "https://aromstudio.vercel.app",
-      "logo": "https://aromstudio.vercel.app/favicon.svg",
-      "description": "Premium web design and development agency based in India. Crafting high-performance websites and digital experiences.",
-      "founder": { "@type": "Person", "name": "Arnav Pagare" },
-      "contactPoint": {
-        "@type": "ContactPoint",
-        "telephone": "+91-8767990061",
-        "contactType": "sales",
-        "email": "aromstudio27@gmail.com",
-        "availableLanguage": ["English", "Hindi"]
-      },
-      "sameAs": [
-        "https://www.instagram.com/aromstudio.web/",
-        "https://wa.me/918767990061"
+      "@graph": [
+        {
+          "@type": ["Organization", "LocalBusiness", "ProfessionalService"],
+          "@id": "https://aromstudio.vercel.app/#organization",
+          "name": "AROM STUDIO",
+          "alternateName": "AROM STUDIO Web Design Agency",
+          "url": "https://aromstudio.vercel.app",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://aromstudio.vercel.app/favicon.svg",
+            "caption": "AROM STUDIO logo"
+          },
+          "image": "https://aromstudio.vercel.app/favicon.svg",
+          "description": "Premium web design and development agency based in Nashik, India. Founded by Arnav Pagare, crafting high-performance websites, web applications, and digital experiences.",
+          "slogan": "A digital studio crafting premium experiences.",
+          "foundingDate": "2026",
+          "founder": {
+            "@type": "Person",
+            "@id": "https://aromstudio.vercel.app/#person",
+            "name": "Arnav Pagare",
+            "jobTitle": "Founder & Solo Developer",
+            "url": "https://aromstudio.vercel.app/about"
+          },
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Nashik",
+            "addressRegion": "Maharashtra",
+            "addressCountry": "IN"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": 19.9975,
+            "longitude": 73.7898
+          },
+          "telephone": "+91-8767990061",
+          "email": "aromstudio27@gmail.com",
+          "priceRange": "\u20B9\u20B9\u20B9",
+          "openingHoursSpecification": {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+            "opens": "10:00",
+            "closes": "19:00"
+          },
+          "contactPoint": [
+            {
+              "@type": "ContactPoint",
+              "telephone": "+91-8767990061",
+              "contactType": "sales",
+              "email": "aromstudio27@gmail.com",
+              "availableLanguage": ["English", "Hindi", "Marathi"]
+            },
+            {
+              "@type": "ContactPoint",
+              "telephone": "+91-8767990061",
+              "contactType": "customer support",
+              "email": "aromstudio27@gmail.com",
+              "availableLanguage": ["English", "Hindi", "Marathi"]
+            }
+          ],
+          "sameAs": [
+            "https://www.instagram.com/aromstudio.web/",
+            "https://wa.me/918767990061"
+          ],
+          "areaServed": { "@type": "Country", "name": "India" },
+          "knowsAbout": [
+            "Web Design", "Web Development", "React", "Next.js",
+            "UI/UX Design", "E-commerce", "SaaS", "SEO",
+            "Performance Optimization", "AI Integration"
+          ],
+          "keywords": "web design agency, web development agency, Next.js developer, React developer, Nashik web designer, premium websites",
+          "makesOffer": [
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Custom Website Development" } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "UI/UX Design" } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "E-commerce Development" } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "SaaS Development" } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "SEO Optimization" } }
+          ],
+          "serviceArea": { "@type": "Country", "name": "India" }
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://aromstudio.vercel.app/#website",
+          "name": "AROM STUDIO",
+          "alternateName": "AROM STUDIO \u2014 Premium Digital Agency",
+          "url": "https://aromstudio.vercel.app",
+          "description": "Premium web design and development agency based in Nashik, India. Building high-performance websites, web applications, and SaaS platforms.",
+          "inLanguage": "en-IN",
+          "publisher": { "@id": "https://aromstudio.vercel.app/#organization" },
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": {
+              "@type": "EntryPoint",
+              "urlTemplate": "https://aromstudio.vercel.app/search?q={search_term_string}"
+            },
+            "query-input": {
+              "@type": "PropertyValueSpecification",
+              "valueRequired": "http://schema.org/True",
+              "valueName": "search_term_string"
+            }
+          }
+        },
+        {
+          "@type": "Person",
+          "@id": "https://aromstudio.vercel.app/#person",
+          "name": "Arnav Pagare",
+          "givenName": "Arnav",
+          "familyName": "Pagare",
+          "jobTitle": "Founder & Solo Developer",
+          "description": "Founder and solo developer behind AROM STUDIO, a premium web design and development agency based in Nashik, India. Specializing in Next.js, React, TypeScript, and Tailwind CSS.",
+          "url": "https://aromstudio.vercel.app/about",
+          "sameAs": [
+            "https://www.instagram.com/aromstudio.web/",
+            "https://wa.me/918767990061"
+          ],
+          "worksFor": { "@id": "https://aromstudio.vercel.app/#organization" },
+          "knowsAbout": ["Web Development", "Next.js", "React", "TypeScript", "Tailwind CSS", "UI/UX Design", "SEO"],
+          "homeLocation": { "@type": "City", "name": "Nashik", "addressCountry": "IN" },
+          "nationality": { "@type": "Country", "name": "India" }
+        },
+        {
+          "@type": "Service",
+          "@id": "https://aromstudio.vercel.app/services/business-websites#service",
+          "name": "Custom Business Website Development",
+          "description": "Custom business websites that establish credibility and drive leads. Includes UI/UX design, responsive development, SEO optimization, and 1 Year Support.",
+          "provider": { "@id": "https://aromstudio.vercel.app/#organization" },
+          "serviceType": "Web Design and Development",
+          "areaServed": { "@type": "Country", "name": "India" },
+          "url": "https://aromstudio.vercel.app/services/business-websites"
+        },
+        {
+          "@type": "Service",
+          "name": "E-commerce Website Development",
+          "description": "Scalable online stores with payment integration (Razorpay/Stripe) and inventory management. Built with Next.js and TypeScript.",
+          "provider": { "@id": "https://aromstudio.vercel.app/#organization" },
+          "serviceType": "E-commerce Development",
+          "areaServed": { "@type": "Country", "name": "India" },
+          "url": "https://aromstudio.vercel.app/services/ecommerce"
+        },
+        {
+          "@type": "Service",
+          "name": "Custom Web Application Development",
+          "description": "Tailored web applications with full-stack development, database design, APIs, and cloud deployment.",
+          "provider": { "@id": "https://aromstudio.vercel.app/#organization" },
+          "serviceType": "Web Application Development",
+          "areaServed": { "@type": "Country", "name": "India" },
+          "url": "https://aromstudio.vercel.app/services/web-applications"
+        },
+        {
+          "@type": "Service",
+          "name": "SaaS Platform Development",
+          "description": "Multi-tenant SaaS platforms with subscription billing, user management, and scalable infrastructure.",
+          "provider": { "@id": "https://aromstudio.vercel.app/#organization" },
+          "serviceType": "SaaS Development",
+          "areaServed": { "@type": "Country", "name": "India" },
+          "url": "https://aromstudio.vercel.app/services/saas-platforms"
+        },
+        {
+          "@type": "Service",
+          "name": "UI/UX Design Services",
+          "description": "User-centered design with research, wireframing, prototyping, and design systems.",
+          "provider": { "@id": "https://aromstudio.vercel.app/#organization" },
+          "serviceType": "UI/UX Design",
+          "areaServed": { "@type": "Country", "name": "India" },
+          "url": "https://aromstudio.vercel.app/services/ui-ux-design"
+        },
+        {
+          "@type": "Service",
+          "name": "Website Redesign Services",
+          "description": "Full transformation of existing websites with modern UI, performance optimization, and SEO improvements.",
+          "provider": { "@id": "https://aromstudio.vercel.app/#organization" },
+          "serviceType": "Website Redesign",
+          "areaServed": { "@type": "Country", "name": "India" },
+          "url": "https://aromstudio.vercel.app/services/website-redesign"
+        },
+        {
+          "@type": "Service",
+          "name": "SEO Optimization Services",
+          "description": "Technical and on-page SEO to improve search rankings and drive organic traffic.",
+          "provider": { "@id": "https://aromstudio.vercel.app/#organization" },
+          "serviceType": "SEO Optimization",
+          "areaServed": { "@type": "Country", "name": "India" },
+          "url": "https://aromstudio.vercel.app/services/seo-optimization"
+        },
+        {
+          "@type": "Service",
+          "name": "Website Performance Optimization",
+          "description": "Speed optimization targeting Lighthouse 95+ scores and improved Core Web Vitals.",
+          "provider": { "@id": "https://aromstudio.vercel.app/#organization" },
+          "serviceType": "Performance Optimization",
+          "areaServed": { "@type": "Country", "name": "India" },
+          "url": "https://aromstudio.vercel.app/services/performance-optimization"
+        },
+        {
+          "@type": "Service",
+          "name": "AI Integration Services",
+          "description": "AI-powered chatbots, content generation, smart search, and personalization features.",
+          "provider": { "@id": "https://aromstudio.vercel.app/#organization" },
+          "serviceType": "AI Integration",
+          "areaServed": { "@type": "Country", "name": "India" },
+          "url": "https://aromstudio.vercel.app/services/ai-integration"
+        }
       ]
     }
     </script>

@@ -1,0 +1,25 @@
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "@id": "https://aromstudio.vercel.app/#breadcrumb",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://aromstudio.vercel.app/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Services",
+      "item": "https://aromstudio.vercel.app/services"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Business Websites",
+      "item": "https://aromstudio.vercel.app/services/business-websites"
+    }
+  ]
+}

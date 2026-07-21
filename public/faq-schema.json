@@ -1,0 +1,167 @@
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "@id": "https://aromstudio.vercel.app/faq#faq",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is AROM STUDIO?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "AROM STUDIO is a premium web design and development agency based in Nashik, India, founded by Arnav Pagare. We specialize in building high-performance websites, web applications, SaaS platforms, and digital experiences for startups, businesses, and creators. Every project targets Lighthouse 95+ scores and includes 1 Year Support."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Who is the founder of AROM STUDIO?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "AROM STUDIO was founded by Arnav Pagare, a solo developer and designer based in Nashik, India. Arnav personally oversees every stage of the development process from strategy and design to development, deployment, and post-launch support."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What services does AROM STUDIO offer?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "AROM STUDIO offers custom website development, UI/UX design, React and Next.js development, Tailwind CSS development, e-commerce websites, SaaS platforms, web applications, website redesign, SEO optimization, performance optimization, AI integration, portfolio websites, landing pages, and website maintenance services."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Where is AROM STUDIO based?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "AROM STUDIO is based in Nashik, Maharashtra, India. We work with clients across India and globally, serving all major cities including Mumbai, Delhi, Bangalore, Hyderabad, Pune, Chennai, and Kolkata."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What technology stack does AROM STUDIO use?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "We use a modern technology stack including Next.js, React, TypeScript, and Tailwind CSS for frontend development, Node.js and Supabase for backend, and Vercel with Cloudflare for deployment. This stack delivers faster performance, better SEO, and easier maintenance compared to traditional CMS platforms."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How much does a website cost at AROM STUDIO?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Pricing starts from ₹12,000 for a basic starter website and goes up to ₹1,00,000+ for enterprise solutions. The most popular plan is the Professional Website at ₹25,000 which includes up to 10 pages, custom design, SEO optimization, and 1 Year Support. Contact us for a detailed quote based on your requirements."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How long does it take to build a website?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A standard business website typically takes 3-6 weeks from discovery to launch. More complex web applications and SaaS platforms can take 8-16 weeks depending on the scope. We provide a detailed timeline during the discovery phase."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does AROM STUDIO provide website maintenance?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, every project includes 1 Year of priority support including bug fixes, updates, performance monitoring, and content updates. Extended maintenance plans are also available for ongoing support."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the development process at AROM STUDIO?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Our process consists of six phases: Discovery (1 week to understand goals and audience), Design (1-2 weeks for wireframes and visual design in Figma), Development (2-4 weeks building with Next.js and TypeScript), Testing (1 week for QA across devices), Launch (3 days for zero-downtime deployment), and Support (1 Year included)."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do you provide hosting services?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, we provide hosting on Vercel with Cloudflare CDN. This includes SSL certificates, global CDN distribution, automatic backups, and 99.9% uptime guarantee. We handle all technical setup and configuration."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Will my website be mobile-friendly?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, every website we build is mobile-first and fully responsive. We design and test across all device sizes including smartphones, tablets, and desktops to ensure a consistent and optimized experience for every user."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does AROM STUDIO offer SEO services?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, we offer comprehensive SEO optimization including technical SEO audits, on-page optimization, keyword research, meta tags and structured data, XML sitemap configuration, Google Search Console setup, and quarterly performance reports. SEO is also built into every website we develop."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What makes AROM STUDIO different from other agencies?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "AROM STUDIO stands out through our commitment to quality over quantity, modern tech stack (Next.js/React/TypeScript instead of outdated CMS), performance obsession targeting Lighthouse 95+, 1 Year Support included with every project, transparent communication, and a founder-led approach where Arnav personally handles every project from start to finish."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do you work with startups?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Absolutely. We work with startups, early-stage companies, and founders to build MVPs, minimum viable products, and full-scale platforms. Our SaaS and web application services are particularly suited for startup needs."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can you redesign my existing website?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, we offer full website redesign services. We start with a comprehensive audit of your current website, then create a modern, high-performance redesign with improved UI, better performance, and enhanced SEO. We handle migration and redirects to preserve your search rankings."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What payment options are available?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "We offer flexible payment plans typically structured as 50% upfront to begin the project and 50% upon completion. We accept bank transfers, UPI, and other digital payment methods."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How can I contact AROM STUDIO?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "You can contact us via email at aromstudio27@gmail.com, WhatsApp at +91 8767990061, through the contact form on our website, or via Instagram at @aromstudio.web. We typically respond within 24 hours on business days."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does AROM STUDIO provide custom domain setup?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, we offer free domain registration for the first year (terms and conditions apply) with our Professional and higher plans. We also provide custom domain configuration with SSL certificates and professional email setup."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What accessibility standards do you follow?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "We build websites following WCAG 2.2 AA accessibility standards. This includes proper heading hierarchy, keyboard navigation, screen reader compatibility, color contrast compliance, and accessible forms. Accessibility is integrated from the design phase, not added as an afterthought."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I update the website content myself after launch?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, we provide training sessions on how to manage content updates. Depending on your plan, we can integrate a CMS (Content Management System) that allows you to update text, images, and other content without technical knowledge. We also handle content updates as part of our support package."
+      }
+    }
+  ]
+}

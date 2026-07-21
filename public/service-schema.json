@@ -1,0 +1,149 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Service",
+      "@id": "https://aromstudio.vercel.app/services/business-websites#service",
+      "name": "Custom Business Website Development",
+      "description": "Custom business websites that establish credibility, drive leads, and represent brands with premium design and engineering. Includes UI/UX design, responsive development, SEO optimization, and 1 Year Support.",
+      "provider": { "@id": "https://aromstudio.vercel.app/#organization" },
+      "serviceType": "Web Design and Development",
+      "areaServed": { "@type": "Country", "name": "India" },
+      "offers": {
+        "@type": "Offer",
+        "price": "12000",
+        "priceCurrency": "INR",
+        "priceValidUntil": "2027-12-31"
+      },
+      "url": "https://aromstudio.vercel.app/services/business-websites"
+    },
+    {
+      "@type": "Service",
+      "@id": "https://aromstudio.vercel.app/services/ecommerce#service",
+      "name": "E-commerce Website Development",
+      "description": "Scalable online stores with product management, secure checkout, payment integration (Razorpay/Stripe), inventory tracking, and order management. Built with Next.js and TypeScript.",
+      "provider": { "@id": "https://aromstudio.vercel.app/#organization" },
+      "serviceType": "E-commerce Development",
+      "areaServed": { "@type": "Country", "name": "India" },
+      "offers": {
+        "@type": "Offer",
+        "price": "25000",
+        "priceCurrency": "INR",
+        "priceValidUntil": "2027-12-31"
+      },
+      "url": "https://aromstudio.vercel.app/services/ecommerce"
+    },
+    {
+      "@type": "Service",
+      "@id": "https://aromstudio.vercel.app/services/web-applications#service",
+      "name": "Custom Web Application Development",
+      "description": "Tailored web applications with full-stack development, database design, RESTful and GraphQL APIs, user authentication, real-time features, and cloud deployment.",
+      "provider": { "@id": "https://aromstudio.vercel.app/#organization" },
+      "serviceType": "Web Application Development",
+      "areaServed": { "@type": "Country", "name": "India" },
+      "url": "https://aromstudio.vercel.app/services/web-applications"
+    },
+    {
+      "@type": "Service",
+      "@id": "https://aromstudio.vercel.app/services/saas-platforms#service",
+      "name": "SaaS Platform Development",
+      "description": "Multi-tenant SaaS platforms with subscription billing (Stripe), user management, analytics dashboards, RESTful API development, and scalable cloud infrastructure.",
+      "provider": { "@id": "https://aromstudio.vercel.app/#organization" },
+      "serviceType": "SaaS Development",
+      "areaServed": { "@type": "Country", "name": "India" },
+      "url": "https://aromstudio.vercel.app/services/saas-platforms"
+    },
+    {
+      "@type": "Service",
+      "@id": "https://aromstudio.vercel.app/services/ui-ux-design#service",
+      "name": "UI/UX Design Services",
+      "description": "User-centered design combining aesthetics with usability. Includes user research, wireframing, prototyping, visual design, design systems, and developer handoff.",
+      "provider": { "@id": "https://aromstudio.vercel.app/#organization" },
+      "serviceType": "UI/UX Design",
+      "areaServed": { "@type": "Country", "name": "India" },
+      "url": "https://aromstudio.vercel.app/services/ui-ux-design"
+    },
+    {
+      "@type": "Service",
+      "@id": "https://aromstudio.vercel.app/services/website-redesign#service",
+      "name": "Website Redesign Services",
+      "description": "Full transformation of existing websites into modern, high-performance digital experiences. Includes audit, modern UI refresh, performance optimization, and SEO improvements.",
+      "provider": { "@id": "https://aromstudio.vercel.app/#organization" },
+      "serviceType": "Website Redesign",
+      "areaServed": { "@type": "Country", "name": "India" },
+      "url": "https://aromstudio.vercel.app/services/website-redesign"
+    },
+    {
+      "@type": "Service",
+      "@id": "https://aromstudio.vercel.app/services/seo-optimization#service",
+      "name": "SEO Optimization Services",
+      "description": "Technical and on-page SEO to improve search rankings and drive organic traffic. Includes SEO audit, keyword research, meta tags, structured data, and Google Search Console setup.",
+      "provider": { "@id": "https://aromstudio.vercel.app/#organization" },
+      "serviceType": "SEO Optimization",
+      "areaServed": { "@type": "Country", "name": "India" },
+      "url": "https://aromstudio.vercel.app/services/seo-optimization"
+    },
+    {
+      "@type": "Service",
+      "@id": "https://aromstudio.vercel.app/services/performance-optimization#service",
+      "name": "Website Performance Optimization",
+      "description": "Speed optimization to achieve Lighthouse 95+ scores and improve Core Web Vitals. Includes audit, image optimization, code splitting, caching, and CDN configuration.",
+      "provider": { "@id": "https://aromstudio.vercel.app/#organization" },
+      "serviceType": "Performance Optimization",
+      "areaServed": { "@type": "Country", "name": "India" },
+      "url": "https://aromstudio.vercel.app/services/performance-optimization"
+    },
+    {
+      "@type": "Service",
+      "@id": "https://aromstudio.vercel.app/services/ai-integration#service",
+      "name": "AI Integration Services",
+      "description": "AI-powered features including chatbots, content generation, smart search, personalization, and custom AI model integration for web applications.",
+      "provider": { "@id": "https://aromstudio.vercel.app/#organization" },
+      "serviceType": "AI Integration",
+      "areaServed": { "@type": "Country", "name": "India" },
+      "url": "https://aromstudio.vercel.app/services/ai-integration"
+    },
+    {
+      "@type": "Service",
+      "name": "Next.js Development",
+      "description": "Professional Next.js development services for building fast, SEO-optimized, and scalable web applications with server-side rendering and static generation.",
+      "provider": { "@id": "https://aromstudio.vercel.app/#organization" },
+      "serviceType": "Next.js Development"
+    },
+    {
+      "@type": "Service",
+      "name": "React Development",
+      "description": "Custom React development services for building interactive user interfaces and single-page applications with modern JavaScript and TypeScript.",
+      "provider": { "@id": "https://aromstudio.vercel.app/#organization" },
+      "serviceType": "React Development"
+    },
+    {
+      "@type": "Service",
+      "name": "Tailwind CSS Development",
+      "description": "Professional Tailwind CSS development for building responsive, utility-first UI with custom design systems and optimized production builds.",
+      "provider": { "@id": "https://aromstudio.vercel.app/#organization" },
+      "serviceType": "Tailwind CSS Development"
+    },
+    {
+      "@type": "Service",
+      "name": "Landing Page Design and Development",
+      "description": "High-converting landing pages designed and developed for campaigns, product launches, and lead generation with optimized performance.",
+      "provider": { "@id": "https://aromstudio.vercel.app/#organization" },
+      "serviceType": "Landing Page Development"
+    },
+    {
+      "@type": "Service",
+      "name": "Portfolio Website Development",
+      "description": "Premium portfolio websites for creators, freelancers, and agencies showcasing work with elegant design and smooth interactions.",
+      "provider": { "@id": "https://aromstudio.vercel.app/#organization" },
+      "serviceType": "Portfolio Website Development"
+    },
+    {
+      "@type": "Service",
+      "name": "Website Maintenance",
+      "description": "Ongoing website maintenance including updates, security patches, performance monitoring, content updates, and technical support.",
+      "provider": { "@id": "https://aromstudio.vercel.app/#organization" },
+      "serviceType": "Website Maintenance"
+    }
+  ]
+}

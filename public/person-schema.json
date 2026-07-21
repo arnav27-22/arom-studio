@@ -1,0 +1,58 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "@id": "https://aromstudio.vercel.app/#person",
+  "name": "Arnav Pagare",
+  "givenName": "Arnav",
+  "familyName": "Pagare",
+  "jobTitle": "Founder & Solo Developer",
+  "description": "Arnav Pagare is the founder and solo developer behind AROM STUDIO, a premium web design and development agency based in Nashik, India. He specializes in building high-performance websites, web applications, and digital experiences using Next.js, React, TypeScript, and Tailwind CSS.",
+  "url": "https://aromstudio.vercel.app/about",
+  "sameAs": [
+    "https://www.instagram.com/aromstudio.web/",
+    "https://wa.me/918767990061"
+  ],
+  "worksFor": {
+    "@id": "https://aromstudio.vercel.app/#organization"
+  },
+  "knowsAbout": [
+    "Web Development",
+    "Next.js",
+    "React",
+    "TypeScript",
+    "Tailwind CSS",
+    "UI/UX Design",
+    "Frontend Development",
+    "Full-Stack Development",
+    "SEO Optimization",
+    "Website Performance",
+    "JavaScript",
+    "Node.js",
+    "Framer Motion",
+    "GSAP"
+  ],
+  "alumniOf": [],
+  "affiliation": {
+    "@id": "https://aromstudio.vercel.app/#organization"
+  },
+  "image": {
+    "@type": "ImageObject",
+    "url": "https://aromstudio.vercel.app/favicon.svg",
+    "caption": "Arnav Pagare — Founder of AROM STUDIO"
+  },
+  "birthPlace": {
+    "@type": "City",
+    "name": "Nashik",
+    "addressCountry": "IN"
+  },
+  "homeLocation": {
+    "@type": "City",
+    "name": "Nashik",
+    "addressCountry": "IN"
+  },
+  "nationality": {
+    "@type": "Country",
+    "name": "India"
+  },
+  "gender": "Male"
+}

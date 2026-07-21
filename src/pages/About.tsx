@@ -32,8 +32,8 @@ export default function About() {
   return (
     <main className="pt-32">
       <SEO
-        title="About"
-        description="AROM STUDIO was founded by Arnav Pagare — a premium web design and development agency based in India. Learn our story, mission, and values."
+        title="About AROM STUDIO — Founder, Mission & Values | Arnav Pagare"
+        description="Learn about AROM STUDIO — founded by Arnav Pagare. Our story, mission, vision, values, and the process behind creating premium digital experiences for Indian businesses."
       />
       {/* Hero */}
       <section className="relative min-h-screen flex items-center overflow-hidden">
@@ -100,8 +100,8 @@ export default function About() {
                   {/* Quick Facts */}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-8">
                     {[
-                      { icon: <Star className="h-4 w-4" />, label: '3+ Years', desc: 'Experience' },
-                      { icon: <Code2 className="h-4 w-4" />, label: '50+', desc: 'Projects Delivered' },
+                      { icon: <Star className="h-4 w-4" />, label: '2026', desc: 'Founded' },
+                      { icon: <Globe className="h-4 w-4" />, label: 'All Over', desc: 'India' },
                       { icon: <Globe className="h-4 w-4" />, label: 'India', desc: 'Serving Clients Across' },
                       { icon: <Clock className="h-4 w-4" />, label: '1 Year', desc: 'Premium Support' },
                     ].map((fact) => (

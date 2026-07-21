@@ -1,0 +1,73 @@
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "@id": "https://aromstudio.vercel.app/#website",
+  "name": "AROM STUDIO",
+  "alternateName": "AROM STUDIO — Premium Digital Agency",
+  "url": "https://aromstudio.vercel.app",
+  "description": "AROM STUDIO is a premium web design and development agency based in Nashik, India. We build high-performance websites, web applications, and SaaS platforms.",
+  "inLanguage": "en-IN",
+  "publisher": {
+    "@id": "https://aromstudio.vercel.app/#organization"
+  },
+  "potentialAction": [
+    {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://aromstudio.vercel.app/search?q={search_term_string}"
+      },
+      "query-input": {
+        "@type": "PropertyValueSpecification",
+        "valueRequired": "http://schema.org/True",
+        "valueName": "search_term_string"
+      }
+    },
+    {
+      "@type": "ViewAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://aromstudio.vercel.app/"
+      }
+    }
+  ],
+  "about": {
+    "@id": "https://aromstudio.vercel.app/#organization"
+  },
+  "mainEntity": {
+    "@id": "https://aromstudio.vercel.app/#organization"
+  },
+  "isAccessibleForFree": true,
+  "hasPart": [
+    {
+      "@type": "WebPage",
+      "name": "Home",
+      "url": "https://aromstudio.vercel.app/"
+    },
+    {
+      "@type": "WebPage",
+      "name": "Services",
+      "url": "https://aromstudio.vercel.app/services"
+    },
+    {
+      "@type": "WebPage",
+      "name": "About",
+      "url": "https://aromstudio.vercel.app/about"
+    },
+    {
+      "@type": "WebPage",
+      "name": "Contact",
+      "url": "https://aromstudio.vercel.app/contact"
+    },
+    {
+      "@type": "WebPage",
+      "name": "Pricing",
+      "url": "https://aromstudio.vercel.app/pricing"
+    },
+    {
+      "@type": "WebPage",
+      "name": "FAQ",
+      "url": "https://aromstudio.vercel.app/faq"
+    }
+  ]
+}

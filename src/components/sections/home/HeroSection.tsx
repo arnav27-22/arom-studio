@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowUpRight, Check, Shield, Zap, Globe, MapPin } from 'lucide-react'
+import { ArrowUpRight, Check, Shield, Zap, Globe } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { useUserCity } from '../../../hooks/useUserCity'
 
 function TypeWriter({ texts, typingSpeed = 80, deletingSpeed = 50, pauseDuration = 2000 }: { texts: string[]; typingSpeed?: number; deletingSpeed?: number; pauseDuration?: number }) {
   const [displayText, setDisplayText] = useState('')
@@ -87,8 +86,6 @@ function BlurText({ text, delay = 0 }: { text: string; delay?: number }) {
 }
 
 export function HeroSection() {
-  const { city, loading } = useUserCity()
-
   return (
     <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
 
@@ -102,13 +99,7 @@ export function HeroSection() {
         >
           <div className="glass inline-flex items-center gap-2 rounded-full px-4 py-1.5">
             <span className="bg-white text-black text-xs font-semibold px-3 py-0.5 rounded-full">Premium</span>
-            <span className="text-xs text-white/80 font-body font-light inline-flex items-center gap-1">
-              {!loading && city ? (
-                <><MapPin className="h-3 w-3 text-accent" /> Web Design & Development — {city}</>
-              ) : (
-                'Web Design & Development Agency — India'
-              )}
-            </span>
+            <span className="text-xs text-white/80 font-body font-light">Web Design & Development Agency — India</span>
           </div>
         </motion.div>
 
@@ -120,7 +111,7 @@ export function HeroSection() {
           className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-8"
         >
           {[
-            { icon: <Check className="h-3 w-3" />, text: '3+ Years Experience' },
+            { icon: <Check className="h-3 w-3" />, text: 'Serving All Over India' },
             { icon: <Shield className="h-3 w-3" />, text: 'Free Domain Included' },
             { icon: <Zap className="h-3 w-3" />, text: 'Lighthouse 95+' },
             { icon: <Globe className="h-3 w-3" />, text: 'Custom Domain Setup' },
@@ -201,14 +192,14 @@ export function HeroSection() {
               <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
             </svg>
             <p className="font-heading text-3xl sm:text-5xl md:text-6xl text-white tracking-[-1px] leading-none">3+</p>
-            <p className="text-[10px] sm:text-sm text-white/60 font-body font-light mt-1 sm:mt-1.5">Years Experience</p>
+            <p className="text-[10px] sm:text-sm text-white/60 font-body font-light mt-1 sm:mt-1.5">Nationwide Coverage</p>
           </div>
           <div className="glass rounded-[20px] p-3 sm:p-4 md:p-5">
             <svg className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-white/80 mb-2 sm:mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
             </svg>
-            <p className="font-heading text-3xl sm:text-5xl md:text-6xl text-white tracking-[-1px] leading-none">50+</p>
-            <p className="text-[10px] sm:text-sm text-white/60 font-body font-light mt-1 sm:mt-1.5">Projects Delivered</p>
+            <p className="font-heading text-3xl sm:text-5xl md:text-6xl text-white tracking-[-1px] leading-none">All</p>
+            <p className="text-[10px] sm:text-sm text-white/60 font-body font-light mt-1 sm:mt-1.5">Over India</p>
           </div>
           <div className="glass rounded-[20px] p-3 sm:p-4 md:p-5">
             <svg className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-white/80 mb-2 sm:mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
