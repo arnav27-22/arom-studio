@@ -274,7 +274,7 @@ export default function Agreement() {
 
             {/* Sections 6-20 in compact format */}
             {[
-              { id: 'communication', title: '6. Project Communication', content: 'The Client should provide timely feedback and approvals to avoid unnecessary delays. Preferred communication methods include: Email, WhatsApp, Google Meet, Phone Call.' },
+              { id: 'communication', title: '6. Project Communication', content: 'The Client should provide timely feedback and approvals to avoid unnecessary delays. Preferred communication methods include: Email, WhatsApp, Google Meet, Zoom, Phone Call.' },
               { id: 'revisions', title: '7. Revisions', content: 'Unless otherwise agreed in writing: Minor revisions are included within the agreed revision limit. Requests outside the original scope may require additional charges. Major redesigns after approval are treated as new work.' },
               { id: 'changes', title: '8. Change Requests', content: 'If the Client requests additional pages, new features, major design changes, third-party integrations, or functional changes, AROM Studio will provide a revised quotation before starting the additional work.' },
               { id: 'domain', title: '9. Domain & Hosting', content: 'Unless specifically included in the proposal, domain registration and hosting purchase are the Client\'s responsibility. If AROM Studio assists with these services, any third-party costs will be billed separately.' },

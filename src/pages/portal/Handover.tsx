@@ -1,33 +1,37 @@
+import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Globe, Lock, Server, Link2, FileText, Shield, Clock, Download, ExternalLink } from 'lucide-react'
+import { Globe, Lock, Server, Link2, FileText, Shield, Clock, Download, ExternalLink, CheckCircle2 } from 'lucide-react'
 import Button from '../../components/ui/Button'
 import { cn } from '../../lib/cn'
 import { generateHandoverPDF } from '../../lib/professionalPDF'
 
-const handoverItems = [
-  { label: 'Website URL', value: 'https://yoursite.com', icon: Globe, color: 'from-blue-500/20 to-cyan-500/20' },
-  { label: 'Admin Login', value: 'https://yoursite.com/admin', icon: Lock, color: 'from-purple-500/20 to-pink-500/20' },
-  { label: 'Hosting Provider', value: 'Vercel + Cloudflare', icon: Server, color: 'from-green-500/20 to-emerald-500/20' },
-  { label: 'Domain Name', value: 'yoursite.com', icon: Link2, color: 'from-amber-500/20 to-orange-500/20' },
-  { label: 'Source Code', value: 'GitHub Repository', icon: ExternalLink, color: 'from-slate-500/20 to-gray-500/20' },
-  { label: 'Documentation', value: 'Project documentation & guides', icon: FileText, color: 'from-indigo-500/20 to-violet-500/20' },
+const hostingOptions = [
+  { value: 'Vercel + Cloudflare', label: 'Vercel + Cloudflare', desc: 'Recommended — modern stack' },
+  { value: 'Vercel + Cloudflare + Netlify', label: 'Vercel + Cloudflare + Netlify', desc: 'Multi-platform deployment' },
+  { value: 'Netlify', label: 'Netlify', desc: 'Simple & fast' },
+  { value: 'cPanel / Shared Hosting', label: 'cPanel / Shared Hosting', desc: 'Traditional hosting' },
+  { value: 'VPS / Dedicated', label: 'VPS / Dedicated', desc: 'Full server control' },
 ]
 
-const supportInfo = [
-  { label: 'Warranty', value: '30 Days', icon: Shield },
-  { label: 'Support Period', value: '1 Year Included', icon: Clock },
-  { label: 'Maintenance Plan', value: 'Optional — Contact us', icon: Server },
+const freeDomains = [
+  { url: 'https://yoursite.vercel.app', label: 'Vercel' },
+  { url: 'https://yoursite.netlify.app', label: 'Netlify' },
+  { url: 'https://yoursite.github.io', label: 'GitHub Pages' },
 ]
 
 export default function Handover() {
+  const [selectedHosting, setSelectedHosting] = useState(hostingOptions[0].value)
+  const [selectedDomain, setSelectedDomain] = useState(freeDomains[0].url)
+
   const handleDownloadPDF = () => {
+    const projectSlug = selectedDomain.match(/https:\/\/(.+?)\.(vercel|netlify|github)/)?.[1] || 'yoursite'
     generateHandoverPDF({
       clientName: 'Client',
       projectName: 'Website Project',
-      websiteUrl: 'https://yoursite.com',
-      adminUrl: 'https://yoursite.com/admin',
-      hostingProvider: 'Vercel + Cloudflare',
-      domainName: 'yoursite.com',
+      websiteUrl: selectedDomain,
+      adminUrl: `https://${projectSlug}.vercel.app/admin`,
+      hostingProvider: selectedHosting,
+      domainName: selectedDomain,
       sourceCode: 'GitHub Repository',
       documentation: 'Project documentation & guides',
       warrantyPeriod: '30 Days',
@@ -48,8 +52,70 @@ export default function Handover() {
         </Button>
       </div>
 
+      {/* Free Domain Selection */}
+      <div className="glass rounded-[24px] p-6 md:p-8 mb-6">
+        <h3 className="font-heading text-lg text-white mb-4">Free Domain (Subdomain)</h3>
+        <p className="text-xs text-white/40 font-body mb-4">Choose a free subdomain for your staging or production site:</p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {freeDomains.map((d) => (
+            <button
+              key={d.url}
+              onClick={() => setSelectedDomain(d.url)}
+              className={cn(
+                'glass rounded-[16px] p-4 text-left transition-all border',
+                selectedDomain === d.url
+                  ? 'border-accent/50 bg-accent/10'
+                  : 'border-white/5 hover:border-white/20'
+              )}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <Globe className={cn('h-4 w-4', selectedDomain === d.url ? 'text-accent' : 'text-white/30')} />
+                {selectedDomain === d.url && <CheckCircle2 className="h-4 w-4 text-accent" />}
+              </div>
+              <p className="text-xs text-white/50 font-body mb-1">{d.label}</p>
+              <p className="text-sm text-white/90 font-body break-all">{d.url}</p>
+            </button>
+          ))}
+        </div>
+        <p className="text-[10px] text-white/30 font-body mt-3">You can also use a custom domain (e.g., yoursite.com) — just provide the domain details.</p>
+      </div>
+
+      {/* Hosting Provider Selection */}
+      <div className="glass rounded-[24px] p-6 md:p-8 mb-6">
+        <h3 className="font-heading text-lg text-white mb-4">Hosting Provider</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {hostingOptions.map((opt) => (
+            <button
+              key={opt.value}
+              onClick={() => setSelectedHosting(opt.value)}
+              className={cn(
+                'glass rounded-[16px] p-4 text-left transition-all border',
+                selectedHosting === opt.value
+                  ? 'border-accent/50 bg-accent/10'
+                  : 'border-white/5 hover:border-white/20'
+              )}
+            >
+              <div className="flex items-center justify-between mb-1">
+                <Server className={cn('h-4 w-4', selectedHosting === opt.value ? 'text-accent' : 'text-white/30')} />
+                {selectedHosting === opt.value && <CheckCircle2 className="h-4 w-4 text-accent" />}
+              </div>
+              <p className="text-sm text-white/90 font-body">{opt.label}</p>
+              <p className="text-xs text-white/40 font-body">{opt.desc}</p>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Handover Details Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
-        {handoverItems.map((item, i) => {
+        {[
+          { label: 'Website URL', value: selectedDomain, icon: Globe, color: 'from-blue-500/20 to-cyan-500/20' },
+          { label: 'Admin Login', value: selectedDomain.replace('https://', 'https://') + '/admin', icon: Lock, color: 'from-purple-500/20 to-pink-500/20' },
+          { label: 'Hosting Provider', value: selectedHosting, icon: Server, color: 'from-green-500/20 to-emerald-500/20' },
+          { label: 'Domain Name', value: selectedDomain, icon: Link2, color: 'from-amber-500/20 to-orange-500/20' },
+          { label: 'Source Code', value: 'GitHub Repository', icon: ExternalLink, color: 'from-slate-500/20 to-gray-500/20' },
+          { label: 'Documentation', value: 'Project documentation & guides', icon: FileText, color: 'from-indigo-500/20 to-violet-500/20' },
+        ].map((item, i) => {
           const Icon = item.icon
           return (
             <motion.div
@@ -75,7 +141,11 @@ export default function Handover() {
 
       <h3 className="font-heading text-xl text-white mb-4">Support & Warranty</h3>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-10">
-        {supportInfo.map((item, i) => {
+        {[
+          { label: 'Warranty', value: '30 Days', icon: Shield },
+          { label: 'Support Period', value: '1 Year Included', icon: Clock },
+          { label: 'Maintenance Plan', value: 'Optional — Contact us', icon: Server },
+        ].map((item, i) => {
           const Icon = item.icon
           return (
             <motion.div

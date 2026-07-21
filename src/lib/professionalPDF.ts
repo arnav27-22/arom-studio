@@ -652,7 +652,7 @@ export function generateAgreementPDF(data: {
   // 6. Communication
   y = writeSection(doc, y, '6. Project Communication', [
     'The Client should provide timely feedback and approvals to avoid unnecessary delays.',
-    'Preferred communication methods include: Email, WhatsApp, Google Meet, Phone Call.',
+    'Preferred communication methods include: Email, WhatsApp, Google Meet, Zoom, Phone Call.',
   ], layout, true)
 
   // 7. Revisions
@@ -822,10 +822,19 @@ export function generateHandoverPDF(data: {
   ]
   y = writeTable(doc, y, headers, rows, layout)
 
+  y = writeSection(doc, y, 'Free Domain (Subdomain)', [
+    'A free subdomain is provided for staging or production:',
+    `  • ${data.websiteUrl}`,
+    '  • https://yoursite.netlify.app (if using Netlify)',
+    '  • https://yoursite.github.io (if using GitHub Pages)',
+    '',
+    'You can also connect a custom domain (e.g., yoursite.com) at any time.',
+  ], layout)
+
   y = writeSection(doc, y, 'Support & Warranty', [
-    `**Warranty Period:** ${data.warrantyPeriod}`,
-    `**Support Period:** ${data.supportPeriod}`,
-    `**Maintenance Plan:** ${data.maintenancePlan}`,
+    `Warranty Period: ${data.warrantyPeriod}`,
+    `Support Period: ${data.supportPeriod}`,
+    `Maintenance Plan: ${data.maintenancePlan}`,
     '',
     'For any support requests, please contact AROM Studio via email or WhatsApp.',
     'Response time is typically within 24 hours on business days.',
