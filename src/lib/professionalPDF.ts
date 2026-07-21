@@ -15,6 +15,13 @@ const BRAND = {
   accent2: { r: 37, g: 211, b: 102 },
 }
 
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December']
+
+function fmtDate(iso: string): string {
+  const [y, m, d] = iso.split('-')
+  return `${MONTHS[parseInt(m, 10) - 1]} ${parseInt(d, 10)}, ${y}`
+}
+
 export interface TableRow {
   cells: string[]
   isHeader?: boolean
@@ -580,9 +587,7 @@ export function generateAgreementPDF(data: {
     clientName: data.clientName || '[Client Name]',
     clientEmail: data.clientEmail,
     clientPhone: data.clientPhone,
-    date: data.effectiveDate
-      ? new Date(data.effectiveDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
-      : new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+    date: data.effectiveDate ? fmtDate(data.effectiveDate) : new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
     reference: `AGR-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`,
   })
 
@@ -596,9 +601,7 @@ export function generateAgreementPDF(data: {
   ]
   const services = data.selectedServices.length > 0 ? data.selectedServices : allServices
 
-  const effDate = data.effectiveDate
-    ? new Date(data.effectiveDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
-    : '_______________'
+  const effDate = data.effectiveDate ? fmtDate(data.effectiveDate) : '_______________'
 
   // Parties
   y = writeSection(doc, y, 'Parties', [
