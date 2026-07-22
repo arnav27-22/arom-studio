@@ -1,10 +1,22 @@
 import crypto from 'crypto'
 import { db } from '../_db.js'
 
-export default function handler(req, res) {
+function getBody(req) {
+  return new Promise((resolve) => {
+    if (req.body) return resolve(req.body)
+    let data = ''
+    req.on('data', (c) => data += c)
+    req.on('end', () => {
+      try { resolve(JSON.parse(data)) } catch { resolve({}) }
+    })
+  })
+}
+
+export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
-  const { type, label, page, sessionId } = req.body || {}
+  const body = await getBody(req)
+  const { type, label, page, sessionId } = body
 
   db.append('clicks', {
     id: crypto.randomUUID(),
