@@ -69,17 +69,17 @@ async function blobWrite(name, data) {
 }
 
 // Exported functions — use Blob when available, otherwise local /tmp
-export async function read(name) {
+async function read(name) {
   if (useBlob) return blobRead(name)
   return cachedRead(name)
 }
 
-export async function write(name, data) {
+async function write(name, data) {
   if (useBlob) await blobWrite(name, data)
   else cachedWrite(name, data)
 }
 
-export async function append(name, item) {
+async function append(name, item) {
   if (useBlob) {
     const existing = await blobRead(name)
     existing.push(item)
@@ -90,3 +90,5 @@ export async function append(name, item) {
   all.push(item)
   cachedWrite(name, all)
 }
+
+export const db = { read, write, append }
