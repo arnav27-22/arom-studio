@@ -30,7 +30,7 @@ export function AdminLogin({ onLogin }: { onLogin: () => void }) {
   }
 
   return (
-    <div className="min-h-screen bg-bg flex items-center justify-center p-4 font-body">
+    <div className="min-h-screen flex items-center justify-center p-4 font-body">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <div className="h-14 w-14 rounded-full glass flex items-center justify-center mx-auto mb-4">

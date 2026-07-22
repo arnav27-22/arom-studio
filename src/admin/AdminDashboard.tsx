@@ -29,7 +29,7 @@ export function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const section = sections.find((s) => s.id === active)
 
   return (
-    <div className="min-h-screen bg-bg text-text-primary font-body flex">
+    <div className="min-h-screen text-text-primary font-body flex">
       {/* Mobile overlay */}
       {sidebarOpen && <div className="fixed inset-0 bg-black/60 z-40 md:hidden" onClick={() => setSidebarOpen(false)} />}
 
