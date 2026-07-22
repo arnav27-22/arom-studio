@@ -1,6 +1,12 @@
 -- Run this entire SQL in Supabase SQL Editor
 
-CREATE TABLE IF NOT EXISTS visits (
+DROP TABLE IF EXISTS visits CASCADE;
+DROP TABLE IF EXISTS pdf_events CASCADE;
+DROP TABLE IF EXISTS form_submissions CASCADE;
+DROP TABLE IF EXISTS click_events CASCADE;
+DROP TABLE IF EXISTS system_logs CASCADE;
+
+CREATE TABLE visits (
   "id" UUID PRIMARY KEY,
   "sessionId" TEXT NOT NULL,
   "page" TEXT NOT NULL,
@@ -16,7 +22,7 @@ CREATE TABLE IF NOT EXISTS visits (
   "createdAt" TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE TABLE IF NOT EXISTS pdf_events (
+CREATE TABLE pdf_events (
   "id" UUID PRIMARY KEY,
   "sessionId" TEXT,
   "pdfType" TEXT,
@@ -28,7 +34,7 @@ CREATE TABLE IF NOT EXISTS pdf_events (
   "createdAt" TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE TABLE IF NOT EXISTS form_submissions (
+CREATE TABLE form_submissions (
   "id" UUID PRIMARY KEY,
   "sessionId" TEXT,
   "name" TEXT,
@@ -42,7 +48,7 @@ CREATE TABLE IF NOT EXISTS form_submissions (
   "createdAt" TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE TABLE IF NOT EXISTS click_events (
+CREATE TABLE click_events (
   "id" UUID PRIMARY KEY,
   "sessionId" TEXT,
   "type" TEXT DEFAULT 'unknown',
@@ -51,7 +57,7 @@ CREATE TABLE IF NOT EXISTS click_events (
   "createdAt" TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE TABLE IF NOT EXISTS system_logs (
+CREATE TABLE system_logs (
   "id" UUID PRIMARY KEY,
   "timestamp" TIMESTAMPTZ DEFAULT NOW(),
   "type" TEXT DEFAULT 'admin',
@@ -61,11 +67,11 @@ CREATE TABLE IF NOT EXISTS system_logs (
   "ipHash" TEXT DEFAULT ''
 );
 
-CREATE INDEX IF NOT EXISTS idx_visits_created ON visits ("createdAt" DESC);
-CREATE INDEX IF NOT EXISTS idx_visits_session ON visits ("sessionId");
-CREATE INDEX IF NOT EXISTS idx_visits_page ON visits ("page");
-CREATE INDEX IF NOT EXISTS idx_pdf_created ON pdf_events ("createdAt" DESC);
-CREATE INDEX IF NOT EXISTS idx_clicks_created ON click_events ("createdAt" DESC);
-CREATE INDEX IF NOT EXISTS idx_logs_created ON system_logs ("createdAt" DESC);
-CREATE INDEX IF NOT EXISTS idx_logs_timestamp ON system_logs ("timestamp" DESC);
-CREATE INDEX IF NOT EXISTS idx_submissions_created ON form_submissions ("createdAt" DESC);
+CREATE INDEX idx_visits_created ON visits ("createdAt" DESC);
+CREATE INDEX idx_visits_session ON visits ("sessionId");
+CREATE INDEX idx_visits_page ON visits ("page");
+CREATE INDEX idx_pdf_created ON pdf_events ("createdAt" DESC);
+CREATE INDEX idx_clicks_created ON click_events ("createdAt" DESC);
+CREATE INDEX idx_logs_created ON system_logs ("createdAt" DESC);
+CREATE INDEX idx_logs_timestamp ON system_logs ("timestamp" DESC);
+CREATE INDEX idx_submissions_created ON form_submissions ("createdAt" DESC);
