@@ -1,17 +1,27 @@
 import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
-import { Users, Monitor, Smartphone, Eye } from 'lucide-react'
+import { Users, Monitor, Smartphone, Eye, ExternalLink, Trash2 } from 'lucide-react'
+
+const ANALYTICS_URL = 'https://vercel.com/sharefile/arom-studio/analytics'
 
 export function Visitors() {
   const [data, setData] = useState<any>(null)
 
-  useEffect(() => {
+  const load = () => {
     fetch('/api/admin/visitors', { credentials: 'include' })
       .then((r) => r.json())
       .then(setData)
       .catch(() => {})
-  }, [])
+  }
+
+  useEffect(() => { load() }, [])
+
+  const clearAll = async () => {
+    if (!confirm('Delete all visit data? This cannot be undone.')) return
+    await fetch('/api/admin/visitors', { method: 'DELETE', credentials: 'include' })
+    load()
+  }
 
   if (!data) return <div className="text-sm text-text-secondary">Loading...</div>
 
@@ -31,11 +41,23 @@ export function Visitors() {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard label="All Time" value={data.allTime} icon={<Users className="h-4 w-4" />} />
-        <StatCard label="Filtered" value={data.total} icon={<Eye className="h-4 w-4" />} />
-        <StatCard label="Desktop" value={data.deviceBreakdown?.desktop || 0} icon={<Monitor className="h-4 w-4" />} />
-        <StatCard label="Mobile" value={data.deviceBreakdown?.mobile || 0} icon={<Smartphone className="h-4 w-4" />} />
+      <div className="flex items-center justify-between">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 flex-1">
+          <StatCard label="All Time" value={data.allTime} icon={<Users className="h-4 w-4" />} />
+          <StatCard label="Filtered" value={data.total} icon={<Eye className="h-4 w-4" />} />
+          <StatCard label="Desktop" value={data.deviceBreakdown?.desktop || 0} icon={<Monitor className="h-4 w-4" />} />
+          <StatCard label="Mobile" value={data.deviceBreakdown?.mobile || 0} icon={<Smartphone className="h-4 w-4" />} />
+        </div>
+        <div className="flex items-center gap-2 ml-4">
+          <a href={ANALYTICS_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-accent/20 hover:bg-accent/30 rounded-lg transition-colors">
+            <ExternalLink className="h-3.5 w-3.5" />
+            Vercel Analytics
+          </a>
+          <button onClick={clearAll} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-400 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition-colors">
+            <Trash2 className="h-3.5 w-3.5" />
+            Clear All
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

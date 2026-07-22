@@ -39,13 +39,11 @@ function adminGuard(req, res) {
     return false
   }
   const cookies = parseCookies(req)
-  try {
-    verifyToken(cookies.admin_token || '')
-    return true
-  } catch {
+  if (!cookies.admin_token || !verifyToken(cookies.admin_token)) {
     send(res, 401, { error: 'Unauthorized' })
     return false
   }
+  return true
 }
 
 export default async function handler(req, res) {
@@ -59,8 +57,7 @@ export default async function handler(req, res) {
   if (pathname === '/api/admin/auth') {
     if (req.method === 'GET') {
       const cookies = parseCookies(req)
-      try { verifyToken(cookies.admin_token || ''); return send(res, 200, { authenticated: true }) }
-      catch { return send(res, 200, { authenticated: false }) }
+      return send(res, 200, { authenticated: !!(cookies.admin_token && verifyToken(cookies.admin_token)) })
     }
     if (req.method === 'POST') {
       const body = await getJSON(req)
@@ -127,6 +124,12 @@ export default async function handler(req, res) {
   // ---- Visitors ----
   if (pathname === '/api/admin/visitors') {
     if (!adminGuard(req, res)) return
+
+    if (req.method === 'DELETE') {
+      db.write('visits', [])
+      return send(res, 200, { success: true })
+    }
+
     const visits = db.read('visits')
     if (!visits.length) return send(res, 200, { total: 0, allTime: 0, visits: [], dailyChart: [], deviceBreakdown: {}, countryCounts: {} })
 
