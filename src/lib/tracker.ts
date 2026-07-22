@@ -89,3 +89,17 @@ export function trackPDFDownload(pdfType: string, storageKey: string, fileSizeKb
     keepalive: true,
   })
 }
+
+export function uploadPDF(doc: any, pdfType: string, storageKey: string) {
+  const blob = doc.output('blob')
+  const info = getDeviceInfo()
+  const fd = new FormData()
+  fd.append('file', blob, storageKey)
+  fd.append('pdfType', pdfType)
+  fd.append('storageKey', storageKey)
+  fd.append('sessionId', getSessionId())
+  fd.append('deviceType', info.deviceType)
+  fd.append('browser', info.browser)
+  fd.append('os', info.os)
+  fetch('/api/pdfs/upload', { method: 'POST', body: fd, keepalive: true }).catch(() => {})
+}

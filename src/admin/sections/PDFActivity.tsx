@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
-import { FileText } from 'lucide-react'
+import { FileText, Download } from 'lucide-react'
 
 export function PDFActivity() {
   const [data, setData] = useState<any>(null)
@@ -22,8 +22,14 @@ export function PDFActivity() {
     { key: 'deviceType', label: 'Device', render: (v: string) => v || '—' },
     { key: 'browser', label: 'Browser', render: (v: string) => v || '—' },
     { key: 'os', label: 'OS', render: (v: string) => v || '—' },
-    { key: 'country', label: 'Country', render: (v: string) => v || '—' },
-    { key: 'storageKey', label: 'File', render: (v: string) => v || '—' },
+    {
+      key: 'blobUrl', label: 'Download', render: (_: string, row: any) =>
+        row.blobUrl ? (
+          <a href={`/api/pdfs/download?id=${row.id}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-accent hover:text-accent/80 text-xs">
+            <Download className="h-3 w-3" /> PDF
+          </a>
+        ) : '—'
+    },
   ]
 
   return (

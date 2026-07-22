@@ -46,6 +46,41 @@ function getJSON(req) {
   })
 }
 
+function parseMultipart(buf, boundary) {
+  const parts = []
+  const delimiter = Buffer.from(`--${boundary}`)
+  const endDelimiter = Buffer.from(`--${boundary}--`)
+  let pos = 0
+  while (pos < buf.length) {
+    const start = buf.indexOf(delimiter, pos)
+    if (start === -1) break
+    const sectionStart = start + delimiter.length
+    if (buf.slice(sectionStart, sectionStart + 2).toString() === '--') break
+    let sectionEnd = buf.indexOf(delimiter, sectionStart)
+    if (sectionEnd === -1) sectionEnd = buf.length
+    const section = buf.slice(sectionStart, sectionEnd).toString('latin1')
+    const headerEnd = section.indexOf('\r\n\r\n')
+    if (headerEnd === -1) { pos = sectionEnd; continue }
+    const headers = section.slice(0, headerEnd)
+    const nameMatch = headers.match(/name="([^"]+)"/)
+    const filenameMatch = headers.match(/filename="([^"]+)"/)
+    const dataStart = sectionStart + headerEnd + 4
+    const dataEnd = sectionEnd - 2
+    const part = { name: nameMatch ? nameMatch[1] : '', value: '' }
+    if (filenameMatch) {
+      part.filename = filenameMatch[1]
+      const ct = headers.match(/Content-Type:\s*(\S+)/i)
+      part.contentType = ct ? ct[1] : 'application/octet-stream'
+      part.data = buf.slice(dataStart, dataEnd)
+    } else {
+      part.value = buf.slice(dataStart, dataEnd).toString('utf-8').replace(/\r$/, '')
+    }
+    parts.push(part)
+    pos = sectionEnd
+  }
+  return parts
+}
+
 export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return send(res, 200, {})
 
@@ -266,12 +301,57 @@ export default async function handler(req, res) {
     return j(res, { ok: true })
   }
 
-  // PDF save (no auth)
-  if (pathname === '/api/pdfs/save' && req.method === 'POST') {
-    const body = await getJSON(req)
-    const info = { deviceType: '', browser: '', os: '' }
-    db.append('pdf_events', { id: crypto.randomUUID(), sessionId: body.sessionId, pdfType: body.pdfType || 'unknown', fileSizeKb: body.fileSizeKb || 0, storageKey: body.storageKey || '', deviceType: body.deviceType || '', browser: body.browser || '', os: body.os || '', country: '', createdAt: new Date().toISOString() })
-    return j(res, { ok: true })
+  // PDF upload (no auth - from client)
+  if (pathname === '/api/pdfs/upload' && req.method === 'POST') {
+    const bufs = []
+    let total = 0
+    for await (const chunk of req) { bufs.push(chunk); total += chunk.length }
+    const boundary = req.headers['content-type']?.split('boundary=')[1]
+    if (!boundary) return send(res, 400, { error: 'missing boundary' })
+    const buf = Buffer.concat(bufs)
+    const parts = parseMultipart(buf, boundary)
+    const fileField = parts.find(p => p.name === 'file')
+    const pdfType = parts.find(p => p.name === 'pdfType')?.value || 'unknown'
+    const storageKey = parts.find(p => p.name === 'storageKey')?.value || `pdf_${crypto.randomUUID()}.pdf`
+    const sessionId = parts.find(p => p.name === 'sessionId')?.value || ''
+    const deviceType = parts.find(p => p.name === 'deviceType')?.value || ''
+    const browser = parts.find(p => p.name === 'browser')?.value || ''
+    const os = parts.find(p => p.name === 'os')?.value || ''
+
+    if (!fileField || !fileField.data) return send(res, 400, { error: 'no file' })
+
+    try {
+      const { put } = await import('@vercel/blob')
+      const blob = await put(`pdfs/${storageKey}`, fileField.data, { access: 'public', addRandomSuffix: true })
+      db.append('pdf_events', {
+        id: crypto.randomUUID(), sessionId, pdfType, fileSizeKb: Math.round(fileField.data.length / 1024),
+        storageKey, blobUrl: blob.url, deviceType, browser, os, country: '', createdAt: new Date().toISOString(),
+      })
+      return j(res, { ok: true, url: blob.url })
+    } catch (e) {
+      return send(res, 500, { error: 'upload failed' })
+    }
+  }
+
+  // PDF download (admin, requires auth)
+  if (pathname === '/api/pdfs/download' && req.method === 'GET') {
+    if (!adminGuard(req, res)) return
+    const pdfs = db.read('pdf_events')
+    const id = url.searchParams.get('id')
+    const entry = pdfs.find(p => p.id === id)
+    if (!entry || !entry.blobUrl) return send(res, 404, { error: 'not found' })
+    try {
+      const response = await fetch(entry.blobUrl)
+      const buffer = Buffer.from(await response.arrayBuffer())
+      res.writeHead(200, {
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename="${entry.storageKey || 'document.pdf'}"`,
+        'Content-Length': buffer.length,
+      })
+      res.end(buffer)
+    } catch {
+      return send(res, 500, { error: 'download failed' })
+    }
   }
 
   // Ping

@@ -1,5 +1,5 @@
 import jsPDF from 'jspdf'
-import { trackPDFDownload } from './tracker'
+import { trackPDFDownload, uploadPDF } from './tracker'
 
 const BRAND = {
   name: 'AROM Studio',
@@ -574,6 +574,7 @@ export function generateProposalPDF(data: {
   }
 
   const proposalFile = `Proposal_${data.clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`
+  uploadPDF(doc, 'proposal', proposalFile)
   trackPDFDownload('proposal', proposalFile)
   doc.save(proposalFile)
 }
@@ -818,6 +819,7 @@ export function generateAgreementPDF(data: {
   }
 
   const agreementFile = `Website_Development_Agreement_${data.clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`
+  uploadPDF(doc, 'agreement', agreementFile)
   trackPDFDownload('agreement', agreementFile)
   doc.save(agreementFile)
 }
@@ -904,6 +906,7 @@ export function generateHandoverPDF(data: {
   }
 
   const handoverFile = `Handover_${data.clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`
+  uploadPDF(doc, 'handover', handoverFile)
   trackPDFDownload('handover', handoverFile)
   doc.save(handoverFile)
 }
@@ -955,6 +958,7 @@ export function generateDesignApprovalPDF(items: { page: string; status: string;
   }
 
   const designFile = `Design_Approval_${new Date().toISOString().split('T')[0]}.pdf`
+  uploadPDF(doc, 'design-approval', designFile)
   trackPDFDownload('design-approval', designFile)
   doc.save(designFile)
 }
@@ -978,6 +982,7 @@ export function generateRevisionsPDF(revisions: { page: string; priority: string
     doc.setPage(2)
     addHeader(doc, 'Revision Requests')
     const revEmptyFile = `Revisions_${new Date().toISOString().split('T')[0]}.pdf`
+    uploadPDF(doc, 'revisions', revEmptyFile)
     trackPDFDownload('revisions', revEmptyFile)
     doc.save(revEmptyFile)
     return
@@ -1005,6 +1010,7 @@ export function generateRevisionsPDF(revisions: { page: string; priority: string
   }
 
   const revFile2 = `Revisions_${new Date().toISOString().split('T')[0]}.pdf`
+  uploadPDF(doc, 'revisions', revFile2)
   trackPDFDownload('revisions', revFile2)
   doc.save(revFile2)
 }
@@ -1053,6 +1059,7 @@ export function generateAssetsPDF(data: {
   }
 
   const assetsFile = `Assets_Summary_${data.clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`
+  uploadPDF(doc, 'assets', assetsFile)
   trackPDFDownload('assets', assetsFile)
   doc.save(assetsFile)
 }
@@ -1114,6 +1121,7 @@ export function generateContentCollectionPDF(data: {
   }
 
   const contentFile = `Content_Collection_${data.clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`
+  uploadPDF(doc, 'content-collection', contentFile)
   trackPDFDownload('content-collection', contentFile)
   doc.save(contentFile)
 }
