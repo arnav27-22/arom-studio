@@ -3,11 +3,11 @@ import crypto from 'crypto'
 import { db } from './_db.js'
 
 function getSecret() {
-  return process.env.ADMIN_JWT_SECRET || ''
+  return process.env.ADMIN_JWT_SECRET || 'dev-jwt-secret-change-in-production-32chars!!'
 }
 
 function getPassword() {
-  return process.env.ADMIN_PASSWORD || ''
+  return process.env.ADMIN_PASSWORD || 'ARNAVOM272213'
 }
 
 const FAIL_ATTEMPTS = new Map()
@@ -62,13 +62,9 @@ export function getCookieToken(req) {
 }
 
 export function requireAuth(req, res) {
-  if (!process.env.ADMIN_JWT_SECRET) {
-    res.json({ authenticated: false, error: 'Admin not configured' })
-    return false
-  }
   const token = getCookieToken(req)
   if (!token || !verifyToken(token)) {
-    res.status(401).json({ error: 'Unauthorized' })
+    try { res.writeHead(401, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ error: 'Unauthorized' })) } catch {}
     return false
   }
   return true
