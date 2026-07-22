@@ -19,7 +19,12 @@ export default function handler(req, res) {
       }
 
       const { password } = req.body || {}
-      const adminPw = process.env.ADMIN_PASSWORD || ''
+      const adminPw = process.env.ADMIN_PASSWORD
+
+      if (!adminPw) {
+        return res.status(500).json({ error: 'ADMIN_PASSWORD not configured on server' })
+      }
+
       const match = timingSafeEqual(password || '', adminPw)
 
       if (!match) {
