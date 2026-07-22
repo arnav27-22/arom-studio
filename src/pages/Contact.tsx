@@ -38,13 +38,15 @@ export default function Contact() {
     message: '',
     customService: '',
     customBudget: '',
+    agreedToTerms: false,
   })
   const [errors, setErrors] = useState<ValidationErrors>({})
   const [showModal, setShowModal] = useState(false)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
+    const { name, value, type } = e.target
+    const val = type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
+    setFormData((prev) => ({ ...prev, [name]: val }))
     if (errors[name as keyof ValidationErrors]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }))
     }
@@ -70,6 +72,7 @@ export default function Contact() {
           service: formData.service === 'other' ? formData.customService : formData.service,
           budget: formData.budget === 'custom' ? formData.customBudget : formData.budget,
           message: formData.message,
+          agreed_to_terms: formData.agreedToTerms ? 'Yes' : 'No',
         },
         EMAILJS_CONFIG.PUBLIC_KEY,
       )
@@ -249,6 +252,29 @@ export default function Contact() {
                           </p>
                         )}
                       </div>
+
+                      <div className="flex items-start gap-3">
+                        <input
+                          type="checkbox"
+                          name="agreedToTerms"
+                          id="agreedToTerms"
+                          checked={formData.agreedToTerms}
+                          onChange={handleChange}
+                          className="mt-0.5 h-4 w-4 shrink-0 rounded-[4px] border border-white/20 bg-white/5 accent-accent focus:outline-none focus:ring-1 focus:ring-accent/50"
+                        />
+                        <label htmlFor="agreedToTerms" className="text-xs text-white/50 font-body leading-relaxed">
+                          I have read and agree to the{' '}
+                          <a href="/privacy" target="_blank" className="text-accent hover:underline">Privacy Policy</a>
+                          {' '}and{' '}
+                          <a href="/terms" target="_blank" className="text-accent hover:underline">Terms &amp; Conditions</a>
+                          {' '}*
+                        </label>
+                      </div>
+                      {errors.agreedToTerms && (
+                        <p className="flex items-center gap-1 text-[11px] text-red-400 font-body">
+                          <AlertCircle className="h-3 w-3" /> {errors.agreedToTerms}
+                        </p>
+                      )}
 
                       <button
                         type="submit"

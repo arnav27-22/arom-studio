@@ -28,6 +28,7 @@ export interface ValidationErrors {
   phone?: string
   service?: string
   message?: string
+  agreedToTerms?: string
 }
 
 export function validateContactForm(data: {
@@ -36,6 +37,7 @@ export function validateContactForm(data: {
   phone: string
   service: string
   message: string
+  agreedToTerms: boolean
 }): ValidationErrors {
   const errors: ValidationErrors = {}
 
@@ -63,6 +65,10 @@ export function validateContactForm(data: {
     errors.message = 'Message is required'
   } else if (data.message.trim().length < 10) {
     errors.message = 'Message must be at least 10 characters'
+  }
+
+  if (!data.agreedToTerms) {
+    errors.agreedToTerms = 'You must accept the Privacy Policy and Terms & Conditions'
   }
 
   return errors
