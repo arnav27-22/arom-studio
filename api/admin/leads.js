@@ -1,6 +1,6 @@
 import crypto from 'crypto'
-import { requireAuth } from '../_auth.mjs'
-import { db } from '../_db.mjs'
+import { requireAuth } from '../_auth.js'
+import { db } from '../_db.js'
 
 function encrypt(text) {
   const key = process.env.ENCRYPTION_KEY || 'default-key-change-me-32chars!!'

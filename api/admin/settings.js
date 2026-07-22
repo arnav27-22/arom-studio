@@ -1,4 +1,4 @@
-import { requireAuth } from '../_auth.mjs'
+import { requireAuth } from '../_auth.js'
 
 export default function handler(req, res) {
   if (!requireAuth(req, res)) return

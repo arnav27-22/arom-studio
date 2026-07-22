@@ -1,4 +1,4 @@
-import { checkRateLimit, recordFailure, timingSafeEqual, signToken, verifyToken, getCookieToken } from '../_auth.mjs'
+import { checkRateLimit, recordFailure, timingSafeEqual, signToken, verifyToken, getCookieToken } from '../_auth.js'
 
 export default function handler(req, res) {
   res.setHeader('X-Robots-Tag', 'noindex')

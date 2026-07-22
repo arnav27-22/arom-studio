@@ -1,5 +1,5 @@
-import { requireAuth } from '../_auth.mjs'
-import { db } from '../_db.mjs'
+import { requireAuth } from '../_auth.js'
+import { db } from '../_db.js'
 
 export default function handler(req, res) {
   if (!requireAuth(req, res)) return

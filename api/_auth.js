@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 import crypto from 'crypto'
-import { db } from './_db.mjs'
+import { db } from './_db.js'
 
 function getSecret() {
   return process.env.ADMIN_JWT_SECRET || ''
