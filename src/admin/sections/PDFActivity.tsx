@@ -19,8 +19,11 @@ export function PDFActivity() {
     { key: 'createdAt', label: 'Time', render: (v: string) => new Date(v).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) },
     { key: 'pdfType', label: 'Type', render: (v: string) => v || '—' },
     { key: 'fileSizeKb', label: 'Size', render: (v: number) => v ? `${v} KB` : '—' },
+    { key: 'deviceType', label: 'Device', render: (v: string) => v || '—' },
+    { key: 'browser', label: 'Browser', render: (v: string) => v || '—' },
+    { key: 'os', label: 'OS', render: (v: string) => v || '—' },
     { key: 'country', label: 'Country', render: (v: string) => v || '—' },
-    { key: 'storageKey', label: 'Storage Key', render: (v: string) => v ? v.slice(0, 20) + '...' : '—' },
+    { key: 'storageKey', label: 'File', render: (v: string) => v || '—' },
   ]
 
   return (

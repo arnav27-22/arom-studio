@@ -60,12 +60,7 @@ export function trackPageView(page: string, referrer: string) {
     deviceInfo: getDeviceInfo(),
   }
 
-  const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' })
-  if (navigator.sendBeacon) {
-    navigator.sendBeacon('/api/track/pageview', blob)
-  } else {
-    fetch('/api/track/pageview', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: blob, keepalive: true })
-  }
+  fetch('/api/track/pageview', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), keepalive: true })
 }
 
 export function trackPageExit() {
@@ -77,12 +72,7 @@ export function trackPageExit() {
     scrollDepth,
   }
 
-  const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' })
-  if (navigator.sendBeacon) {
-    navigator.sendBeacon('/api/track/exit', blob)
-  } else {
-    fetch('/api/track/exit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: blob, keepalive: true })
-  }
+  fetch('/api/track/exit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), keepalive: true })
 }
 
 export function trackClick(type: string, label: string) {
@@ -91,10 +81,11 @@ export function trackClick(type: string, label: string) {
 }
 
 export function trackPDFDownload(pdfType: string, storageKey: string, fileSizeKb: number = 0) {
+  const info = getDeviceInfo()
   fetch('/api/pdfs/save', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ sessionId: getSessionId(), pdfType, fileSizeKb, storageKey }),
+    body: JSON.stringify({ sessionId: getSessionId(), pdfType, fileSizeKb, storageKey, deviceType: info.deviceType, browser: info.browser, os: info.os }),
     keepalive: true,
   })
 }

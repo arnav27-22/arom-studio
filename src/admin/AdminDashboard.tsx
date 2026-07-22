@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react'
-import { BarChart3, Users, FileText, Mail, LineChart, MousePointer2, Terminal, Settings, LogOut, Menu, X } from 'lucide-react'
+import { BarChart3, Users, FileText, Mail, LineChart, MousePointer2, Settings, LogOut, Menu, X } from 'lucide-react'
 import { Overview } from './sections/Overview'
 import { Visitors } from './sections/Visitors'
 import { PDFActivity } from './sections/PDFActivity'
 import { Leads } from './sections/Leads'
 import { PageAnalytics } from './sections/PageAnalytics'
 import { LinkClicks } from './sections/LinkClicks'
-import { SystemLogs } from './sections/SystemLogs'
 import { SettingsPage } from './sections/SettingsPage'
 
 const sections = [
@@ -16,7 +15,6 @@ const sections = [
   { id: 'leads', label: 'Contact Form Leads', icon: Mail },
   { id: 'analytics', label: 'Page Analytics', icon: LineChart },
   { id: 'clicks', label: 'Link Clicks', icon: MousePointer2 },
-  { id: 'logs', label: 'System Logs', icon: Terminal },
   { id: 'settings', label: 'Settings', icon: Settings },
 ]
 
@@ -93,7 +91,6 @@ export function AdminDashboard({ onLogout }: { onLogout: () => void }) {
               {active === 'leads' && <Leads />}
               {active === 'analytics' && <PageAnalytics />}
               {active === 'clicks' && <LinkClicks />}
-              {active === 'logs' && <SystemLogs />}
               {active === 'settings' && <SettingsPage />}
             </>
           )}

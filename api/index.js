@@ -415,6 +415,9 @@ export default async function handler(req, res) {
       pdfType: body.pdfType || 'unknown',
       fileSizeKb: body.fileSizeKb || 0,
       storageKey: body.storageKey || '',
+      deviceType: body.deviceType || '',
+      browser: body.browser || '',
+      os: body.os || '',
       country: '',
       createdAt: new Date().toISOString(),
     })
