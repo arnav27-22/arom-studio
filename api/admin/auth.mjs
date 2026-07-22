@@ -1,7 +1,6 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { checkRateLimit, recordFailure, timingSafeEqual, signToken, verifyToken, getCookieToken } from '../_auth'
+import { checkRateLimit, recordFailure, timingSafeEqual, signToken, verifyToken, getCookieToken } from '../_auth.mjs'
 
-export default function handler(req: VercelRequest, res: VercelResponse) {
+export default function handler(req, res) {
   res.setHeader('X-Robots-Tag', 'noindex')
 
   if (req.method === 'GET') {
@@ -13,7 +12,8 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
     const { action } = req.body || {}
 
     if (action === 'login') {
-      const ip = (req.headers['x-forwarded-for'] as string || req.socket.remoteAddress || 'unknown').split(',')[0].trim()
+      const forwarded = req.headers['x-forwarded-for'] || ''
+      const ip = (forwarded || req.socket?.remoteAddress || 'unknown').split(',')[0].trim()
       if (!checkRateLimit(ip)) {
         return res.status(429).json({ error: 'Too many attempts. Try again later.' })
       }

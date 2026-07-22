@@ -1,12 +1,11 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { requireAuth } from '../_auth'
-import { db } from '../_db'
+import { requireAuth } from '../_auth.mjs'
+import { db } from '../_db.mjs'
 
-export default function handler(req: VercelRequest, res: VercelResponse) {
+export default function handler(req, res) {
   if (!requireAuth(req, res)) return
 
-  const logs = db.read<any>('system_logs')
-  const { type: typeFilter, severity, from, to } = req.query as Record<string, string>
+  const logs = db.read('system_logs')
+  const { type: typeFilter, severity, from, to } = req.query
 
   let filtered = [...logs]
   if (from) filtered = filtered.filter((l) => l.timestamp >= from)

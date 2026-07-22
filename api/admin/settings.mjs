@@ -1,7 +1,6 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { requireAuth } from '../_auth'
+import { requireAuth } from '../_auth.mjs'
 
-export default function handler(req: VercelRequest, res: VercelResponse) {
+export default function handler(req, res) {
   if (!requireAuth(req, res)) return
 
   const envChecks = {

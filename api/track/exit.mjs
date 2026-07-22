@@ -1,13 +1,12 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { db } from '../_db'
+import { db } from '../_db.mjs'
 
-export default function handler(req: VercelRequest, res: VercelResponse) {
+export default function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
   const { sessionId, page, timeOnPage, scrollDepth } = req.body || {}
   if (!sessionId || !page) return res.status(400).json({ error: 'Missing fields' })
 
-  const visits = db.read<any>('visits')
+  const visits = db.read('visits')
   const last = visits.findLast((v) => v.sessionId === sessionId && v.page === page)
   if (last) {
     last.timeOnPage = timeOnPage || 0

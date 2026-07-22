@@ -1,15 +1,14 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { requireAuth } from '../_auth'
-import { db } from '../_db'
+import { requireAuth } from '../_auth.mjs'
+import { db } from '../_db.mjs'
 
-export default function handler(req: VercelRequest, res: VercelResponse) {
+export default function handler(req, res) {
   if (!requireAuth(req, res)) return
 
-  const visits = db.read<any>('visits')
+  const visits = db.read('visits')
 
-  const pages: Record<string, { views: number; sessions: number; totalTime: number; totalScroll: number; entries: number; exits: number; referrers: Record<string, number> }> = {}
+  const pages = {}
 
-  visits.forEach((v: any, i: number) => {
+  visits.forEach((v, i) => {
     if (!pages[v.page]) {
       pages[v.page] = { views: 0, sessions: 0, totalTime: 0, totalScroll: 0, entries: 0, exits: 0, referrers: {} }
     }
@@ -21,10 +20,10 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
     if (i === visits.length - 1 || visits[i + 1]?.sessionId !== v.sessionId) pages[v.page].exits++
   })
 
-  const uniqueSessions = new Set(visits.map((v: any) => v.sessionId))
-  const singlePageSessions = new Set<string>()
-  const sessionPages: Record<string, Set<string>> = {}
-  visits.forEach((v: any) => {
+  const uniqueSessions = new Set(visits.map((v) => v.sessionId))
+  const singlePageSessions = new Set()
+  const sessionPages = {}
+  visits.forEach((v) => {
     if (!sessionPages[v.sessionId]) sessionPages[v.sessionId] = new Set()
     sessionPages[v.sessionId].add(v.page)
   })
@@ -32,8 +31,8 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
     if (pagesSet.size <= 1) singlePageSessions.add(sid)
   })
 
-  const hourlyTraffic: number[][] = Array.from({ length: 7 }, () => Array(24).fill(0))
-  visits.forEach((v: any) => {
+  const hourlyTraffic = Array.from({ length: 7 }, () => Array(24).fill(0))
+  visits.forEach((v) => {
     const d = new Date(v.createdAt)
     const day = d.getDay()
     const hour = d.getHours()

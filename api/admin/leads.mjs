@@ -1,9 +1,8 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node'
 import crypto from 'crypto'
-import { requireAuth } from '../_auth'
-import { db } from '../_db'
+import { requireAuth } from '../_auth.mjs'
+import { db } from '../_db.mjs'
 
-function encrypt(text: string): string {
+function encrypt(text) {
   const key = process.env.ENCRYPTION_KEY || 'default-key-change-me-32chars!!'
   const iv = crypto.randomBytes(16)
   const cipher = crypto.createCipheriv('aes-256-gcm', Buffer.from(key.padEnd(32, 'x').slice(0, 32)), iv)
@@ -12,7 +11,7 @@ function encrypt(text: string): string {
   return iv.toString('hex') + ':' + encrypted + ':' + cipher.getAuthTag().toString('hex')
 }
 
-function decrypt(encrypted: string): string {
+function decrypt(encrypted) {
   const key = process.env.ENCRYPTION_KEY || 'default-key-change-me-32chars!!'
   const [ivHex, enc, tagHex] = encrypted.split(':')
   const decipher = crypto.createDecipheriv('aes-256-gcm', Buffer.from(key.padEnd(32, 'x').slice(0, 32)), Buffer.from(ivHex, 'hex'))
@@ -22,23 +21,23 @@ function decrypt(encrypted: string): string {
   return decrypted
 }
 
-export default function handler(req: VercelRequest, res: VercelResponse) {
+export default function handler(req, res) {
   if (!requireAuth(req, res)) return
 
-  const leads = db.read<any>('form_submissions')
-  const { from, to, status: statusFilter } = req.query as Record<string, string>
+  const leads = db.read('form_submissions')
+  const { from, to, status: statusFilter } = req.query
 
   let filtered = [...leads]
   if (from) filtered = filtered.filter((l) => l.createdAt >= from)
   if (to) filtered = filtered.filter((l) => l.createdAt <= to + 'T23:59:59')
   if (statusFilter) filtered = filtered.filter((l) => l.status === statusFilter)
 
-  const byService: Record<string, number> = {}
-  filtered.forEach((l: any) => { const s = l.service || 'Unknown'; byService[s] = (byService[s] || 0) + 1 })
+  const byService = {}
+  filtered.forEach((l) => { const s = l.service || 'Unknown'; byService[s] = (byService[s] || 0) + 1 })
 
   if (req.method === 'PUT') {
     const { id, status } = req.body || {}
-    const idx = leads.findIndex((l: any) => l.id === id)
+    const idx = leads.findIndex((l) => l.id === id)
     if (idx !== -1) {
       leads[idx].status = status || leads[idx].status
       db.write('form_submissions', leads)
@@ -48,14 +47,14 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   if (req.query.view === 'full' && req.query.id) {
-    const lead = leads.find((l: any) => l.id === req.query.id)
+    const lead = leads.find((l) => l.id === req.query.id)
     if (!lead) return res.status(404).json({ error: 'Not found' })
     return res.json({ ...lead, email: lead.emailEncrypted ? decrypt(lead.emailEncrypted) : lead.email })
   }
 
   res.json({
     total: filtered.length,
-    leads: filtered.slice(-100).reverse().map((l: any) => ({ ...l, email: '***' })),
+    leads: filtered.slice(-100).reverse().map((l) => ({ ...l, email: '***' })),
     byService,
   })
 }

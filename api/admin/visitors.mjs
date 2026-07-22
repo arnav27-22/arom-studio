@@ -1,12 +1,11 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { requireAuth } from '../_auth'
-import { db } from '../_db'
+import { requireAuth } from '../_auth.mjs'
+import { db } from '../_db.mjs'
 
-export default function handler(req: VercelRequest, res: VercelResponse) {
+export default function handler(req, res) {
   if (!requireAuth(req, res)) return
 
-  const visits = db.read<any>('visits')
-  const { page, country, device, from, to } = req.query as Record<string, string>
+  const visits = db.read('visits')
+  const { page, country, device, from, to } = req.query
 
   let filtered = [...visits]
 
@@ -18,16 +17,16 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
 
   const last30 = Array.from({ length: 30 }, (_, i) => {
     const d = new Date(Date.now() - i * 86400000).toISOString().slice(0, 10)
-    const dayVisits = visits.filter((v: any) => v.createdAt?.startsWith(d))
-    const unique = new Set(dayVisits.map((v: any) => v.sessionId)).size
+    const dayVisits = visits.filter((v) => v.createdAt?.startsWith(d))
+    const unique = new Set(dayVisits.map((v) => v.sessionId)).size
     return { date: d, visits: dayVisits.length, unique }
   }).reverse()
 
-  const deviceBreakdown: Record<string, number> = {}
-  visits.forEach((v: any) => { deviceBreakdown[v.deviceType] = (deviceBreakdown[v.deviceType] || 0) + 1 })
+  const deviceBreakdown = {}
+  visits.forEach((v) => { deviceBreakdown[v.deviceType] = (deviceBreakdown[v.deviceType] || 0) + 1 })
 
-  const countryCounts: Record<string, number> = {}
-  visits.forEach((v: any) => { if (v.country) countryCounts[v.country] = (countryCounts[v.country] || 0) + 1 })
+  const countryCounts = {}
+  visits.forEach((v) => { if (v.country) countryCounts[v.country] = (countryCounts[v.country] || 0) + 1 })
 
   res.json({
     total: filtered.length,

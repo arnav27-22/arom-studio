@@ -1,12 +1,11 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { requireAuth } from '../_auth'
-import { db } from '../_db'
+import { requireAuth } from '../_auth.mjs'
+import { db } from '../_db.mjs'
 
-export default function handler(req: VercelRequest, res: VercelResponse) {
+export default function handler(req, res) {
   if (!requireAuth(req, res)) return
 
-  const pdfEvents = db.read<any>('pdf_events')
-  const { from, to, pdfType, country } = req.query as Record<string, string>
+  const pdfEvents = db.read('pdf_events')
+  const { from, to, pdfType, country } = req.query
 
   let filtered = [...pdfEvents]
   if (from) filtered = filtered.filter((e) => e.createdAt >= from)
@@ -14,8 +13,8 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
   if (pdfType) filtered = filtered.filter((e) => e.pdfType === pdfType)
   if (country) filtered = filtered.filter((e) => e.country === country)
 
-  const byDay: Record<string, { count: number; totalSize: number }> = {}
-  filtered.forEach((e: any) => {
+  const byDay = {}
+  filtered.forEach((e) => {
     const day = e.createdAt?.slice(0, 10)
     if (!day) return
     if (!byDay[day]) byDay[day] = { count: 0, totalSize: 0 }
@@ -27,6 +26,6 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
     total: filtered.length,
     pdfs: filtered.slice(-100).reverse(),
     byDay,
-    avgSize: filtered.length > 0 ? Math.round(filtered.reduce((s: number, e: any) => s + (e.fileSizeKb || 0), 0) / filtered.length) : 0,
+    avgSize: filtered.length > 0 ? Math.round(filtered.reduce((s, e) => s + (e.fileSizeKb || 0), 0) / filtered.length) : 0,
   })
 }
