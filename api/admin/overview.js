@@ -1,5 +1,5 @@
 import { requireAuth } from '../_auth.js'
-import { getSupabase } from '../_supabase.js'
+import { getSupabase, toCamel } from '../_supabase.js'
 
 export default async function handler(req, res) {
   if (!requireAuth(req, res)) return
@@ -13,18 +13,18 @@ export default async function handler(req, res) {
   const fiveMinAgo = new Date(now - 5 * 60000).toISOString()
 
   const [visitsRes, pdfsRes, leadsRes, logsRes, recentRes] = await Promise.all([
-    supabase.from('visits').select('id, sessionId, page, createdAt').gte('createdAt', monthAgo),
-    supabase.from('pdf_events').select('id, createdAt, fileSizeKb'),
-    supabase.from('form_submissions').select('id, createdAt'),
-    supabase.from('system_logs').select('id, type, event, detail, severity, createdAt, timestamp').order('createdAt', { ascending: false }).limit(5),
-    supabase.from('visits').select('id, sessionId, page, createdAt').order('createdAt', { ascending: false }).limit(10),
+    supabase.from('visits').select('id, session_id, page, created_at').gte('created_at', monthAgo),
+    supabase.from('pdf_events').select('id, created_at, file_size_kb'),
+    supabase.from('form_submissions').select('id, created_at'),
+    supabase.from('system_logs').select('id, type, event, detail, severity, created_at').order('created_at', { ascending: false }).limit(5),
+    supabase.from('visits').select('id, session_id, page, created_at').order('created_at', { ascending: false }).limit(10),
   ])
 
-  const visits = visitsRes.data || []
-  const pdfs = pdfsRes.data || []
-  const leads = leadsRes.data || []
-  const logs = logsRes.data || []
-  const recentVisits = recentRes.data || []
+  const visits = toCamel(visitsRes.data || [])
+  const pdfs = toCamel(pdfsRes.data || [])
+  const leads = toCamel(leadsRes.data || [])
+  const logs = toCamel(logsRes.data || [])
+  const recentVisits = toCamel(recentRes.data || [])
 
   const todayVisits = visits.filter((v) => v.createdAt?.startsWith(today))
   const weekVisits = visits.filter((v) => v.createdAt >= weekAgo)
@@ -35,7 +35,7 @@ export default async function handler(req, res) {
   const topPage = Object.entries(pageCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || '/'
 
   const recentEvents = [...logs, ...recentVisits]
-    .sort((a, b) => new Date(b.createdAt || b.timestamp).getTime() - new Date(a.createdAt || a.timestamp).getTime())
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .slice(0, 5)
 
   res.json({

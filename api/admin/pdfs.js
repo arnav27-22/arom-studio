@@ -1,5 +1,5 @@
 import { requireAuth } from '../_auth.js'
-import { getSupabase } from '../_supabase.js'
+import { getSupabase, toCamel } from '../_supabase.js'
 
 export default async function handler(req, res) {
   if (!requireAuth(req, res)) return
@@ -9,14 +9,15 @@ export default async function handler(req, res) {
   const { data: pdfEvents, error } = await supabase
     .from('pdf_events')
     .select('*')
-    .order('createdAt', { ascending: false })
+    .order('created_at', { ascending: false })
 
   if (error) return res.status(500).json({ error: error.message })
-  if (!pdfEvents) return res.json({ total: 0, pdfs: [], byDay: {}, avgSize: 0 })
+  const decoded = toCamel(pdfEvents || [])
+  if (!decoded.length) return res.json({ total: 0, pdfs: [], byDay: {}, avgSize: 0 })
 
   const { from, to, pdfType, country } = req.query
 
-  let filtered = [...pdfEvents]
+  let filtered = [...decoded]
   if (from) filtered = filtered.filter((e) => e.createdAt >= from)
   if (to) filtered = filtered.filter((e) => e.createdAt <= to + 'T23:59:59')
   if (pdfType) filtered = filtered.filter((e) => e.pdfType === pdfType)

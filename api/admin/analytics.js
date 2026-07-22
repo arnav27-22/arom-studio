@@ -1,5 +1,5 @@
 import { requireAuth } from '../_auth.js'
-import { getSupabase } from '../_supabase.js'
+import { getSupabase, toCamel } from '../_supabase.js'
 
 export default async function handler(req, res) {
   if (!requireAuth(req, res)) return
@@ -9,13 +9,14 @@ export default async function handler(req, res) {
   const { data: visits, error } = await supabase
     .from('visits')
     .select('*')
-    .order('createdAt', { ascending: true })
+    .order('created_at', { ascending: true })
 
   if (error) return res.status(500).json({ error: error.message })
-  if (!visits) return res.json({ pages: [], totalUniqueSessions: 0, overallBounceRate: 0, hourlyTraffic: [] })
+  const decoded = toCamel(visits || [])
+  if (!decoded.length) return res.json({ pages: [], totalUniqueSessions: 0, overallBounceRate: 0, hourlyTraffic: [] })
 
   const pages = {}
-  visits.forEach((v, i) => {
+  decoded.forEach((v, i) => {
     if (!pages[v.page]) {
       pages[v.page] = { views: 0, sessions: 0, totalTime: 0, totalScroll: 0, entries: 0, exits: 0, referrers: {} }
     }
@@ -23,14 +24,14 @@ export default async function handler(req, res) {
     if (v.timeOnPage) pages[v.page].totalTime += v.timeOnPage
     if (v.scrollDepth) pages[v.page].totalScroll += v.scrollDepth
     if (v.referrer) pages[v.page].referrers[v.referrer] = (pages[v.page].referrers[v.referrer] || 0) + 1
-    if (i === 0 || visits[i - 1]?.sessionId !== v.sessionId) pages[v.page].entries++
-    if (i === visits.length - 1 || visits[i + 1]?.sessionId !== v.sessionId) pages[v.page].exits++
+    if (i === 0 || decoded[i - 1]?.sessionId !== v.sessionId) pages[v.page].entries++
+    if (i === decoded.length - 1 || decoded[i + 1]?.sessionId !== v.sessionId) pages[v.page].exits++
   })
 
-  const uniqueSessions = new Set(visits.map((v) => v.sessionId))
+  const uniqueSessions = new Set(decoded.map((v) => v.sessionId))
   const singlePageSessions = new Set()
   const sessionPages = {}
-  visits.forEach((v) => {
+  decoded.forEach((v) => {
     if (!sessionPages[v.sessionId]) sessionPages[v.sessionId] = new Set()
     sessionPages[v.sessionId].add(v.page)
   })
@@ -39,7 +40,7 @@ export default async function handler(req, res) {
   })
 
   const hourlyTraffic = Array.from({ length: 7 }, () => Array(24).fill(0))
-  visits.forEach((v) => {
+  decoded.forEach((v) => {
     const d = new Date(v.createdAt)
     const day = d.getDay()
     const hour = d.getHours()

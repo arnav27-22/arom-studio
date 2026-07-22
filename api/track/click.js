@@ -17,16 +17,15 @@ export default async function handler(req, res) {
   const supabase = getSupabase()
   if (!supabase) return res.json({ ok: true })
 
-  const body = await getBody(req)
-  const { type, label, page, sessionId } = body
+  const b = await getBody(req)
 
   await supabase.from('click_events').insert({
     id: crypto.randomUUID(),
-    sessionId,
-    type: type || 'unknown',
-    label: label || '',
-    page: page || '/',
-    createdAt: new Date().toISOString(),
+    session_id: b.sessionId,
+    type: b.type || 'unknown',
+    label: b.label || '',
+    page: b.page || '/',
+    created_at: new Date().toISOString(),
   })
 
   res.json({ ok: true })

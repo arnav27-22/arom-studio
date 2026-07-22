@@ -20,22 +20,22 @@ export default async function handler(req, res) {
   const forwarded = req.headers['x-forwarded-for'] || ''
   const ip = (forwarded || req.socket?.remoteAddress || 'unknown').split(',')[0].trim()
   const ipHash = crypto.createHash('sha256').update(ip).digest('hex').slice(0, 16)
-  const body = await getBody(req)
+  const b = await getBody(req)
 
   await supabase.from('visits').insert({
     id: crypto.randomUUID(),
-    sessionId: body.sessionId,
-    page: body.page || '/',
-    referrer: body.referrer || '',
-    deviceType: body.deviceInfo?.deviceType || 'desktop',
-    browser: body.deviceInfo?.browser || 'Unknown',
-    os: body.deviceInfo?.os || 'Unknown',
+    session_id: b.sessionId,
+    page: b.page || '/',
+    referrer: b.referrer || '',
+    device_type: b.deviceInfo?.deviceType || 'desktop',
+    browser: b.deviceInfo?.browser || 'Unknown',
+    os: b.deviceInfo?.os || 'Unknown',
     country: '',
     city: '',
-    ipHash,
-    timeOnPage: 0,
-    scrollDepth: 0,
-    createdAt: new Date().toISOString(),
+    ip_hash: ipHash,
+    time_on_page: 0,
+    scroll_depth: 0,
+    created_at: new Date().toISOString(),
   })
 
   res.json({ ok: true })

@@ -16,14 +16,14 @@ export default async function handler(req, res) {
   const supabase = getSupabase()
   if (!supabase) return res.json({ ok: true })
 
-  const body = await getBody(req)
-  const { sessionId, page, timeOnPage, scrollDepth } = body
+  const b = await getBody(req)
+  const { sessionId, page, timeOnPage, scrollDepth } = b
   if (!sessionId || !page) return res.status(400).json({ error: 'Missing fields' })
 
   await supabase
     .from('visits')
-    .update({ timeOnPage: timeOnPage || 0, scrollDepth: scrollDepth || 0 })
-    .eq('sessionId', sessionId)
+    .update({ time_on_page: timeOnPage || 0, scroll_depth: scrollDepth || 0 })
+    .eq('session_id', sessionId)
     .eq('page', page)
 
   res.json({ ok: true })

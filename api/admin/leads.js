@@ -1,6 +1,6 @@
 import crypto from 'crypto'
 import { requireAuth } from '../_auth.js'
-import { getSupabase } from '../_supabase.js'
+import { getSupabase, toCamel } from '../_supabase.js'
 
 function encrypt(text) {
   const key = process.env.ENCRYPTION_KEY || 'default-key-change-me-32chars!!'
@@ -36,14 +36,15 @@ export default async function handler(req, res) {
   const { data: leads, error } = await supabase
     .from('form_submissions')
     .select('*')
-    .order('createdAt', { ascending: false })
+    .order('created_at', { ascending: false })
 
   if (error) return res.status(500).json({ error: error.message })
-  if (!leads) return res.json({ total: 0, leads: [], byService: {} })
+  const decoded = toCamel(leads || [])
+  if (!decoded.length) return res.json({ total: 0, leads: [], byService: {} })
 
   const { from, to, status: statusFilter } = req.query
 
-  let filtered = [...leads]
+  let filtered = [...decoded]
   if (from) filtered = filtered.filter((l) => l.createdAt >= from)
   if (to) filtered = filtered.filter((l) => l.createdAt <= to + 'T23:59:59')
   if (statusFilter) filtered = filtered.filter((l) => l.status === statusFilter)
@@ -52,7 +53,7 @@ export default async function handler(req, res) {
   filtered.forEach((l) => { const s = l.service || 'Unknown'; byService[s] = (byService[s] || 0) + 1 })
 
   if (req.query.view === 'full' && req.query.id) {
-    const lead = leads.find((l) => l.id === req.query.id)
+    const lead = decoded.find((l) => l.id === req.query.id)
     if (!lead) return res.status(404).json({ error: 'Not found' })
     return res.json({ ...lead, email: lead.emailEncrypted ? decrypt(lead.emailEncrypted) : lead.email })
   }

@@ -79,11 +79,11 @@ export async function logAdminEvent(event, detail, ip) {
   if (!supabase) return
   await supabase.from('system_logs').insert({
     id: crypto.randomUUID(),
-    timestamp: new Date().toISOString(),
+    created_at: new Date().toISOString(),
     type: 'admin',
     event,
     detail,
     severity: event.includes('fail') ? 'warn' : 'info',
-    ipHash: crypto.createHash('sha256').update(ip).digest('hex').slice(0, 16),
+    ip_hash: crypto.createHash('sha256').update(ip).digest('hex').slice(0, 16),
   })
 }
