@@ -6,15 +6,15 @@ import { TechStackSection } from '../components/sections/home/TechStackSection'
 import { FounderSection } from '../components/sections/home/FounderSection'
 import { TestimonialsSection } from '../components/sections/home/TestimonialsSection'
 import { PricingPreview } from '../components/sections/home/PricingPreview'
-import { CityLinksSection } from '../components/sections/home/CityLinksSection'
 import { CTABanner } from '../components/sections/shared/CTABanner'
+import { InfoBoxSection } from '../components/sections/home/InfoBoxSection'
 
 const homeSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
   name: 'AROM STUDIO',
   url: 'https://aromstudio.vercel.app',
-  description: 'Premium web design and development agency based in Nashik, crafting high-performance websites and digital experiences for businesses worldwide.',
+  description: 'Premium web design and development agency based in Nashik, crafting high-performance websites and digital experiences for businesses across India.',
   potentialAction: {
     '@type': 'SearchAction',
     target: 'https://aromstudio.vercel.app/search?q={search_term_string}',
@@ -27,7 +27,7 @@ export default function Home() {
     <main>
       <SEO
         title="Home"
-        description="AROM STUDIO is a premium web design and development agency based in Nashik, crafting high-performance websites and digital experiences for businesses worldwide."
+        description="AROM STUDIO is a premium web design and development agency based in Nashik, crafting high-performance websites and digital experiences for businesses across India."
         jsonLd={homeSchema}
       />
       <HeroSection />
@@ -37,7 +37,7 @@ export default function Home() {
       <FounderSection />
       <TestimonialsSection />
       <PricingPreview />
-      <CityLinksSection />
+      <InfoBoxSection />
       <CTABanner />
     </main>
   )
