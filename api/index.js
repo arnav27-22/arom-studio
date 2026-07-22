@@ -301,6 +301,13 @@ export default async function handler(req, res) {
     return j(res, { ok: true })
   }
 
+  // PDF save (no auth - simple tracking, no file)
+  if (pathname === '/api/pdfs/save' && req.method === 'POST') {
+    const body = await getJSON(req)
+    db.append('pdf_events', { id: crypto.randomUUID(), sessionId: body.sessionId, pdfType: body.pdfType || 'unknown', fileSizeKb: body.fileSizeKb || 0, storageKey: body.storageKey || '', blobUrl: '', deviceType: body.deviceType || '', browser: body.browser || '', os: body.os || '', country: '', createdAt: new Date().toISOString() })
+    return j(res, { ok: true })
+  }
+
   // PDF upload (no auth - from client)
   if (pathname === '/api/pdfs/upload' && req.method === 'POST') {
     const bufs = []
@@ -320,17 +327,18 @@ export default async function handler(req, res) {
 
     if (!fileField || !fileField.data) return send(res, 400, { error: 'no file' })
 
+    let blobUrl = ''
     try {
       const { put } = await import('@vercel/blob')
       const blob = await put(`pdfs/${storageKey}`, fileField.data, { access: 'public', addRandomSuffix: true })
-      db.append('pdf_events', {
-        id: crypto.randomUUID(), sessionId, pdfType, fileSizeKb: Math.round(fileField.data.length / 1024),
-        storageKey, blobUrl: blob.url, deviceType, browser, os, country: '', createdAt: new Date().toISOString(),
-      })
-      return j(res, { ok: true, url: blob.url })
-    } catch (e) {
-      return send(res, 500, { error: 'upload failed' })
-    }
+      blobUrl = blob.url
+    } catch {}
+
+    db.append('pdf_events', {
+      id: crypto.randomUUID(), sessionId, pdfType, fileSizeKb: Math.round(fileField.data.length / 1024),
+      storageKey, blobUrl, deviceType, browser, os, country: '', createdAt: new Date().toISOString(),
+    })
+    return j(res, { ok: true, url: blobUrl })
   }
 
   // PDF download (admin, requires auth)
