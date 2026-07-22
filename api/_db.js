@@ -1,9 +1,9 @@
 import fs from 'fs'
 import path from 'path'
-import { put, get, list } from '@vercel/blob'
 
-const DATA_DIR = path.resolve(process.cwd(), 'data')
-const BLOB_PREFIX = 'arom-data/'
+const useBlob = !!(process.env.VERCEL && process.env.BLOB_READ_WRITE_TOKEN)
+
+const DATA_DIR = process.env.VERCEL ? '/tmp/arom_data' : path.resolve(process.cwd(), 'data')
 
 function ensureDir() {
   if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true })
@@ -26,23 +26,30 @@ function localWrite(name, data) {
   fs.writeFileSync(localPath(name), JSON.stringify(data, null, 2))
 }
 
-const useBlob = !!(process.env.VERCEL && process.env.BLOB_READ_WRITE_TOKEN)
+let blobImpl = null
+
+async function getBlob() {
+  if (blobImpl) return blobImpl
+  const mod = await import('@vercel/blob')
+  blobImpl = mod
+  return mod
+}
 
 async function blobRead(name) {
   try {
-    const blobUrl = `${BLOB_PREFIX}${name}.json`
-    const { blobs } = await list({ prefix: blobUrl })
+    const { list, get } = await getBlob()
+    const { blobs } = await list({ prefix: `arom-data/${name}.json` })
     if (blobs.length === 0) return []
     const response = await get(blobs[0].url)
-    const text = await response.text()
-    return JSON.parse(text)
+    return JSON.parse(await response.text())
   } catch {
     return []
   }
 }
 
 async function blobWrite(name, data) {
-  await put(`${BLOB_PREFIX}${name}.json`, JSON.stringify(data), {
+  const { put } = await getBlob()
+  await put(`arom-data/${name}.json`, JSON.stringify(data), {
     access: 'public',
     addRandomSuffix: false,
   })
