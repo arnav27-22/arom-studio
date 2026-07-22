@@ -89,3 +89,12 @@ export function trackClick(type: string, label: string) {
   const payload = { type, label, page: currentPage, sessionId: getSessionId() }
   fetch('/api/track/click', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), keepalive: true })
 }
+
+export function trackPDFDownload(pdfType: string, storageKey: string, fileSizeKb: number = 0) {
+  fetch('/api/pdfs/save', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ sessionId: getSessionId(), pdfType, fileSizeKb, storageKey }),
+    keepalive: true,
+  })
+}

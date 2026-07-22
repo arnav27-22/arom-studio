@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Download, CheckCircle2 } from 'lucide-react'
+import { trackPDFDownload } from '../../lib/tracker'
 import { GlassCard } from '../../components/ui/GlassCard'
 import Button from '../../components/ui/Button'
 import jsPDF from 'jspdf'
@@ -296,7 +297,9 @@ function generateQuestionnairePDF(data: QData) {
   doc.text('Lead Status: ____ New ____ Qualified ____ Proposal Sent ____ Negotiation ____ Won ____ Lost', 15, y)
 
   addFooter()
-  doc.save(`Discovery_Questionnaire_${(data.fullName || 'Client').replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`)
+  const dqFile = `Discovery_Questionnaire_${(data.fullName || 'Client').replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`
+  trackPDFDownload('discovery-questionnaire', dqFile)
+  doc.save(dqFile)
 }
 
 export default function DiscoveryQuestionnaire() {

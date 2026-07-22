@@ -1,4 +1,5 @@
 import jsPDF from 'jspdf'
+import { trackPDFDownload } from './tracker'
 
 const BRAND = {
   name: 'AROM Studio',
@@ -572,7 +573,9 @@ export function generateProposalPDF(data: {
     addHeader(doc, 'Project Proposal')
   }
 
-  doc.save(`Proposal_${data.clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`)
+  const proposalFile = `Proposal_${data.clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`
+  trackPDFDownload('proposal', proposalFile)
+  doc.save(proposalFile)
 }
 
 export function generateAgreementPDF(data: {
@@ -814,7 +817,9 @@ export function generateAgreementPDF(data: {
     addHeader(doc, 'Website Development Agreement')
   }
 
-  doc.save(`Website_Development_Agreement_${data.clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`)
+  const agreementFile = `Website_Development_Agreement_${data.clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`
+  trackPDFDownload('agreement', agreementFile)
+  doc.save(agreementFile)
 }
 
 export function generateHandoverPDF(data: {
@@ -898,7 +903,9 @@ export function generateHandoverPDF(data: {
     addHeader(doc, 'Website Handover')
   }
 
-  doc.save(`Handover_${data.clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`)
+  const handoverFile = `Handover_${data.clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`
+  trackPDFDownload('handover', handoverFile)
+  doc.save(handoverFile)
 }
 
 export function generateDesignApprovalPDF(items: { page: string; status: string; notes?: string }[]) {
@@ -947,7 +954,9 @@ export function generateDesignApprovalPDF(items: { page: string; status: string;
     addHeader(doc, 'Design Approval Report')
   }
 
-  doc.save(`Design_Approval_${new Date().toISOString().split('T')[0]}.pdf`)
+  const designFile = `Design_Approval_${new Date().toISOString().split('T')[0]}.pdf`
+  trackPDFDownload('design-approval', designFile)
+  doc.save(designFile)
 }
 
 export function generateRevisionsPDF(revisions: { page: string; priority: string; description: string; status: string }[]) {
@@ -968,7 +977,9 @@ export function generateRevisionsPDF(revisions: { page: string; priority: string
     finalizeDoc(doc)
     doc.setPage(2)
     addHeader(doc, 'Revision Requests')
-    doc.save(`Revisions_${new Date().toISOString().split('T')[0]}.pdf`)
+    const revEmptyFile = `Revisions_${new Date().toISOString().split('T')[0]}.pdf`
+    trackPDFDownload('revisions', revEmptyFile)
+    doc.save(revEmptyFile)
     return
   }
 
@@ -993,7 +1004,9 @@ export function generateRevisionsPDF(revisions: { page: string; priority: string
     addHeader(doc, 'Revision Requests')
   }
 
-  doc.save(`Revisions_${new Date().toISOString().split('T')[0]}.pdf`)
+  const revFile2 = `Revisions_${new Date().toISOString().split('T')[0]}.pdf`
+  trackPDFDownload('revisions', revFile2)
+  doc.save(revFile2)
 }
 
 export function generateAssetsPDF(data: {
@@ -1039,7 +1052,9 @@ export function generateAssetsPDF(data: {
     addHeader(doc, 'Assets Upload Summary')
   }
 
-  doc.save(`Assets_Summary_${data.clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`)
+  const assetsFile = `Assets_Summary_${data.clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`
+  trackPDFDownload('assets', assetsFile)
+  doc.save(assetsFile)
 }
 
 export function generateContentCollectionPDF(data: {
@@ -1098,5 +1113,7 @@ export function generateContentCollectionPDF(data: {
     addHeader(doc, 'Content Collection')
   }
 
-  doc.save(`Content_Collection_${data.clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`)
+  const contentFile = `Content_Collection_${data.clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`
+  trackPDFDownload('content-collection', contentFile)
+  doc.save(contentFile)
 }
