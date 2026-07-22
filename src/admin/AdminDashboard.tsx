@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react'
-import { BarChart3, Users, FileText, Mail, LineChart, MousePointer2, Settings, LogOut, Menu, X } from 'lucide-react'
+import { BarChart3, Users, FileText, Mail, LineChart, Settings, LogOut, Menu, X } from 'lucide-react'
 import { Overview } from './sections/Overview'
 import { Visitors } from './sections/Visitors'
 import { PDFActivity } from './sections/PDFActivity'
 import { Leads } from './sections/Leads'
 import { PageAnalytics } from './sections/PageAnalytics'
-import { LinkClicks } from './sections/LinkClicks'
 import { SettingsPage } from './sections/SettingsPage'
 
 const sections = [
@@ -14,7 +13,6 @@ const sections = [
   { id: 'pdfs', label: 'PDF Activity', icon: FileText },
   { id: 'leads', label: 'Contact Form Leads', icon: Mail },
   { id: 'analytics', label: 'Page Analytics', icon: LineChart },
-  { id: 'clicks', label: 'Link Clicks', icon: MousePointer2 },
   { id: 'settings', label: 'Settings', icon: Settings },
 ]
 
@@ -28,10 +26,8 @@ export function AdminDashboard({ onLogout }: { onLogout: () => void }) {
 
   return (
     <div className="min-h-screen text-text-primary font-body flex">
-      {/* Mobile overlay */}
       {sidebarOpen && <div className="fixed inset-0 bg-black/60 z-40 md:hidden" onClick={() => setSidebarOpen(false)} />}
 
-      {/* Sidebar */}
       <aside className={`fixed md:sticky top-0 left-0 z-50 h-screen w-64 bg-surface border-r border-stroke flex flex-col transition-transform md:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:block`}>
         <div className="p-5 border-b border-stroke flex items-center justify-between">
           <div>
@@ -69,7 +65,6 @@ export function AdminDashboard({ onLogout }: { onLogout: () => void }) {
         </div>
       </aside>
 
-      {/* Main */}
       <main className="flex-1 min-w-0">
         <div className="sticky top-0 z-30 bg-bg/80 backdrop-blur-xl border-b border-stroke px-4 md:px-6 py-3 flex items-center gap-3">
           <button onClick={() => setSidebarOpen(true)} className="md:hidden text-text-secondary hover:text-text-primary">
@@ -90,7 +85,6 @@ export function AdminDashboard({ onLogout }: { onLogout: () => void }) {
               {active === 'pdfs' && <PDFActivity />}
               {active === 'leads' && <Leads />}
               {active === 'analytics' && <PageAnalytics />}
-              {active === 'clicks' && <LinkClicks />}
               {active === 'settings' && <SettingsPage />}
             </>
           )}
