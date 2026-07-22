@@ -114,10 +114,11 @@ export default function Contact() {
                     <form onSubmit={handleSubmit} noValidate className="space-y-5">
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                         <div>
-                          <label className="block text-xs text-white/50 font-body mb-2">Name *</label>
+                          <label htmlFor="name" className="block text-xs text-white/50 font-body mb-2">Name *</label>
                           <input
                             type="text"
                             name="name"
+                            id="name"
                             required
                             value={formData.name}
                             onChange={handleChange}
@@ -133,10 +134,11 @@ export default function Contact() {
                           )}
                         </div>
                         <div>
-                          <label className="block text-xs text-white/50 font-body mb-2">Email *</label>
+                          <label htmlFor="email" className="block text-xs text-white/50 font-body mb-2">Email *</label>
                           <input
                             type="email"
                             name="email"
+                            id="email"
                             required
                             value={formData.email}
                             onChange={handleChange}
@@ -154,10 +156,11 @@ export default function Contact() {
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                         <div>
-                          <label className="block text-xs text-white/50 font-body mb-2">Phone</label>
+                          <label htmlFor="phone" className="block text-xs text-white/50 font-body mb-2">Phone</label>
                           <input
                             type="tel"
                             name="phone"
+                            id="phone"
                             value={formData.phone}
                             onChange={handleChange}
                             className={inputClass('phone')}
@@ -171,9 +174,10 @@ export default function Contact() {
                           )}
                         </div>
                         <div>
-                          <label className="block text-xs text-white/50 font-body mb-2">Service Needed *</label>
+                          <label htmlFor="service" className="block text-xs text-white/50 font-body mb-2">Service Needed *</label>
                           <select
                             name="service"
+                            id="service"
                             required
                             value={formData.service}
                             onChange={handleChange}
@@ -208,9 +212,10 @@ export default function Contact() {
                       </div>
 
                       <div>
-                        <label className="block text-xs text-white/50 font-body mb-2">Budget Range</label>
+                        <label htmlFor="budget" className="block text-xs text-white/50 font-body mb-2">Budget Range</label>
                         <select
                           name="budget"
+                          id="budget"
                           value={formData.budget}
                           onChange={handleChange}
                           className="w-full bg-white/5 border border-white/10 rounded-[18px] px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-accent/50 transition-colors font-body appearance-none"
@@ -235,9 +240,10 @@ export default function Contact() {
                       </div>
 
                       <div>
-                        <label className="block text-xs text-white/50 font-body mb-2">Message *</label>
+                        <label htmlFor="message" className="block text-xs text-white/50 font-body mb-2">Message *</label>
                         <textarea
                           name="message"
+                          id="message"
                           required
                           rows={4}
                           value={formData.message}

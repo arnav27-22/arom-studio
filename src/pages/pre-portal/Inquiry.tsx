@@ -112,43 +112,43 @@ export default function Inquiry() {
           <motion.form initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} onSubmit={handleSubmit} className="max-w-2xl mx-auto glass rounded-[32px] p-8 md:p-10">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
-                <label className="text-xs text-white/50 font-body mb-2 block"><User className="h-3 w-3 inline mr-1" /> Name *</label>
-                <input value={form.name} onChange={(e) => update('name', e.target.value)} placeholder="Your name" required className="w-full bg-white/5 border border-white/10 rounded-[18px] px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-accent/50 font-body" />
+                <label htmlFor="inquiry-name" className="text-xs text-white/50 font-body mb-2 block"><User className="h-3 w-3 inline mr-1" /> Name *</label>
+                <input id="inquiry-name" value={form.name} onChange={(e) => update('name', e.target.value)} placeholder="Your name" required className="w-full bg-white/5 border border-white/10 rounded-[18px] px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-accent/50 font-body" />
               </div>
               <div>
-                <label className="text-xs text-white/50 font-body mb-2 block"><Mail className="h-3 w-3 inline mr-1" /> Email *</label>
-                <input type="email" value={form.email} onChange={(e) => update('email', e.target.value)} placeholder="you@email.com" required className="w-full bg-white/5 border border-white/10 rounded-[18px] px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-accent/50 font-body" />
-              </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <div>
-                <label className="text-xs text-white/50 font-body mb-2 block"><Phone className="h-3 w-3 inline mr-1" /> Phone</label>
-                <input value={form.phone} onChange={(e) => update('phone', e.target.value)} placeholder="+91 98765 43210" className="w-full bg-white/5 border border-white/10 rounded-[18px] px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-accent/50 font-body" />
-              </div>
-              <div>
-                <label className="text-xs text-white/50 font-body mb-2 block"><Building2 className="h-3 w-3 inline mr-1" /> Company</label>
-                <input value={form.company} onChange={(e) => update('company', e.target.value)} placeholder="Your company name" className="w-full bg-white/5 border border-white/10 rounded-[18px] px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-accent/50 font-body" />
+                <label htmlFor="inquiry-email" className="text-xs text-white/50 font-body mb-2 block"><Mail className="h-3 w-3 inline mr-1" /> Email *</label>
+                <input type="email" id="inquiry-email" value={form.email} onChange={(e) => update('email', e.target.value)} placeholder="you@email.com" required className="w-full bg-white/5 border border-white/10 rounded-[18px] px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-accent/50 font-body" />
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
-                <label className="text-xs text-white/50 font-body mb-2 block">Project Type *</label>
-                <select value={form.projectType} onChange={(e) => update('projectType', e.target.value)} required className="w-full bg-white/5 border border-white/10 rounded-[18px] px-4 py-3 text-sm text-white focus:outline-none focus:border-accent/50 font-body appearance-none">
+                <label htmlFor="inquiry-phone" className="text-xs text-white/50 font-body mb-2 block"><Phone className="h-3 w-3 inline mr-1" /> Phone</label>
+                <input id="inquiry-phone" value={form.phone} onChange={(e) => update('phone', e.target.value)} placeholder="+91 98765 43210" className="w-full bg-white/5 border border-white/10 rounded-[18px] px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-accent/50 font-body" />
+              </div>
+              <div>
+                <label htmlFor="inquiry-company" className="text-xs text-white/50 font-body mb-2 block"><Building2 className="h-3 w-3 inline mr-1" /> Company</label>
+                <input id="inquiry-company" value={form.company} onChange={(e) => update('company', e.target.value)} placeholder="Your company name" className="w-full bg-white/5 border border-white/10 rounded-[18px] px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-accent/50 font-body" />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label htmlFor="inquiry-projectType" className="text-xs text-white/50 font-body mb-2 block">Project Type *</label>
+                <select id="inquiry-projectType" value={form.projectType} onChange={(e) => update('projectType', e.target.value)} required className="w-full bg-white/5 border border-white/10 rounded-[18px] px-4 py-3 text-sm text-white focus:outline-none focus:border-accent/50 font-body appearance-none">
                   <option value="" className="bg-bg">Select type</option>
                   {projectTypes.map((t) => <option key={t} className="bg-bg" value={t}>{t}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-xs text-white/50 font-body mb-2 block">Budget Range</label>
-                <select value={form.budget} onChange={(e) => update('budget', e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-[18px] px-4 py-3 text-sm text-white focus:outline-none focus:border-accent/50 font-body appearance-none">
+                <label htmlFor="inquiry-budget" className="text-xs text-white/50 font-body mb-2 block">Budget Range</label>
+                <select id="inquiry-budget" value={form.budget} onChange={(e) => update('budget', e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-[18px] px-4 py-3 text-sm text-white focus:outline-none focus:border-accent/50 font-body appearance-none">
                   <option value="" className="bg-bg">Select range</option>
                   {budgetRanges.map((b) => <option key={b} className="bg-bg" value={b}>{b}</option>)}
                 </select>
               </div>
             </div>
             <div className="mb-6">
-              <label className="text-xs text-white/50 font-body mb-2 block">Project Description *</label>
-              <textarea value={form.description} onChange={(e) => update('description', e.target.value)} placeholder="Tell us about your project — goals, features, timeline, and anything else we should know." rows={5} required className="w-full bg-white/5 border border-white/10 rounded-[18px] px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-accent/50 font-body resize-none" />
+              <label htmlFor="inquiry-description" className="text-xs text-white/50 font-body mb-2 block">Project Description *</label>
+              <textarea id="inquiry-description" value={form.description} onChange={(e) => update('description', e.target.value)} placeholder="Tell us about your project — goals, features, timeline, and anything else we should know." rows={5} required className="w-full bg-white/5 border border-white/10 rounded-[18px] px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-accent/50 font-body resize-none" />
             </div>
             <div className="flex items-start gap-3 mb-4">
               <input
