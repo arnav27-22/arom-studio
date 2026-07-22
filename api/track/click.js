@@ -1,5 +1,5 @@
 import crypto from 'crypto'
-import { getSupabase } from '../_supabase.js'
+import { db } from '../_db.js'
 
 function getBody(req) {
   return new Promise((resolve) => {
@@ -14,18 +14,16 @@ function getBody(req) {
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
-  const supabase = getSupabase()
-  if (!supabase) return res.json({ ok: true })
 
   const b = await getBody(req)
 
-  await supabase.from('click_events').insert({
+  db.append('clicks', {
     id: crypto.randomUUID(),
-    session_id: b.sessionId,
+    sessionId: b.sessionId,
     type: b.type || 'unknown',
     label: b.label || '',
     page: b.page || '/',
-    created_at: new Date().toISOString(),
+    createdAt: new Date().toISOString(),
   })
 
   res.json({ ok: true })

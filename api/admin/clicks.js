@@ -1,23 +1,15 @@
 import { requireAuth } from '../_auth.js'
-import { getSupabase, toCamel } from '../_supabase.js'
+import { db } from '../_db.js'
 
 export default async function handler(req, res) {
   if (!requireAuth(req, res)) return
-  const supabase = getSupabase()
-  if (!supabase) return res.status(500).json({ error: 'Supabase not configured' })
 
-  const { data: clicks, error } = await supabase
-    .from('click_events')
-    .select('*')
-    .order('created_at', { ascending: false })
-
-  if (error) return res.status(500).json({ error: error.message })
-  const decoded = toCamel(clicks || [])
-  if (!decoded.length) return res.json({ total: 0, clicks: [], byLabel: {} })
+  const clicks = db.read('clicks')
+  if (!clicks.length) return res.json({ total: 0, clicks: [], byLabel: {} })
 
   const { type, from, to } = req.query
 
-  let filtered = [...decoded]
+  let filtered = [...clicks]
   if (from) filtered = filtered.filter((c) => c.createdAt >= from)
   if (to) filtered = filtered.filter((c) => c.createdAt <= to + 'T23:59:59')
   if (type) filtered = filtered.filter((c) => c.type === type)

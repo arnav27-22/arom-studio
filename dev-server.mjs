@@ -192,7 +192,7 @@ async function handler(req, res) {
     const singlePageSessions = new Set()
     const sessionPages = {}
     visits.forEach(v => { if (!sessionPages[v.sessionId]) sessionPages[v.sessionId] = new Set(); sessionPages[v.sessionId].add(v.page) })
-    Object.entries(sessionPages).forEach(([, pagesSet]) => { if (pagesSet.size <= 1) singlePageSessions.add(sid) })
+    Object.entries(sessionPages).forEach(([sid, pagesSet]) => { if (pagesSet.size <= 1) singlePageSessions.add(sid) })
 
     const hourlyTraffic = Array.from({ length: 7 }, () => Array(24).fill(0))
     visits.forEach(v => { const d = new Date(v.createdAt); if (hourlyTraffic[d.getDay()]) hourlyTraffic[d.getDay()][d.getHours()]++ })

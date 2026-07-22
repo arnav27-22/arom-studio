@@ -1,23 +1,15 @@
 import { requireAuth } from '../_auth.js'
-import { getSupabase, toCamel } from '../_supabase.js'
+import { db } from '../_db.js'
 
 export default async function handler(req, res) {
   if (!requireAuth(req, res)) return
-  const supabase = getSupabase()
-  if (!supabase) return res.status(500).json({ error: 'Supabase not configured' })
 
-  const { data: visits, error } = await supabase
-    .from('visits')
-    .select('*')
-    .order('created_at', { ascending: false })
-
-  if (error) return res.status(500).json({ error: error.message })
-  const decoded = toCamel(visits || [])
-  if (!decoded.length) return res.json({ total: 0, allTime: 0, visits: [], dailyChart: [], deviceBreakdown: {}, countryCounts: {} })
+  const visits = db.read('visits')
+  if (!visits.length) return res.json({ total: 0, allTime: 0, visits: [], dailyChart: [], deviceBreakdown: {}, countryCounts: {} })
 
   const { page, country, device, from, to } = req.query
 
-  let filtered = [...decoded]
+  let filtered = [...visits]
   if (from) filtered = filtered.filter((v) => v.createdAt >= from)
   if (to) filtered = filtered.filter((v) => v.createdAt <= to + 'T23:59:59')
   if (page) filtered = filtered.filter((v) => v.page === page)
@@ -26,20 +18,20 @@ export default async function handler(req, res) {
 
   const last30 = Array.from({ length: 30 }, (_, i) => {
     const d = new Date(Date.now() - i * 86400000).toISOString().slice(0, 10)
-    const dayVisits = decoded.filter((v) => v.createdAt?.startsWith(d))
+    const dayVisits = visits.filter((v) => v.createdAt?.startsWith(d))
     const unique = new Set(dayVisits.map((v) => v.sessionId)).size
     return { date: d, visits: dayVisits.length, unique }
   }).reverse()
 
   const deviceBreakdown = {}
-  decoded.forEach((v) => { deviceBreakdown[v.deviceType] = (deviceBreakdown[v.deviceType] || 0) + 1 })
+  visits.forEach((v) => { deviceBreakdown[v.deviceType] = (deviceBreakdown[v.deviceType] || 0) + 1 })
 
   const countryCounts = {}
-  decoded.forEach((v) => { if (v.country) countryCounts[v.country] = (countryCounts[v.country] || 0) + 1 })
+  visits.forEach((v) => { if (v.country) countryCounts[v.country] = (countryCounts[v.country] || 0) + 1 })
 
   res.json({
     total: filtered.length,
-    allTime: decoded.length,
+    allTime: visits.length,
     visits: filtered.slice(-200).reverse(),
     dailyChart: last30,
     deviceBreakdown,

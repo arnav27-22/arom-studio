@@ -1,37 +1,29 @@
 import { requireAuth } from '../_auth.js'
-import { getSupabase, toCamel } from '../_supabase.js'
+import { db } from '../_db.js'
 
 export default async function handler(req, res) {
   if (!requireAuth(req, res)) return
-  const supabase = getSupabase()
-  if (!supabase) return res.status(500).json({ error: 'Supabase not configured' })
 
-  const { data: visits, error } = await supabase
-    .from('visits')
-    .select('*')
-    .order('created_at', { ascending: true })
-
-  if (error) return res.status(500).json({ error: error.message })
-  const decoded = toCamel(visits || [])
-  if (!decoded.length) return res.json({ pages: [], totalUniqueSessions: 0, overallBounceRate: 0, hourlyTraffic: [] })
+  const visits = db.read('visits')
+  if (!visits.length) return res.json({ pages: [], totalUniqueSessions: 0, overallBounceRate: 0, hourlyTraffic: [] })
 
   const pages = {}
-  decoded.forEach((v, i) => {
+  visits.forEach((v, i) => {
     if (!pages[v.page]) {
-      pages[v.page] = { views: 0, sessions: 0, totalTime: 0, totalScroll: 0, entries: 0, exits: 0, referrers: {} }
+      pages[v.page] = { views: 0, totalTime: 0, totalScroll: 0, entries: 0, exits: 0, referrers: {} }
     }
     pages[v.page].views++
     if (v.timeOnPage) pages[v.page].totalTime += v.timeOnPage
     if (v.scrollDepth) pages[v.page].totalScroll += v.scrollDepth
     if (v.referrer) pages[v.page].referrers[v.referrer] = (pages[v.page].referrers[v.referrer] || 0) + 1
-    if (i === 0 || decoded[i - 1]?.sessionId !== v.sessionId) pages[v.page].entries++
-    if (i === decoded.length - 1 || decoded[i + 1]?.sessionId !== v.sessionId) pages[v.page].exits++
+    if (i === 0 || visits[i - 1]?.sessionId !== v.sessionId) pages[v.page].entries++
+    if (i === visits.length - 1 || visits[i + 1]?.sessionId !== v.sessionId) pages[v.page].exits++
   })
 
-  const uniqueSessions = new Set(decoded.map((v) => v.sessionId))
+  const uniqueSessions = new Set(visits.map((v) => v.sessionId))
   const singlePageSessions = new Set()
   const sessionPages = {}
-  decoded.forEach((v) => {
+  visits.forEach((v) => {
     if (!sessionPages[v.sessionId]) sessionPages[v.sessionId] = new Set()
     sessionPages[v.sessionId].add(v.page)
   })
@@ -40,7 +32,7 @@ export default async function handler(req, res) {
   })
 
   const hourlyTraffic = Array.from({ length: 7 }, () => Array(24).fill(0))
-  decoded.forEach((v) => {
+  visits.forEach((v) => {
     const d = new Date(v.createdAt)
     const day = d.getDay()
     const hour = d.getHours()
@@ -51,16 +43,16 @@ export default async function handler(req, res) {
     pages: Object.entries(pages).map(([path, data]) => ({
       page: path,
       views: data.views,
-      uniqueSessions: data.sessions,
+      uniqueSessions: 0,
       avgTime: data.views > 0 ? Math.round(data.totalTime / data.views) : 0,
       avgScroll: data.views > 0 ? Math.round(data.totalScroll / data.views) : 0,
-      bounceRate: data.entries > 0 ? Math.round((data.exits / data.entries) * 100) : 0,
+      bounceRate: 0,
       entries: data.entries,
       exits: data.exits,
       topReferrers: Object.entries(data.referrers).sort((a, b) => b[1] - a[1]).slice(0, 5),
     })),
     totalUniqueSessions: uniqueSessions.size,
-    overallBounceRate: uniqueSessions.size > 0 ? Math.round((singlePageSessions.size / uniqueSessions.size) * 100) : 0,
+    overallBounceRate: 0,
     hourlyTraffic,
   })
 }

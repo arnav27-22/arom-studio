@@ -1,6 +1,6 @@
 import crypto from 'crypto'
 import { requireAuth } from '../_auth.js'
-import { getSupabase, toCamel } from '../_supabase.js'
+import { db } from '../_db.js'
 
 function encrypt(text) {
   const key = process.env.ENCRYPTION_KEY || 'default-key-change-me-32chars!!'
@@ -23,28 +23,25 @@ function decrypt(encrypted) {
 
 export default async function handler(req, res) {
   if (!requireAuth(req, res)) return
-  const supabase = getSupabase()
-  if (!supabase) return res.status(500).json({ error: 'Supabase not configured' })
 
   if (req.method === 'PUT') {
     const { id, status } = req.body || {}
-    const { error } = await supabase.from('form_submissions').update({ status }).eq('id', id)
-    if (error) return res.status(500).json({ error: error.message })
-    return res.json({ success: true })
+    const leads = db.read('form_submissions')
+    const idx = leads.findIndex(l => l.id === id)
+    if (idx !== -1) {
+      leads[idx].status = status || leads[idx].status
+      db.write('form_submissions', leads)
+      return res.json({ success: true })
+    }
+    return res.status(404).json({ error: 'Not found' })
   }
 
-  const { data: leads, error } = await supabase
-    .from('form_submissions')
-    .select('*')
-    .order('created_at', { ascending: false })
-
-  if (error) return res.status(500).json({ error: error.message })
-  const decoded = toCamel(leads || [])
-  if (!decoded.length) return res.json({ total: 0, leads: [], byService: {} })
+  const leads = db.read('form_submissions')
+  if (!leads.length) return res.json({ total: 0, leads: [], byService: {} })
 
   const { from, to, status: statusFilter } = req.query
 
-  let filtered = [...decoded]
+  let filtered = [...leads]
   if (from) filtered = filtered.filter((l) => l.createdAt >= from)
   if (to) filtered = filtered.filter((l) => l.createdAt <= to + 'T23:59:59')
   if (statusFilter) filtered = filtered.filter((l) => l.status === statusFilter)
@@ -53,7 +50,7 @@ export default async function handler(req, res) {
   filtered.forEach((l) => { const s = l.service || 'Unknown'; byService[s] = (byService[s] || 0) + 1 })
 
   if (req.query.view === 'full' && req.query.id) {
-    const lead = decoded.find((l) => l.id === req.query.id)
+    const lead = leads.find((l) => l.id === req.query.id)
     if (!lead) return res.status(404).json({ error: 'Not found' })
     return res.json({ ...lead, email: lead.emailEncrypted ? decrypt(lead.emailEncrypted) : lead.email })
   }
