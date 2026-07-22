@@ -189,7 +189,8 @@ export default function Agreement() {
               <p className="mb-1"><strong>Agency:</strong> AROM Studio</p>
               <p className="mb-1"><strong>Client:</strong> {clientName || <span className="text-white/30 italic">[Client Name]</span>}</p>
               {clientAddress && <p className="mb-1">Address: {clientAddress}</p>}
-              {(clientEmail || clientPhone) && <p className="mb-3">Contact: {[clientEmail, clientPhone].filter(Boolean).join(' | ')}</p>}
+              {clientEmail && <p className="mb-1">Contact: {clientEmail}</p>}
+              {clientPhone && <p className="mb-3 pl-9">{clientPhone}</p>}
               <p className="mb-3">This Agreement becomes effective from <strong>{effDateStr}</strong>.</p>
               <label className="flex items-start gap-3 cursor-pointer mt-3 pt-3 border-t border-white/10">
                 <input type="checkbox" checked={!!checkedSections['parties']} onChange={() => toggleSection('parties')} className="mt-0.5 accent-accent" />

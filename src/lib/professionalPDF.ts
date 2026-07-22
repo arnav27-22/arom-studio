@@ -91,10 +91,12 @@ export function addCoverPage(
   }
 
   // Info box
-  const contactStr = [opts.clientEmail, opts.clientPhone].filter(Boolean).join(' | ')
+  const hasEmail = !!opts.clientEmail
+  const hasPhone = !!opts.clientPhone
+  const contactRows = (hasEmail ? 1 : 0) + (hasPhone ? 1 : 0)
   let rowCount = 2 // agency + date always
   if (opts.clientName) rowCount++
-  if (contactStr) rowCount++
+  rowCount += contactRows
   const boxHeight = rowCount * 12 + 4
 
   const boxY = 140
@@ -129,17 +131,25 @@ export function addCoverPage(
     infoY += 12
   }
 
-  // Contact
-  if (contactStr) {
+  // Contact — email above, phone below
+  if (hasEmail || hasPhone) {
+    const labelX = pw / 2 - 55
+    const valX = pw / 2 + 10
     doc.setFont('helvetica', 'bold')
     doc.setFontSize(9)
     doc.setTextColor(BRAND.mid.r, BRAND.mid.g, BRAND.mid.b)
-    doc.text('CONTACT', pw / 2 - 55, infoY)
+    doc.text('CONTACT', labelX, infoY)
     doc.setFont('helvetica', 'normal')
     doc.setFontSize(10)
     doc.setTextColor(BRAND.dark.r, BRAND.dark.g, BRAND.dark.b)
-    doc.text(contactStr, pw / 2 + 10, infoY)
-    infoY += 12
+    if (hasEmail) {
+      doc.text(opts.clientEmail || '', valX, infoY)
+      infoY += 12
+    }
+    if (hasPhone) {
+      doc.text(opts.clientPhone || '', valX, infoY)
+      infoY += 12
+    }
   }
 
   // Date
@@ -610,7 +620,8 @@ export function generateAgreementPDF(data: {
     `Agency: AROM Studio`,
     `Client: ${data.clientName || '[Client Name]'}`,
     ...(data.clientAddress ? [`Address: ${data.clientAddress}`] : []),
-    ...(data.clientEmail || data.clientPhone ? [`Contact: ${[data.clientEmail, data.clientPhone].filter(Boolean).join(' | ')}`] : []),
+    ...(data.clientEmail ? [`Contact: ${data.clientEmail}`] : []),
+    ...(data.clientPhone ? [`         ${data.clientPhone}`] : []),
     '',
     `This Agreement becomes effective from ${effDate}.`,
   ], layout, true)
