@@ -82,12 +82,9 @@ export function trackClick(type: string, label: string) {
 
 export function trackPDFDownload(pdfType: string, storageKey: string, fileSizeKb: number = 0) {
   const info = getDeviceInfo()
-  fetch('/api/pdfs/save', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ sessionId: getSessionId(), pdfType, fileSizeKb, storageKey, deviceType: info.deviceType, browser: info.browser, os: info.os }),
-    keepalive: true,
-  })
+  const payload = { sessionId: getSessionId(), pdfType, fileSizeKb, storageKey, deviceType: info.deviceType, browser: info.browser, os: info.os }
+  const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' })
+  navigator.sendBeacon('/api/pdfs/save', blob)
 }
 
 export function uploadPDF(doc: any, pdfType: string, storageKey: string) {

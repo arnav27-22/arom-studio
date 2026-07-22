@@ -116,10 +116,10 @@ export default async function handler(req, res) {
   // Overview
   if (pathname === '/api/admin/overview') {
     if (!adminGuard(req, res)) return
-    const visits = db.read('visits')
-    const pdfs = db.read('pdf_events')
-    const leads = db.read('form_submissions')
-    const logs = db.read('system_logs')
+    const visits = await db.read('visits')
+    const pdfs = await db.read('pdf_events')
+    const leads = await db.read('form_submissions')
+    const logs = await db.read('system_logs')
     const now = new Date()
     const today = now.toISOString().slice(0, 10)
     const weekAgo = new Date(now - 7 * 86400000).toISOString()
@@ -141,8 +141,8 @@ export default async function handler(req, res) {
   // Visitors
   if (pathname === '/api/admin/visitors') {
     if (!adminGuard(req, res)) return
-    if (req.method === 'DELETE') { db.write('visits', []); return j(res, { success: true }) }
-    const visits = db.read('visits')
+    if (req.method === 'DELETE') { await db.write('visits', []); return j(res, { success: true }) }
+    const visits = await db.read('visits')
     if (!visits.length) return j(res, { total: 0, allTime: 0, visits: [], dailyChart: [], deviceBreakdown: {}, countryCounts: {} })
     const params = Object.fromEntries(url.searchParams)
     let filtered = [...visits]
@@ -164,7 +164,7 @@ export default async function handler(req, res) {
   // PDFs
   if (pathname === '/api/admin/pdfs') {
     if (!adminGuard(req, res)) return
-    const pdfs = db.read('pdf_events')
+    const pdfs = await db.read('pdf_events')
     if (!pdfs.length) return j(res, { total: 0, pdfs: [], byDay: {}, avgSize: 0 })
     const params = Object.fromEntries(url.searchParams)
     let f = [...pdfs]
@@ -189,12 +189,12 @@ export default async function handler(req, res) {
     }
     if (req.method === 'PUT') {
       const body = await getJSON(req)
-      const leads = db.read('form_submissions')
+      const leads = await db.read('form_submissions')
       const idx = leads.findIndex(l => l.id === body.id)
-      if (idx !== -1) { leads[idx].status = body.status || leads[idx].status; db.write('form_submissions', leads); return j(res, { success: true }) }
+      if (idx !== -1) { leads[idx].status = body.status || leads[idx].status; await db.write('form_submissions', leads); return j(res, { success: true }) }
       return send(res, 404, { error: 'Not found' })
     }
-    const leads = db.read('form_submissions')
+    const leads = await db.read('form_submissions')
     if (!leads.length) return j(res, { total: 0, leads: [], byService: {} })
     const params = Object.fromEntries(url.searchParams)
     let f = [...leads]
@@ -213,7 +213,7 @@ export default async function handler(req, res) {
   // Analytics
   if (pathname === '/api/admin/analytics') {
     if (!adminGuard(req, res)) return
-    const visits = db.read('visits')
+    const visits = await db.read('visits')
     if (!visits.length) return j(res, { pages: [], totalUniqueSessions: 0, overallBounceRate: 0, hourlyTraffic: [] })
     const pages = {}
     visits.forEach((v, i) => {
@@ -240,7 +240,7 @@ export default async function handler(req, res) {
   // Clicks
   if (pathname === '/api/admin/clicks') {
     if (!adminGuard(req, res)) return
-    const clicks = db.read('clicks')
+    const clicks = await db.read('clicks')
     if (!clicks.length) return j(res, { total: 0, clicks: [], byLabel: {} })
     const params = Object.fromEntries(url.searchParams)
     let f = [...clicks]
@@ -254,7 +254,7 @@ export default async function handler(req, res) {
   // Logs
   if (pathname === '/api/admin/logs') {
     if (!adminGuard(req, res)) return
-    const logs = db.read('system_logs')
+    const logs = await db.read('system_logs')
     if (!logs.length) return j(res, { total: 0, logs: [] })
     const params = Object.fromEntries(url.searchParams)
     let f = [...logs]
@@ -275,7 +275,7 @@ export default async function handler(req, res) {
   if (pathname === '/api/track/pageview' && req.method === 'POST') {
     const body = await getJSON(req)
     const ipHash = crypto.createHash('sha256').update(ip).digest('hex').slice(0, 16)
-    db.append('visits', {
+    await db.append('visits', {
       id: crypto.randomUUID(), sessionId: body.sessionId, page: body.page || '/', referrer: body.referrer || '',
       deviceType: body.deviceInfo?.deviceType || 'desktop', browser: body.deviceInfo?.browser || 'Unknown', os: body.deviceInfo?.os || 'Unknown',
       country: '', city: '', ipHash, timeOnPage: 0, scrollDepth: 0, createdAt: new Date().toISOString(),
@@ -287,9 +287,9 @@ export default async function handler(req, res) {
   if (pathname === '/api/track/exit' && req.method === 'POST') {
     const body = await getJSON(req)
     if (body.sessionId && body.page) {
-      const visits = db.read('visits')
+      const visits = await db.read('visits')
       const last = visits.findLast(v => v.sessionId === body.sessionId && v.page === body.page)
-      if (last) { last.timeOnPage = body.timeOnPage || 0; last.scrollDepth = body.scrollDepth || 0; db.write('visits', visits) }
+      if (last) { last.timeOnPage = body.timeOnPage || 0; last.scrollDepth = body.scrollDepth || 0; await db.write('visits', visits) }
     }
     return j(res, { ok: true })
   }
@@ -297,14 +297,14 @@ export default async function handler(req, res) {
   // Track click
   if (pathname === '/api/track/click' && req.method === 'POST') {
     const body = await getJSON(req)
-    db.append('clicks', { id: crypto.randomUUID(), sessionId: body.sessionId, type: body.type || 'unknown', label: body.label || '', page: body.page || '/', createdAt: new Date().toISOString() })
+    await db.append('clicks', { id: crypto.randomUUID(), sessionId: body.sessionId, type: body.type || 'unknown', label: body.label || '', page: body.page || '/', createdAt: new Date().toISOString() })
     return j(res, { ok: true })
   }
 
   // PDF save (no auth - simple tracking, no file)
   if (pathname === '/api/pdfs/save' && req.method === 'POST') {
     const body = await getJSON(req)
-    db.append('pdf_events', { id: crypto.randomUUID(), sessionId: body.sessionId, pdfType: body.pdfType || 'unknown', fileSizeKb: body.fileSizeKb || 0, storageKey: body.storageKey || '', blobUrl: '', deviceType: body.deviceType || '', browser: body.browser || '', os: body.os || '', country: '', createdAt: new Date().toISOString() })
+    await db.append('pdf_events', { id: crypto.randomUUID(), sessionId: body.sessionId, pdfType: body.pdfType || 'unknown', fileSizeKb: body.fileSizeKb || 0, storageKey: body.storageKey || '', blobUrl: '', deviceType: body.deviceType || '', browser: body.browser || '', os: body.os || '', country: '', createdAt: new Date().toISOString() })
     return j(res, { ok: true })
   }
 
@@ -334,7 +334,7 @@ export default async function handler(req, res) {
       blobUrl = blob.url
     } catch {}
 
-    db.append('pdf_events', {
+    await db.append('pdf_events', {
       id: crypto.randomUUID(), sessionId, pdfType, fileSizeKb: Math.round(fileField.data.length / 1024),
       storageKey, blobUrl, deviceType, browser, os, country: '', createdAt: new Date().toISOString(),
     })
@@ -344,7 +344,7 @@ export default async function handler(req, res) {
   // PDF download (admin, requires auth)
   if (pathname === '/api/pdfs/download' && req.method === 'GET') {
     if (!adminGuard(req, res)) return
-    const pdfs = db.read('pdf_events')
+    const pdfs = await db.read('pdf_events')
     const id = url.searchParams.get('id')
     const entry = pdfs.find(p => p.id === id)
     if (!entry || !entry.blobUrl) return send(res, 404, { error: 'not found' })
