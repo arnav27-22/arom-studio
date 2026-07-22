@@ -26,21 +26,25 @@ interface FormData {
   projectType: string
   budget: string
   description: string
+  agreedToTerms: boolean
 }
 
 export default function Inquiry() {
   const [form, setForm] = useState<FormData>({
     name: '', email: '', phone: '', company: '',
     projectType: '', budget: '', description: '',
+    agreedToTerms: false,
   })
   const [submitted, setSubmitted] = useState(false)
   const [sending, setSending] = useState(false)
+  const [termsError, setTermsError] = useState(false)
 
-  const update = (field: keyof FormData, value: string) => setForm((p) => ({ ...p, [field]: value }))
+  const update = (field: keyof FormData, value: string | boolean) => setForm((p) => ({ ...p, [field]: value }))
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!form.name.trim() || !form.email.trim() || !form.description.trim()) return
+    if (!form.agreedToTerms) { setTermsError(true); return }
     setSending(true)
     try {
       await emailjs.send(
@@ -54,6 +58,7 @@ export default function Inquiry() {
           project_type: form.projectType,
           budget: form.budget,
           message: form.description,
+          agreed_to_terms: 'Yes',
         },
         EMAILJS_CONFIG.PUBLIC_KEY,
       )
@@ -145,6 +150,23 @@ export default function Inquiry() {
               <label className="text-xs text-white/50 font-body mb-2 block">Project Description *</label>
               <textarea value={form.description} onChange={(e) => update('description', e.target.value)} placeholder="Tell us about your project — goals, features, timeline, and anything else we should know." rows={5} required className="w-full bg-white/5 border border-white/10 rounded-[18px] px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-accent/50 font-body resize-none" />
             </div>
+            <div className="flex items-start gap-3 mb-4">
+              <input
+                type="checkbox"
+                id="inquiryAgreedToTerms"
+                checked={form.agreedToTerms}
+                onChange={(e) => { update('agreedToTerms', e.target.checked); setTermsError(false) }}
+                className="mt-0.5 h-4 w-4 shrink-0 rounded-[4px] border border-white/20 bg-white/5 accent-accent focus:outline-none focus:ring-1 focus:ring-accent/50"
+              />
+              <label htmlFor="inquiryAgreedToTerms" className="text-xs text-white/50 font-body leading-relaxed">
+                I have read and agree to the{' '}
+                <a href="/privacy" target="_blank" className="text-accent hover:underline">Privacy Policy</a>
+                {' '}and{' '}
+                <a href="/terms" target="_blank" className="text-accent hover:underline">Terms &amp; Conditions</a>
+                {' '}*
+              </label>
+            </div>
+            {termsError && <p className="flex items-center gap-1 text-[11px] text-red-400 font-body -mt-2 mb-4">You must accept the Privacy Policy and Terms &amp; Conditions</p>}
             <Button type="submit" variant="secondary" size="lg" isLoading={sending} className="w-full"><Send className="h-4 w-4" /> {sending ? 'Sending...' : 'Submit Inquiry'}</Button>
           </motion.form>
         </Container>
