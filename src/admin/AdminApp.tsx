@@ -16,8 +16,8 @@ export default function AdminApp() {
 
   if (authed === null) {
     return (
-      <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center">
-        <div className="h-5 w-5 border-2 border-[#4E85BF] border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-bg flex items-center justify-center">
+        <div className="h-5 w-5 border-2 border-accent border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }

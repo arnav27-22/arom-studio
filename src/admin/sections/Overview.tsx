@@ -16,9 +16,9 @@ export function Overview() {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {Array.from({ length: 8 }).map((_, i) => (
-          <div key={i} className="bg-white/5 border border-white/5 rounded-xl p-4 animate-pulse">
-            <div className="h-3 w-20 bg-white/10 rounded mb-3" />
-            <div className="h-7 w-16 bg-white/10 rounded" />
+          <div key={i} className="glass rounded-[--radius-card] p-4 animate-pulse">
+            <div className="h-3 w-20 bg-surface-light rounded mb-3" />
+            <div className="h-7 w-16 bg-surface-light rounded" />
           </div>
         ))}
       </div>
@@ -38,20 +38,20 @@ export function Overview() {
         <StatCard label="Top Page Today" value={data.topPage} icon={<Eye className="h-4 w-4" />} />
       </div>
 
-      <div className="bg-white/5 border border-white/5 rounded-xl p-4">
-        <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">Recent Events</h3>
+      <div className="glass rounded-[--radius-card] p-4">
+        <h3 className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-3">Recent Events</h3>
         {data.recentEvents?.length > 0 ? (
           <div className="space-y-2">
             {data.recentEvents.map((ev: any, i: number) => (
-              <div key={ev.id || i} className="flex items-center gap-3 text-xs text-zinc-400">
-                <span className="text-zinc-600 shrink-0 font-mono">{new Date(ev.createdAt || ev.timestamp).toLocaleTimeString()}</span>
-                <span className="text-zinc-500 capitalize">{ev.type || ev.event || 'visit'}</span>
-                <span className="text-zinc-600 truncate">{ev.page || ev.detail || ''}</span>
+              <div key={ev.id || i} className="flex items-center gap-3 text-xs text-text-secondary">
+                <span className="text-muted shrink-0 font-mono">{new Date(ev.createdAt || ev.timestamp).toLocaleTimeString()}</span>
+                <span className="text-text-secondary capitalize">{ev.type || ev.event || 'visit'}</span>
+                <span className="text-muted truncate">{ev.page || ev.detail || ''}</span>
               </div>
             ))}
           </div>
         ) : (
-          <p className="text-sm text-zinc-600">No events recorded yet</p>
+          <p className="text-sm text-muted">No events recorded yet</p>
         )}
       </div>
     </div>

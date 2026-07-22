@@ -13,7 +13,7 @@ export function Visitors() {
       .catch(() => {})
   }, [])
 
-  if (!data) return <div className="text-sm text-zinc-500">Loading...</div>
+  if (!data) return <div className="text-sm text-text-secondary">Loading...</div>
 
   const columns = [
     { key: 'createdAt', label: 'Time', render: (v: string) => new Date(v).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) },
@@ -39,43 +39,43 @@ export function Visitors() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="bg-white/5 border border-white/5 rounded-xl p-4">
-          <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">Daily Visits (30 days)</h3>
+        <div className="glass rounded-[--radius-card] p-4">
+          <h3 className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-3">Daily Visits (30 days)</h3>
           {data.dailyChart?.length > 0 ? (
             <div className="flex items-end gap-1 h-32">
               {data.dailyChart.map((d: any) => {
                 const max = Math.max(...data.dailyChart.map((x: any) => x.visits), 1)
                 return (
                   <div key={d.date} className="flex-1 flex flex-col items-center gap-0.5 group relative">
-                    <div className="w-full bg-[#4E85BF]/20 rounded-t" style={{ height: `${(d.visits / max) * 100}%`, minHeight: d.visits > 0 ? 4 : 0 }} />
-                    <span className="text-[8px] text-zinc-600">{d.date.slice(5)}</span>
+                    <div className="w-full bg-accent/20 rounded-t" style={{ height: `${(d.visits / max) * 100}%`, minHeight: d.visits > 0 ? 4 : 0 }} />
+                    <span className="text-[8px] text-muted">{d.date.slice(5)}</span>
                   </div>
                 )
               })}
             </div>
           ) : (
-            <p className="text-sm text-zinc-600">No data yet</p>
+            <p className="text-sm text-muted">No data yet</p>
           )}
         </div>
 
-        <div className="bg-white/5 border border-white/5 rounded-xl p-4">
-          <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">Device Breakdown</h3>
+        <div className="glass rounded-[--radius-card] p-4">
+          <h3 className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-3">Device Breakdown</h3>
           <div className="space-y-2">
             {Object.entries(data.deviceBreakdown || {}).map(([device, count]) => (
               <div key={device} className="flex items-center gap-3">
-                <span className="text-xs text-zinc-400 w-20 capitalize">{device}</span>
-                <div className="flex-1 h-5 bg-white/5 rounded-full overflow-hidden">
-                  <div className="h-full bg-[#4E85BF]/40 rounded-full" style={{ width: `${((count as number) / (devTotal || 1)) * 100}%` }} />
+                <span className="text-xs text-text-secondary w-20 capitalize">{device}</span>
+                <div className="flex-1 h-5 bg-surface-light rounded-full overflow-hidden">
+                  <div className="h-full bg-accent/40 rounded-full" style={{ width: `${((count as number) / (devTotal || 1)) * 100}%` }} />
                 </div>
-                <span className="text-xs text-zinc-500 w-10 text-right">{count as number}</span>
+                <span className="text-xs text-text-secondary w-10 text-right">{count as number}</span>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      <div className="bg-white/5 border border-white/5 rounded-xl p-4">
-        <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">Recent Visits</h3>
+      <div className="glass rounded-[--radius-card] p-4">
+        <h3 className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-3">Recent Visits</h3>
         <DataTable columns={columns} data={data.visits || []} />
       </div>
     </div>

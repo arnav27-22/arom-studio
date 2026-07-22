@@ -22,7 +22,7 @@ export function SystemLogs() {
     a.click()
   }
 
-  if (!data) return <div className="text-sm text-zinc-500">Loading...</div>
+  if (!data) return <div className="text-sm text-text-secondary">Loading...</div>
 
   const filtered = filter
     ? data.logs.filter((l: any) => JSON.stringify(l).toLowerCase().includes(filter.toLowerCase()))
@@ -34,7 +34,7 @@ export function SystemLogs() {
     { key: 'event', label: 'Event' },
     { key: 'severity', label: 'Severity', render: (v: string) => {
       const colors: Record<string, string> = { info: 'text-green-400', warn: 'text-amber-400', error: 'text-red-400' }
-      return <span className={`font-medium ${colors[v] || 'text-zinc-400'}`}>{v || '—'}</span>
+      return <span className={`font-medium ${colors[v] || 'text-text-secondary'}`}>{v || '—'}</span>
     }},
     { key: 'detail', label: 'Detail', render: (v: string) => v || '—' },
   ]
@@ -47,17 +47,17 @@ export function SystemLogs() {
           placeholder="Filter logs..."
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
-          className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#4E85BF]/50 w-48"
+          className="bg-surface-light border border-stroke rounded-lg px-3 py-2 text-xs text-text-primary placeholder:text-muted focus:outline-none focus:border-accent/50 w-48"
         />
-        <button onClick={exportJSON} className="flex items-center gap-2 text-xs font-medium text-zinc-400 hover:text-white bg-white/5 hover:bg-white/10 px-3 py-2 rounded-lg transition-all">
+        <button onClick={exportJSON} className="flex items-center gap-2 text-xs font-medium text-text-secondary hover:text-text-primary bg-surface-light hover:bg-white/10 px-3 py-2 rounded-lg transition-all">
           <Download className="h-3.5 w-3.5" /> Export JSON
         </button>
-        <span className="text-xs text-zinc-600">
+        <span className="text-xs text-muted">
           {filtered.length} of {data.logs?.length || 0} entries
         </span>
       </div>
 
-      <div className="bg-white/5 border border-white/5 rounded-xl p-4">
+      <div className="glass rounded-[--radius-card] p-4">
         <DataTable columns={columns} data={filtered} />
       </div>
     </div>

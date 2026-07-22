@@ -29,18 +29,18 @@ export function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const section = sections.find((s) => s.id === active)
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-white flex">
+    <div className="min-h-screen bg-bg text-text-primary font-body flex">
       {/* Mobile overlay */}
       {sidebarOpen && <div className="fixed inset-0 bg-black/60 z-40 md:hidden" onClick={() => setSidebarOpen(false)} />}
 
       {/* Sidebar */}
-      <aside className={`fixed md:sticky top-0 left-0 z-50 h-screen w-64 bg-[#111118] border-r border-white/5 flex flex-col transition-transform md:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:block`}>
-        <div className="p-5 border-b border-white/5 flex items-center justify-between">
+      <aside className={`fixed md:sticky top-0 left-0 z-50 h-screen w-64 bg-surface border-r border-stroke flex flex-col transition-transform md:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:block`}>
+        <div className="p-5 border-b border-stroke flex items-center justify-between">
           <div>
-            <h2 className="text-sm font-bold text-white">AROM STUDIO</h2>
-            <p className="text-[10px] text-zinc-500">Admin Panel</p>
+            <h2 className="text-sm font-bold text-text-primary">AROM STUDIO</h2>
+            <p className="text-[10px] text-text-secondary">Admin Panel</p>
           </div>
-          <button onClick={() => setSidebarOpen(false)} className="md:hidden text-zinc-500 hover:text-white">
+          <button onClick={() => setSidebarOpen(false)} className="md:hidden text-text-secondary hover:text-text-primary">
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -53,7 +53,7 @@ export function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                 key={s.id}
                 onClick={() => { setActive(s.id); setSidebarOpen(false) }}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-medium transition-all ${
-                  active === s.id ? 'bg-[#4E85BF]/10 text-[#4E85BF]' : 'text-zinc-400 hover:text-white hover:bg-white/5'
+                  active === s.id ? 'bg-accent/10 text-accent' : 'text-text-secondary hover:text-text-primary hover:bg-surface-light'
                 }`}
               >
                 <Icon className="h-4 w-4 shrink-0" />
@@ -63,8 +63,8 @@ export function AdminDashboard({ onLogout }: { onLogout: () => void }) {
           })}
         </nav>
 
-        <div className="p-3 border-t border-white/5">
-          <button onClick={onLogout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-red-400 hover:bg-red-400/5 transition-all">
+        <div className="p-3 border-t border-stroke">
+          <button onClick={onLogout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-medium text-text-secondary hover:text-red-400 hover:bg-red-400/5 transition-all">
             <LogOut className="h-4 w-4" />
             Sign Out
           </button>
@@ -73,14 +73,14 @@ export function AdminDashboard({ onLogout }: { onLogout: () => void }) {
 
       {/* Main */}
       <main className="flex-1 min-w-0">
-        <div className="sticky top-0 z-30 bg-[#0a0a0f]/80 backdrop-blur border-b border-white/5 px-4 md:px-6 py-3 flex items-center gap-3">
-          <button onClick={() => setSidebarOpen(true)} className="md:hidden text-zinc-400 hover:text-white">
+        <div className="sticky top-0 z-30 bg-bg/80 backdrop-blur-xl border-b border-stroke px-4 md:px-6 py-3 flex items-center gap-3">
+          <button onClick={() => setSidebarOpen(true)} className="md:hidden text-text-secondary hover:text-text-primary">
             <Menu className="h-5 w-5" />
           </button>
           <div className="flex items-center gap-2 text-sm">
-            <span className="text-zinc-500">Admin</span>
-            <span className="text-zinc-600">/</span>
-            <span className="text-white font-medium">{section?.label}</span>
+            <span className="text-text-secondary">Admin</span>
+            <span className="text-muted">/</span>
+            <span className="text-text-primary font-medium">{section?.label}</span>
           </div>
         </div>
 

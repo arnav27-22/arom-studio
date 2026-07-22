@@ -30,14 +30,14 @@ export function AdminLogin({ onLogin }: { onLogin: () => void }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-bg flex items-center justify-center p-4 font-body">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <div className="h-14 w-14 rounded-full bg-[#4E85BF]/10 flex items-center justify-center mx-auto mb-4">
-            <Lock className="h-6 w-6 text-[#4E85BF]" />
+          <div className="h-14 w-14 rounded-full glass flex items-center justify-center mx-auto mb-4">
+            <Lock className="h-6 w-6 text-accent" />
           </div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Admin Access</h1>
-          <p className="text-sm text-zinc-500 mt-1">Enter the master password to continue</p>
+          <h1 className="text-2xl font-bold text-text-primary tracking-tight">Admin Access</h1>
+          <p className="text-sm text-text-secondary mt-1">Enter the master password to continue</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -48,9 +48,9 @@ export function AdminLogin({ onLogin }: { onLogin: () => void }) {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Master password"
               autoFocus
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 pr-10 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#4E85BF]/50 font-mono"
+              className="w-full bg-surface-light border border-stroke rounded-xl px-4 py-3 pr-10 text-sm text-text-primary placeholder:text-muted focus:outline-none focus:border-accent/50 font-mono"
             />
-            <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300">
+            <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-text-secondary">
               {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
           </div>
@@ -65,7 +65,7 @@ export function AdminLogin({ onLogin }: { onLogin: () => void }) {
           <button
             type="submit"
             disabled={loading || !password}
-            className="w-full bg-[#4E85BF] hover:bg-[#4E85BF]/90 disabled:opacity-40 text-white text-sm font-medium rounded-xl px-4 py-3 transition-all"
+            className="w-full bg-accent hover:bg-accent/90 disabled:opacity-40 text-white text-sm font-medium rounded-xl px-4 py-3 transition-all"
           >
             {loading ? 'Verifying...' : 'Unlock'}
           </button>

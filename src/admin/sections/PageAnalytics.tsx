@@ -14,7 +14,7 @@ export function PageAnalytics() {
       .catch(() => {})
   }, [])
 
-  if (!data) return <div className="text-sm text-zinc-500">Loading...</div>
+  if (!data) return <div className="text-sm text-text-secondary">Loading...</div>
 
   const pageColumns = [
     { key: 'page', label: 'Page' },
@@ -34,17 +34,17 @@ export function PageAnalytics() {
         <StatCard label="Overall Bounce Rate" value={`${data.overallBounceRate || 0}%`} icon={<BarChart3 className="h-4 w-4" />} />
       </div>
 
-      <div className="bg-white/5 border border-white/5 rounded-xl p-4">
-        <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">Hourly Traffic Heatmap (7d x 24h)</h3>
+      <div className="glass rounded-[--radius-card] p-4">
+        <h3 className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-3">Hourly Traffic Heatmap (7d x 24h)</h3>
         <div className="overflow-x-auto">
           <div className="grid grid-cols-25 gap-0.5 min-w-[600px]">
-            <div className="text-[8px] text-zinc-600" />
+            <div className="text-[8px] text-muted" />
             {Array.from({ length: 24 }).map((_, h) => (
-              <div key={h} className="text-[8px] text-zinc-600 text-center">{h}</div>
+              <div key={h} className="text-[8px] text-muted text-center">{h}</div>
             ))}
             {(data.hourlyTraffic || []).map((row: number[], day: number) => (
               <>
-                <div key={`label-${day}`} className="text-[8px] text-zinc-600 pr-1 flex items-center">{heatmapDays[day]}</div>
+                <div key={`label-${day}`} className="text-[8px] text-muted pr-1 flex items-center">{heatmapDays[day]}</div>
                 {row.map((val: number, hour: number) => {
                   const max = Math.max(...(data.hourlyTraffic || []).flat(), 1)
                   const intensity = Math.min(1, val / max)
@@ -63,21 +63,21 @@ export function PageAnalytics() {
         </div>
       </div>
 
-      <div className="bg-white/5 border border-white/5 rounded-xl p-4">
-        <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">Page Performance</h3>
+      <div className="glass rounded-[--radius-card] p-4">
+        <h3 className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-3">Page Performance</h3>
         <DataTable columns={pageColumns} data={(data.pages || []).sort((a: any, b: any) => b.views - a.views)} />
       </div>
 
       {selectedPage && (
-        <div className="bg-white/5 border border-white/5 rounded-xl p-4">
-          <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">Top Referrers for {selectedPage}</h3>
-          <div className="space-y-1 text-xs text-zinc-400">
+        <div className="glass rounded-[--radius-card] p-4">
+          <h3 className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-3">Top Referrers for {selectedPage}</h3>
+          <div className="space-y-1 text-xs text-text-secondary">
             {data.pages?.find((p: any) => p.page === selectedPage)?.topReferrers?.map((r: [string, number]) => (
               <div key={r[0]} className="flex items-center gap-2">
-                <span className="text-zinc-600">{r[0]}</span>
-                <span className="text-zinc-500">({r[1]})</span>
+                <span className="text-muted">{r[0]}</span>
+                <span className="text-text-secondary">({r[1]})</span>
               </div>
-            )) || <p className="text-zinc-600">No referrer data</p>}
+            )) || <p className="text-muted">No referrer data</p>}
           </div>
         </div>
       )}

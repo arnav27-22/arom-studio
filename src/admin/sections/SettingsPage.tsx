@@ -11,12 +11,12 @@ export function SettingsPage() {
       .catch(() => {})
   }, [])
 
-  if (!data) return <div className="text-sm text-zinc-500">Loading...</div>
+  if (!data) return <div className="text-sm text-text-secondary">Loading...</div>
 
   return (
     <div className="space-y-6 max-w-2xl">
-      <div className="bg-white/5 border border-white/5 rounded-xl p-4">
-        <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-4">Environment Variables</h3>
+      <div className="glass rounded-[--radius-card] p-4">
+        <h3 className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-4">Environment Variables</h3>
         <div className="space-y-2">
           {Object.entries(data.envChecks || {}).map(([key, set]) => (
             <div key={key} className="flex items-center gap-3 text-xs">
@@ -25,12 +25,12 @@ export function SettingsPage() {
               ) : (
                 <XCircle className="h-3.5 w-3.5 text-red-400 shrink-0" />
               )}
-              <span className="text-zinc-400 font-mono">{key}</span>
-              <span className="text-zinc-600">{set ? '✓ Set' : '✗ Not set'}</span>
+              <span className="text-text-secondary font-mono">{key}</span>
+              <span className="text-muted">{set ? '✓ Set' : '✗ Not set'}</span>
             </div>
           ))}
         </div>
-        <p className="text-xs text-zinc-600 mt-3">
+        <p className="text-xs text-muted mt-3">
           Overall: {data.allSet ? (
             <span className="text-green-400">All environment variables are configured</span>
           ) : (
@@ -39,28 +39,28 @@ export function SettingsPage() {
         </p>
       </div>
 
-      <div className="bg-white/5 border border-white/5 rounded-xl p-4">
-        <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-4">Session Configuration</h3>
+      <div className="glass rounded-[--radius-card] p-4">
+        <h3 className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-4">Session Configuration</h3>
         <div className="space-y-2 text-xs">
           <div className="flex items-center justify-between">
-            <span className="text-zinc-400">Admin session timeout</span>
-            <span className="text-zinc-200 font-mono">{data.adminSessionTimeout}</span>
+            <span className="text-text-secondary">Admin session timeout</span>
+            <span className="text-text-primary font-mono">{data.adminSessionTimeout}</span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-zinc-400">JWT token expiry</span>
-            <span className="text-zinc-200 font-mono">{data.adminJwtExpiry}</span>
+            <span className="text-text-secondary">JWT token expiry</span>
+            <span className="text-text-primary font-mono">{data.adminJwtExpiry}</span>
           </div>
         </div>
       </div>
 
-      <div className="bg-white/5 border border-white/5 rounded-xl p-4">
-        <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-4">Actions</h3>
+      <div className="glass rounded-[--radius-card] p-4">
+        <h3 className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-4">Actions</h3>
         <div className="space-y-3">
-          <button className="flex items-center gap-2 text-xs font-medium text-zinc-400 hover:text-white bg-white/5 hover:bg-white/10 px-3 py-2 rounded-lg transition-all w-full">
+          <button className="flex items-center gap-2 text-xs font-medium text-text-secondary hover:text-text-primary bg-surface-light hover:bg-white/10 px-3 py-2 rounded-lg transition-all w-full">
             <RefreshCw className="h-3.5 w-3.5" />
             Force Logout All Sessions (requires ADMIN_JWT_SECRET rotation + redeploy)
           </button>
-          <button className="flex items-center gap-2 text-xs font-medium text-zinc-400 hover:text-white bg-white/5 hover:bg-white/10 px-3 py-2 rounded-lg transition-all w-full">
+          <button className="flex items-center gap-2 text-xs font-medium text-text-secondary hover:text-text-primary bg-surface-light hover:bg-white/10 px-3 py-2 rounded-lg transition-all w-full">
             <Download className="h-3.5 w-3.5" />
             Export All Data as JSON
           </button>
