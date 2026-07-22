@@ -84,10 +84,9 @@ export default async function handler(req, res) {
   // ---- Overview ----
   if (pathname === '/api/admin/overview') {
     if (!adminGuard(req, res)) return
-    const visits = db.read('visits')
-    const pdfs = db.read('pdf_events')
-    const leads = db.read('form_submissions')
-    const logs = db.read('system_logs')
+    const [visits, pdfs, leads, logs] = await Promise.all([
+      db.read('visits'), db.read('pdf_events'), db.read('form_submissions'), db.read('system_logs'),
+    ])
 
     const now = new Date()
     const today = now.toISOString().slice(0, 10)
@@ -126,11 +125,11 @@ export default async function handler(req, res) {
     if (!adminGuard(req, res)) return
 
     if (req.method === 'DELETE') {
-      db.write('visits', [])
+      await db.write('visits', [])
       return send(res, 200, { success: true })
     }
 
-    const visits = db.read('visits')
+    const visits = await db.read('visits')
     if (!visits.length) return send(res, 200, { total: 0, allTime: 0, visits: [], dailyChart: [], deviceBreakdown: {}, countryCounts: {} })
 
     const { page, country, device, from, to } = Object.fromEntries(url.searchParams)
@@ -167,7 +166,7 @@ export default async function handler(req, res) {
   // ---- PDFs ----
   if (pathname === '/api/admin/pdfs') {
     if (!adminGuard(req, res)) return
-    const pdfEvents = db.read('pdf_events')
+    const pdfEvents = await db.read('pdf_events')
     if (!pdfEvents.length) return send(res, 200, { total: 0, pdfs: [], byDay: {}, avgSize: 0 })
 
     const { from, to, pdfType, country } = Object.fromEntries(url.searchParams)
@@ -220,17 +219,17 @@ export default async function handler(req, res) {
 
     if (req.method === 'PUT') {
       const body = await getJSON(req)
-      const leads = db.read('form_submissions')
+      const leads = await db.read('form_submissions')
       const idx = leads.findIndex(l => l.id === body.id)
       if (idx !== -1) {
         leads[idx].status = body.status || leads[idx].status
-        db.write('form_submissions', leads)
+        await db.write('form_submissions', leads)
         return send(res, 200, { success: true })
       }
       return send(res, 404, { error: 'Not found' })
     }
 
-    const leads = db.read('form_submissions')
+    const leads = await db.read('form_submissions')
     if (!leads.length) return send(res, 200, { total: 0, leads: [], byService: {} })
 
     const { from, to, status: statusFilter } = Object.fromEntries(url.searchParams)
@@ -259,7 +258,7 @@ export default async function handler(req, res) {
   // ---- Analytics ----
   if (pathname === '/api/admin/analytics') {
     if (!adminGuard(req, res)) return
-    const visits = db.read('visits')
+    const visits = await db.read('visits')
     if (!visits.length) return send(res, 200, { pages: [], totalUniqueSessions: 0, overallBounceRate: 0, hourlyTraffic: [] })
 
     const pages = {}
@@ -303,7 +302,7 @@ export default async function handler(req, res) {
   // ---- Clicks ----
   if (pathname === '/api/admin/clicks') {
     if (!adminGuard(req, res)) return
-    const clicks = db.read('clicks')
+    const clicks = await db.read('clicks')
     if (!clicks.length) return send(res, 200, { total: 0, clicks: [], byLabel: {} })
 
     const { type, from, to } = Object.fromEntries(url.searchParams)
@@ -326,7 +325,7 @@ export default async function handler(req, res) {
   // ---- Logs ----
   if (pathname === '/api/admin/logs') {
     if (!adminGuard(req, res)) return
-    const logs = db.read('system_logs')
+    const logs = await db.read('system_logs')
     if (!logs.length) return send(res, 200, { total: 0, logs: [] })
 
     const { type: typeFilter, severity, from, to } = Object.fromEntries(url.searchParams)
@@ -363,7 +362,7 @@ export default async function handler(req, res) {
   if (pathname === '/api/track/pageview' && req.method === 'POST') {
     const body = await getJSON(req)
     const ipHash = crypto.createHash('sha256').update(ip).digest('hex').slice(0, 16)
-    db.append('visits', {
+    await db.append('visits', {
       id: crypto.randomUUID(),
       sessionId: body.sessionId,
       page: body.page || '/',
@@ -385,9 +384,9 @@ export default async function handler(req, res) {
   if (pathname === '/api/track/exit' && req.method === 'POST') {
     const body = await getJSON(req)
     if (body.sessionId && body.page) {
-      const visits = db.read('visits')
+      const visits = await db.read('visits')
       const last = visits.findLast(v => v.sessionId === body.sessionId && v.page === body.page)
-      if (last) { last.timeOnPage = body.timeOnPage || 0; last.scrollDepth = body.scrollDepth || 0; db.write('visits', visits) }
+      if (last) { last.timeOnPage = body.timeOnPage || 0; last.scrollDepth = body.scrollDepth || 0; await db.write('visits', visits) }
     }
     return send(res, 200, { ok: true })
   }
@@ -395,7 +394,7 @@ export default async function handler(req, res) {
   // ---- Track Click ----
   if (pathname === '/api/track/click' && req.method === 'POST') {
     const body = await getJSON(req)
-    db.append('clicks', {
+    await db.append('clicks', {
       id: crypto.randomUUID(),
       sessionId: body.sessionId,
       type: body.type || 'unknown',
@@ -409,7 +408,7 @@ export default async function handler(req, res) {
   // ---- PDF Save (no auth) ----
   if (pathname === '/api/pdfs/save' && req.method === 'POST') {
     const body = await getJSON(req)
-    db.append('pdf_events', {
+    await db.append('pdf_events', {
       id: crypto.randomUUID(),
       sessionId: body.sessionId,
       pdfType: body.pdfType || 'unknown',
