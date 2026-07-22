@@ -1,6 +1,5 @@
 import fs from 'fs'
 import path from 'path'
-import crypto from 'crypto'
 
 const LOCAL_DIR = path.resolve(process.cwd(), 'data')
 const TMP_DIR = '/tmp/arom_data'

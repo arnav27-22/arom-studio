@@ -362,6 +362,20 @@ export default async function handler(req, res) {
     }
   }
 
+  // Debug — shows stored data count and Blob status (no auth)
+  if (pathname === '/api/admin/debug') {
+    if (!adminGuard(req, res)) return
+    const [visits, pdfs, leads, clicks, logs] = await Promise.all([
+      db.read('visits'), db.read('pdf_events'), db.read('form_submissions'), db.read('clicks'), db.read('system_logs'),
+    ])
+    return j(res, {
+      useBlob: !!(process.env.VERCEL && process.env.BLOB_READ_WRITE_TOKEN),
+      counts: { visits: visits.length, pdfs: pdfs.length, leads: leads.length, clicks: clicks.length, logs: logs.length },
+      recentPDFs: pdfs.slice(-5),
+      recentVisits: visits.slice(-3),
+    })
+  }
+
   // Ping
   if (pathname === '/api/ping') return j(res, { ok: true })
 
