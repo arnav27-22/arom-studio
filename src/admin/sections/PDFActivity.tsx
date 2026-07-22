@@ -1,0 +1,58 @@
+import { useState, useEffect } from 'react'
+import { StatCard } from '../components/StatCard'
+import { DataTable } from '../components/DataTable'
+import { FileText } from 'lucide-react'
+
+export function PDFActivity() {
+  const [data, setData] = useState<any>(null)
+
+  useEffect(() => {
+    fetch('/api/admin/pdfs', { credentials: 'include' })
+      .then((r) => r.json())
+      .then(setData)
+      .catch(() => {})
+  }, [])
+
+  if (!data) return <div className="text-sm text-zinc-500">Loading...</div>
+
+  const columns = [
+    { key: 'createdAt', label: 'Time', render: (v: string) => new Date(v).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) },
+    { key: 'pdfType', label: 'Type', render: (v: string) => v || '—' },
+    { key: 'fileSizeKb', label: 'Size', render: (v: number) => v ? `${v} KB` : '—' },
+    { key: 'country', label: 'Country', render: (v: string) => v || '—' },
+    { key: 'storageKey', label: 'Storage Key', render: (v: string) => v ? v.slice(0, 20) + '...' : '—' },
+  ]
+
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <StatCard label="Total PDFs" value={data.total} icon={<FileText className="h-4 w-4" />} />
+        <StatCard label="Average Size" value={`${data.avgSize} KB`} icon={<FileText className="h-4 w-4" />} />
+      </div>
+
+      <div className="bg-white/5 border border-white/5 rounded-xl p-4">
+        <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">PDFs by Day</h3>
+        {Object.keys(data.byDay || {}).length > 0 ? (
+          <div className="flex items-end gap-1 h-32">
+            {Object.entries(data.byDay).map(([date, vals]: [string, any]) => {
+              const max = Math.max(...Object.values(data.byDay).map((v: any) => v.count), 1)
+              return (
+                <div key={date} className="flex-1 flex flex-col items-center gap-0.5">
+                  <div className="w-full bg-[#4E85BF]/20 rounded-t" style={{ height: `${(vals.count / max) * 100}%`, minHeight: vals.count > 0 ? 4 : 0 }} />
+                  <span className="text-[8px] text-zinc-600">{date.slice(5)}</span>
+                </div>
+              )
+            })}
+          </div>
+        ) : (
+          <p className="text-sm text-zinc-600">No PDF activity yet</p>
+        )}
+      </div>
+
+      <div className="bg-white/5 border border-white/5 rounded-xl p-4">
+        <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">All PDF Events</h3>
+        <DataTable columns={columns} data={data.pdfs || []} />
+      </div>
+    </div>
+  )
+}

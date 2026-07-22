@@ -5,6 +5,7 @@ import { Footer } from './components/layout/Footer'
 import { WhatsAppButton } from './components/ui/WhatsAppButton'
 import { SiteBackground } from './components/ui/SiteBackground'
 import { Particles } from './components/ui/ParticleBackground'
+import { initTracker, trackPageView } from './lib/tracker'
 import Home from './pages/Home'
 import Services from './pages/Services'
 import ServiceDetail from './pages/ServiceDetail'
@@ -30,6 +31,7 @@ import AssetsUpload from './pages/portal/AssetsUpload'
 import ProjectTimeline from './pages/portal/ProjectTimeline'
 import ContentCollection from './pages/portal/ContentCollection'
 import Handover from './pages/portal/Handover'
+import AdminApp from './admin/AdminApp'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -39,46 +41,62 @@ function ScrollToTop() {
   return null
 }
 
+function PageTracker() {
+  const { pathname } = useLocation()
+  useEffect(() => {
+    trackPageView(pathname, document.referrer)
+  }, [pathname])
+  return null
+}
+
 export default function App() {
+  useEffect(() => { initTracker() }, [])
+
   return (
     <>
       <ScrollToTop />
-      <div className="min-h-screen bg-bg text-white font-body overflow-x-hidden relative">
-        <SiteBackground />
-        <Particles quantity={55} color="#4e85bf" size={1.2} vx={0.03} vy={0.03} />
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/services" element={<Services />} />
-          <Route path="/services/:slug" element={<ServiceDetail />} />
-          <Route path="/services/:slug/in/:cityName" element={<CityService />} />
-          <Route path="/pricing" element={<Pricing />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/faq" element={<FAQ />} />
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="/terms" element={<Terms />} />
-          <Route path="/refund" element={<Refund />} />
-          <Route path="/brand" element={<Brand />} />
-          <Route path="/inquiry" element={<Inquiry />} />
-          <Route path="/questionnaire" element={<Questionnaire />} />
-          <Route path="/proposal" element={<Proposal />} />
-          <Route path="/clientportal" element={<ClientPortal />}>
-            <Route index element={<ClientInquiry />} />
-            <Route path="inquiry" element={<ClientInquiry />} />
-            <Route path="proposal" element={<ProjectProposal />} />
-            <Route path="agreement" element={<Agreement />} />
-            <Route path="questionnaire" element={<DiscoveryQuestionnaire />} />
-            <Route path="timeline" element={<ProjectTimeline />} />
-            <Route path="content" element={<ContentCollection />} />
-            <Route path="assets" element={<AssetsUpload />} />
-            <Route path="handover" element={<Handover />} />
-          </Route>
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-        <Footer />
-        <WhatsAppButton />
-      </div>
+      <Routes>
+        <Route path="/admin" element={<AdminApp />} />
+        <Route path="*" element={
+          <div className="min-h-screen bg-bg text-white font-body overflow-x-hidden relative">
+            <SiteBackground />
+            <Particles quantity={55} color="#4e85bf" size={1.2} vx={0.03} vy={0.03} />
+            <Navbar />
+            <PageTracker />
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/services" element={<Services />} />
+              <Route path="/services/:slug" element={<ServiceDetail />} />
+              <Route path="/services/:slug/in/:cityName" element={<CityService />} />
+              <Route path="/pricing" element={<Pricing />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/faq" element={<FAQ />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/refund" element={<Refund />} />
+              <Route path="/brand" element={<Brand />} />
+              <Route path="/inquiry" element={<Inquiry />} />
+              <Route path="/questionnaire" element={<Questionnaire />} />
+              <Route path="/proposal" element={<Proposal />} />
+              <Route path="/clientportal" element={<ClientPortal />}>
+                <Route index element={<ClientInquiry />} />
+                <Route path="inquiry" element={<ClientInquiry />} />
+                <Route path="proposal" element={<ProjectProposal />} />
+                <Route path="agreement" element={<Agreement />} />
+                <Route path="questionnaire" element={<DiscoveryQuestionnaire />} />
+                <Route path="timeline" element={<ProjectTimeline />} />
+                <Route path="content" element={<ContentCollection />} />
+                <Route path="assets" element={<AssetsUpload />} />
+                <Route path="handover" element={<Handover />} />
+              </Route>
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+            <Footer />
+            <WhatsAppButton />
+          </div>
+        } />
+      </Routes>
     </>
   )
 }
