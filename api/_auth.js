@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 import crypto from 'crypto'
-import { db } from './_db.js'
+import { getSupabase } from './_supabase.js'
 
 function getSecret() {
   return process.env.ADMIN_JWT_SECRET || ''
@@ -74,8 +74,10 @@ export function requireAuth(req, res) {
   return true
 }
 
-export function logAdminEvent(event, detail, ip) {
-  db.append('system_logs', {
+export async function logAdminEvent(event, detail, ip) {
+  const supabase = getSupabase()
+  if (!supabase) return
+  await supabase.from('system_logs').insert({
     id: crypto.randomUUID(),
     timestamp: new Date().toISOString(),
     type: 'admin',

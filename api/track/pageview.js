@@ -1,5 +1,5 @@
 import crypto from 'crypto'
-import { db } from '../_db.js'
+import { getSupabase } from '../_supabase.js'
 
 function getBody(req) {
   return new Promise((resolve) => {
@@ -14,13 +14,15 @@ function getBody(req) {
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
+  const supabase = getSupabase()
+  if (!supabase) return res.json({ ok: true })
 
   const forwarded = req.headers['x-forwarded-for'] || ''
   const ip = (forwarded || req.socket?.remoteAddress || 'unknown').split(',')[0].trim()
   const ipHash = crypto.createHash('sha256').update(ip).digest('hex').slice(0, 16)
   const body = await getBody(req)
 
-  db.append('visits', {
+  await supabase.from('visits').insert({
     id: crypto.randomUUID(),
     sessionId: body.sessionId,
     page: body.page || '/',

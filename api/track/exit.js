@@ -1,4 +1,4 @@
-import { db } from '../_db.js'
+import { getSupabase } from '../_supabase.js'
 
 function getBody(req) {
   return new Promise((resolve) => {
@@ -13,18 +13,18 @@ function getBody(req) {
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
+  const supabase = getSupabase()
+  if (!supabase) return res.json({ ok: true })
 
   const body = await getBody(req)
   const { sessionId, page, timeOnPage, scrollDepth } = body
   if (!sessionId || !page) return res.status(400).json({ error: 'Missing fields' })
 
-  const visits = db.read('visits')
-  const last = visits.findLast((v) => v.sessionId === sessionId && v.page === page)
-  if (last) {
-    last.timeOnPage = timeOnPage || 0
-    last.scrollDepth = scrollDepth || 0
-    db.write('visits', visits)
-  }
+  await supabase
+    .from('visits')
+    .update({ timeOnPage: timeOnPage || 0, scrollDepth: scrollDepth || 0 })
+    .eq('sessionId', sessionId)
+    .eq('page', page)
 
   res.json({ ok: true })
 }

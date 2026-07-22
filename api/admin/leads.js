@@ -1,6 +1,6 @@
 import crypto from 'crypto'
 import { requireAuth } from '../_auth.js'
-import { db } from '../_db.js'
+import { getSupabase } from '../_supabase.js'
 
 function encrypt(text) {
   const key = process.env.ENCRYPTION_KEY || 'default-key-change-me-32chars!!'
@@ -21,10 +21,26 @@ function decrypt(encrypted) {
   return decrypted
 }
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
   if (!requireAuth(req, res)) return
+  const supabase = getSupabase()
+  if (!supabase) return res.status(500).json({ error: 'Supabase not configured' })
 
-  const leads = db.read('form_submissions')
+  if (req.method === 'PUT') {
+    const { id, status } = req.body || {}
+    const { error } = await supabase.from('form_submissions').update({ status }).eq('id', id)
+    if (error) return res.status(500).json({ error: error.message })
+    return res.json({ success: true })
+  }
+
+  const { data: leads, error } = await supabase
+    .from('form_submissions')
+    .select('*')
+    .order('createdAt', { ascending: false })
+
+  if (error) return res.status(500).json({ error: error.message })
+  if (!leads) return res.json({ total: 0, leads: [], byService: {} })
+
   const { from, to, status: statusFilter } = req.query
 
   let filtered = [...leads]
@@ -34,17 +50,6 @@ export default function handler(req, res) {
 
   const byService = {}
   filtered.forEach((l) => { const s = l.service || 'Unknown'; byService[s] = (byService[s] || 0) + 1 })
-
-  if (req.method === 'PUT') {
-    const { id, status } = req.body || {}
-    const idx = leads.findIndex((l) => l.id === id)
-    if (idx !== -1) {
-      leads[idx].status = status || leads[idx].status
-      db.write('form_submissions', leads)
-      return res.json({ success: true })
-    }
-    return res.status(404).json({ error: 'Not found' })
-  }
 
   if (req.query.view === 'full' && req.query.id) {
     const lead = leads.find((l) => l.id === req.query.id)

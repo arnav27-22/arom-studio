@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
+    "@supabase/supabase-js": "^2.110.8",
     "clsx": "^2.1.1",
     "cookie": "^2.0.1",
     "framer-motion": "^12.42.2",

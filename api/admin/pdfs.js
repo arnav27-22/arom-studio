@@ -1,10 +1,19 @@
 import { requireAuth } from '../_auth.js'
-import { db } from '../_db.js'
+import { getSupabase } from '../_supabase.js'
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
   if (!requireAuth(req, res)) return
+  const supabase = getSupabase()
+  if (!supabase) return res.status(500).json({ error: 'Supabase not configured' })
 
-  const pdfEvents = db.read('pdf_events')
+  const { data: pdfEvents, error } = await supabase
+    .from('pdf_events')
+    .select('*')
+    .order('createdAt', { ascending: false })
+
+  if (error) return res.status(500).json({ error: error.message })
+  if (!pdfEvents) return res.json({ total: 0, pdfs: [], byDay: {}, avgSize: 0 })
+
   const { from, to, pdfType, country } = req.query
 
   let filtered = [...pdfEvents]

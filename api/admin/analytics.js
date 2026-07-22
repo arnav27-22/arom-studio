@@ -1,13 +1,20 @@
 import { requireAuth } from '../_auth.js'
-import { db } from '../_db.js'
+import { getSupabase } from '../_supabase.js'
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
   if (!requireAuth(req, res)) return
+  const supabase = getSupabase()
+  if (!supabase) return res.status(500).json({ error: 'Supabase not configured' })
 
-  const visits = db.read('visits')
+  const { data: visits, error } = await supabase
+    .from('visits')
+    .select('*')
+    .order('createdAt', { ascending: true })
+
+  if (error) return res.status(500).json({ error: error.message })
+  if (!visits) return res.json({ pages: [], totalUniqueSessions: 0, overallBounceRate: 0, hourlyTraffic: [] })
 
   const pages = {}
-
   visits.forEach((v, i) => {
     if (!pages[v.page]) {
       pages[v.page] = { views: 0, sessions: 0, totalTime: 0, totalScroll: 0, entries: 0, exits: 0, referrers: {} }
