@@ -75,7 +75,7 @@ export function requireAuth(req, res) {
 }
 
 export async function logAdminEvent(event, detail, ip) {
-  await db.append('system_logs', {
+  db.append('system_logs', {
     id: crypto.randomUUID(),
     createdAt: new Date().toISOString(),
     type: 'admin',
