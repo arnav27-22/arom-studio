@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import jsPDF from 'jspdf'
-import { Plus, Download, Eye, Trash2, FileText, CheckCircle2, Clock, AlertCircle } from 'lucide-react'
+import { Plus, Download, Eye, Trash2, FileText, CheckCircle2, Clock } from 'lucide-react'
 import { getAdminStore, saveAdminStore, formatIST, recordAdminInvoice, type AdminInvoice } from '../adminStore'
 import { StatCard } from '../components/StatCard'
 
