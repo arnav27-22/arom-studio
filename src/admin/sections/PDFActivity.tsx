@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { FileText, Download, Eye, X } from 'lucide-react'
-import { getAdminStore, formatIST, AdminPDF } from '../adminStore'
+import { getAdminStore, formatIST, type AdminPDF } from '../adminStore'
 
 export function PDFActivity() {
   const [data, setData] = useState<AdminPDF[]>(getAdminStore().pdfs)
