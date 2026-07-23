@@ -46,6 +46,22 @@ export default function Inquiry() {
     if (!form.name.trim() || !form.email.trim() || !form.description.trim()) return
     if (!form.agreedToTerms) { setTermsError(true); return }
     setSending(true)
+
+    try {
+      const { recordAdminLead } = await import('../../admin/adminStore')
+      recordAdminLead({
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        company: form.company,
+        service: form.projectType,
+        budget: form.budget,
+        message: form.description,
+      })
+    } catch {
+      // non-blocking
+    }
+
     try {
       await emailjs.send(
         EMAILJS_CONFIG.SERVICE_ID,

@@ -62,6 +62,21 @@ export default function Contact() {
       return
     }
 
+    // Record real lead inquiry in admin store
+    try {
+      const { recordAdminLead } = await import('../admin/adminStore')
+      recordAdminLead({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        service: formData.service === 'other' ? formData.customService : formData.service,
+        budget: formData.budget === 'custom' ? formData.customBudget : formData.budget,
+        message: formData.message,
+      })
+    } catch {
+      // non-blocking
+    }
+
     try {
       await emailjs.send(
         EMAILJS_CONFIG.SERVICE_ID,
