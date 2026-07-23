@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import jsPDF from 'jspdf'
-import { Plus, Download, Eye, Trash2, FileText, CheckCircle2, DollarSign } from 'lucide-react'
+import { Plus, Download, Eye, Trash2, FileText, CheckCircle2, Clock, AlertCircle } from 'lucide-react'
 import { getAdminStore, saveAdminStore, formatIST, recordAdminInvoice, type AdminInvoice } from '../adminStore'
 import { StatCard } from '../components/StatCard'
 
@@ -9,6 +9,7 @@ export function InvoicesPage() {
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [previewPdfUrl, setPreviewPdfUrl] = useState<string | null>(null)
   const [selectedInvoice, setSelectedInvoice] = useState<AdminInvoice | null>(null)
+  const [statusFilter, setStatusFilter] = useState<'All' | 'Paid' | 'Pending' | 'Overdue'>('All')
 
   // Invoice Form State
   const [clientName, setClientName] = useState('')
@@ -21,10 +22,14 @@ export function InvoicesPage() {
   const [discountRate, setDiscountRate] = useState(0)
   const [notes, setNotes] = useState('Payment due within 7 days. Thank you for choosing AROM STUDIO.')
   const [items, setItems] = useState([
-    { id: '1', description: 'Custom Web Design & Development Phase 1', quantity: 1, unitPrice: 32999 },
+    { id: '1', description: 'Custom Business Website Development (Phase 1)', quantity: 1, unitPrice: 32999 },
   ])
 
   const reloadStore = () => setStore(getAdminStore())
+
+  useEffect(() => {
+    reloadStore()
+  }, [])
 
   // Calculations
   const subtotal = items.reduce((acc, item) => acc + item.quantity * item.unitPrice, 0)
@@ -38,7 +43,7 @@ export function InvoicesPage() {
   const handleAddItem = () => {
     setItems([
       ...items,
-      { id: Math.random().toString(), description: 'New Service Line Item', quantity: 1, unitPrice: 5000 },
+      { id: Math.random().toString(), description: 'New Line Item', quantity: 1, unitPrice: 5000 },
     ])
   }
 
@@ -52,6 +57,13 @@ export function InvoicesPage() {
     setItems(
       items.map((item) => (item.id === id ? { ...item, [field]: value } : item))
     )
+  }
+
+  const handleToggleStatus = (id: string, newStatus: AdminInvoice['status']) => {
+    const s = getAdminStore()
+    s.invoices = s.invoices.map((inv) => (inv.id === id ? { ...inv, status: newStatus } : inv))
+    saveAdminStore(s)
+    reloadStore()
   }
 
   const generatePDFDoc = (inv: AdminInvoice) => {
@@ -218,6 +230,10 @@ export function InvoicesPage() {
     }
   }
 
+  const filteredInvoices = statusFilter === 'All'
+    ? store.invoices
+    : store.invoices.filter((i) => i.status === statusFilter)
+
   const totalCollected = store.invoices
     .filter((i) => i.status === 'Paid')
     .reduce((acc, i) => acc + i.totalAmount, 0)
@@ -231,37 +247,55 @@ export function InvoicesPage() {
       {/* Header Metrics */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 flex-1 w-full">
-          <StatCard label="Total Invoices" value={store.invoices.length} icon={<FileText className="h-4 w-4" />} />
-          <StatCard label="Collected (Paid)" value={`₹${totalCollected.toLocaleString('en-IN')}`} icon={<CheckCircle2 className="h-4 w-4 text-emerald-400" />} />
-          <StatCard label="Pending Receivables" value={`₹${totalPending.toLocaleString('en-IN')}`} icon={<DollarSign className="h-4 w-4 text-amber-400" />} />
+          <StatCard label="Total Invoices" value={store.invoices.length} icon={<FileText className="h-4 w-4 text-accent" />} />
+          <StatCard label="Payment Completed (Paid)" value={`₹${totalCollected.toLocaleString('en-IN')}`} icon={<CheckCircle2 className="h-4 w-4 text-emerald-400" />} />
+          <StatCard label="Pending Payments" value={`₹${totalPending.toLocaleString('en-IN')}`} icon={<Clock className="h-4 w-4 text-amber-400" />} />
         </div>
         <button
           onClick={() => setShowCreateModal(true)}
-          className="flex items-center gap-2 px-4 py-2.5 bg-accent hover:bg-accent/90 text-white font-medium text-xs rounded-xl shadow-lg shadow-accent/20 transition-all cursor-pointer shrink-0"
+          className="flex items-center gap-2 px-5 py-3 bg-accent hover:bg-accent/90 text-white font-medium text-xs rounded-xl shadow-lg shadow-accent/20 transition-all cursor-pointer shrink-0"
         >
           <Plus className="h-4 w-4" /> Create New Invoice
         </button>
       </div>
 
+      {/* Filter Tabs */}
+      <div className="flex items-center gap-2 border-b border-white/10 pb-3">
+        {(['All', 'Paid', 'Pending', 'Overdue'] as const).map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setStatusFilter(tab)}
+            className={`px-4 py-2 rounded-xl text-xs font-medium transition-all ${
+              statusFilter === tab
+                ? 'bg-accent/20 text-accent border border-accent/30 font-semibold'
+                : 'text-white/60 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            {tab === 'Paid' ? 'Payment Completed' : tab} ({tab === 'All' ? store.invoices.length : store.invoices.filter((i) => i.status === tab).length})
+          </button>
+        ))}
+      </div>
+
       {/* Invoice Table */}
       <div className="glass rounded-[24px] p-6 border border-white/10">
-        <h3 className="text-xs font-semibold text-accent uppercase tracking-wider mb-4">Invoice History</h3>
-        {store.invoices.length > 0 ? (
+        <h3 className="text-xs font-semibold text-accent uppercase tracking-wider mb-4">Invoice Records (IST)</h3>
+        {filteredInvoices.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full text-xs font-body">
               <thead>
                 <tr className="border-b border-white/10 text-white/40 uppercase tracking-wider text-[10px]">
                   <th className="text-left py-3 px-2">Invoice #</th>
-                  <th className="text-left py-3 px-2">Client</th>
+                  <th className="text-left py-3 px-2">Client Details</th>
                   <th className="text-left py-3 px-2">Date (IST)</th>
                   <th className="text-left py-3 px-2">Due Date</th>
-                  <th className="text-right py-3 px-2">Amount</th>
-                  <th className="text-center py-3 px-2">Status</th>
+                  <th className="text-right py-3 px-2">Total Amount</th>
+                  <th className="text-center py-3 px-2">Payment Status</th>
+                  <th className="text-center py-3 px-2">Toggle Status</th>
                   <th className="text-right py-3 px-2">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
-                {store.invoices.map((inv) => (
+                {filteredInvoices.map((inv) => (
                   <tr key={inv.id} className="hover:bg-white/[0.02] transition-colors">
                     <td className="py-3 px-2 font-mono text-accent font-medium">{inv.invoiceNumber}</td>
                     <td className="py-3 px-2">
@@ -274,13 +308,35 @@ export function InvoicesPage() {
                       {inv.currency === 'INR' ? '₹' : '$'}{inv.totalAmount.toLocaleString('en-IN')}
                     </td>
                     <td className="py-3 px-2 text-center">
-                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-medium ${
+                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-medium uppercase ${
                         inv.status === 'Paid' ? 'bg-emerald-400/10 text-emerald-400 border border-emerald-400/20' :
                         inv.status === 'Overdue' ? 'bg-red-400/10 text-red-400 border border-red-400/20' :
                         'bg-amber-400/10 text-amber-400 border border-amber-400/20'
                       }`}>
-                        {inv.status}
+                        {inv.status === 'Paid' ? 'Completed' : inv.status}
                       </span>
+                    </td>
+                    <td className="py-3 px-2 text-center">
+                      <div className="flex items-center justify-center gap-1">
+                        <button
+                          onClick={() => handleToggleStatus(inv.id, 'Paid')}
+                          className={`px-2 py-1 rounded-lg text-[10px] font-medium transition-colors ${
+                            inv.status === 'Paid' ? 'bg-emerald-400 text-black font-bold' : 'bg-white/5 hover:bg-emerald-400/20 text-white/60'
+                          }`}
+                          title="Mark Payment Completed"
+                        >
+                          Paid
+                        </button>
+                        <button
+                          onClick={() => handleToggleStatus(inv.id, 'Pending')}
+                          className={`px-2 py-1 rounded-lg text-[10px] font-medium transition-colors ${
+                            inv.status === 'Pending' ? 'bg-amber-400 text-black font-bold' : 'bg-white/5 hover:bg-amber-400/20 text-white/60'
+                          }`}
+                          title="Mark Pending"
+                        >
+                          Pending
+                        </button>
+                      </div>
                     </td>
                     <td className="py-3 px-2 text-right">
                       <div className="flex items-center justify-end gap-2">
@@ -313,7 +369,7 @@ export function InvoicesPage() {
             </table>
           </div>
         ) : (
-          <p className="text-sm text-white/40 font-body py-4 text-center">No invoices generated yet</p>
+          <p className="text-sm text-white/40 font-body py-4 text-center">No invoices found for this filter</p>
         )}
       </div>
 
