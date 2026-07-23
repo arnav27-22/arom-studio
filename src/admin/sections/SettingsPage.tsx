@@ -33,7 +33,7 @@ export function SettingsPage() {
           <ShieldCheck className="h-4 w-4" /> System Health &amp; Environment
         </h3>
         <div className="space-y-3">
-          {Object.entries(data.envChecks || {}).map(([key, set]) => (
+          {Object.entries(data.envChecks || {}).map(([key, _set]) => (
             <div key={key} className="flex items-center gap-3 text-xs text-white/80 py-1.5 border-b border-white/5 last:border-0">
               <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
               <span className="text-white font-mono flex-1">{key}</span>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
-import { FileText, Download } from 'lucide-react'
+import { FileText } from 'lucide-react'
 
 const DEFAULT_PDFS = {
   total: 48,
