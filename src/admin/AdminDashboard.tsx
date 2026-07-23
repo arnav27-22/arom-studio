@@ -8,6 +8,7 @@ import { PageAnalytics } from './sections/PageAnalytics'
 import { SettingsPage } from './sections/SettingsPage'
 import { InvoicesPage } from './sections/InvoicesPage'
 import { SystemLogs } from './sections/SystemLogs'
+import { syncFromCloud } from './adminStore'
 
 const sections = [
   { id: 'overview', label: 'Overview', icon: BarChart3 },
@@ -25,7 +26,18 @@ export function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
 
-  useEffect(() => { setMounted(true) }, [])
+  useEffect(() => {
+    setMounted(true)
+    // Initial cloud sync
+    syncFromCloud()
+
+    // Poll global cloud sync every 5 seconds so events from mobile/other devices update in real-time
+    const interval = setInterval(() => {
+      syncFromCloud()
+    }, 5000)
+
+    return () => clearInterval(interval)
+  }, [])
 
   const section = sections.find((s) => s.id === active)
 
@@ -87,7 +99,7 @@ export function AdminDashboard({ onLogout }: { onLogout: () => void }) {
           </div>
 
           <div className="text-[10px] text-white/40 font-mono hidden sm:block bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
-            IST Timezone • Asia/Kolkata
+            Realtime Cloud Sync Active • IST Timezone
           </div>
         </div>
 

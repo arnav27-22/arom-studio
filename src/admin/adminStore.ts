@@ -76,7 +76,7 @@ export interface AdminSystemLog {
   severity: 'info' | 'warn' | 'error'
 }
 
-const STORAGE_KEY = 'arom_admin_real_store_v5'
+const STORAGE_KEY = 'arom_admin_global_real_store_v6'
 
 interface StoreData {
   visitors: AdminVisitor[]
@@ -86,7 +86,6 @@ interface StoreData {
   logs: AdminSystemLog[]
 }
 
-// Initial clean state with ZERO dummy/mock records
 const CLEAN_INITIAL_DATA: StoreData = {
   visitors: [],
   leads: [],
@@ -95,7 +94,7 @@ const CLEAN_INITIAL_DATA: StoreData = {
   logs: [],
 }
 
-// Load data helper
+// Load local storage data helper
 export function getAdminStore(): StoreData {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
@@ -116,13 +115,51 @@ export function getAdminStore(): StoreData {
   return CLEAN_INITIAL_DATA
 }
 
-// Save helper
+// Save local storage helper
 export function saveAdminStore(data: StoreData) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
   } catch (e) {
     console.error('Failed to save admin store:', e)
   }
+}
+
+// Global Cloud Sync: Syncs data from cloud server so Admin on Device B sees events from Device A
+export async function syncFromCloud(): Promise<StoreData> {
+  const local = getAdminStore()
+  try {
+    const res = await fetch('/api/sync')
+    if (res.ok) {
+      const remote = await res.json()
+      const mergedVisitors = [...(remote.visitors || [])]
+      local.visitors.forEach((v) => { if (!mergedVisitors.some((m) => m.id === v.id)) mergedVisitors.push(v) })
+
+      const mergedPdfs = [...(remote.pdfs || [])]
+      local.pdfs.forEach((p) => { if (!mergedPdfs.some((m) => m.id === p.id)) mergedPdfs.push(p) })
+
+      const mergedLeads = [...(remote.leads || [])]
+      local.leads.forEach((l) => { if (!mergedLeads.some((m) => m.id === l.id)) mergedLeads.push(l) })
+
+      const mergedInvoices = [...(remote.invoices || [])]
+      local.invoices.forEach((i) => { if (!mergedInvoices.some((m) => m.id === i.id)) mergedInvoices.push(i) })
+
+      const mergedLogs = [...(remote.logs || [])]
+      local.logs.forEach((g) => { if (!mergedLogs.some((m) => m.id === g.id)) mergedLogs.push(g) })
+
+      const updated: StoreData = {
+        visitors: mergedVisitors.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+        pdfs: mergedPdfs.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+        leads: mergedLeads.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+        invoices: mergedInvoices.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+        logs: mergedLogs.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+      }
+      saveAdminStore(updated)
+      return updated
+    }
+  } catch (e) {
+    console.error('Cloud sync fallback:', e)
+  }
+  return local
 }
 
 // Helper to format timestamps to Indian Standard Time (IST)
@@ -145,7 +182,7 @@ export function formatIST(dateString?: string): string {
   }
 }
 
-// Record REAL Website Visitor
+// Record REAL Website Visitor & sync globally
 export function recordAdminVisit(page: string, referrer: string = 'Direct') {
   const store = getAdminStore()
   const ua = navigator.userAgent
@@ -167,20 +204,17 @@ export function recordAdminVisit(page: string, referrer: string = 'Direct') {
 
   store.visitors.unshift(newVisit)
   if (store.visitors.length > 500) store.visitors.pop()
-
-  store.logs.unshift({
-    id: 'g_' + Math.random().toString(36).slice(2, 9),
-    createdAt: new Date().toISOString(),
-    type: 'visit',
-    event: 'Real Page Visit',
-    detail: `User visited ${page} from ${referrer || 'Direct'}`,
-    severity: 'info',
-  })
-
   saveAdminStore(store)
+
+  // Sync to server API
+  fetch('/api/sync', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'visit', data: newVisit }),
+  }).catch(() => {})
 }
 
-// Record REAL Lead Form Inquiry
+// Record REAL Lead Form Inquiry & sync globally
 export function recordAdminLead(lead: Omit<AdminLead, 'id' | 'createdAt' | 'status'>) {
   const store = getAdminStore()
   const newLead: AdminLead = {
@@ -191,20 +225,16 @@ export function recordAdminLead(lead: Omit<AdminLead, 'id' | 'createdAt' | 'stat
     country: lead.country || 'India',
   }
   store.leads.unshift(newLead)
-  
-  store.logs.unshift({
-    id: 'g_' + Math.random().toString(36).slice(2, 9),
-    createdAt: new Date().toISOString(),
-    type: 'lead',
-    event: 'Real Form Submission',
-    detail: `Inquiry from ${lead.name} (${lead.service || 'General'})`,
-    severity: 'info',
-  })
-
   saveAdminStore(store)
+
+  fetch('/api/sync', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'lead', data: newLead }),
+  }).catch(() => {})
 }
 
-// Record REAL PDF Generation
+// Record REAL PDF Generation & sync globally with Base64 data
 export function recordAdminPDF(pdf: Omit<AdminPDF, 'id' | 'createdAt'>) {
   const store = getAdminStore()
   const newPdf: AdminPDF = {
@@ -213,20 +243,16 @@ export function recordAdminPDF(pdf: Omit<AdminPDF, 'id' | 'createdAt'>) {
     createdAt: new Date().toISOString(),
   }
   store.pdfs.unshift(newPdf)
-
-  store.logs.unshift({
-    id: 'g_' + Math.random().toString(36).slice(2, 9),
-    createdAt: new Date().toISOString(),
-    type: 'pdf',
-    event: 'PDF Generated',
-    detail: `${pdf.pdfType} generated for ${pdf.clientName}`,
-    severity: 'info',
-  })
-
   saveAdminStore(store)
+
+  fetch('/api/sync', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'pdf', data: newPdf }),
+  }).catch(() => {})
 }
 
-// Record Invoice Creation
+// Record Invoice Creation & sync globally
 export function recordAdminInvoice(invoice: Omit<AdminInvoice, 'id' | 'createdAt'>) {
   const store = getAdminStore()
   const newInv: AdminInvoice = {
@@ -235,15 +261,11 @@ export function recordAdminInvoice(invoice: Omit<AdminInvoice, 'id' | 'createdAt
     createdAt: new Date().toISOString(),
   }
   store.invoices.unshift(newInv)
-
-  store.logs.unshift({
-    id: 'g_' + Math.random().toString(36).slice(2, 9),
-    createdAt: new Date().toISOString(),
-    type: 'invoice',
-    event: 'Invoice Created',
-    detail: `${invoice.invoiceNumber} created for ${invoice.clientName}`,
-    severity: 'info',
-  })
-
   saveAdminStore(store)
+
+  fetch('/api/sync', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'invoice', data: newInv }),
+  }).catch(() => {})
 }

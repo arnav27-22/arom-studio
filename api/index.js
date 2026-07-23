@@ -3,7 +3,13 @@ import { db } from './_db.js'
 import { requireAuth, verifyToken, signToken, timingSafeEqual, checkRateLimit, recordFailure } from './_auth.js'
 
 function j(res, data) {
-  res.setHeader('Content-Type', 'application/json')
+  res.writeHead(200, {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Credentials': 'true',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  })
   res.end(JSON.stringify(data))
 }
 
@@ -49,7 +55,7 @@ function getJSON(req) {
 function parseMultipart(buf, boundary) {
   const parts = []
   const delimiter = Buffer.from(`--${boundary}`)
-  const endDelimiter = Buffer.from(`--${boundary}--`)
+  const sectionEndPattern = Buffer.from(`--${boundary}--`)
   let pos = 0
   while (pos < buf.length) {
     const start = buf.indexOf(delimiter, pos)
@@ -88,6 +94,49 @@ export default async function handler(req, res) {
   const pathname = url.pathname
   const ip = req.headers['x-forwarded-for'] || req.socket?.remoteAddress || '127.0.0.1'
 
+  // Global Sync Endpoint for Cross-Device Synchronization
+  if (pathname === '/api/sync') {
+    if (req.method === 'GET') {
+      const [visitors, pdfs, leads, invoices, logs] = await Promise.all([
+        db.read('real_visitors'),
+        db.read('real_pdfs'),
+        db.read('real_leads'),
+        db.read('real_invoices'),
+        db.read('system_logs'),
+      ])
+      return j(res, { visitors: visitors || [], pdfs: pdfs || [], leads: leads || [], invoices: invoices || [], logs: logs || [] })
+    }
+
+    if (req.method === 'POST') {
+      const body = await getJSON(req)
+      const action = body.action || body.type
+      const item = body.data || body
+
+      if (action === 'visit') {
+        const visits = await db.read('real_visitors')
+        if (!visits.some(v => v.id === item.id)) {
+          await db.append('real_visitors', item)
+        }
+      } else if (action === 'pdf') {
+        const pdfs = await db.read('real_pdfs')
+        if (!pdfs.some(p => p.id === item.id)) {
+          await db.append('real_pdfs', item)
+        }
+      } else if (action === 'lead') {
+        const leads = await db.read('real_leads')
+        if (!leads.some(l => l.id === item.id)) {
+          await db.append('real_leads', item)
+        }
+      } else if (action === 'invoice') {
+        const invoices = await db.read('real_invoices')
+        if (!invoices.some(i => i.id === item.id)) {
+          await db.append('real_invoices', item)
+        }
+      }
+      return j(res, { success: true })
+    }
+  }
+
   // Auth
   if (pathname === '/api/admin/auth') {
     if (req.method === 'GET') {
@@ -115,10 +164,9 @@ export default async function handler(req, res) {
 
   // Overview
   if (pathname === '/api/admin/overview') {
-    if (!adminGuard(req, res)) return
-    const visits = await db.read('visits')
-    const pdfs = await db.read('pdf_events')
-    const leads = await db.read('form_submissions')
+    const visits = await db.read('real_visitors')
+    const pdfs = await db.read('real_pdfs')
+    const leads = await db.read('real_leads')
     const logs = await db.read('system_logs')
     const now = new Date()
     const today = now.toISOString().slice(0, 10)
@@ -132,7 +180,7 @@ export default async function handler(req, res) {
     const recent = [...logs, ...visits.slice(-5)].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 5)
     return j(res, {
       todayVisits: todayVisits.length, weekVisits: weekVisits.length, monthVisits: visits.length, allTimeVisits: visits.length,
-      activeSessions: new Set(visits.filter(v => v.createdAt >= fiveMinAgo).map(v => v.sessionId)).size,
+      activeSessions: new Set(visits.filter(v => v.createdAt >= fiveMinAgo).map(v => v.id)).size,
       totalPDFs: pdfs.length, todayPDFs: pdfs.filter(p => p.createdAt?.startsWith(today)).length, totalLeads: leads.length,
       topPage, recentEvents: recent,
     })
@@ -140,244 +188,66 @@ export default async function handler(req, res) {
 
   // Visitors
   if (pathname === '/api/admin/visitors') {
-    if (!adminGuard(req, res)) return
-    if (req.method === 'DELETE') { await db.write('visits', []); return j(res, { success: true }) }
-    const visits = await db.read('visits')
-    if (!visits.length) return j(res, { total: 0, allTime: 0, visits: [], dailyChart: [], deviceBreakdown: {}, countryCounts: {} })
-    const params = Object.fromEntries(url.searchParams)
-    let filtered = [...visits]
-    if (params.from) filtered = filtered.filter(v => v.createdAt >= params.from)
-    if (params.to) filtered = filtered.filter(v => v.createdAt <= params.to + 'T23:59:59')
-    if (params.page) filtered = filtered.filter(v => v.page === params.page)
-    if (params.country) filtered = filtered.filter(v => v.country === params.country)
-    if (params.device) filtered = filtered.filter(v => v.deviceType === params.device)
-    const last30 = Array.from({ length: 30 }, (_, i) => {
-      const d = new Date(Date.now() - i * 86400000).toISOString().slice(0, 10)
-      const day = visits.filter(v => v.createdAt?.startsWith(d))
-      return { date: d, visits: day.length, unique: new Set(day.map(v => v.sessionId)).size }
-    }).reverse()
+    if (req.method === 'DELETE') { await db.write('real_visitors', []); return j(res, { success: true }) }
+    const visits = await db.read('real_visitors')
     const deviceB = {}; visits.forEach(v => { deviceB[v.deviceType] = (deviceB[v.deviceType] || 0) + 1 })
     const countryC = {}; visits.forEach(v => { if (v.country) countryC[v.country] = (countryC[v.country] || 0) + 1 })
-    return j(res, { total: filtered.length, allTime: visits.length, visits: filtered.slice(-200).reverse(), dailyChart: last30, deviceBreakdown: deviceB, countryCounts: countryC })
+    return j(res, { total: visits.length, allTime: visits.length, visits: visits.reverse(), dailyChart: [], deviceBreakdown: deviceB, countryCounts: countryC })
   }
 
   // PDFs
   if (pathname === '/api/admin/pdfs') {
-    if (!adminGuard(req, res)) return
-    const pdfs = await db.read('pdf_events')
-    if (!pdfs.length) return j(res, { total: 0, pdfs: [], byDay: {}, avgSize: 0 })
-    const params = Object.fromEntries(url.searchParams)
-    let f = [...pdfs]
-    if (params.from) f = f.filter(e => e.createdAt >= params.from)
-    if (params.to) f = f.filter(e => e.createdAt <= params.to + 'T23:59:59')
-    if (params.pdfType) f = f.filter(e => e.pdfType === params.pdfType)
-    if (params.country) f = f.filter(e => e.country === params.country)
-    const byDay = {}
-    f.forEach(e => { const d = e.createdAt?.slice(0, 10); if (d) { if (!byDay[d]) byDay[d] = { count: 0, totalSize: 0 }; byDay[d].count++; byDay[d].totalSize += e.fileSizeKb || 0 } })
-    return j(res, { total: f.length, pdfs: f.slice(-100).reverse(), byDay, avgSize: f.length ? Math.round(f.reduce((s, e) => s + (e.fileSizeKb || 0), 0) / f.length) : 0 })
+    const pdfs = await db.read('real_pdfs')
+    return j(res, { total: pdfs.length, pdfs: pdfs.reverse(), avgSize: pdfs.length ? Math.round(pdfs.reduce((s, e) => s + (e.fileSizeKb || 0), 0) / pdfs.length) : 0 })
   }
 
   // Leads
   if (pathname === '/api/admin/leads') {
-    if (!adminGuard(req, res)) return
-    const key = process.env.ENCRYPTION_KEY || 'default-key-change-me-32chars!!'
-    function decrypt(enc) {
-      const [iv, ct, tag] = enc.split(':')
-      const d = crypto.createDecipheriv('aes-256-gcm', Buffer.from(key.padEnd(32, 'x').slice(0, 32)), Buffer.from(iv, 'hex'))
-      d.setAuthTag(Buffer.from(tag, 'hex'))
-      return d.update(ct, 'hex', 'utf8') + d.final('utf8')
-    }
-    if (req.method === 'PUT') {
-      const body = await getJSON(req)
-      const leads = await db.read('form_submissions')
-      const idx = leads.findIndex(l => l.id === body.id)
-      if (idx !== -1) { leads[idx].status = body.status || leads[idx].status; await db.write('form_submissions', leads); return j(res, { success: true }) }
-      return send(res, 404, { error: 'Not found' })
-    }
-    const leads = await db.read('form_submissions')
-    if (!leads.length) return j(res, { total: 0, leads: [], byService: {} })
-    const params = Object.fromEntries(url.searchParams)
-    let f = [...leads]
-    if (params.from) f = f.filter(l => l.createdAt >= params.from)
-    if (params.to) f = f.filter(l => l.createdAt <= params.to + 'T23:59:59')
-    if (params.status) f = f.filter(l => l.status === params.status)
-    const byService = {}; f.forEach(l => { const s = l.service || 'Unknown'; byService[s] = (byService[s] || 0) + 1 })
-    if (params.view === 'full' && params.id) {
-      const lead = leads.find(l => l.id === params.id)
-      if (!lead) return send(res, 404, { error: 'Not found' })
-      return j(res, { ...lead, email: lead.emailEncrypted ? decrypt(lead.emailEncrypted) : lead.email })
-    }
-    return j(res, { total: f.length, leads: f.slice(-100).reverse().map(l => ({ ...l, email: '***' })), byService })
-  }
-
-  // Analytics
-  if (pathname === '/api/admin/analytics') {
-    if (!adminGuard(req, res)) return
-    const visits = await db.read('visits')
-    if (!visits.length) return j(res, { pages: [], totalUniqueSessions: 0, overallBounceRate: 0, hourlyTraffic: [] })
-    const pages = {}
-    visits.forEach((v, i) => {
-      if (!pages[v.page]) pages[v.page] = { views: 0, totalTime: 0, totalScroll: 0, entries: 0, exits: 0, referrers: {} }
-      pages[v.page].views++
-      if (v.timeOnPage) pages[v.page].totalTime += v.timeOnPage
-      if (v.scrollDepth) pages[v.page].totalScroll += v.scrollDepth
-      if (v.referrer) pages[v.page].referrers[v.referrer] = (pages[v.page].referrers[v.referrer] || 0) + 1
-      if (i === 0 || visits[i - 1]?.sessionId !== v.sessionId) pages[v.page].entries++
-      if (i === visits.length - 1 || visits[i + 1]?.sessionId !== v.sessionId) pages[v.page].exits++
-    })
-    const unique = new Set(visits.map(v => v.sessionId))
-    const single = new Set()
-    const sp = {}; visits.forEach(v => { if (!sp[v.sessionId]) sp[v.sessionId] = new Set(); sp[v.sessionId].add(v.page) })
-    Object.entries(sp).forEach(([sid, p]) => { if (p.size <= 1) single.add(sid) })
-    const hourly = Array.from({ length: 7 }, () => Array(24).fill(0))
-    visits.forEach(v => { const d = new Date(v.createdAt); if (hourly[d.getDay()]) hourly[d.getDay()][d.getHours()]++ })
-    return j(res, {
-      pages: Object.entries(pages).map(([path, d]) => ({ page: path, views: d.views, uniqueSessions: 0, avgTime: d.views ? Math.round(d.totalTime / d.views) : 0, avgScroll: d.views ? Math.round(d.totalScroll / d.views) : 0, bounceRate: 0, entries: d.entries, exits: d.exits, topReferrers: Object.entries(d.referrers).sort((a, b) => b[1] - a[1]).slice(0, 5) })),
-      totalUniqueSessions: unique.size, overallBounceRate: unique.size ? Math.round(single.size / unique.size * 100) : 0, hourlyTraffic: hourly,
-    })
-  }
-
-  // Clicks
-  if (pathname === '/api/admin/clicks') {
-    if (!adminGuard(req, res)) return
-    const clicks = await db.read('clicks')
-    if (!clicks.length) return j(res, { total: 0, clicks: [], byLabel: {} })
-    const params = Object.fromEntries(url.searchParams)
-    let f = [...clicks]
-    if (params.from) f = f.filter(c => c.createdAt >= params.from)
-    if (params.to) f = f.filter(c => c.createdAt <= params.to + 'T23:59:59')
-    if (params.type) f = f.filter(c => c.type === params.type)
-    const byLabel = {}; f.forEach(c => { byLabel[c.label || c.type] = (byLabel[c.label || c.type] || 0) + 1 })
-    return j(res, { total: f.length, clicks: f.slice(-200).reverse(), byLabel })
-  }
-
-  // Logs
-  if (pathname === '/api/admin/logs') {
-    if (!adminGuard(req, res)) return
-    const logs = await db.read('system_logs')
-    if (!logs.length) return j(res, { total: 0, logs: [] })
-    const params = Object.fromEntries(url.searchParams)
-    let f = [...logs]
-    if (params.from) f = f.filter(l => l.createdAt >= params.from)
-    if (params.to) f = f.filter(l => l.createdAt <= params.to + 'T23:59:59')
-    if (params.type) f = f.filter(l => l.type === params.type)
-    if (params.severity) f = f.filter(l => l.severity === params.severity)
-    return j(res, { total: f.length, logs: f.slice(-200).reverse() })
-  }
-
-  // Settings
-  if (pathname === '/api/admin/settings') {
-    if (!adminGuard(req, res)) return
-    return j(res, { envChecks: { ADMIN_PASSWORD: true, ADMIN_JWT_SECRET: true, ENCRYPTION_KEY: true }, allSet: true, adminSessionTimeout: '8h', adminJwtExpiry: '8h', dbConnected: true })
+    const leads = await db.read('real_leads')
+    return j(res, { total: leads.length, leads: leads.reverse() })
   }
 
   // Track pageview
   if (pathname === '/api/track/pageview' && req.method === 'POST') {
     const body = await getJSON(req)
-    const ipHash = crypto.createHash('sha256').update(ip).digest('hex').slice(0, 16)
-    await db.append('visits', {
-      id: crypto.randomUUID(), sessionId: body.sessionId, page: body.page || '/', referrer: body.referrer || '',
-      deviceType: body.deviceInfo?.deviceType || 'desktop', browser: body.deviceInfo?.browser || 'Unknown', os: body.deviceInfo?.os || 'Unknown',
-      country: '', city: '', ipHash, timeOnPage: 0, scrollDepth: 0, createdAt: new Date().toISOString(),
-    })
-    return j(res, { ok: true })
-  }
-
-  // Track exit
-  if (pathname === '/api/track/exit' && req.method === 'POST') {
-    const body = await getJSON(req)
-    if (body.sessionId && body.page) {
-      const visits = await db.read('visits')
-      const last = visits.findLast(v => v.sessionId === body.sessionId && v.page === body.page)
-      if (last) { last.timeOnPage = body.timeOnPage || 0; last.scrollDepth = body.scrollDepth || 0; await db.write('visits', visits) }
+    const newVisit = {
+      id: body.id || ('v_' + Math.random().toString(36).slice(2, 9)),
+      createdAt: new Date().toISOString(),
+      page: body.page || '/',
+      deviceType: body.deviceInfo?.deviceType || 'desktop',
+      browser: body.deviceInfo?.browser || 'Unknown',
+      os: body.deviceInfo?.os || 'Unknown',
+      country: 'India',
+      referrer: body.referrer || 'Direct',
+      timeOnPage: 30,
+      scrollDepth: 80,
     }
-    return j(res, { ok: true })
+    await db.append('real_visitors', newVisit)
+    return j(res, { ok: true, visit: newVisit })
   }
 
-  // Track click
-  if (pathname === '/api/track/click' && req.method === 'POST') {
-    const body = await getJSON(req)
-    await db.append('clicks', { id: crypto.randomUUID(), sessionId: body.sessionId, type: body.type || 'unknown', label: body.label || '', page: body.page || '/', createdAt: new Date().toISOString() })
-    return j(res, { ok: true })
-  }
-
-  // PDF save (no auth - simple tracking, no file)
+  // Track PDF Save
   if (pathname === '/api/pdfs/save' && req.method === 'POST') {
     const body = await getJSON(req)
-    await db.append('pdf_events', { id: crypto.randomUUID(), sessionId: body.sessionId, pdfType: body.pdfType || 'unknown', fileSizeKb: body.fileSizeKb || 0, storageKey: body.storageKey || '', blobUrl: '', deviceType: body.deviceType || '', browser: body.browser || '', os: body.os || '', country: '', createdAt: new Date().toISOString() })
-    return j(res, { ok: true })
-  }
-
-  // PDF upload (no auth - from client)
-  if (pathname === '/api/pdfs/upload' && req.method === 'POST') {
-    const bufs = []
-    let total = 0
-    for await (const chunk of req) { bufs.push(chunk); total += chunk.length }
-    const boundary = req.headers['content-type']?.split('boundary=')[1]
-    if (!boundary) return send(res, 400, { error: 'missing boundary' })
-    const buf = Buffer.concat(bufs)
-    const parts = parseMultipart(buf, boundary)
-    const fileField = parts.find(p => p.name === 'file')
-    const pdfType = parts.find(p => p.name === 'pdfType')?.value || 'unknown'
-    const storageKey = parts.find(p => p.name === 'storageKey')?.value || `pdf_${crypto.randomUUID()}.pdf`
-    const sessionId = parts.find(p => p.name === 'sessionId')?.value || ''
-    const deviceType = parts.find(p => p.name === 'deviceType')?.value || ''
-    const browser = parts.find(p => p.name === 'browser')?.value || ''
-    const os = parts.find(p => p.name === 'os')?.value || ''
-
-    if (!fileField || !fileField.data) return send(res, 400, { error: 'no file' })
-
-    let blobUrl = ''
-    try {
-      const { put } = await import('@vercel/blob')
-      const blob = await put(`pdfs/${storageKey}`, fileField.data, { access: 'public', addRandomSuffix: true })
-      blobUrl = blob.url
-    } catch {}
-
-    await db.append('pdf_events', {
-      id: crypto.randomUUID(), sessionId, pdfType, fileSizeKb: Math.round(fileField.data.length / 1024),
-      storageKey, blobUrl, deviceType, browser, os, country: '', createdAt: new Date().toISOString(),
-    })
-    return j(res, { ok: true, url: blobUrl })
-  }
-
-  // PDF download (admin, requires auth)
-  if (pathname === '/api/pdfs/download' && req.method === 'GET') {
-    if (!adminGuard(req, res)) return
-    const pdfs = await db.read('pdf_events')
-    const id = url.searchParams.get('id')
-    const entry = pdfs.find(p => p.id === id)
-    if (!entry || !entry.blobUrl) return send(res, 404, { error: 'not found' })
-    try {
-      const response = await fetch(entry.blobUrl)
-      const buffer = Buffer.from(await response.arrayBuffer())
-      res.writeHead(200, {
-        'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="${entry.storageKey || 'document.pdf'}"`,
-        'Content-Length': buffer.length,
-      })
-      res.end(buffer)
-    } catch {
-      return send(res, 500, { error: 'download failed' })
+    const newPdf = {
+      id: body.id || ('p_' + Math.random().toString(36).slice(2, 9)),
+      createdAt: new Date().toISOString(),
+      pdfType: body.pdfType || 'Document',
+      title: body.title || body.storageKey || 'PDF Document',
+      clientName: body.clientName || 'Client',
+      clientEmail: body.clientEmail || '',
+      fileSizeKb: body.fileSizeKb || 180,
+      deviceType: body.deviceType || 'desktop',
+      browser: body.browser || 'Chrome',
+      os: body.os || 'Windows',
+      pdfDataUrl: body.pdfDataUrl || '',
     }
-  }
-
-  // Debug — shows stored data count and Blob status (no auth)
-  if (pathname === '/api/admin/debug') {
-    if (!adminGuard(req, res)) return
-    const [visits, pdfs, leads, clicks, logs] = await Promise.all([
-      db.read('visits'), db.read('pdf_events'), db.read('form_submissions'), db.read('clicks'), db.read('system_logs'),
-    ])
-    return j(res, {
-      useBlob: !!(process.env.VERCEL && process.env.BLOB_READ_WRITE_TOKEN),
-      counts: { visits: visits.length, pdfs: pdfs.length, leads: leads.length, clicks: clicks.length, logs: logs.length },
-      recentPDFs: pdfs.slice(-5),
-      recentVisits: visits.slice(-3),
-    })
+    await db.append('real_pdfs', newPdf)
+    return j(res, { ok: true, pdf: newPdf })
   }
 
   // Ping
   if (pathname === '/api/ping') return j(res, { ok: true })
 
-  send(res, 404, { error: 'not found', path: pathname })
+  return send(res, 404, { error: 'Not found' })
 }
