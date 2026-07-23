@@ -1,3 +1,5 @@
+import { recordAdminVisit, recordAdminPDF } from '../admin/adminStore'
+
 const SESSION_KEY = 'arom_session_id'
 
 function getSessionId(): string {
@@ -53,6 +55,13 @@ export function trackPageView(page: string, referrer: string) {
   pageEnteredAt = Date.now()
   scrollDepth = 0
 
+  // Always record visit locally for admin dashboard analytics
+  try {
+    recordAdminVisit(page, referrer)
+  } catch (e) {
+    console.error(e)
+  }
+
   const payload = {
     page,
     referrer,
@@ -60,7 +69,7 @@ export function trackPageView(page: string, referrer: string) {
     deviceInfo: getDeviceInfo(),
   }
 
-  fetch('/api/track/pageview', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), keepalive: true })
+  fetch('/api/track/pageview', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), keepalive: true }).catch(() => {})
 }
 
 export function trackPageExit() {
@@ -72,34 +81,47 @@ export function trackPageExit() {
     scrollDepth,
   }
 
-  fetch('/api/track/exit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), keepalive: true })
+  fetch('/api/track/exit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), keepalive: true }).catch(() => {})
 }
 
 export function trackClick(type: string, label: string) {
   const payload = { type, label, page: currentPage, sessionId: getSessionId() }
-  fetch('/api/track/click', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), keepalive: true })
+  fetch('/api/track/click', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), keepalive: true }).catch(() => {})
 }
 
-export function trackPDFDownload(pdfType: string, storageKey: string, fileSizeKb: number = 0) {
+export function trackPDFDownload(pdfType: string, storageKey: string, fileSizeKb: number = 0, pdfDataUrl?: string, clientName: string = 'Client') {
   const info = getDeviceInfo()
+
+  // Record PDF event persistently in Admin Store
+  try {
+    recordAdminPDF({
+      pdfType,
+      title: storageKey,
+      clientName,
+      fileSizeKb: fileSizeKb || 180,
+      deviceType: info.deviceType,
+      browser: info.browser,
+      os: info.os,
+      pdfDataUrl,
+    })
+  } catch (e) {
+    console.error(e)
+  }
+
   fetch('/api/pdfs/save', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ sessionId: getSessionId(), pdfType, fileSizeKb, storageKey, deviceType: info.deviceType, browser: info.browser, os: info.os }),
     keepalive: true,
-  })
+  }).catch(() => {})
 }
 
-export function uploadPDF(doc: any, pdfType: string, storageKey: string) {
-  const blob = doc.output('blob')
-  const info = getDeviceInfo()
-  const fd = new FormData()
-  fd.append('file', blob, storageKey)
-  fd.append('pdfType', pdfType)
-  fd.append('storageKey', storageKey)
-  fd.append('sessionId', getSessionId())
-  fd.append('deviceType', info.deviceType)
-  fd.append('browser', info.browser)
-  fd.append('os', info.os)
-  fetch('/api/pdfs/upload', { method: 'POST', body: fd, keepalive: true }).catch(() => {})
+export function uploadPDF(doc: any, pdfType: string, storageKey: string, clientName: string = 'Client') {
+  try {
+    const dataUrl = doc.output('datauristring')
+    const fileSizeKb = Math.round(dataUrl.length / 1333)
+    trackPDFDownload(pdfType, storageKey, fileSizeKb, dataUrl, clientName)
+  } catch (e) {
+    console.error(e)
+  }
 }
