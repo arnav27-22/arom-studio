@@ -1,14 +1,13 @@
 User-agent: *
 Allow: /
-Disallow: /_next/
 Disallow: /api/
+Disallow: /admin/
 
-# AI crawlers - allow full access for training and indexing
 User-agent: GPTBot
 Allow: /
 Disallow: /api/
 
-User-agent: Claude-Web
+User-agent: ClaudeBot
 Allow: /
 Disallow: /api/
 
@@ -16,38 +15,8 @@ User-agent: PerplexityBot
 Allow: /
 Disallow: /api/
 
-User-agent: CCBot
-Allow: /
-Disallow: /api/
-
-User-agent: Amazonbot
-Allow: /
-Disallow: /api/
-
-User-agent: Applebot
-Allow: /
-Disallow: /api/
-
-# Search engines
-User-agent: Googlebot
+User-agent: Google-Extended
 Allow: /
 
-User-agent: Bingbot
-Allow: /
-
-# Social media crawlers
-User-agent: Twitterbot
-Allow: /
-
-User-agent: FacebookBot
-Allow: /
-
-User-agent: LinkedInBot
-Allow: /
-
-# Common Crawl
-User-agent: CCBot
-Allow: /
-Disallow: /api/
-
+Host: https://aromstudio.vercel.app
 Sitemap: https://aromstudio.vercel.app/sitemap.xml

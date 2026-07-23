@@ -6,6 +6,8 @@ export const testimonials: Testimonial[] = [
     quote: 'AROM STUDIO delivered a website that exceeded our expectations. The attention to detail and performance optimization is outstanding.',
     client: 'Rajesh Mehta',
     company: 'CEO, Nexus Financial Services',
+    companyName: 'Nexus Financial Services',
+    companyUrl: 'https://aromstudio.vercel.app',
     rating: 5,
   },
   {
@@ -13,6 +15,8 @@ export const testimonials: Testimonial[] = [
     quote: 'Working with Arnav was a seamless experience. He understood our vision perfectly and delivered a product that truly represents our brand.',
     client: 'Priya Sharma',
     company: 'Founder, GreenPlate Organics',
+    companyName: 'GreenPlate Organics',
+    companyUrl: 'https://aromstudio.vercel.app',
     rating: 4.5,
   },
   {
@@ -20,6 +24,8 @@ export const testimonials: Testimonial[] = [
     quote: 'Our new website has become our most powerful sales tool. The leads we generate through the site have more than doubled.',
     client: 'Vikram Patel',
     company: 'Director, BuildCraft Infrastructures',
+    companyName: 'BuildCraft Infrastructures',
+    companyUrl: 'https://aromstudio.vercel.app',
     rating: 5,
   },
   {
@@ -27,6 +33,8 @@ export const testimonials: Testimonial[] = [
     quote: 'The platform AROM STUDIO built for us handles thousands of active users without breaking a sweat. Exceptional engineering.',
     client: 'Dr. Suresh Kumar',
     company: 'CTO, MediVault Hospitals',
+    companyName: 'MediVault Hospitals',
+    companyUrl: 'https://aromstudio.vercel.app',
     rating: 5,
   },
   {
@@ -34,6 +42,8 @@ export const testimonials: Testimonial[] = [
     quote: 'From concept to launch, Arnav was professional, communicative, and delivered on every promise. Highly recommended.',
     client: 'Ananya Reddy',
     company: 'Owner, Stellar Cuisine',
+    companyName: 'Stellar Cuisine',
+    companyUrl: 'https://aromstudio.vercel.app',
     rating: 4.5,
   },
   {
@@ -41,6 +51,8 @@ export const testimonials: Testimonial[] = [
     quote: 'AROM STUDIO doesn\'t just build websites — they build digital experiences that drive real business results.',
     client: 'Neha Gupta',
     company: 'Marketing Head, EduSphere',
+    companyName: 'EduSphere',
+    companyUrl: 'https://aromstudio.vercel.app',
     rating: 5,
   },
 ]

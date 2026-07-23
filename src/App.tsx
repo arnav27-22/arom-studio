@@ -1,4 +1,4 @@
-import { useEffect, lazy, Suspense } from 'react'
+import { useEffect, useState, lazy, Suspense } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import { Analytics } from '@vercel/analytics/react'
 import { Navbar } from './components/layout/Navbar'
@@ -6,6 +6,9 @@ import { Footer } from './components/layout/Footer'
 import { WhatsAppButton } from './components/ui/WhatsAppButton'
 import { SiteBackground } from './components/ui/SiteBackground'
 import { Particles } from './components/ui/ParticleBackground'
+import { CookieConsent } from './components/ui/CookieConsent'
+import { MobileBottomCTA } from './components/ui/MobileBottomCTA'
+import { CalendlyModal } from './components/ui/CalendlyModal'
 import { initTracker, trackPageView } from './lib/tracker'
 
 import Home from './pages/Home'
@@ -21,6 +24,8 @@ const Privacy = lazy(() => import('./pages/Privacy'))
 const Terms = lazy(() => import('./pages/Terms'))
 const Refund = lazy(() => import('./pages/Refund'))
 const Brand = lazy(() => import('./pages/Brand'))
+const Blog = lazy(() => import('./pages/Blog'))
+const BlogPost = lazy(() => import('./pages/BlogPost'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 const Inquiry = lazy(() => import('./pages/pre-portal/Inquiry'))
 const Questionnaire = lazy(() => import('./pages/pre-portal/Questionnaire'))
@@ -53,12 +58,16 @@ function PageTracker() {
 }
 
 export default function App() {
+  const [isCalendlyOpen, setIsCalendlyOpen] = useState(false)
+
   useEffect(() => { initTracker() }, [])
 
   return (
     <>
       <ScrollToTop />
       <Analytics />
+      <CookieConsent />
+      <CalendlyModal isOpen={isCalendlyOpen} onClose={() => setIsCalendlyOpen(false)} />
       <Suspense fallback={null}>
         <Routes>
           <Route path="/admin" element={<AdminApp />} />
@@ -82,6 +91,8 @@ export default function App() {
                   <Route path="/terms" element={<Terms />} />
                   <Route path="/refund" element={<Refund />} />
                   <Route path="/brand" element={<Brand />} />
+                  <Route path="/blog" element={<Blog />} />
+                  <Route path="/blog/:slug" element={<BlogPost />} />
                   <Route path="/inquiry" element={<Inquiry />} />
                   <Route path="/questionnaire" element={<Questionnaire />} />
                   <Route path="/proposal" element={<Proposal />} />
@@ -101,6 +112,7 @@ export default function App() {
               </Suspense>
               <Footer />
               <WhatsAppButton />
+              <MobileBottomCTA onOpenBookModal={() => setIsCalendlyOpen(true)} />
             </div>
           } />
         </Routes>

@@ -17,6 +17,9 @@ export interface Testimonial {
   client: string
   company: string
   rating: number
+  companyLogo?: string
+  companyUrl?: string
+  companyName?: string
 }
 
 export interface Plan {
