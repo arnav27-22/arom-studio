@@ -87,7 +87,7 @@ export default function Contact() {
     `w-full bg-white/5 border ${errors[field] ? 'border-red-500/50' : 'border-white/10'} rounded-[18px] px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-accent/50 transition-colors font-body`
 
   return (
-    <main className="pt-32">
+    <main id="main-content" className="pt-32">
       <SEO
         title="Contact"
         description="Get in touch with AROM STUDIO. Contact us via email at aromstudio27@gmail.com or WhatsApp at +91 8767990061. We respond within 24 hours."
@@ -111,186 +111,190 @@ export default function Contact() {
             <div className="lg:col-span-2">
               <FadeIn>
                 <GlassCard hover={false}>
-                    <form onSubmit={handleSubmit} noValidate className="space-y-5">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                        <div>
-                          <label htmlFor="name" className="block text-xs text-white/50 font-body mb-2">Name *</label>
-                          <input
-                            type="text"
-                            name="name"
-                            id="name"
-                            required
-                            value={formData.name}
-                            onChange={handleChange}
-                            className={inputClass('name')}
-                            placeholder="Your name"
-                            maxLength={60}
-                            autoComplete="name"
-                          />
-                          {errors.name && (
-                            <p className="flex items-center gap-1 text-[11px] text-red-400 font-body mt-1.5">
-                              <AlertCircle className="h-3 w-3" /> {errors.name}
-                            </p>
-                          )}
-                        </div>
-                        <div>
-                          <label htmlFor="email" className="block text-xs text-white/50 font-body mb-2">Email *</label>
-                          <input
-                            type="email"
-                            name="email"
-                            id="email"
-                            required
-                            value={formData.email}
-                            onChange={handleChange}
-                            className={inputClass('email')}
-                            placeholder="your@email.com"
-                            autoComplete="email"
-                          />
-                          {errors.email && (
-                            <p className="flex items-center gap-1 text-[11px] text-red-400 font-body mt-1.5">
-                              <AlertCircle className="h-3 w-3" /> {errors.email}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                        <div>
-                          <label htmlFor="phone" className="block text-xs text-white/50 font-body mb-2">Phone</label>
-                          <input
-                            type="tel"
-                            name="phone"
-                            id="phone"
-                            value={formData.phone}
-                            onChange={handleChange}
-                            className={inputClass('phone')}
-                            placeholder="+91 98765 43210"
-                            autoComplete="tel"
-                          />
-                          {errors.phone && (
-                            <p className="flex items-center gap-1 text-[11px] text-red-400 font-body mt-1.5">
-                              <AlertCircle className="h-3 w-3" /> {errors.phone}
-                            </p>
-                          )}
-                        </div>
-                        <div>
-                          <label htmlFor="service" className="block text-xs text-white/50 font-body mb-2">Service Needed *</label>
-                          <select
-                            name="service"
-                            id="service"
-                            required
-                            value={formData.service}
-                            onChange={handleChange}
-                            className={inputClass('service') + ' appearance-none'}
-                          >
-                            <option value="" className="bg-bg">Select a service</option>
-                            <option value="business-website" className="bg-bg">Business Website</option>
-                            <option value="ecommerce" className="bg-bg">E-commerce</option>
-                            <option value="web-application" className="bg-bg">Web Application</option>
-                            <option value="saas" className="bg-bg">SaaS Platform</option>
-                            <option value="ui-ux" className="bg-bg">UI/UX Design</option>
-                            <option value="redesign" className="bg-bg">Website Redesign</option>
-                            <option value="seo" className="bg-bg">SEO Optimization</option>
-                            <option value="other" className="bg-bg">Other</option>
-                          </select>
-                          {formData.service === 'other' && (
-                            <input
-                              type="text"
-                              name="customService"
-                              value={formData.customService}
-                              onChange={handleChange}
-                              placeholder="Please specify your service..."
-                              className="w-full bg-white/5 border border-white/10 rounded-[18px] px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-accent/50 transition-colors font-body mt-2"
-                            />
-                          )}
-                          {errors.service && (
-                            <p className="flex items-center gap-1 text-[11px] text-red-400 font-body mt-1.5">
-                              <AlertCircle className="h-3 w-3" /> {errors.service}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-
+                  <form onSubmit={handleSubmit} noValidate className="space-y-5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                       <div>
-                        <label htmlFor="budget" className="block text-xs text-white/50 font-body mb-2">Budget Range</label>
-                        <select
-                          name="budget"
-                          id="budget"
-                          value={formData.budget}
-                          onChange={handleChange}
-                          className="w-full bg-white/5 border border-white/10 rounded-[18px] px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-accent/50 transition-colors font-body appearance-none"
-                        >
-                          <option value="" className="bg-bg">Select budget range</option>
-                          <option value="180-380" className="bg-bg">$180 - $380 / ₹12K - ₹25K</option>
-                          <option value="380-680" className="bg-bg">$380 - $680 / ₹25K - ₹45K</option>
-                          <option value="680-1140" className="bg-bg">$680 - $1,140 / ₹45K - ₹75K</option>
-                          <option value="1140-plus" className="bg-bg">$1,140+ / ₹75K+</option>
-                          <option value="custom" className="bg-bg">Custom / Enterprise</option>
-                        </select>
-                        {formData.budget === 'custom' && (
-                          <input
-                            type="text"
-                            name="customBudget"
-                            value={formData.customBudget}
-                            onChange={handleChange}
-                            placeholder="Enter your budget..."
-                            className="w-full bg-white/5 border border-white/10 rounded-[18px] px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-accent/50 transition-colors font-body mt-2"
-                          />
-                        )}
-                      </div>
-
-                      <div>
-                        <label htmlFor="message" className="block text-xs text-white/50 font-body mb-2">Message *</label>
-                        <textarea
-                          name="message"
-                          id="message"
+                        <label htmlFor="name" className="block text-xs text-white/50 font-body mb-2">Name *</label>
+                        <input
+                          type="text"
+                          name="name"
+                          id="name"
                           required
-                          rows={4}
-                          value={formData.message}
+                          value={formData.name}
                           onChange={handleChange}
-                          className={inputClass('message') + ' resize-none'}
-                          placeholder="Tell us about your project..."
-                          maxLength={2000}
+                          className={inputClass('name')}
+                          placeholder="Your name"
+                          maxLength={60}
+                          autoComplete="name"
                         />
-                        {errors.message && (
+                        {errors.name && (
                           <p className="flex items-center gap-1 text-[11px] text-red-400 font-body mt-1.5">
-                            <AlertCircle className="h-3 w-3" /> {errors.message}
+                            <AlertCircle className="h-3 w-3" /> {errors.name}
                           </p>
                         )}
                       </div>
-
-                      <div className="flex items-start gap-3">
+                      <div>
+                        <label htmlFor="email" className="block text-xs text-white/50 font-body mb-2">Email *</label>
                         <input
-                          type="checkbox"
-                          name="agreedToTerms"
-                          id="agreedToTerms"
-                          checked={formData.agreedToTerms}
+                          type="email"
+                          name="email"
+                          id="email"
+                          required
+                          value={formData.email}
                           onChange={handleChange}
-                          className="mt-0.5 h-4 w-4 shrink-0 rounded-[4px] border border-white/20 bg-white/5 accent-accent focus:outline-none focus:ring-1 focus:ring-accent/50"
+                          className={inputClass('email')}
+                          placeholder="your@email.com"
+                          autoComplete="email"
                         />
-                        <label htmlFor="agreedToTerms" className="text-xs text-white/50 font-body leading-relaxed">
-                          I have read and agree to the{' '}
-                          <a href="/privacy" target="_blank" className="text-accent hover:underline">Privacy Policy</a>
-                          {' '}and{' '}
-                          <a href="/terms" target="_blank" className="text-accent hover:underline">Terms &amp; Conditions</a>
-                          {' '}*
-                        </label>
+                        {errors.email && (
+                          <p className="flex items-center gap-1 text-[11px] text-red-400 font-body mt-1.5">
+                            <AlertCircle className="h-3 w-3" /> {errors.email}
+                          </p>
+                        )}
                       </div>
-                      {errors.agreedToTerms && (
-                        <p className="flex items-center gap-1 text-[11px] text-red-400 font-body">
-                          <AlertCircle className="h-3 w-3" /> {errors.agreedToTerms}
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                      <div>
+                        <label htmlFor="phone" className="block text-xs text-white/50 font-body mb-2">Phone</label>
+                        <input
+                          type="tel"
+                          name="phone"
+                          id="phone"
+                          value={formData.phone}
+                          onChange={handleChange}
+                          className={inputClass('phone')}
+                          placeholder="+91 98765 43210"
+                          autoComplete="tel"
+                        />
+                        {errors.phone && (
+                          <p className="flex items-center gap-1 text-[11px] text-red-400 font-body mt-1.5">
+                            <AlertCircle className="h-3 w-3" /> {errors.phone}
+                          </p>
+                        )}
+                      </div>
+                      <div>
+                        <label htmlFor="service" className="block text-xs text-white/50 font-body mb-2">Service Needed *</label>
+                        <select
+                          name="service"
+                          id="service"
+                          required
+                          value={formData.service}
+                          onChange={handleChange}
+                          className={inputClass('service') + ' appearance-none'}
+                        >
+                          <option value="" className="bg-bg">Select a service</option>
+                          <option value="business-website" className="bg-bg">Business Website</option>
+                          <option value="ecommerce" className="bg-bg">E-commerce</option>
+                          <option value="web-application" className="bg-bg">Web Application</option>
+                          <option value="saas" className="bg-bg">SaaS Platform</option>
+                          <option value="ui-ux" className="bg-bg">UI/UX Design</option>
+                          <option value="redesign" className="bg-bg">Website Redesign</option>
+                          <option value="seo" className="bg-bg">SEO Optimization</option>
+                          <option value="other" className="bg-bg">Other</option>
+                        </select>
+                        {formData.service === 'other' && (
+                          <input
+                            type="text"
+                            name="customService"
+                            id="customService"
+                            aria-label="Custom Service Specification"
+                            value={formData.customService}
+                            onChange={handleChange}
+                            placeholder="Please specify your service..."
+                            className="w-full bg-white/5 border border-white/10 rounded-[18px] px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-accent/50 transition-colors font-body mt-2"
+                          />
+                        )}
+                        {errors.service && (
+                          <p className="flex items-center gap-1 text-[11px] text-red-400 font-body mt-1.5">
+                            <AlertCircle className="h-3 w-3" /> {errors.service}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div>
+                      <label htmlFor="budget" className="block text-xs text-white/50 font-body mb-2">Budget Range</label>
+                      <select
+                        name="budget"
+                        id="budget"
+                        value={formData.budget}
+                        onChange={handleChange}
+                        className="w-full bg-white/5 border border-white/10 rounded-[18px] px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-accent/50 transition-colors font-body appearance-none"
+                      >
+                        <option value="" className="bg-bg">Select budget range</option>
+                        <option value="180-380" className="bg-bg">$180 - $380 / ₹12K - ₹25K</option>
+                        <option value="380-680" className="bg-bg">$380 - $680 / ₹25K - ₹45K</option>
+                        <option value="680-1140" className="bg-bg">$680 - $1,140 / ₹45K - ₹75K</option>
+                        <option value="1140-plus" className="bg-bg">$1,140+ / ₹75K+</option>
+                        <option value="custom" className="bg-bg">Custom / Enterprise</option>
+                      </select>
+                      {formData.budget === 'custom' && (
+                        <input
+                          type="text"
+                          name="customBudget"
+                          id="customBudget"
+                          aria-label="Custom Budget Specification"
+                          value={formData.customBudget}
+                          onChange={handleChange}
+                          placeholder="Enter your budget..."
+                          className="w-full bg-white/5 border border-white/10 rounded-[18px] px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-accent/50 transition-colors font-body mt-2"
+                        />
+                      )}
+                    </div>
+
+                    <div>
+                      <label htmlFor="message" className="block text-xs text-white/50 font-body mb-2">Message *</label>
+                      <textarea
+                        name="message"
+                        id="message"
+                        required
+                        rows={4}
+                        value={formData.message}
+                        onChange={handleChange}
+                        className={inputClass('message') + ' resize-none'}
+                        placeholder="Tell us about your project..."
+                        maxLength={2000}
+                      />
+                      {errors.message && (
+                        <p className="flex items-center gap-1 text-[11px] text-red-400 font-body mt-1.5">
+                          <AlertCircle className="h-3 w-3" /> {errors.message}
                         </p>
                       )}
+                    </div>
 
-                      <button
-                        type="submit"
-                        className="glass-strong text-sm font-body font-medium text-white rounded-full px-6 py-3 inline-flex items-center gap-2 hover:shadow-[0_0_20px_2px_rgba(78,133,191,0.3)] transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
-                      >
-                        <Send className="h-4 w-4" />
-                        Send Message
-                      </button>
-                    </form>
-                  </GlassCard>
+                    <div className="flex items-start gap-3">
+                      <input
+                        type="checkbox"
+                        name="agreedToTerms"
+                        id="agreedToTerms"
+                        checked={formData.agreedToTerms}
+                        onChange={handleChange}
+                        className="mt-0.5 h-4 w-4 shrink-0 rounded-[4px] border border-white/20 bg-white/5 accent-accent focus:outline-none focus:ring-1 focus:ring-accent/50"
+                      />
+                      <label htmlFor="agreedToTerms" className="text-xs text-white/50 font-body leading-relaxed">
+                        I have read and agree to the{' '}
+                        <a href="/privacy" target="_blank" className="text-accent hover:underline">Privacy Policy</a>
+                        {' '}and{' '}
+                        <a href="/terms" target="_blank" className="text-accent hover:underline">Terms &amp; Conditions</a>
+                        {' '}*
+                      </label>
+                    </div>
+                    {errors.agreedToTerms && (
+                      <p className="flex items-center gap-1 text-[11px] text-red-400 font-body">
+                        <AlertCircle className="h-3 w-3" /> {errors.agreedToTerms}
+                      </p>
+                    )}
+
+                    <button
+                      type="submit"
+                      className="glass-strong text-sm font-body font-medium text-white rounded-full px-6 py-3 inline-flex items-center gap-2 hover:shadow-[0_0_20px_2px_rgba(78,133,191,0.3)] transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+                    >
+                      <Send className="h-4 w-4" />
+                      Send Message
+                    </button>
+                  </form>
+                </GlassCard>
               </FadeIn>
             </div>
 
@@ -301,7 +305,7 @@ export default function Contact() {
                   <FileText className="h-5 w-5 text-accent mb-3" />
                   <h3 className="font-heading text-sm text-white mb-1">Client Inquiry Form</h3>
                   <p className="text-xs text-white/60 font-body font-light mb-4">
-                    Prefer a structured form? Fill out our detailed inquiry form and we'll get back to you within 24–48 hours.
+                    Prefer a structured form? Fill out our detailed inquiry form and we&apos;ll get back to you within 24–48 hours.
                   </p>
                   <a
                     href="https://forms.gle/fGwvkaTRdtb5ZH3x6"
@@ -360,6 +364,7 @@ export default function Contact() {
           </div>
         </Container>
       </Section>
+
       {/* Success Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -369,6 +374,7 @@ export default function Contact() {
               <button
                 onClick={() => setShowModal(false)}
                 className="absolute top-4 right-4 text-white/40 hover:text-white transition-colors"
+                aria-label="Close modal"
               >
                 <X className="h-5 w-5" />
               </button>

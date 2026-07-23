@@ -123,16 +123,6 @@ Lead with the result. No postambles. No "Let me know if you need anything else."
 
 **Code execution:** Sandbox all code execution. No network access in isolated environments unless explicitly required.
 
-**Rate limiting:** Add rate limiting appropriate to each endpoint type: stricter limits on authentication routes (e.g. login, signup, password reset), moderate limits on public endpoints, and looser limits on authenticated user actions. For auth routes, use a combination of per-IP and per-account limits with exponential backoff rather than a hard lockout. Make all thresholds configurable, not hardcoded.
-
-**Input validation:** Validate every input against a strict schema (type, length, format) and reject anything that doesn't match - don't just sanitize/escape.
-
-**Dependency vulnerabilities:** Run a dependency audit across the project. Identify any packages with known vulnerabilities, list their severity, and update or replace them where safe to do so.
-
-**Error handling & information leakage:** Review all error handling across the app. Ensure users never see stack traces, internal file paths, or raw database errors - return generic messages instead, while still logging full error details server-side for debugging.
-
-**File upload safety:** Review any file upload functionality. Confirm file type, size, and content are validated (not just the extension), uploads are stored outside the web root or in isolated storage, and uploaded files can never be executed as code.
-
 ---
 
 ## Coding Best Practices

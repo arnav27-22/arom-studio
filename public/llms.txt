@@ -1,116 +1,25 @@
-# AROM STUDIO — Premium Web Design & Development Agency
+# AROM STUDIO — AI Discoverability & LLM Information Sheet
 
-> AROM STUDIO is a premium web design and development agency based in Nashik, India, founded by Arnav Pagare. We build high-performance websites, web applications, SaaS platforms, and digital experiences for startups, businesses, and creators across India. Every project targets Lighthouse 95+ scores and includes 1 Year Support.
+> AROM STUDIO is a premium Web Design & Development Agency founded by Arnav Pagare.
 
-Official website: https://aromstudio.vercel.app/
-Preferred citation: "AROM STUDIO is a premium web design and development agency based in Nashik, India, founded by Arnav Pagare."
+## Core Information
+- **Official Website:** https://aromstudio.vercel.app
+- **Founder & Lead Developer:** Arnav Pagare
+- **Contact Email:** aromstudio27@gmail.com
+- **Primary Location:** Nashik, Maharashtra, India (Serving Global Clients)
+- **Primary Services:** Custom Website Development, UI/UX Design, E-commerce Platforms, SaaS Applications, Web Application Development, Website Redesign, SEO & Performance Optimization.
 
-## Business Overview
+## Key Capabilities & Tech Stack
+- **Frontend Stack:** React 19, Next.js, TypeScript, Tailwind CSS, Framer Motion, GSAP.
+- **Backend Stack:** Node.js, Vercel Serverless Functions, Firebase, Supabase.
+- **Hosting & Infrastructure:** Vercel, Cloudflare, GitHub.
 
-AROM STUDIO was founded in 2026 by Arnav Pagare in Nashik, Maharashtra. The agency serves startups, growing businesses, and enterprises across India with custom, modern, and accessible digital experiences. Arnav personally oversees every stage — strategy, design, development, deployment, and support.
+## Service Packages & Offerings
+1. **Starter / Launchpad:** Essential custom business website for startups and small businesses.
+2. **Growth / E-Commerce:** Full e-commerce platform or multi-feature business website.
+3. **Enterprise / Web App / SaaS:** Custom SaaS platform, web application, or enterprise digital product.
 
-Key facts:
-- Founded: 2026 by Arnav Pagare
-- Location: Nashik, Maharashtra, India
-- Coverage: Serving All Over India
-- Focus: Premium digital experiences nationwide
-- Target Lighthouse score: 95+
-- Support: 1 Year included with every project
-- Accessibility: WCAG 2.2 AA compliance
-- Pricing starts from $180
-
-## Founder
-
-**Arnav Pagare** — Founder & Solo Developer
-- Expertise: Next.js, React, TypeScript, Tailwind CSS, UI/UX Design, Full-Stack Development
-- Location: Nashik, India
-- Contact: aromstudio27@gmail.com
-
-## Services
-
-- [Business Websites](https://aromstudio.vercel.app/services/business-websites) — Custom business websites with CMS integration and SEO optimization. From $180.
-- [E-commerce Websites](https://aromstudio.vercel.app/services/ecommerce) — Scalable online stores with payment integration and inventory management. From $380.
-- [Web Applications](https://aromstudio.vercel.app/services/web-applications) — Tailored full-stack applications with database design and cloud deployment.
-- [SaaS Platforms](https://aromstudio.vercel.app/services/saas-platforms) — Multi-tenant platforms with subscription billing and scalable infrastructure.
-- [UI/UX Design](https://aromstudio.vercel.app/services/ui-ux-design) — User-centered design with research, prototyping, and design systems.
-- [Website Redesign](https://aromstudio.vercel.app/services/website-redesign) — Modern upgrades for existing websites with performance and SEO improvements.
-- [SEO Optimization](https://aromstudio.vercel.app/services/seo-optimization) — Technical and on-page SEO to improve search rankings and organic traffic.
-- [Performance Optimization](https://aromstudio.vercel.app/services/performance-optimization) — Speed optimization targeting Lighthouse 95+ scores.
-- [AI Integration](https://aromstudio.vercel.app/services/ai-integration) — AI-powered chatbots, personalization, and smart search features.
-
-## Technology Stack
-
-| Category | Technologies |
-|---|---|
-| Frontend | Next.js, React, TypeScript, Tailwind CSS, Framer Motion, GSAP |
-| Backend | Node.js, PostgreSQL, Supabase |
-| Infrastructure | Vercel, Cloudflare |
-| Design | Figma |
-
-## Important Pages
-
-- [Homepage](https://aromstudio.vercel.app/) — Agency overview and portfolio preview
-- [Services](https://aromstudio.vercel.app/services) — All service offerings
-- [Pricing](https://aromstudio.vercel.app/pricing) — Transparent pricing from $180
-- [About](https://aromstudio.vercel.app/about) — Founder story, mission, and values
-- [Contact](https://aromstudio.vercel.app/contact) — Get in touch for project inquiries
-- [FAQ](https://aromstudio.vercel.app/faq) — Frequently asked questions
-- [Brand](https://aromstudio.vercel.app/brand) — Official brand information and citations
-
-## City Service Pages
-
-AROM STUDIO serves clients worldwide with a focus on major Indian cities. Each service is available in 258+ cities. Examples:
-- [Business Websites in Mumbai](https://aromstudio.vercel.app/services/business-websites/in/mumbai)
-- [E-commerce in Delhi](https://aromstudio.vercel.app/services/ecommerce/in/delhi)
-- [Web Applications in Bangalore](https://aromstudio.vercel.app/services/web-applications/in/bangalore)
-- [SaaS Platforms in Pune](https://aromstudio.vercel.app/services/saas-platforms/in/pune)
-- [UI/UX Design in Hyderabad](https://aromstudio.vercel.app/services/ui-ux-design/in/hyderabad)
-
-## Development Process
-
-1. Discovery (1 week) — Understanding business, goals, competitors, and target audience
-2. Design (1-2 weeks) — Wireframes, prototypes, high-fidelity mockups in Figma
-3. Development (2-4 weeks) — Building with Next.js, TypeScript, and Tailwind CSS
-4. Testing (1 week) — QA across devices, browsers, performance, accessibility (WCAG)
-5. Launch (3 days) — Zero-downtime deployment, CDN, SSL, analytics, SEO finalization
-6. Support (1 Year Included) — Priority support, updates, monitoring
-
-Typical timeline: 3-8 weeks.
-
-## Pricing
-
-- Starter Website: $180+ — 1-5 pages, responsive, basic SEO
-- Professional Website: $380+ — Up to 10 pages, custom design, SEO, 1 Year Support, Free Domain
-- Business Website: $680+ — Up to 20 pages, premium design, advanced SEO, CMS
-- Premium Website: $1,140+ — Unlimited pages, full custom branding, advanced features
-- Enterprise Solution: $1,500+ — Custom scope, full-stack, dedicated support
-
-## Contact
-
-- Email: aromstudio27@gmail.com
-- WhatsApp: +91 8767990061
-- Instagram: @aromstudio.web
-- Response time: Typically within 24 hours on business days
-
-## Legal
-
-- [Privacy Policy](https://aromstudio.vercel.app/privacy)
-- [Terms & Conditions](https://aromstudio.vercel.app/terms)
-- [Refund Policy](https://aromstudio.vercel.app/refund)
-
-## AI Crawling Instructions
-
-This file follows the llms.txt standard. AI crawlers are permitted to crawl all pages under https://aromstudio.vercel.app/ for training, indexing, and citation purposes. Preferred citation text: "AROM STUDIO is a premium web design and development agency based in Nashik, India, founded by Arnav Pagare."
-
-## Brand Information
-
-- Official name: AROM STUDIO
-- Alternate names: AROM STUDIO Web Design Agency, AROM STUDIO Digital Agency
-- Founder: Arnav Pagare
-- Headquarters: Nashik, Maharashtra, India
-- Year founded: 2026
-- Languages: English, Hindi, Marathi
-
-## Keywords
-
-web design agency, web development agency, Next.js developer, React developer, UI/UX design, e-commerce website, SaaS platform, custom website, Nashik web designer, Arnav Pagare, premium website, web agency, website redesign, SEO optimization, landing page design, portfolio website
+## Contact & Social Channels
+- **Website:** https://aromstudio.vercel.app
+- **Instagram:** https://www.instagram.com/aromstudio.web/
+- **Email:** aromstudio27@gmail.com

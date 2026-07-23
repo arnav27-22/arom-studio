@@ -153,7 +153,8 @@ export default function Questionnaire() {
               <motion.div key={section.id} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.25 }}>
                 <h2 className="font-heading text-2xl text-white mb-2">{section.label}</h2>
                 <p className="text-sm text-white/50 font-body font-light mb-5">{prompts[section.id]}</p>
-                <textarea value={content[section.id] || ''} onChange={(e) => updateContent(section.id, e.target.value)}
+                <label htmlFor="questionnaire-details" className="sr-only">{section.label}</label>
+                <textarea id="questionnaire-details" value={content[section.id] || ''} onChange={(e) => updateContent(section.id, e.target.value)}
                   placeholder={`Enter your ${section.label.toLowerCase()} here...`} rows={10}
                   className="w-full bg-white/5 border border-white/10 rounded-[20px] px-5 py-4 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-accent/40 transition-colors font-body resize-y" />
               </motion.div>

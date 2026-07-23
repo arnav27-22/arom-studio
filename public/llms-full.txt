@@ -1,214 +1,26 @@
-# AROM STUDIO — Premium Digital Agency
+# AROM STUDIO — Complete Agency Context & Documentation
 
-AROM STUDIO is a premium web design and development agency based in Nashik, India, founded by Arnav Pagare. The agency creates high-performance websites, web applications, SaaS platforms, and digital experiences for startups, businesses, and creators worldwide. Every project targets Lighthouse 95+ scores and includes 1 Year Support.
+AROM STUDIO is an independent web design and development agency founded by Arnav Pagare.
+We specialize in creating fast, scalable, modern, SEO-friendly, and accessible websites.
 
-Source: https://aromstudio.vercel.app/
+## Services Offered
+- Business Website Development
+- Landing Page Design & Optimization
+- E-Commerce Web Stores
+- SaaS Application Engineering
+- Custom Web Application Development
+- UI/UX Design & Prototyping
+- Website Redesign & Migration
+- Technical SEO & Performance Tuning
+- Continuous Website Maintenance
 
----
+## Technical Stack
+- React 19, Next.js, TypeScript, Tailwind CSS
+- GSAP & Framer Motion Animations
+- Vercel Serverless Architecture, Node.js
+- Firebase & Supabase Integration
 
-## Company Overview
-
-AROM STUDIO serves startups, growing businesses, and enterprises worldwide. The founder, Arnav Pagare, personally oversees every stage from anywhere — strategy, planning, UI/UX design, frontend and backend development, performance optimization, deployment, and post-launch support.
-
-### Quick Facts
-- Founded by Arnav Pagare
-- Founded: 2026
-- Global service
-- 1 Year Support included with every project
-- Target Lighthouse score: 95+
-
-Source: https://aromstudio.vercel.app/about
-
-### Core Values
-- **Quality Over Quantity** — Fewer projects, exceptional results.
-- **Honest Communication** — Transparent and timely communication.
-- **Performance-First** — Every website targets Lighthouse 95+ scores.
-- **User-Centered Design** — Design driven by user needs and business goals.
-- **Continuous Learning** — Staying at the forefront of modern web technologies.
-- **Accessibility for All** — WCAG 2.2 AA compliance built into every project.
-- **Long-Term Partnerships** — Building relationships, not just websites.
-- **Security by Design** — Security best practices integrated from day one.
-
-Source: https://aromstudio.vercel.app/about
-
-### Technology Stack
-| Category | Technologies |
-|---|---|
-| Frontend | Next.js, React, TypeScript, Tailwind CSS, Framer Motion, GSAP |
-| Backend | Node.js, PostgreSQL, Supabase |
-| Deployment | Vercel, Cloudflare |
-| Design | Figma |
-
-Source: https://aromstudio.vercel.app/
-
----
-
-## Services
-
-### Business Websites
-Custom business websites that establish credibility, drive leads, and represent brands with premium design and engineering. Includes custom UI/UX design, responsive development, SEO optimization, performance tuning, CMS integration, contact forms, analytics setup, and WhatsApp integration. Ideal for local businesses, startups, and SMEs.
-
-Tech: Next.js, React, TypeScript, Tailwind CSS, Supabase, Vercel
-Process: Discovery (1 week) → Design (1-2 weeks) → Development (2-4 weeks) → Launch
-Source: https://aromstudio.vercel.app/services/business-websites
-
-### E-commerce Websites
-Scalable online stores with product management, secure checkout, payment integration (Razorpay/Stripe), inventory tracking, order management dashboard, mobile-optimized UI, and SEO-ready architecture. Ideal for retailers, D2C brands, and wholesalers.
-
-Tech: Next.js, TypeScript, Stripe, Razorpay, PostgreSQL, Tailwind CSS
-Process: Discovery → UX Design → Development → Launch
-Source: https://aromstudio.vercel.app/services/ecommerce
-
-### Custom Web Applications
-Tailored web applications with full-stack development, database design and optimization, RESTful and GraphQL APIs, user authentication and roles, real-time features, dashboard UI, scalable architecture, and cloud deployment. Ideal for businesses needing internal tools, customer portals, or data management platforms.
-
-Tech: Next.js, Node.js, PostgreSQL, Supabase, TypeScript, Docker
-Process: Requirement Analysis → Architecture Design → Iterative Development → Deployment & Support
-Source: https://aromstudio.vercel.app/services/web-applications
-
-### SaaS Platforms
-Multi-tenant SaaS platforms with subscription billing (Stripe), user management and roles, analytics dashboards, RESTful API development, and scalable cloud infrastructure. Ideal for founders and companies launching subscription-based digital products.
-
-Tech: Next.js, PostgreSQL, Stripe, Supabase, TypeScript, Vercel, Docker
-Process: Concept Validation → MVP Development → Iteration & Scale → Launch & Growth
-Source: https://aromstudio.vercel.app/services/saas-platforms
-
-### UI/UX Design
-User-centered design combining aesthetics with usability. Includes user research and personas, wireframing and prototyping, interactive Figma prototypes, visual design and branding, design systems, usability testing, and developer handoff. Ideal for startups and businesses needing professional UI/UX design.
-
-Tech: Figma, Adobe Creative Suite, Prototyping, Design Systems
-Process: Research → Design & Iterate → Test & Refine → Handoff
-Source: https://aromstudio.vercel.app/services/ui-ux-design
-
-### Website Redesign
-Full transformation of existing websites into modern, high-performance digital experiences. Includes full site audit and analysis, modern UI refresh, performance optimization, SEO improvements, content restructuring, mobile optimization, migration, and redirects. Ideal for businesses with outdated websites.
-
-Tech: Next.js, TypeScript, Tailwind CSS, Framer Motion, SEO Tools
-Process: Audit & Analysis → Strategy & Planning → Design & Develop → Launch & Optimize
-Source: https://aromstudio.vercel.app/services/website-redesign
-
-### SEO Optimization
-Technical and on-page SEO to improve search rankings and drive organic traffic. Includes technical SEO audit, on-page optimization, keyword research and strategy, meta tags and structured data, performance optimization, XML sitemap and robots.txt, Google Search Console setup, rank tracking and reports, and quarterly strategy reviews.
-
-Tech: Google Search Console, Semrush, Schema.org, PageSpeed Insights
-Process: Audit → Strategy → Implementation → Monitoring & Reporting
-Typical timeline for results: 3-6 months
-Source: https://aromstudio.vercel.app/services/seo-optimization
-
-### Performance Optimization
-Speed optimization to achieve Lighthouse 95+ scores and improve Core Web Vitals. Includes performance audit and waterfall analysis, image and video optimization, code splitting and bundling, caching strategy implementation, CDN configuration, database query optimization, and monthly performance reports. A 1-second delay in page load time can reduce conversions by 7%.
-
-Tech: Lighthouse, WebPageTest, Cloudflare, Vercel, Sentry
-Process: Audit → Analysis → Optimization → Verification
-Source: https://aromstudio.vercel.app/services/performance-optimization
-
-### AI Integration
-AI-powered features including chatbots and virtual assistants, content generation and summarization, smart search and recommendations, user personalization engines, image and video analysis, natural language processing, and custom AI model integration. Ideal for businesses wanting to add AI features to improve user experience and automate processes.
-
-Tech: OpenAI, LangChain, Vector DB, Node.js, Python
-Process: Discovery → Proof of Concept → Integration → Training & Refinement
-Source: https://aromstudio.vercel.app/services/ai-integration
-
----
-
-## Pricing Plans
-
-### Starter Website — $180+
-Perfect for small businesses and personal brands. Includes 1-page or 5-page website, responsive design, basic SEO setup, contact form integration, social media links, Google Analytics setup, basic performance optimization, and 1 Year Support.
-
-### Professional Website — $380+ (Most Popular)
-For growing businesses. Includes up to 10 pages, custom UI/UX design, premium typography and branding, SEO optimization (on-page), blog/news section, contact and inquiry forms, WhatsApp integration, performance optimization, 1 Year Support, and Free Domain (1 Year, T&C apply).
-
-### Business Website — $680+
-For established businesses. Includes up to 20 pages, custom premium design system, advanced SEO strategy, CMS integration, e-commerce or booking system, API integrations, custom animations and interactions, advanced performance optimization, 1 Year Support, Free Domain (1 Year, T&C apply), and custom domain setup.
-
-### Premium Website — $1,140+
-For enterprises and brands. Includes unlimited pages, full custom design and branding, advanced animations (GSAP/Framer), complete SEO package, custom web application features, third-party API integrations, AI-powered features (optional), Lighthouse 95+ performance, 1 Year Support, Free Domain (1 Year, T&C apply), and custom domain setup.
-
-### Enterprise Solution — $1,500+
-For large-scale projects. Includes custom scope and architecture, full-stack development, scalable infrastructure, advanced security implementation, dedicated project manager, ongoing maintenance and support, SLA-backed support, priority response time, long-term partnership, 1 Year Support, Free Domain (1 Year, T&C apply), custom domain setup, team training session, and monthly performance reports.
-
-Source: https://aromstudio.vercel.app/pricing
-
-### Add-on Services
-- **Custom Domain Setup**: Professional email and domain configuration with SSL.
-- **Free Domain Registration**: Free domain registration for the first year (T&C apply).
-- **Extended Support**: Ongoing maintenance, updates, and priority support.
-- **Content Writing**: Professional copywriting for up to 5 pages.
-- **Logo and Brand Kit**: Custom logo design with brand guidelines.
-- **SEO Boost Package**: Advanced keyword research, backlinks, and monthly reporting.
-
-Source: https://aromstudio.vercel.app/pricing
-
----
-
-## Development Process
-
-1. **Discovery** (1 week): Understanding business, goals, competitors, and target audience.
-2. **Design** (1-2 weeks): Bespoke visual identity with wireframes, prototypes, and high-fidelity mockups in Figma.
-3. **Development** (2-4 weeks): Building with Next.js, TypeScript, and Tailwind CSS.
-4. **Testing** (1 week): QA across devices, browsers, performance benchmarking, and accessibility compliance (WCAG).
-5. **Launch** (3 days): Zero-downtime deployment, CDN setup, SSL configuration, analytics, and SEO finalization.
-6. **Support** (1 Year Included): Priority support, updates, performance monitoring, and content changes.
-
-Typical timeline: 3-8 weeks.
-
-Source: https://aromstudio.vercel.app/
-
----
-
-## FAQ
-
-### General
-- **What is AROM STUDIO?** A premium web design and development agency based in Nashik, India creating high-performance websites, web applications, and digital experiences.
-- **Where is AROM STUDIO based?** Nashik, India, working with clients worldwide.
-- **Who is the founder?** Arnav Pagare.
-
-### Services
-- **What services do you offer?** Business websites, corporate websites, landing pages, e-commerce, web applications, SaaS platforms, UI/UX design, redesign, SEO, performance optimization, maintenance, hosting, and AI integration.
-- **Do you offer website maintenance?** Yes, including updates, security patches, performance monitoring, and content updates.
-- **Can you redesign an existing website?** Yes.
-
-### Investment
-- **How much does a website cost?** Plans start from $180. Contact for a detailed quote.
-- **Is there a payment plan?** Yes — typically 50% upfront and 50% on completion.
-
-### Process
-- **How long does it take?** Standard business website: 3-6 weeks. Complex web applications: 8-16 weeks.
-- **Do you provide hosting?** Yes, with Vercel and Cloudflare.
-
-### Technical
-- **What technology stack do you use?** Next.js, React, TypeScript, Tailwind CSS, GSAP, Framer Motion for frontend; Node.js, PostgreSQL, Supabase for backend; Vercel and Cloudflare for deployment.
-- **Will my website be mobile-friendly?** Yes, every website is mobile-first and fully responsive.
-- **Do you focus on performance?** Yes, targeting Lighthouse 95+ across all metrics.
-
-### Support
-- **What support is provided after launch?** Bug fixes, updates, performance monitoring, and content updates based on the plan.
-- **How do I contact support?** Via email, WhatsApp, or the client portal.
-- **Do you offer training?** Yes, training sessions for managing content updates and making changes.
-
-Source: https://aromstudio.vercel.app/faq
-
----
-
-## Contact
-
-- **Email**: aromstudio27@gmail.com
-- **WhatsApp**: +91 8767990061
-- **Client Inquiry Form**: https://forms.gle/fGwvkaTRdtb5ZH3x6
-- **Instagram**: https://www.instagram.com/aromstudio.web/
-- **Response Time**: Typically within 24 hours on business days.
-
-Source: https://aromstudio.vercel.app/contact
-
-### Brand
-Official brand information page optimized for AI citation and entity recognition.
-Source: https://aromstudio.vercel.app/brand
-
----
-
-## Legal
-
-- **Privacy Policy**: https://aromstudio.vercel.app/privacy
-- **Terms & Conditions**: https://aromstudio.vercel.app/terms
-- **Refund Policy**: https://aromstudio.vercel.app/refund
+## Contact Information
+- Email: aromstudio27@gmail.com
+- Location: Nashik, Maharashtra, India
+- Official URL: https://aromstudio.vercel.app
