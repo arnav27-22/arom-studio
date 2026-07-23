@@ -1,4 +1,4 @@
-import { useEffect, useState, lazy, Suspense } from 'react'
+import { useEffect, lazy, Suspense } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import { Analytics } from '@vercel/analytics/react'
 import { Navbar } from './components/layout/Navbar'
@@ -8,7 +8,6 @@ import { SiteBackground } from './components/ui/SiteBackground'
 import { Particles } from './components/ui/ParticleBackground'
 import { CookieConsent } from './components/ui/CookieConsent'
 import { MobileBottomCTA } from './components/ui/MobileBottomCTA'
-import { CalendlyModal } from './components/ui/CalendlyModal'
 import { initTracker, trackPageView } from './lib/tracker'
 
 import Home from './pages/Home'
@@ -58,8 +57,6 @@ function PageTracker() {
 }
 
 export default function App() {
-  const [isCalendlyOpen, setIsCalendlyOpen] = useState(false)
-
   useEffect(() => { initTracker() }, [])
 
   return (
@@ -67,7 +64,6 @@ export default function App() {
       <ScrollToTop />
       <Analytics />
       <CookieConsent />
-      <CalendlyModal isOpen={isCalendlyOpen} onClose={() => setIsCalendlyOpen(false)} />
       <Suspense fallback={null}>
         <Routes>
           <Route path="/admin" element={<AdminApp />} />
@@ -112,7 +108,7 @@ export default function App() {
               </Suspense>
               <Footer />
               <WhatsAppButton />
-              <MobileBottomCTA onOpenBookModal={() => setIsCalendlyOpen(true)} />
+              <MobileBottomCTA />
             </div>
           } />
         </Routes>

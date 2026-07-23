@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Calendar } from 'lucide-react'
+import { Mail } from 'lucide-react'
 import { SOCIAL_LINKS } from '../../constants/navigation'
 import { trackEvent } from '../../lib/analytics'
 
@@ -13,11 +14,7 @@ function WhatsAppIcon({ className }: { className?: string }) {
   )
 }
 
-interface MobileBottomCTAProps {
-  onOpenBookModal: () => void
-}
-
-export function MobileBottomCTA({ onOpenBookModal }: MobileBottomCTAProps) {
+export function MobileBottomCTA() {
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
@@ -46,17 +43,15 @@ export function MobileBottomCTA({ onOpenBookModal }: MobileBottomCTAProps) {
               <WhatsAppIcon className="h-4 w-4" />
               WhatsApp
             </a>
-            <button
-              onClick={() => {
-                trackEvent('calendly_open', 'Mobile CTA', 'Book Call Button')
-                onOpenBookModal()
-              }}
-              aria-label="Book a call"
+            <Link
+              to="/contact"
+              onClick={() => trackEvent('contact_click', 'Mobile CTA', 'Contact Link')}
+              aria-label="Contact Us"
               className="flex items-center justify-center gap-2 glass-strong text-white font-body font-medium text-xs rounded-full py-3 hover:bg-white/10 transition-colors"
             >
-              <Calendar className="h-4 w-4 text-accent" />
-              Book Call
-            </button>
+              <Mail className="h-4 w-4 text-accent" />
+              Contact Us
+            </Link>
           </div>
         </motion.div>
       )}
