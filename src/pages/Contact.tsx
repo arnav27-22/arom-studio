@@ -1,5 +1,6 @@
 import type React from 'react'
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Clock, Send, AlertCircle, FileText, X, ExternalLink } from 'lucide-react'
 import emailjs from '@emailjs/browser'
 import { EMAILJS_CONFIG } from '../lib/emailjs'
@@ -272,13 +273,19 @@ export default function Contact() {
                         onChange={handleChange}
                         className="mt-0.5 h-4 w-4 shrink-0 rounded-[4px] border border-white/20 bg-white/5 accent-accent focus:outline-none focus:ring-1 focus:ring-accent/50"
                       />
-                      <label htmlFor="agreedToTerms" className="text-xs text-white/50 font-body leading-relaxed">
-                        I have read and agree to the{' '}
-                        <a href="/privacy" target="_blank" className="text-accent hover:underline">Privacy Policy</a>
-                        {' '}and{' '}
-                        <a href="/terms" target="_blank" className="text-accent hover:underline">Terms &amp; Conditions</a>
-                        {' '}*
-                      </label>
+                      <div className="text-xs text-white/50 font-body leading-relaxed">
+                        <label htmlFor="agreedToTerms" className="cursor-pointer select-none">
+                          I have read and agree to the
+                        </label>{' '}
+                        <Link to="/privacy" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline relative z-10" onClick={(e) => e.stopPropagation()}>
+                          Privacy Policy
+                        </Link>{' '}
+                        and{' '}
+                        <Link to="/terms" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline relative z-10" onClick={(e) => e.stopPropagation()}>
+                          Terms &amp; Conditions
+                        </Link>{' '}
+                        *
+                      </div>
                     </div>
                     {errors.agreedToTerms && (
                       <p className="flex items-center gap-1 text-[11px] text-red-400 font-body">
