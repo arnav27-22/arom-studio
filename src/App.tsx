@@ -7,7 +7,6 @@ import { WhatsAppButton } from './components/ui/WhatsAppButton'
 import { SiteBackground } from './components/ui/SiteBackground'
 import { Particles } from './components/ui/ParticleBackground'
 import { CookieConsent } from './components/ui/CookieConsent'
-import { MobileBottomCTA } from './components/ui/MobileBottomCTA'
 import { initTracker, trackPageView } from './lib/tracker'
 
 import Home from './pages/Home'
@@ -108,7 +107,6 @@ export default function App() {
               </Suspense>
               <Footer />
               <WhatsAppButton />
-              <MobileBottomCTA />
             </div>
           } />
         </Routes>
