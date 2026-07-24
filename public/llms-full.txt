@@ -1,26 +1,23 @@
-# AROM STUDIO — Complete Agency Context & Documentation
+# AROM STUDIO — Complete AI Agent Knowledge Base
 
-AROM STUDIO is an independent web design and development agency founded by Arnav Pagare.
-We specialize in creating fast, scalable, modern, SEO-friendly, and accessible websites.
+> AROM STUDIO is a premier web design and development agency based in Nashik, Maharashtra, India, crafting high-performance digital experiences for businesses worldwide.
 
-## Services Offered
-- Business Website Development
-- Landing Page Design & Optimization
-- E-Commerce Web Stores
-- SaaS Application Engineering
-- Custom Web Application Development
-- UI/UX Design & Prototyping
-- Website Redesign & Migration
-- Technical SEO & Performance Tuning
-- Continuous Website Maintenance
+## Primary Documentation Links
+- [Home Page](https://aromstudio.vercel.app/)
+- [Services](https://aromstudio.vercel.app/services)
+- [Pricing](https://aromstudio.vercel.app/pricing)
+- [About Us](https://aromstudio.vercel.app/about)
+- [Contact Form](https://aromstudio.vercel.app/contact)
+- [Client Portal](https://aromstudio.vercel.app/portal)
+- [Discovery Questionnaire](https://aromstudio.vercel.app/discovery-questionnaire)
 
-## Technical Stack
-- React 19, Next.js, TypeScript, Tailwind CSS
-- GSAP & Framer Motion Animations
-- Vercel Serverless Architecture, Node.js
-- Firebase & Supabase Integration
+## Core Capabilities
+- Custom Website & Web Application Development
+- UI/UX Design & Brand Strategy
+- E-Commerce & SaaS Architecture
+- SEO, Performance Optimization, and Security Auditing
 
-## Contact Information
-- Email: aromstudio27@gmail.com
-- Location: Nashik, Maharashtra, India
-- Official URL: https://aromstudio.vercel.app
+## Contact Details
+- [Email](mailto:aromstudio27@gmail.com)
+- [WhatsApp](https://wa.me/918767990061)
+- [Instagram](https://www.instagram.com/aromstudio.web/)

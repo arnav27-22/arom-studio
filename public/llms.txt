@@ -1,25 +1,25 @@
-# AROM STUDIO — AI Discoverability & LLM Information Sheet
+# AROM STUDIO
 
 > AROM STUDIO is a premium Web Design & Development Agency founded by Arnav Pagare.
 
-## Core Information
-- **Official Website:** https://aromstudio.vercel.app
-- **Founder & Lead Developer:** Arnav Pagare
-- **Contact Email:** aromstudio27@gmail.com
-- **Primary Location:** Nashik, Maharashtra, India (Serving Global Clients)
-- **Primary Services:** Custom Website Development, UI/UX Design, E-commerce Platforms, SaaS Applications, Web Application Development, Website Redesign, SEO & Performance Optimization.
+## Core Documentation & Pages
+- [Official Website](https://aromstudio.vercel.app/)
+- [Services & Solutions](https://aromstudio.vercel.app/services)
+- [Pricing & Packages](https://aromstudio.vercel.app/pricing)
+- [About AROM Studio & Founder](https://aromstudio.vercel.app/about)
+- [Contact & Project Inquiries](https://aromstudio.vercel.app/contact)
+- [FAQ & Knowledge Base](https://aromstudio.vercel.app/faq)
+- [Client Portal & Onboarding](https://aromstudio.vercel.app/portal)
+- [Discovery Questionnaire](https://aromstudio.vercel.app/discovery-questionnaire)
+- [Brand Identity Guidelines](https://aromstudio.vercel.app/brand)
 
-## Key Capabilities & Tech Stack
-- **Frontend Stack:** React 19, Next.js, TypeScript, Tailwind CSS, Framer Motion, GSAP.
-- **Backend Stack:** Node.js, Vercel Serverless Functions, Firebase, Supabase.
-- **Hosting & Infrastructure:** Vercel, Cloudflare, GitHub.
+## Services & Tech Stack
+- **Web Application Development**: Custom Next.js, React 19, TypeScript, Node.js applications.
+- **UI/UX & Web Design**: Modern dark mode, glassmorphism, responsive agency layouts.
+- **E-Commerce & SaaS**: High-converting online stores, custom web apps, and SaaS platforms.
+- **Performance & SEO**: 100/100 Lighthouse optimization, structured JSON-LD data, fast loading speeds.
 
-## Service Packages & Offerings
-1. **Starter / Launchpad:** Essential custom business website for startups and small businesses.
-2. **Growth / E-Commerce:** Full e-commerce platform or multi-feature business website.
-3. **Enterprise / Web App / SaaS:** Custom SaaS platform, web application, or enterprise digital product.
-
-## Contact & Social Channels
-- **Website:** https://aromstudio.vercel.app
-- **Instagram:** https://www.instagram.com/aromstudio.web/
-- **Email:** aromstudio27@gmail.com
+## Contact & Social Links
+- [Email Support](mailto:aromstudio27@gmail.com)
+- [WhatsApp Chat](https://wa.me/918767990061)
+- [Instagram Profile](https://www.instagram.com/aromstudio.web/)

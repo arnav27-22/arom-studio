@@ -92,7 +92,7 @@ export function AdminDashboard({ onLogout }: { onLogout: () => void }) {
             <h2 className="text-base font-heading font-bold text-white tracking-wider">AROM STUDIO</h2>
             <p className="text-[10px] text-accent uppercase tracking-widest font-mono mt-0.5">Admin Agency Platform</p>
           </div>
-          <button onClick={() => setSidebarOpen(false)} className="md:hidden text-white/50 hover:text-white cursor-pointer">
+          <button onClick={() => setSidebarOpen(false)} className="md:hidden text-white/50 hover:text-white cursor-pointer" aria-label="Close admin navigation menu">
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -163,7 +163,7 @@ export function AdminDashboard({ onLogout }: { onLogout: () => void }) {
       <main className="flex-1 min-w-0">
         <div className="sticky top-0 z-30 bg-bg/90 backdrop-blur-2xl border-b border-white/10 px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <button onClick={() => setSidebarOpen(true)} className="md:hidden text-white/60 hover:text-white">
+            <button onClick={() => setSidebarOpen(true)} className="md:hidden text-white/60 hover:text-white" aria-label="Open admin navigation menu">
               <Menu className="h-5 w-5" />
             </button>
             <div className="flex items-center gap-2 text-xs">

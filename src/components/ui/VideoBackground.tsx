@@ -80,8 +80,9 @@ export function VideoBackground() {
   return (
     <div
       ref={containerRef}
-      className="absolute inset-0 min-h-screen bg-black overflow-hidden"
+      className="absolute inset-0 min-h-screen bg-black overflow-hidden pointer-events-none"
       style={{ opacity: 0 }}
+      aria-hidden="true"
     >
       <video
         ref={videoRef}
@@ -89,9 +90,12 @@ export function VideoBackground() {
         muted
         loop={false}
         playsInline
+        preload="metadata"
         className="absolute inset-0 w-full h-full object-cover object-center sm:object-[center_17%]"
         src={VIDEO_URL}
-      />
+      >
+        <track kind="captions" src="data:text/vtt,WEBVTT" srcLang="en" label="Muted Background Video" />
+      </video>
       <div className="absolute inset-0 bg-black/40" />
     </div>
   )
