@@ -95,6 +95,7 @@ export function SettingsPage() {
       leads: 'Leads',
       pdfs: 'PDFs',
       visitors: 'Visitors',
+      discoveryQuestionnaires: 'Discovery Questionnaires',
     }
     return colMap[col] || col
   }

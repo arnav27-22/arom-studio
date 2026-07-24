@@ -864,7 +864,13 @@ export function restoreFromRecycleBin(recycleId: string) {
 
   const collection = record.originalCollection
   const currentList = (store[collection] as any[]) || []
-  ;(store as any)[collection] = [record.itemData, ...currentList]
+
+  // Ensure item is placed back in its original collection without duplicate
+  const exists = currentList.some((i: any) => i.id === record.itemData?.id)
+  if (!exists && record.itemData) {
+    ;(store as any)[collection] = [record.itemData, ...currentList]
+  }
+
   store.recycleBin = store.recycleBin.filter((r) => r.id !== recycleId)
 
   saveAdminStore(store)
@@ -892,41 +898,39 @@ export async function syncFromCloud(): Promise<StoreData> {
     const res = await fetch('/api/sync')
     if (res.ok) {
       const remote = await res.json()
-      const mergedVisitors = [...(remote.visitors || [])]
-      local.visitors.forEach((v) => { if (!mergedVisitors.some((m) => m.id === v.id)) mergedVisitors.push(v) })
 
-      const mergedPdfs = [...(remote.pdfs || [])]
-      local.pdfs.forEach((p) => { if (!mergedPdfs.some((m) => m.id === p.id)) mergedPdfs.push(p) })
-
-      const mergedLeads = [...(remote.leads || [])]
-      local.leads.forEach((l) => { if (!mergedLeads.some((m) => m.id === l.id)) mergedLeads.push(l) })
-
-      const mergedInvoices = [...(remote.invoices || [])]
-      local.invoices.forEach((i) => { if (!mergedInvoices.some((m) => m.id === i.id)) mergedInvoices.push(i) })
-
-      const mergedLogs = [...(remote.logs || [])]
-      local.logs.forEach((g) => { if (!mergedLogs.some((m) => m.id === g.id)) mergedLogs.push(g) })
+      const mergeList = <T extends { id: string }>(remoteArr?: T[], localArr?: T[]): T[] => {
+        const localItems = Array.isArray(localArr) ? localArr : []
+        const remoteItems = Array.isArray(remoteArr) ? remoteArr : []
+        const result: T[] = [...localItems]
+        remoteItems.forEach((r) => {
+          if (r && r.id && !result.some((m) => m.id === r.id)) {
+            result.push(r)
+          }
+        })
+        return result
+      }
 
       const updated: StoreData = {
-        visitors: mergedVisitors.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
-        pdfs: mergedPdfs.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
-        leads: mergedLeads.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
-        invoices: mergedInvoices.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
-        logs: mergedLogs.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
-        clients: Array.isArray(remote.clients) ? remote.clients : local.clients,
-        projects: Array.isArray(remote.projects) ? remote.projects : local.projects,
-        proposals: Array.isArray(remote.proposals) ? remote.proposals : local.proposals,
-        agreements: Array.isArray(remote.agreements) ? remote.agreements : local.agreements,
-        payments: Array.isArray(remote.payments) ? remote.payments : local.payments,
-        content: Array.isArray(remote.content) ? remote.content : local.content,
-        assets: Array.isArray(remote.assets) ? remote.assets : local.assets,
-        approvals: Array.isArray(remote.approvals) ? remote.approvals : local.approvals,
-        timelines: Array.isArray(remote.timelines) ? remote.timelines : local.timelines,
-        handovers: Array.isArray(remote.handovers) ? remote.handovers : local.handovers,
-        feedbacks: Array.isArray(remote.feedbacks) ? remote.feedbacks : local.feedbacks,
-        notifications: Array.isArray(remote.notifications) ? remote.notifications : local.notifications,
-        discoveryQuestionnaires: Array.isArray(remote.discoveryQuestionnaires) ? remote.discoveryQuestionnaires : local.discoveryQuestionnaires,
-        recycleBin: Array.isArray(remote.recycleBin) ? remote.recycleBin : local.recycleBin,
+        visitors: mergeList(remote.visitors, local.visitors).sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()),
+        pdfs: mergeList(remote.pdfs, local.pdfs).sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()),
+        leads: mergeList(remote.leads, local.leads).sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()),
+        invoices: mergeList(remote.invoices, local.invoices).sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()),
+        logs: mergeList(remote.logs, local.logs).sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()),
+        clients: mergeList(remote.clients, local.clients),
+        projects: mergeList(remote.projects, local.projects),
+        proposals: mergeList(remote.proposals, local.proposals),
+        agreements: mergeList(remote.agreements, local.agreements),
+        payments: mergeList(remote.payments, local.payments),
+        content: mergeList(remote.content, local.content),
+        assets: mergeList(remote.assets, local.assets),
+        approvals: mergeList(remote.approvals, local.approvals),
+        timelines: mergeList(remote.timelines, local.timelines),
+        handovers: mergeList(remote.handovers, local.handovers),
+        feedbacks: mergeList(remote.feedbacks, local.feedbacks),
+        notifications: mergeList(remote.notifications, local.notifications),
+        discoveryQuestionnaires: mergeList(remote.discoveryQuestionnaires, local.discoveryQuestionnaires),
+        recycleBin: mergeList(remote.recycleBin, local.recycleBin),
       }
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
