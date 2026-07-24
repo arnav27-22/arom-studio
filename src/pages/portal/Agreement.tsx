@@ -56,7 +56,7 @@ export default function Agreement() {
   const [projectDescription, setProjectDescription] = useState('')
   const [timeline, setTimeline] = useState('4-6 Weeks')
   const [advancePct, setAdvancePct] = useState('50')
-  const [supportPeriod, setSupportPeriod] = useState<'7' | '15' | '30' | '180'>('30')
+  const [supportPeriod, setSupportPeriod] = useState<'7' | '15' | '30'>('30')
   const [selectedServices, setSelectedServices] = useState<string[]>([])
   const [checkedSections, setCheckedSections] = useState<Record<string, boolean>>({})
   const [declaration, setDeclaration] = useState(false)
@@ -154,17 +154,11 @@ export default function Agreement() {
           </div>
 
           <h4 className="font-heading text-base text-white mb-3">Payment Terms</h4>
-          <p className="text-xs text-white/40 font-body mb-3">Select the advance payment percentage. Minimum: 27%.</p>
+          <p className="text-xs text-white/40 font-body mb-3">Minimum advance payment: 27%. Recommended: 50%</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-xs text-white/50 font-body mb-1 block">Advance Payment (%)</label>
-              <div className="flex flex-wrap gap-2">
-                {['27', '50', '75', '100'].map((pct) => (
-                  <button key={pct} onClick={() => setAdvancePct(pct)} className={`text-xs px-3 py-1.5 rounded-full border font-body transition-all ${advancePct === pct ? 'bg-accent/20 border-accent/50 text-accent' : 'border-white/10 text-white/50 hover:border-white/30'}`}>
-                    {pct}%
-                  </button>
-                ))}
-              </div>
+              <label className="text-xs text-white/50 font-body mb-1 block">Advance Payment (%) — minimum 27%</label>
+              <input type="number" min={27} max={100} value={advancePct} onChange={(e) => setAdvancePct(Math.max(27, Math.min(100, Number(e.target.value) || 27)).toString())} className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white focus:outline-none focus:border-accent/40 font-body" />
             </div>
             <div>
               <label className="text-xs text-white/50 font-body mb-1 block">Final Payment (%)</label>
@@ -173,15 +167,12 @@ export default function Agreement() {
           </div>
 
           <h4 className="font-heading text-base text-white mt-6 mb-3">Support Period</h4>
-          <div className="flex gap-3 flex-wrap">
+          <div className="flex gap-3">
             {(['7', '15', '30'] as const).map((days) => (
               <button key={days} onClick={() => setSupportPeriod(days)} className={`text-sm px-5 py-2.5 rounded-full border font-body transition-all ${supportPeriod === days ? 'bg-accent/20 border-accent/50 text-accent' : 'border-white/10 text-white/50 hover:border-white/30'}`}>
                 {days} Days
               </button>
             ))}
-            <button onClick={() => setSupportPeriod('180')} className={`text-sm px-5 py-2.5 rounded-full border font-body transition-all ${supportPeriod === '180' ? 'bg-accent/20 border-accent/50 text-accent' : 'border-white/10 text-white/50 hover:border-white/30'}`}>
-              6 Months
-            </button>
           </div>
         </GlassCard>
 
@@ -296,7 +287,7 @@ export default function Agreement() {
               { id: 'confidentiality', title: '12. Confidentiality', content: 'Both parties agree to keep confidential information private. Business information, passwords, source files, and sensitive project information shall not be shared with third parties without permission, unless required by law.' },
               { id: 'cancellation', title: '13. Cancellation', content: 'Either party may cancel the project. If cancelled: Work completed up to the cancellation date must be paid for. Advance payments cover work already performed and are generally non-refundable. Completed deliverables up to the cancellation date may be provided after outstanding payments are settled.' },
               { id: 'launch', title: '14. Website Launch', content: 'The website will be deployed after: Final approval, Final payment received, Required domain and hosting access provided (if applicable).' },
-              { id: 'support', title: '15. Support', content: `After website delivery, the included support period is ${supportPeriod === '180' ? '6 months' : `${supportPeriod || '30'} days`}. The warranty covers defects in delivered work. Support includes: Bug Fixes, Minor Technical Assistance. Support does not include: Client modifications, Third-party plugin updates, New Features, Major Design Changes, Additional Pages, Third-party software issues.` },
+              { id: 'support', title: '15. Support', content: `After website delivery, the included support period is ${supportPeriod || '30'} days. The warranty covers defects in delivered work. Support includes: Bug Fixes, Minor Technical Assistance. Support does not include: Client modifications, Third-party plugin updates, New Features, Major Design Changes, Additional Pages, Third-party software issues.` },
               { id: 'liability', title: '16. Limitation of Liability', content: 'AROM Studio shall not be responsible for: Third-party hosting failures, Domain provider issues, Payment gateway outages, Search engine ranking changes, Client-added errors after handover, Cyberattacks or data loss caused by third-party systems beyond AROM Studio\'s control.' },
               { id: 'portfolio', title: '17. Portfolio Rights', content: 'Unless the Client specifically requests confidentiality in writing, AROM Studio may showcase the completed project in its portfolio, website, and social media for promotional purposes. If confidentiality is requested and agreed upon, AROM Studio will not publicly display the project.' },
               { id: 'force', title: '18. Force Majeure', content: 'Neither party shall be liable for delays caused by events beyond reasonable control, including natural disasters, government actions, internet outages, pandemics, or other unforeseen circumstances.' },

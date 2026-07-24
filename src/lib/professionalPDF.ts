@@ -237,8 +237,31 @@ export function writeSection(
   title: string,
   bodyLines: string[],
   layout: PageStyles,
-  checkboxes?: boolean
+  checkboxes?: boolean,
+  keepTogether?: boolean
 ): number {
+  if (keepTogether) {
+    const f = 'helvetica'
+    doc.setFont(f, 'normal')
+    doc.setFontSize(9)
+    const lh = checkboxes ? 9 : 6
+    let total = 0
+    for (const line of bodyLines) {
+      if (line === '') { total += 1; continue }
+      const isBullet = line.startsWith('  -') || line.startsWith('  •')
+      const text = isBullet ? line.trim().replace(/^[-•]\s*/, '').replace(/\*\*/g, '') : line.replace(/\*\*/g, '')
+      const w = isBullet ? (checkboxes ? layout.contentWidth - 25 : layout.contentWidth - 10) : layout.contentWidth
+      total += doc.splitTextToSize(text, w).length
+    }
+    const est = 16 + total * lh + 8
+    const ph = doc.internal.pageSize.getHeight()
+    if (y + est > ph - 22) {
+      doc.addPage()
+      addHeader(doc, '')
+      y = 25
+    }
+  }
+
   y = checkPage(doc, y, 20)
 
   // Section title with left accent bar
@@ -621,20 +644,25 @@ export function generateAgreementPDF(data: {
   y = writeSection(doc, y, 'Parties', [
     'This Website Development Agreement ("Agreement") is entered into between:',
     '',
-    `Agency: AROM Studio`,
+    'Agency: AROM Studio',
     `Client: ${data.clientName || '[Client Name]'}`,
     ...(data.clientAddress ? [`Address: ${data.clientAddress}`] : []),
     ...(data.clientEmail ? [`Contact: ${data.clientEmail}`] : []),
     ...(data.clientPhone ? [`         ${data.clientPhone}`] : []),
     '',
     `This Agreement becomes effective from ${effDate}.`,
-  ], layout, true)
+    '',
+    '  - I confirm that the party information above is accurate and I have read the Parties section.',
+  ], layout, true, true)
 
   // 1. Project Overview
   y = writeSection(doc, y, '1. Project Overview', [
     'The Client has requested AROM Studio to design and/or develop a website.',
-    `The specific project requirements, deliverables, pricing, and timeline will be defined in the approved Project Proposal.${data.projectDescription ? `\n\nProject Description: ${data.projectDescription}` : ''}`,
-  ], layout, true)
+    'The specific project requirements, deliverables, pricing, and timeline will be defined in the approved Project Proposal.',
+    ...(data.projectDescription ? [`Project Description: ${data.projectDescription}`] : []),
+    '',
+    '  - I have read and agree to Section 1: Project Overview',
+  ], layout, true, true)
 
   // 2. Scope of Work
   y = writeSection(doc, y, '2. Scope of Work', [
@@ -643,26 +671,34 @@ export function generateAgreementPDF(data: {
     ...services.map((s) => `  • ${s}`),
     '',
     'Any work outside the agreed scope shall be considered additional work and may require a separate quotation.',
-  ], layout, true)
+    '',
+    '  - I have read and agree to Section 2: Scope of Work',
+  ], layout, true, true)
 
   // 3. Timeline
   y = writeSection(doc, y, '3. Project Timeline', [
-    `The estimated project duration is ${data.timeline || '[Timeline]'}.`,
+    `The estimated project duration will be defined in the Project Proposal. Current estimate: ${data.timeline || '4-6 Weeks'}.`,
     'The timeline may change if:',
     '  • Client delays providing content or assets.',
     '  • Additional features are requested.',
     '  • Project requirements change.',
     '  • Third-party services cause delays.',
     'AROM Studio will communicate any timeline changes as early as possible.',
-  ], layout, true)
+    '',
+    '  - I have read and agree to Section 3: Project Timeline',
+  ], layout, true, true)
 
   // 4. Payment Terms
   y = writeSection(doc, y, '4. Payment Terms', [
-    `Payment schedule: ${data.advancePercentage || '27'}% Advance before project commencement, ${data.finalPercentage || '50'}% Final Payment before final website delivery or deployment.`,
+    'Payment schedule:',
+    `  • ${data.advancePercentage || '50'}% Advance before project commencement.`,
+    `  • ${data.finalPercentage || '50'}% Final Payment before final website delivery or deployment.`,
     'Additional work requested after project approval will be charged separately.',
     'Payments are due within the agreed payment period.',
     'If payment is delayed by more than 7 days, AROM Studio may pause work until payment is received.',
-  ], layout, true)
+    '',
+    '  - I have read and agree to Section 4: Payment Terms',
+  ], layout, true, true)
 
   // 5. Client Responsibilities
   y = writeSection(doc, y, '5. Client Responsibilities', [
@@ -673,102 +709,99 @@ export function generateAgreementPDF(data: {
     '  • Domain Details (if applicable)',
     '  • Hosting Details (if applicable)',
     'The Client is responsible for ensuring that all supplied content is accurate and legally owned or licensed.',
-  ], layout, true)
+    '',
+    '  - I have read and agree to Section 5: Client Responsibilities',
+  ], layout, true, true)
 
   // 6. Communication
   y = writeSection(doc, y, '6. Project Communication', [
     'The Client should provide timely feedback and approvals to avoid unnecessary delays.',
     'Preferred communication methods include: Email, WhatsApp, Google Meet, Zoom, Phone Call.',
     'If the Client does not respond within 10 business days, the project may be placed on hold until communication resumes.',
-  ], layout, true)
+    '',
+    '  - I have read and agree to 6. Project Communication',
+  ], layout, true, true)
 
   // 7. Revisions
   y = writeSection(doc, y, '7. Revisions', [
-    'Revision limits are defined per project tier:',
-    '  • Basic: 2 revision rounds',
-    '  • Standard: 3 revision rounds',
-    '  • Premium: Unlimited until design approval',
+    'Revision limits are defined per project tier: Basic (2 revision rounds), Standard (3 revision rounds), Premium (Unlimited until design approval).',
     'Requests outside the original scope or beyond the revision limit may require additional charges.',
     'Major redesigns after approval are treated as new work.',
-  ], layout, true)
+    '',
+    '  - I have read and agree to 7. Revisions',
+  ], layout, true, true)
 
   // 8. Change Requests
   y = writeSection(doc, y, '8. Change Requests', [
-    'If the Client requests additional pages, new features, major design changes, third-party integrations, or functional changes:',
-    'AROM Studio will provide a revised quotation before starting the additional work.',
-  ], layout, true)
+    'If the Client requests additional pages, new features, major design changes, third-party integrations, or functional changes, AROM Studio will provide a revised quotation before starting the additional work.',
+    '',
+    '  - I have read and agree to 8. Change Requests',
+  ], layout, true, true)
 
-  // 9-20. Remaining sections (compact)
-  const remainingSections: [string, string[]][] = [
-    ['9. Domain & Hosting', [
+  // 9-22. Remaining sections
+  const remainingSections: [string, string, string[]][] = [
+    ['9. Domain & Hosting', '9. Domain & Hosting', [
       'Unless specifically included in the proposal, domain registration and hosting purchase are the Client\'s responsibility.',
       'If AROM Studio assists with these services, any third-party costs will be billed separately.',
     ]],
-    ['10. Content Ownership', [
+    ['10. Content Ownership', '10. Content Ownership', [
       'The Client retains ownership of: Logos, Images, Videos, Written Content, Brand Assets.',
       'The Client confirms they have permission to use all provided materials.',
     ]],
-    ['11. Intellectual Property', [
+    ['11. Intellectual Property', '11. Intellectual Property', [
       'After full payment has been received, the Client owns the completed website and receives all agreed project files.',
       'AROM Studio retains ownership of its internal tools, reusable code libraries, templates, frameworks, and development methodologies unless otherwise agreed.',
     ]],
-    ['12. Confidentiality', [
+    ['12. Confidentiality', '12. Confidentiality', [
       'Both parties agree to keep confidential information private.',
       'Business information, passwords, source files, and sensitive project information shall not be shared with third parties without permission, unless required by law.',
     ]],
-    ['13. Cancellation', [
-      'Either party may cancel the project.',
-      'If cancelled: Work completed up to the cancellation date must be paid for. Advance payments are generally non-refundable. Completed deliverables may be provided after outstanding payments are settled.',
+    ['13. Cancellation', '13. Cancellation', [
+      'Either party may cancel the project. If cancelled: Work completed up to the cancellation date must be paid for. Advance payments cover work already performed and are generally non-refundable. Completed deliverables up to the cancellation date may be provided after outstanding payments are settled.',
     ]],
-    ['14. Website Launch', [
-      'The website will be deployed after final approval, final payment, and required domain/hosting access (if applicable).',
+    ['14. Website Launch', '14. Website Launch', [
+      'The website will be deployed after: Final approval, Final payment received, Required domain and hosting access provided (if applicable).',
     ]],
-    ['15. Support', [
-      `After website delivery, the included support period is ${data.supportPeriod === '180' ? '6 months' : `${data.supportPeriod || '30'} days`}.`,
-      'The warranty covers defects in delivered work.',
-      'Support includes: Bug Fixes, Minor Technical Assistance.',
-      'Support does not include: Client modifications, Third-party plugin updates, New Features, Major Design Changes, Additional Pages, Third-party software issues.',
+    ['15. Support', '15. Support', [
+      `After website delivery, the included support period is ${data.supportPeriod || '30'} days. The warranty covers defects in delivered work. Support includes: Bug Fixes, Minor Technical Assistance. Support does not include: Client modifications, Third-party plugin updates, New Features, Major Design Changes, Additional Pages, Third-party software issues.`,
     ]],
-    ['16. Limitation of Liability', [
-      'AROM Studio shall not be responsible for third-party hosting failures, domain provider issues, payment gateway outages, search engine ranking changes, client-added errors after handover, or cyberattacks beyond our control.',
+    ['16. Limitation of Liability', '16. Limitation of Liability', [
+      'AROM Studio shall not be responsible for: Third-party hosting failures, Domain provider issues, Payment gateway outages, Search engine ranking changes, Client-added errors after handover, Cyberattacks or data loss caused by third-party systems beyond AROM Studio\'s control.',
     ]],
-    ['17. Portfolio Rights', [
-      'Unless the Client specifically requests confidentiality in writing, AROM Studio may showcase the completed project in its portfolio, website, and social media for promotional purposes.',
+    ['17. Portfolio Rights', '17. Portfolio Rights', [
+      'Unless the Client specifically requests confidentiality in writing, AROM Studio may showcase the completed project in its portfolio, website, and social media for promotional purposes. If confidentiality is requested and agreed upon, AROM Studio will not publicly display the project.',
     ]],
-    ['18. Force Majeure', [
+    ['18. Force Majeure', '18. Force Majeure', [
       'Neither party shall be liable for delays caused by events beyond reasonable control, including natural disasters, government actions, internet outages, pandemics, or other unforeseen circumstances.',
     ]],
-    ['19. Governing Law', [
-      'This Agreement shall be governed by the applicable laws of India.',
-      'Any disputes shall first be attempted to be resolved through mutual discussion before pursuing legal remedies.',
+    ['19. Governing Law', '19. Governing Law', [
+      'This Agreement shall be governed by the applicable laws of India. Any disputes shall first be attempted to be resolved through mutual discussion before pursuing legal remedies.',
     ]],
-    ['20. Digital Acceptance', [
-      'By clicking "I Agree" in the AROM Studio Client Portal or by making the agreed advance payment after accepting the proposal, the Client acknowledges that they have read, understood, and accepted the terms of this Agreement.',
-      'This constitutes a legally binding digital acceptance. No handwritten signature is required.',
+    ['20. Digital Acceptance', '20. Digital Acceptance', [
+      'By clicking "I Agree" in the AROM Studio Client Portal or by making the agreed advance payment after accepting the proposal, the Client acknowledges that they have read, understood, and accepted the terms of this Agreement. This constitutes a legally binding digital acceptance. No handwritten signature is required.',
     ]],
-    ['21. Entire Agreement', [
-      'This Agreement, together with the approved Project Proposal, constitutes the entire agreement between the parties.',
-      'It supersedes any prior discussions, negotiations, or communications, whether written or oral.',
+    ['21. Entire Agreement', '21. Entire Agreement', [
+      'This Agreement, together with the approved Project Proposal, constitutes the entire agreement between the parties and supersedes any prior discussions, negotiations, or communications, whether written or oral.',
     ]],
-    ['22. Browser Support', [
-      'AROM Studio officially supports the latest two versions of the following browsers:',
-      '  • Google Chrome',
-      '  • Mozilla Firefox',
-      '  • Apple Safari',
-      '  • Microsoft Edge',
-      'The website may not function as intended on older or unsupported browsers.',
+    ['22. Browser Support', '22. Browser Support', [
+      'AROM Studio officially supports the latest two versions of: Google Chrome, Mozilla Firefox, Apple Safari, and Microsoft Edge. The website may not function as intended on older or unsupported browsers.',
     ]],
   ]
 
-  for (const [title, lines] of remainingSections) {
-    y = writeSection(doc, y, title, lines, layout, true)
+  for (const [title, agreeRef, lines] of remainingSections) {
+    y = writeSection(doc, y, title, [
+      ...lines,
+      '',
+      `  - I have read and agree to ${agreeRef}`,
+    ], layout, true, true)
   }
 
   // 23. Legal Policies
-  y = writeSection(doc, y, '23. Legal Policies', [
+  y = writeSection(doc, y, 'Legal Policies', [
     'The following legal policies apply to all services provided by AROM Studio.',
     '',
-  ], layout, true)
+    '  - I have read and agree to the Legal Policies section',
+  ], layout, true, true)
 
   y = writeSection(doc, y, 'Privacy Policy', [
     '  • Information We Collect: We collect information you provide directly, such as your name, email address, phone number, and project details when you fill out our contact form or book a consultation.',
@@ -777,7 +810,8 @@ export function generateAgreementPDF(data: {
     '  • Cookies: Our website may use cookies to enhance your browsing experience. You can choose to disable cookies in your browser settings.',
     '  • Contact: If you have any questions about this Privacy Policy, please contact us at aromstudio27@gmail.com.',
     '',
-  ], layout, true)
+    '  - I have read and agree to the Privacy Policy',
+  ], layout, true, true)
 
   y = writeSection(doc, y, 'Terms & Conditions', [
     '  • Acceptance of Terms: By accessing or using the AROM STUDIO website, you agree to be bound by these Terms and Conditions.',
@@ -786,7 +820,8 @@ export function generateAgreementPDF(data: {
     '  • Payment Terms: Payment terms are outlined in the project proposal. Late payments may result in project delays.',
     '  • Limitation of Liability: AROM STUDIO shall not be liable for any indirect, incidental, or consequential damages arising from the use of our services.',
     '',
-  ], layout, true)
+    '  - I have read and agree to the Terms & Conditions',
+  ], layout, true, true)
 
   y = writeSection(doc, y, 'Refund Policy', [
     '  • Project Deposits: The initial advance payment is non-refundable as it covers the discovery, research, and design phase work already performed.',
@@ -795,18 +830,20 @@ export function generateAgreementPDF(data: {
     '  • Maintenance & Support: Monthly maintenance fees are non-refundable but can be cancelled with 30 days notice.',
     '  • Dispute Resolution: In the event of a dispute, both parties will work in good faith to find a fair resolution.',
     '',
-  ], layout, true)
+    '  - I have read and agree to the Refund Policy',
+  ], layout, true, true)
 
   // Client Declaration
   y = writeSection(doc, y, 'Client Declaration', [
-    `I, ${data.clientName || '[Client Name]'}, hereby declare that:`,
-    `  • I have read, understood, and agree to all sections of this Website Development Agreement including the Entire Agreement clause, Browser Support, and Digital Acceptance.`,
-    '  • I have read, understood, and agree to the Privacy Policy, Terms & Conditions, and Refund Policy as outlined in the Legal section.',
-    `  • All information provided by me is accurate and complete.`,
+    `I, ${data.clientName || '[Client Name]'}, confirm that:`,
+    '  • I have read and understood all sections of this Agreement including the Entire Agreement clause, Browser Support, and Digital Acceptance.',
+    '  • All information I have provided is accurate and complete.',
     `  • I agree to the payment terms including the ${data.advancePercentage || '50'}% advance payment.`,
     '  • I agree to provide all required content and assets within agreed timelines.',
-    '  • I acknowledge that this Agreement is legally binding once accepted.',
-  ], layout, true)
+    '  • I acknowledge that this Agreement is legally binding and accept the Digital Acceptance clause.',
+    '',
+    '  - I hereby declare that I have read, understood, and agree to all terms and conditions of this Website Development Agreement. This declaration is required to proceed.',
+  ], layout, true, true)
 
   // Signature
   y = writeSignatureBlock(doc, y, layout, data.clientName, new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }))
