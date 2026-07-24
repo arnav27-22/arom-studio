@@ -3,7 +3,7 @@ import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { FileSignature, Search, Download, CheckCircle2, Clock, Plus, X, Trash2 } from 'lucide-react'
 import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, type AdminAgreement } from '../adminStore'
-import { generateAgreementPDF, generateAdminReportPDF } from '../../lib/professionalPDF'
+import { generateAdminReportPDF } from '../../lib/professionalPDF'
 
 export function AgreementManager() {
   const [store, setStore] = useState(getAdminStore())
@@ -21,8 +21,8 @@ export function AgreementManager() {
     generateAdminReportPDF({
       sectionTitle: 'Website Agreement Contracts',
       subtitle: `${agreements.length} Contracts | ${signedAgreements} Signed, ${pendingAgreements} Pending`,
-      headers: ['Agreement #', 'Client Name', 'Effective Date', 'Scope Price', 'Status', 'IP Address'],
-      rows: agreements.map((a) => [a.agreementNumber, a.clientName, a.effectiveDate, `₹${(a.totalScopePrice || 0).toLocaleString()}`, a.status, a.ipAddress || '103.15.22.84']),
+      headers: ['Agreement #', 'Client Name', 'Version', 'Signed Date', 'Status'],
+      rows: agreements.map((a) => [a.agreementNumber, a.clientName, a.agreementVersion || 'v1.0', a.signedDate ? formatIST(a.signedDate) : 'Pending', a.status]),
       summaryLines: [
         `Total Website Development Contracts: ${totalAgreements}`,
         `Signed Contracts: ${signedAgreements}`,

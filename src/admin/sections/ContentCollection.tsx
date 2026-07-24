@@ -35,6 +35,8 @@ export function ContentCollection() {
   const handleExportItemPDF = (row: AdminContentItem) => {
     generateContentCollectionPDF({
       clientName: row.clientName,
+      projectName: row.projectName,
+      homePage: 'Home & Landing Hero Copy',
       aboutUs: row.checklist.find((c) => c.section.includes('About') || c.section.includes('Bios'))?.section || 'Company Overview and Mission',
       services: row.checklist.find((c) => c.section.includes('Copy') || c.section.includes('Services'))?.section || 'Core Web Services Matrix',
       faqs: 'Standard Technical & Licensing FAQs Provided',

@@ -69,6 +69,7 @@ export interface AdminInvoice {
   currency: 'INR' | 'USD'
   items: InvoiceItem[]
   taxRate: number
+  includeGST?: boolean
   discountRate: number
   subtotal: number
   taxAmount: number
@@ -806,14 +807,31 @@ export function restoreFromRecycleBin(recycleId: string) {
   if (!Array.isArray(store.recycleBin)) return
 
   const record = store.recycleBin.find((r) => r.id === recycleId)
-  if (!record) return
+  if (!record || !record.itemData) return
 
   const collection = record.originalCollection
   const currentList = (store[collection] as any[]) || []
-  ;(store as any)[collection] = [record.itemData, ...currentList]
+
+  // Ensure restored item is unshifted into destination collection without duplicates
+  const restoredItem = { ...record.itemData }
+  const filteredList = currentList.filter((i: any) => i && i.id !== restoredItem.id)
+  ;(store as any)[collection] = [restoredItem, ...filteredList]
+
+  // Remove from recycleBin
   store.recycleBin = store.recycleBin.filter((r) => r.id !== recycleId)
 
+  // System audit log
+  store.logs.unshift({
+    id: 'l_' + Math.random().toString(36).slice(2, 9),
+    createdAt: new Date().toISOString(),
+    type: 'system',
+    event: `Restored ${record.title}`,
+    detail: `Restored item ${record.title} back to active ${String(collection)} section.`,
+    severity: 'info',
+  })
+
   saveAdminStore(store)
+  return restoredItem
 }
 
 // Permanently delete a single item from the Recycle Bin
@@ -838,20 +856,23 @@ export async function syncFromCloud(): Promise<StoreData> {
     const res = await fetch('/api/sync')
     if (res.ok) {
       const remote = await res.json()
-      const mergedVisitors = [...(remote.visitors || [])]
-      local.visitors.forEach((v) => { if (!mergedVisitors.some((m) => m.id === v.id)) mergedVisitors.push(v) })
 
-      const mergedPdfs = [...(remote.pdfs || [])]
-      local.pdfs.forEach((p) => { if (!mergedPdfs.some((m) => m.id === p.id)) mergedPdfs.push(p) })
+      const mergeById = (remoteItems?: any[], localItems?: any[]) => {
+        const map = new Map<string, any>()
+        if (Array.isArray(remoteItems)) {
+          remoteItems.forEach((item) => { if (item && item.id) map.set(item.id, item) })
+        }
+        if (Array.isArray(localItems)) {
+          localItems.forEach((item) => { if (item && item.id) map.set(item.id, item) })
+        }
+        return Array.from(map.values())
+      }
 
-      const mergedLeads = [...(remote.leads || [])]
-      local.leads.forEach((l) => { if (!mergedLeads.some((m) => m.id === l.id)) mergedLeads.push(l) })
-
-      const mergedInvoices = [...(remote.invoices || [])]
-      local.invoices.forEach((i) => { if (!mergedInvoices.some((m) => m.id === i.id)) mergedInvoices.push(i) })
-
-      const mergedLogs = [...(remote.logs || [])]
-      local.logs.forEach((g) => { if (!mergedLogs.some((m) => m.id === g.id)) mergedLogs.push(g) })
+      const mergedVisitors = mergeById(remote.visitors, local.visitors)
+      const mergedPdfs = mergeById(remote.pdfs, local.pdfs)
+      const mergedLeads = mergeById(remote.leads, local.leads)
+      const mergedInvoices = mergeById(remote.invoices, local.invoices)
+      const mergedLogs = mergeById(remote.logs, local.logs)
 
       const updated: StoreData = {
         visitors: mergedVisitors.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
@@ -859,18 +880,18 @@ export async function syncFromCloud(): Promise<StoreData> {
         leads: mergedLeads.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
         invoices: mergedInvoices.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
         logs: mergedLogs.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
-        clients: Array.isArray(remote.clients) ? remote.clients : local.clients,
-        projects: Array.isArray(remote.projects) ? remote.projects : local.projects,
-        proposals: Array.isArray(remote.proposals) ? remote.proposals : local.proposals,
-        agreements: Array.isArray(remote.agreements) ? remote.agreements : local.agreements,
-        payments: Array.isArray(remote.payments) ? remote.payments : local.payments,
-        content: Array.isArray(remote.content) ? remote.content : local.content,
-        assets: Array.isArray(remote.assets) ? remote.assets : local.assets,
-        approvals: Array.isArray(remote.approvals) ? remote.approvals : local.approvals,
-        timelines: Array.isArray(remote.timelines) ? remote.timelines : local.timelines,
-        handovers: Array.isArray(remote.handovers) ? remote.handovers : local.handovers,
-        feedbacks: Array.isArray(remote.feedbacks) ? remote.feedbacks : local.feedbacks,
-        notifications: Array.isArray(remote.notifications) ? remote.notifications : local.notifications,
+        clients: mergeById(remote.clients, local.clients),
+        projects: mergeById(remote.projects, local.projects),
+        proposals: mergeById(remote.proposals, local.proposals),
+        agreements: mergeById(remote.agreements, local.agreements),
+        payments: mergeById(remote.payments, local.payments),
+        content: mergeById(remote.content, local.content),
+        assets: mergeById(remote.assets, local.assets),
+        approvals: mergeById(remote.approvals, local.approvals),
+        timelines: mergeById(remote.timelines, local.timelines),
+        handovers: mergeById(remote.handovers, local.handovers),
+        feedbacks: mergeById(remote.feedbacks, local.feedbacks),
+        notifications: mergeById(remote.notifications, local.notifications),
         recycleBin: Array.isArray(remote.recycleBin) ? remote.recycleBin : local.recycleBin,
       }
       try {

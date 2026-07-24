@@ -196,7 +196,7 @@ export function DesignApproval() {
       sectionTitle: 'UI/UX Design Sign-Off & Approvals Audit',
       subtitle: `${total} Prototypes Submitted | ${approved} Signed-off Approved`,
       headers: ['Project Name', 'Client Name', 'Version', 'Status', 'Approved Date'],
-      rows: approvals.map((a) => [a.projectName, a.clientName, a.version, a.status, a.approvedAt ? formatIST(a.approvedAt) : 'Pending']),
+      rows: approvals.map((a) => [a.projectName, a.clientName, a.version, a.status, a.approvalDate ? formatIST(a.approvalDate) : 'Pending']),
       summaryLines: [
         `Total Design System Prototypes: ${total}`,
         `Approved & Signed Off: ${approved}`,

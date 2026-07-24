@@ -37,9 +37,9 @@ export function AssetsManager() {
   const handleExportSingleAssetPDF = (row: AdminAssetFolder) => {
     generateAssetsPDF({
       clientName: row.clientName,
-      driveLink: row.googleDriveLink,
-      receivedItems: (row.checklist || []).filter((c) => c.received).map((c) => c.name),
-      pendingItems: (row.checklist || []).filter((c) => !c.received).map((c) => c.name),
+      projectName: row.projectName,
+      folderLink: row.googleDriveLink,
+      categories: (row.checklist || []).map((c) => `${c.name}: ${c.received ? 'Received' : 'Pending'}`),
     })
   }
 

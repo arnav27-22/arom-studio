@@ -44,6 +44,21 @@ export function ClientManagement() {
   const onboardingClients = clients.filter((c) => c.status === 'Onboarding').length
   const totalRevenue = clients.reduce((acc, c) => acc + (c.totalRevenue || 0), 0)
 
+  const handleExportPDF = () => {
+    generateAdminReportPDF({
+      sectionTitle: 'Client Management Roster',
+      subtitle: `${clients.length} Active Accounts | Total Revenue: ₹${totalRevenue.toLocaleString()}`,
+      headers: ['Company', 'Contact Person', 'Email', 'Phone', 'Status', 'Total Revenue'],
+      rows: clients.map((c) => [c.companyName, c.contactPerson, c.email, c.phone, c.status, `₹${(c.totalRevenue || 0).toLocaleString()}`]),
+      summaryLines: [
+        `Total Registered Clients: ${totalClients}`,
+        `Active Retainer Clients: ${activeClients}`,
+        `Onboarding Clients: ${onboardingClients}`,
+        `Cumulative Client Revenue: ₹${totalRevenue.toLocaleString()}`,
+      ],
+    })
+  }
+
   const handleAddClient = (e: React.FormEvent) => {
     e.preventDefault()
     if (!form.companyName || !form.email) return

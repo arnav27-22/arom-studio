@@ -172,8 +172,11 @@ export function InvoicesPage() {
       doc.text(`Discount (${inv.discountRate}%): -${sym}${inv.discountAmount.toLocaleString('en-IN')}`, 135, y)
       y += 6
     }
-    doc.text(`GST/Tax (${inv.taxRate}%): +${sym}${inv.taxAmount.toLocaleString('en-IN')}`, 135, y)
-    y += 8
+    if (inv.includeGST && inv.taxAmount > 0) {
+      doc.text(`GST (${inv.taxRate}%): +${sym}${inv.taxAmount.toLocaleString('en-IN')}`, 135, y)
+      y += 6
+    }
+    y += 2
 
     doc.setFont('helvetica', 'bold')
     doc.setFontSize(12)
@@ -206,6 +209,7 @@ export function InvoicesPage() {
       currency,
       items,
       taxRate,
+      includeGST,
       discountRate,
       subtotal,
       taxAmount,
