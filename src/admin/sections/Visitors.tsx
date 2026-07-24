@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
-import { Users, Monitor, Smartphone, Eye, ExternalLink, Activity, Calendar, Clock, Globe, Zap, Radio, UserCheck, UserPlus } from 'lucide-react'
-import { getAdminStore, formatIST, type AdminVisitor } from '../adminStore'
+import { Users, Monitor, Smartphone, Eye, ExternalLink, Activity, Calendar, Clock, Globe, Zap, Radio, UserCheck, UserPlus, Trash2 } from 'lucide-react'
+import { getAdminStore, saveAdminStore, formatIST, type AdminVisitor } from '../adminStore'
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts'
 
 export function Visitors() {
@@ -14,6 +14,21 @@ export function Visitors() {
   const reload = () => {
     const s = getAdminStore()
     setStore(s)
+  }
+
+  const handleDeleteVisitor = (id: string) => {
+    const updatedVisitors = visitors.filter((v) => v.id !== id)
+    const updated = { ...store, visitors: updatedVisitors }
+    saveAdminStore(updated)
+    setStore(updated)
+  }
+
+  const handleClearAllVisitors = () => {
+    if (confirm('Clear all visitor logs?')) {
+      const updated = { ...store, visitors: [] }
+      saveAdminStore(updated)
+      setStore(updated)
+    }
   }
 
   useEffect(() => {
@@ -199,6 +214,19 @@ export function Visitors() {
             <div className="text-[9px] text-amber-400 font-semibold uppercase tracking-wider mt-1">Bounce</div>
           )}
         </div>
+      ),
+    },
+    {
+      key: 'actions',
+      label: 'Actions',
+      render: (_: any, row: AdminVisitor) => (
+        <button
+          onClick={() => handleDeleteVisitor(row.id)}
+          className="p-1.5 rounded-lg bg-white/5 hover:bg-red-500/20 hover:text-red-400 text-white/60 transition-colors cursor-pointer"
+          title="Delete Visitor Log"
+        >
+          <Trash2 className="h-3.5 w-3.5" />
+        </button>
       ),
     },
   ]
@@ -420,13 +448,24 @@ export function Visitors() {
       <div className="glass rounded-[24px] p-6 border border-white/10 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <h3 className="text-xs font-semibold text-accent uppercase tracking-wider">Real Visitor Log (IST)</h3>
-          <input
-            type="text"
-            placeholder="Search visitor route, browser, OS, city, IP..."
-            value={searchFilter}
-            onChange={(e) => setSearchFilter(e.target.value)}
-            className="px-3.5 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-white/40 focus:outline-none focus:border-accent max-w-xs"
-          />
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              placeholder="Search visitor route, browser, OS, city, IP..."
+              value={searchFilter}
+              onChange={(e) => setSearchFilter(e.target.value)}
+              className="px-3.5 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-white/40 focus:outline-none focus:border-accent max-w-xs"
+            />
+            {visitors.length > 0 && (
+              <button
+                onClick={handleClearAllVisitors}
+                className="px-3 py-1.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 text-xs font-medium transition-colors cursor-pointer"
+                title="Clear All Visitor Logs"
+              >
+                Clear Logs
+              </button>
+            )}
+          </div>
         </div>
 
         {filteredVisitors.length > 0 ? (

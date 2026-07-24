@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
-import { FileText, Download, Eye, X } from 'lucide-react'
-import { getAdminStore, formatIST, type AdminPDF } from '../adminStore'
+import { FileText, Download, Eye, Trash2, X } from 'lucide-react'
+import { getAdminStore, saveAdminStore, formatIST, type AdminPDF } from '../adminStore'
 
 export function PDFActivity() {
   const [data, setData] = useState<AdminPDF[]>(getAdminStore().pdfs)
@@ -24,6 +24,15 @@ export function PDFActivity() {
       a.click()
     } else {
       alert(`PDF file archived: ${pdf.title || pdf.pdfType} (${pdf.fileSizeKb || 180} KB)`)
+    }
+  }
+
+  const handleDelete = (id: string) => {
+    if (confirm('Delete this archived PDF document?')) {
+      const s = getAdminStore()
+      s.pdfs = s.pdfs.filter((p) => p.id !== id)
+      saveAdminStore(s)
+      reload()
     }
   }
 
@@ -54,6 +63,13 @@ export function PDFActivity() {
             title="Download PDF to device"
           >
             <Download className="h-3.5 w-3.5" /> Download
+          </button>
+          <button
+            onClick={() => handleDelete(row.id)}
+            className="p-1.5 text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 rounded-lg border border-red-500/20 transition-colors"
+            title="Delete PDF document"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
           </button>
         </div>
       )

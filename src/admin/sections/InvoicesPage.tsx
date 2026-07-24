@@ -18,7 +18,8 @@ export function InvoicesPage() {
   const [clientCompany, setClientCompany] = useState('')
   const [currency, setCurrency] = useState<'INR' | 'USD'>('INR')
   const [dueDate, setDueDate] = useState(new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10))
-  const [taxRate, setTaxRate] = useState(18)
+  const [taxRate, setTaxRate] = useState(0)
+  const [includeGST, setIncludeGST] = useState(false)
   const [discountRate, setDiscountRate] = useState(0)
   const [notes, setNotes] = useState('Payment due within 7 days. Thank you for choosing AROM STUDIO.')
   const [items, setItems] = useState([
@@ -35,7 +36,8 @@ export function InvoicesPage() {
   const subtotal = items.reduce((acc, item) => acc + item.quantity * item.unitPrice, 0)
   const discountAmount = (subtotal * discountRate) / 100
   const taxable = subtotal - discountAmount
-  const taxAmount = (taxable * taxRate) / 100
+  const currentTaxRate = includeGST ? (taxRate || 18) : 0
+  const taxAmount = (taxable * currentTaxRate) / 100
   const totalAmount = taxable + taxAmount
 
   const currencySymbol = currency === 'INR' ? '₹' : '$'
@@ -447,8 +449,29 @@ export function InvoicesPage() {
               {/* Tax / Discount */}
               <div className="grid grid-cols-2 gap-3 pt-2">
                 <div>
-                  <label className="text-white/50 block mb-1">GST / Tax Rate (%)</label>
-                  <input type="number" value={taxRate} onChange={(e) => setTaxRate(Number(e.target.value))} className="w-full bg-white/5 border border-white/10 rounded-xl p-2 text-white" />
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="text-white/50 block font-medium">GST / Tax Rate (%)</label>
+                    <label className="flex items-center gap-1.5 text-accent cursor-pointer text-[11px]">
+                      <input
+                        type="checkbox"
+                        checked={includeGST}
+                        onChange={(e) => {
+                          setIncludeGST(e.target.checked)
+                          if (e.target.checked && taxRate === 0) setTaxRate(18)
+                        }}
+                        className="rounded border-white/20 accent-accent"
+                      />
+                      <span>Apply GST</span>
+                    </label>
+                  </div>
+                  <input
+                    type="number"
+                    disabled={!includeGST}
+                    value={includeGST ? taxRate : 0}
+                    onChange={(e) => setTaxRate(Number(e.target.value))}
+                    placeholder="0"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl p-2 text-white disabled:opacity-40"
+                  />
                 </div>
                 <div>
                   <label className="text-white/50 block mb-1">Discount Rate (%)</label>

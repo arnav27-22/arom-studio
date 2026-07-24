@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
-import { PackageCheck, Search, Download, ExternalLink, Key, Globe, Server, CheckCircle2, Clock, Plus, X } from 'lucide-react'
+import { PackageCheck, Search, Download, ExternalLink, Key, Globe, Server, CheckCircle2, Clock, Plus, X, Trash2 } from 'lucide-react'
 import { getAdminStore, saveAdminStore, type AdminHandover } from '../adminStore'
 
 export function HandoverManager() {
@@ -10,6 +10,15 @@ export function HandoverManager() {
   const [statusFilter, setStatusFilter] = useState<string>('All')
   const [selectedHandover, setSelectedHandover] = useState<AdminHandover | null>(null)
   const [showAddModal, setShowAddModal] = useState(false)
+
+  const handleDeleteHandover = (id: string) => {
+    if (confirm('Delete this handover record?')) {
+      const updated = { ...store, handovers: store.handovers.filter((h) => h.id !== id) }
+      saveAdminStore(updated)
+      setStore(updated)
+      if (selectedHandover?.id === id) setSelectedHandover(null)
+    }
+  }
 
   const [form, setForm] = useState({
     projectName: '',
@@ -143,6 +152,13 @@ export function HandoverManager() {
             title="Download Handover ZIP"
           >
             <Download className="h-3.5 w-3.5" />
+          </button>
+          <button
+            onClick={() => handleDeleteHandover(row.id)}
+            className="p-1.5 rounded-lg bg-white/5 hover:bg-red-500/20 hover:text-red-400 text-white/60 transition-colors cursor-pointer"
+            title="Delete Handover Record"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
           </button>
         </div>
       ),

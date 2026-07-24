@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
-import { Briefcase, Search, Plus, CheckCircle2, Clock, Archive, Rocket, Users, X, Eye } from 'lucide-react'
+import { Briefcase, Search, Plus, CheckCircle2, Clock, Archive, Rocket, Users, X, Eye, Trash2 } from 'lucide-react'
 import { getAdminStore, saveAdminStore, type AdminProject } from '../adminStore'
 
 export function ProjectManagement() {
@@ -29,6 +29,16 @@ export function ProjectManagement() {
 
   const projects = store.projects || []
   const clients = store.clients || []
+
+  const handleDeleteProject = (id: string) => {
+    if (confirm('Are you sure you want to delete this project?')) {
+      const updatedProjects = store.projects.filter((p) => p.id !== id)
+      const updated = { ...store, projects: updatedProjects }
+      saveAdminStore(updated)
+      setStore(updated)
+      if (selectedProject?.id === id) setSelectedProject(null)
+    }
+  }
 
   const filteredProjects = projects.filter((p) => {
     const matchesSearch =
@@ -195,6 +205,13 @@ export function ProjectManagement() {
             title="Archive Project"
           >
             <Archive className="h-3.5 w-3.5" />
+          </button>
+          <button
+            onClick={() => handleDeleteProject(row.id)}
+            className="p-1.5 rounded-lg bg-white/5 hover:bg-red-500/20 hover:text-red-400 text-white/60 transition-colors cursor-pointer"
+            title="Delete Project"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
           </button>
         </div>
       ),

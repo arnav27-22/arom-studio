@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
-import { FolderKanban, Search, Download, CheckCircle2, Clock, FileText, Eye, X } from 'lucide-react'
+import { FolderKanban, Search, Download, CheckCircle2, Clock, FileText, Eye, X, Trash2 } from 'lucide-react'
 import { getAdminStore, saveAdminStore, formatIST, type AdminContentItem } from '../adminStore'
 
 export function ContentCollection() {
@@ -9,6 +9,15 @@ export function ContentCollection() {
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('All')
   const [selectedItem, setSelectedItem] = useState<AdminContentItem | null>(null)
+
+  const handleDeleteContent = (id: string) => {
+    if (confirm('Delete this content collection item?')) {
+      const updated = { ...store, content: store.content.filter((c) => c.id !== id) }
+      saveAdminStore(updated)
+      setStore(updated)
+      if (selectedItem?.id === id) setSelectedItem(null)
+    }
+  }
 
   useEffect(() => {
     setStore(getAdminStore())
@@ -115,6 +124,13 @@ export function ContentCollection() {
             title="Download Content Summary PDF"
           >
             <Download className="h-3.5 w-3.5" />
+          </button>
+          <button
+            onClick={() => handleDeleteContent(row.id)}
+            className="p-1.5 rounded-lg bg-white/5 hover:bg-red-500/20 hover:text-red-400 text-white/60 transition-colors cursor-pointer"
+            title="Delete Content Record"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
           </button>
         </div>
       ),

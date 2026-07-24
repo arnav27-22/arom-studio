@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
-import { CreditCard, Search, DollarSign, CheckCircle2, Clock, AlertCircle, Download, Bell, Plus, X } from 'lucide-react'
+import { CreditCard, Search, DollarSign, CheckCircle2, Clock, AlertCircle, Download, Bell, Plus, X, Trash2 } from 'lucide-react'
 import { getAdminStore, saveAdminStore, formatIST, type AdminPayment } from '../adminStore'
 
 export function PaymentsManager() {
@@ -9,6 +9,14 @@ export function PaymentsManager() {
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('All')
   const [showAddModal, setShowAddModal] = useState(false)
+
+  const handleDeletePayment = (id: string) => {
+    if (confirm('Delete this payment record?')) {
+      const updated = { ...store, payments: store.payments.filter((p) => p.id !== id) }
+      saveAdminStore(updated)
+      setStore(updated)
+    }
+  }
 
   const [form, setForm] = useState({
     invoiceNumber: 'INV-2026-004',
@@ -145,6 +153,13 @@ export function PaymentsManager() {
             title="Invoice Link & Receipt"
           >
             <Download className="h-3.5 w-3.5" />
+          </button>
+          <button
+            onClick={() => handleDeletePayment(row.id)}
+            className="p-1.5 rounded-lg bg-white/5 hover:bg-red-500/20 hover:text-red-400 text-white/60 transition-colors cursor-pointer"
+            title="Delete Payment Record"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
           </button>
         </div>
       ),

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
-import { Bell, Mail, FileSpreadsheet, CreditCard, CheckSquare, Rocket, PackageCheck, ShieldAlert, Check, Search } from 'lucide-react'
+import { Bell, Mail, FileSpreadsheet, CreditCard, CheckSquare, Rocket, PackageCheck, ShieldAlert, Check, Search, Trash2 } from 'lucide-react'
 import { getAdminStore, saveAdminStore, formatIST } from '../adminStore'
 
 export function NotificationsCenter() {
@@ -13,6 +13,22 @@ export function NotificationsCenter() {
   }, [])
 
   const notifications = store.notifications || []
+
+  const handleDeleteNotification = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation()
+    const updatedNotifs = notifications.filter((n) => n.id !== id)
+    const updated = { ...store, notifications: updatedNotifs }
+    saveAdminStore(updated)
+    setStore(updated)
+  }
+
+  const handleClearAll = () => {
+    if (confirm('Clear all notifications?')) {
+      const updated = { ...store, notifications: [] }
+      saveAdminStore(updated)
+      setStore(updated)
+    }
+  }
 
   const filteredNotifications = notifications.filter((n) => {
     const matchesSearch =
@@ -70,14 +86,24 @@ export function NotificationsCenter() {
           </h2>
           <p className="text-xs text-white/50">Central event stream for inquiries, payments, design sign-offs, live deployments & system alerts</p>
         </div>
-        {unreadCount > 0 && (
-          <button
-            onClick={handleMarkAllRead}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-medium text-xs transition-all cursor-pointer"
-          >
-            <Check className="h-4 w-4 text-accent" /> Mark All as Read ({unreadCount})
-          </button>
-        )}
+        <div className="flex items-center gap-2">
+          {unreadCount > 0 && (
+            <button
+              onClick={handleMarkAllRead}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-medium text-xs transition-all cursor-pointer"
+            >
+              <Check className="h-4 w-4 text-accent" /> Mark All Read ({unreadCount})
+            </button>
+          )}
+          {totalCount > 0 && (
+            <button
+              onClick={handleClearAll}
+              className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 font-medium text-xs transition-all cursor-pointer"
+            >
+              <Trash2 className="h-4 w-4" /> Clear All
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Stat Summary */}
@@ -146,11 +172,20 @@ export function NotificationsCenter() {
                   </div>
                 </div>
 
-                <span className={`text-[10px] font-semibold uppercase px-2.5 py-1 rounded-full border shrink-0 ${
-                  n.read ? 'bg-white/5 border-white/10 text-white/40' : 'bg-accent/20 border-accent/40 text-accent'
-                }`}>
-                  {n.read ? 'Read' : 'New'}
-                </span>
+                <div className="flex items-center gap-2 shrink-0">
+                  <span className={`text-[10px] font-semibold uppercase px-2.5 py-1 rounded-full border ${
+                    n.read ? 'bg-white/5 border-white/10 text-white/40' : 'bg-accent/20 border-accent/40 text-accent'
+                  }`}>
+                    {n.read ? 'Read' : 'New'}
+                  </span>
+                  <button
+                    onClick={(e) => handleDeleteNotification(n.id, e)}
+                    className="p-1 rounded-lg bg-white/5 hover:bg-red-500/20 hover:text-red-400 text-white/40 transition-colors"
+                    title="Delete Notification"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </div>
               </div>
             ))
           ) : (

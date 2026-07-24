@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
-import { FileSpreadsheet, Search, Plus, Download, Copy, CheckCircle2, Eye, Clock, FileText, X } from 'lucide-react'
+import { FileSpreadsheet, Search, Plus, Download, Copy, CheckCircle2, Eye, Clock, FileText, X, Trash2 } from 'lucide-react'
 import { getAdminStore, saveAdminStore, type AdminProposal } from '../adminStore'
 
 export function ProposalManager() {
@@ -39,6 +39,15 @@ export function ProposalManager() {
   const acceptedProposals = proposals.filter((p) => p.status === 'Accepted').length
   const pendingProposals = proposals.filter((p) => p.status === 'Sent' || p.status === 'Viewed').length
   const totalValue = proposals.reduce((acc, p) => acc + (p.amount || 0), 0)
+
+  const handleDeleteProposal = (id: string) => {
+    if (confirm('Delete this proposal?')) {
+      const updated = { ...store, proposals: store.proposals.filter((p) => p.id !== id) }
+      saveAdminStore(updated)
+      setStore(updated)
+      if (selectedProposal?.id === id) setSelectedProposal(null)
+    }
+  }
 
   const handleGenerateProposal = (e: React.FormEvent) => {
     e.preventDefault()
@@ -155,6 +164,13 @@ export function ProposalManager() {
             title="Download PDF"
           >
             <Download className="h-3.5 w-3.5" />
+          </button>
+          <button
+            onClick={() => handleDeleteProposal(row.id)}
+            className="p-1.5 rounded-lg bg-white/5 hover:bg-red-500/20 hover:text-red-400 text-white/60 transition-colors cursor-pointer"
+            title="Delete Proposal"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
           </button>
         </div>
       ),

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
-import { CheckSquare, Search, ExternalLink, MessageSquare, CheckCircle2, Clock, AlertTriangle, Plus, X, Send } from 'lucide-react'
+import { CheckSquare, Search, ExternalLink, MessageSquare, CheckCircle2, Clock, AlertTriangle, Plus, X, Send, Trash2 } from 'lucide-react'
 import { getAdminStore, saveAdminStore, formatIST, type AdminDesignApproval } from '../adminStore'
 
 export function DesignApproval() {
@@ -24,6 +24,15 @@ export function DesignApproval() {
   }, [])
 
   const approvals = store.approvals || []
+
+  const handleDeleteApproval = (id: string) => {
+    if (confirm('Delete this design approval record?')) {
+      const updated = { ...store, approvals: store.approvals.filter((a) => a.id !== id) }
+      saveAdminStore(updated)
+      setStore(updated)
+      if (selectedApproval?.id === id) setSelectedApproval(null)
+    }
+  }
 
   const filteredApprovals = approvals.filter((a) => {
     const matchesSearch =
@@ -171,6 +180,13 @@ export function DesignApproval() {
               Approve
             </button>
           )}
+          <button
+            onClick={() => handleDeleteApproval(row.id)}
+            className="p-1.5 rounded-lg bg-white/5 hover:bg-red-500/20 hover:text-red-400 text-white/60 transition-colors cursor-pointer"
+            title="Delete Design Approval"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </button>
         </div>
       ),
     },

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
-import { GitCommit, Search, CheckCircle2, Clock, AlertTriangle, Layers } from 'lucide-react'
-import { getAdminStore } from '../adminStore'
+import { GitCommit, Search, CheckCircle2, Clock, AlertTriangle, Layers, Trash2 } from 'lucide-react'
+import { getAdminStore, saveAdminStore } from '../adminStore'
 
 export function ProjectTimeline() {
   const [store, setStore] = useState(getAdminStore())
@@ -10,6 +10,14 @@ export function ProjectTimeline() {
   useEffect(() => {
     setStore(getAdminStore())
   }, [])
+
+  const handleDeleteTimeline = (id: string) => {
+    if (confirm('Delete this project timeline?')) {
+      const updated = { ...store, timelines: store.timelines.filter((t) => t.id !== id) }
+      saveAdminStore(updated)
+      setStore(updated)
+    }
+  }
 
   const timelines = store.timelines || []
 
@@ -67,6 +75,13 @@ export function ProjectTimeline() {
                   <Clock className="h-3.5 w-3.5" /> Phase: {t.currentPhase}
                 </span>
                 <span className="text-xs font-mono text-white/60">Est: {t.estimatedDelivery}</span>
+                <button
+                  onClick={() => handleDeleteTimeline(t.id)}
+                  className="p-1.5 rounded-lg bg-white/5 hover:bg-red-500/20 hover:text-red-400 text-white/60 transition-colors cursor-pointer"
+                  title="Delete Timeline"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
               </div>
             </div>
 

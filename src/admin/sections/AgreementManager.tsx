@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
-import { FileSignature, Search, Download, CheckCircle2, Clock, Plus, X } from 'lucide-react'
+import { FileSignature, Search, Download, CheckCircle2, Clock, Plus, X, Trash2 } from 'lucide-react'
 import { getAdminStore, saveAdminStore, formatIST, type AdminAgreement } from '../adminStore'
 
 export function AgreementManager() {
@@ -9,6 +9,14 @@ export function AgreementManager() {
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('All')
   const [showAddModal, setShowAddModal] = useState(false)
+
+  const handleDeleteAgreement = (id: string) => {
+    if (confirm('Delete this agreement?')) {
+      const updated = { ...store, agreements: store.agreements.filter((a) => a.id !== id) }
+      saveAdminStore(updated)
+      setStore(updated)
+    }
+  }
 
   const [form, setForm] = useState({
     clientName: '',
@@ -116,6 +124,13 @@ export function AgreementManager() {
             title="Download Signed Agreement"
           >
             <Download className="h-3.5 w-3.5" />
+          </button>
+          <button
+            onClick={() => handleDeleteAgreement(row.id)}
+            className="p-1.5 rounded-lg bg-white/5 hover:bg-red-500/20 hover:text-red-400 text-white/60 transition-colors cursor-pointer"
+            title="Delete Agreement"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
           </button>
         </div>
       ),

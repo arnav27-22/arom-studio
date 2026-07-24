@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
-import { MessageSquareHeart, Star, CheckCircle2, Search, Lightbulb, Plus, X } from 'lucide-react'
+import { MessageSquareHeart, Star, CheckCircle2, Search, Lightbulb, Plus, X, Trash2 } from 'lucide-react'
 import { getAdminStore, saveAdminStore, type AdminFeedback } from '../adminStore'
 
 export function FeedbackManager() {
@@ -21,6 +21,14 @@ export function FeedbackManager() {
   }, [])
 
   const feedbacks = store.feedbacks || []
+
+  const handleDeleteFeedback = (id: string) => {
+    if (confirm('Delete this client review?')) {
+      const updated = { ...store, feedbacks: store.feedbacks.filter((f) => f.id !== id) }
+      saveAdminStore(updated)
+      setStore(updated)
+    }
+  }
 
   const filteredFeedbacks = feedbacks.filter((f) => {
     return (
@@ -157,6 +165,14 @@ export function FeedbackManager() {
                 }`}
               >
                 Portfolio Use: {f.portfolioPermission ? 'Permitted' : 'Private'}
+              </button>
+
+              <button
+                onClick={() => handleDeleteFeedback(f.id)}
+                className="p-1.5 rounded-lg bg-white/5 hover:bg-red-500/20 hover:text-red-400 text-white/60 transition-colors cursor-pointer ml-auto"
+                title="Delete Review"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
               </button>
             </div>
           </div>
