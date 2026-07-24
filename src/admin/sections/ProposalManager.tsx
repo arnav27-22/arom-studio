@@ -29,13 +29,21 @@ export function ProposalManager() {
 
   const handleDownloadPDF = (p: AdminProposal) => {
     generateProposalPDF({
-      proposalNumber: p.proposalNumber,
       clientName: p.clientName,
-      clientEmail: p.clientEmail,
       projectName: p.title || 'Web Development Project',
-      amount: p.amount,
-      validUntil: p.validUntil,
-      scopeItems: [p.scopeSummary || 'Custom UI Design & Web Engineering Services'],
+      preparedBy: 'AROM STUDIO',
+      date: new Date().toLocaleDateString('en-US'),
+      executiveSummary: p.scopeSummary || 'Custom UI Design & Web Engineering Services',
+      objectives: ['Build high performance web application'],
+      scope: [p.scopeSummary || 'Custom React & Tailwind Application'],
+      deliverables: ['Responsive Web App', 'Admin Portal', 'Documentation'],
+      milestones: [{ phase: 'Phase 1', description: 'Design & Build', timeline: '2 Weeks' }],
+      totalPrice: `₹${(p.amount || 0).toLocaleString('en-IN')}`,
+      paymentTerms: '50% Advance, 50% Upon Launch',
+      validityDays: '30 Days',
+      acceptedBy: p.clientName,
+      termsAndConditions: 'Standard agency service agreement terms apply.',
+      supportDescription: '30-day post launch warranty & support.',
     })
   }
 
@@ -99,19 +107,6 @@ export function ProposalManager() {
     setShowAddModal(false)
   }
 
-  const handleDuplicateProposal = (prop: AdminProposal) => {
-    const num = `PROP-2026-${(proposals.length + 1).toString().padStart(3, '0')}`
-    const dup: AdminProposal = {
-      ...prop,
-      id: 'prop_' + Math.random().toString(36).slice(2, 9),
-      proposalNumber: num,
-      status: 'Draft',
-      createdAt: new Date().toISOString(),
-    }
-    const updated = { ...store, proposals: [dup, ...store.proposals] }
-    saveAdminStore(updated)
-    setStore(updated)
-  }
 
   const columns = [
     {
