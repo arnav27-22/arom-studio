@@ -724,7 +724,7 @@ export function generateAgreementPDF(data: {
       'The website will be deployed after final approval, final payment, and required domain/hosting access (if applicable).',
     ]],
     ['15. Support', [
-      `After website delivery, the included support period is ${data.supportPeriod || '30'} days.`,
+      `After website delivery, the included support period is ${data.supportPeriod === '180' ? '6 months' : `${data.supportPeriod || '30'} days`}.`,
       'The warranty covers defects in delivered work.',
       'Support includes: Bug Fixes, Minor Technical Assistance.',
       'Support does not include: Client modifications, Third-party plugin updates, New Features, Major Design Changes, Additional Pages, Third-party software issues.',
