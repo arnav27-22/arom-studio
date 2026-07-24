@@ -597,7 +597,7 @@ export function generateProposalPDF(data: {
   }
 
   const proposalFile = `Proposal_${data.clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`
-  uploadPDF(doc, 'proposal', proposalFile)
+  uploadPDF(doc, 'Proposal Document', proposalFile, data.clientName)
   trackPDFDownload('proposal', proposalFile)
   doc.save(proposalFile)
 }
@@ -856,7 +856,7 @@ export function generateAgreementPDF(data: {
   }
 
   const agreementFile = `Website_Development_Agreement_${data.clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`
-  uploadPDF(doc, 'agreement', agreementFile)
+  uploadPDF(doc, 'Website Agreement Contract', agreementFile, data.clientName)
   trackPDFDownload('agreement', agreementFile)
   doc.save(agreementFile)
 }
@@ -1096,7 +1096,7 @@ export function generateAssetsPDF(data: {
   }
 
   const assetsFile = `Assets_Summary_${data.clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`
-  uploadPDF(doc, 'assets', assetsFile)
+  uploadPDF(doc, 'Assets Upload Summary', assetsFile, data.clientName)
   trackPDFDownload('assets', assetsFile)
   doc.save(assetsFile)
 }
@@ -1158,7 +1158,7 @@ export function generateContentCollectionPDF(data: {
   }
 
   const contentFile = `Content_Collection_${data.clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`
-  uploadPDF(doc, 'content-collection', contentFile)
+  uploadPDF(doc, 'Content Collection Summary', contentFile, data.clientName)
   trackPDFDownload('content-collection', contentFile)
   doc.save(contentFile)
 }

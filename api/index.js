@@ -162,6 +162,23 @@ export default async function handler(req, res) {
         if (!invoices.some(i => i.id === item.id)) {
           await db.append('real_invoices', item)
         }
+      } else if (action === 'save_store' && item) {
+        if (Array.isArray(item.clients)) await db.write('real_clients', item.clients)
+        if (Array.isArray(item.projects)) await db.write('real_projects', item.projects)
+        if (Array.isArray(item.proposals)) await db.write('real_proposals', item.proposals)
+        if (Array.isArray(item.agreements)) await db.write('real_agreements', item.agreements)
+        if (Array.isArray(item.payments)) await db.write('real_payments', item.payments)
+        if (Array.isArray(item.content)) await db.write('real_content', item.content)
+        if (Array.isArray(item.assets)) await db.write('real_assets', item.assets)
+        if (Array.isArray(item.approvals)) await db.write('real_approvals', item.approvals)
+        if (Array.isArray(item.timelines)) await db.write('real_timelines', item.timelines)
+        if (Array.isArray(item.handovers)) await db.write('real_handovers', item.handovers)
+        if (Array.isArray(item.feedbacks)) await db.write('real_feedbacks', item.feedbacks)
+        if (Array.isArray(item.notifications)) await db.write('real_notifications', item.notifications)
+        if (Array.isArray(item.visitors)) await db.write('real_visitors', item.visitors)
+        if (Array.isArray(item.pdfs)) await db.write('real_pdfs', item.pdfs)
+        if (Array.isArray(item.invoices)) await db.write('real_invoices', item.invoices)
+        if (Array.isArray(item.leads)) await db.write('real_leads', item.leads)
       } else if (action === 'save_entity' && body.entity && body.data) {
         await db.write(`real_${body.entity}`, body.data)
       }

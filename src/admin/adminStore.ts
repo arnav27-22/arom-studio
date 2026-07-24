@@ -711,39 +711,48 @@ export function getAdminStore(): StoreData {
     if (raw) {
       const parsed = JSON.parse(raw)
       return {
-        visitors: parsed.visitors || [],
-        leads: parsed.leads || [],
-        pdfs: parsed.pdfs || [],
-        invoices: parsed.invoices || [],
-        logs: parsed.logs || [],
-        clients: parsed.clients || INITIAL_CLIENTS,
-        projects: parsed.projects || INITIAL_PROJECTS,
-        proposals: parsed.proposals || INITIAL_PROPOSALS,
-        agreements: parsed.agreements || INITIAL_AGREEMENTS,
-        payments: parsed.payments || INITIAL_PAYMENTS,
-        content: parsed.content || INITIAL_CONTENT,
-        assets: parsed.assets || INITIAL_ASSETS,
-        approvals: parsed.approvals || INITIAL_APPROVALS,
-        timelines: parsed.timelines || INITIAL_TIMELINES,
-        handovers: parsed.handovers || INITIAL_HANDOVERS,
-        feedbacks: parsed.feedbacks || INITIAL_FEEDBACKS,
-        notifications: parsed.notifications || INITIAL_NOTIFICATIONS,
+        visitors: Array.isArray(parsed.visitors) ? parsed.visitors : [],
+        leads: Array.isArray(parsed.leads) ? parsed.leads : [],
+        pdfs: Array.isArray(parsed.pdfs) ? parsed.pdfs : [],
+        invoices: Array.isArray(parsed.invoices) ? parsed.invoices : [],
+        logs: Array.isArray(parsed.logs) ? parsed.logs : [],
+        clients: Array.isArray(parsed.clients) ? parsed.clients : INITIAL_CLIENTS,
+        projects: Array.isArray(parsed.projects) ? parsed.projects : INITIAL_PROJECTS,
+        proposals: Array.isArray(parsed.proposals) ? parsed.proposals : INITIAL_PROPOSALS,
+        agreements: Array.isArray(parsed.agreements) ? parsed.agreements : INITIAL_AGREEMENTS,
+        payments: Array.isArray(parsed.payments) ? parsed.payments : INITIAL_PAYMENTS,
+        content: Array.isArray(parsed.content) ? parsed.content : INITIAL_CONTENT,
+        assets: Array.isArray(parsed.assets) ? parsed.assets : INITIAL_ASSETS,
+        approvals: Array.isArray(parsed.approvals) ? parsed.approvals : INITIAL_APPROVALS,
+        timelines: Array.isArray(parsed.timelines) ? parsed.timelines : INITIAL_TIMELINES,
+        handovers: Array.isArray(parsed.handovers) ? parsed.handovers : INITIAL_HANDOVERS,
+        feedbacks: Array.isArray(parsed.feedbacks) ? parsed.feedbacks : INITIAL_FEEDBACKS,
+        notifications: Array.isArray(parsed.notifications) ? parsed.notifications : INITIAL_NOTIFICATIONS,
       }
     }
   } catch (e) {
     console.error('Failed to read admin store:', e)
   }
-  saveAdminStore(CLEAN_INITIAL_DATA)
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(CLEAN_INITIAL_DATA))
+  } catch {}
   return CLEAN_INITIAL_DATA
 }
 
-// Save local storage helper
+// Save local storage & cloud backup helper
 export function saveAdminStore(data: StoreData) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
   } catch (e) {
     console.error('Failed to save admin store:', e)
   }
+
+  // Backup store on backend database
+  fetch('/api/sync', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'save_store', data }),
+  }).catch(() => {})
 }
 
 // Global Cloud Sync: Syncs data from cloud server so Admin on Device B sees events from Device A
@@ -774,20 +783,22 @@ export async function syncFromCloud(): Promise<StoreData> {
         leads: mergedLeads.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
         invoices: mergedInvoices.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
         logs: mergedLogs.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
-        clients: remote.clients || local.clients,
-        projects: remote.projects || local.projects,
-        proposals: remote.proposals || local.proposals,
-        agreements: remote.agreements || local.agreements,
-        payments: remote.payments || local.payments,
-        content: remote.content || local.content,
-        assets: remote.assets || local.assets,
-        approvals: remote.approvals || local.approvals,
-        timelines: remote.timelines || local.timelines,
-        handovers: remote.handovers || local.handovers,
-        feedbacks: remote.feedbacks || local.feedbacks,
-        notifications: remote.notifications || local.notifications,
+        clients: Array.isArray(remote.clients) ? remote.clients : local.clients,
+        projects: Array.isArray(remote.projects) ? remote.projects : local.projects,
+        proposals: Array.isArray(remote.proposals) ? remote.proposals : local.proposals,
+        agreements: Array.isArray(remote.agreements) ? remote.agreements : local.agreements,
+        payments: Array.isArray(remote.payments) ? remote.payments : local.payments,
+        content: Array.isArray(remote.content) ? remote.content : local.content,
+        assets: Array.isArray(remote.assets) ? remote.assets : local.assets,
+        approvals: Array.isArray(remote.approvals) ? remote.approvals : local.approvals,
+        timelines: Array.isArray(remote.timelines) ? remote.timelines : local.timelines,
+        handovers: Array.isArray(remote.handovers) ? remote.handovers : local.handovers,
+        feedbacks: Array.isArray(remote.feedbacks) ? remote.feedbacks : local.feedbacks,
+        notifications: Array.isArray(remote.notifications) ? remote.notifications : local.notifications,
       }
-      saveAdminStore(updated)
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
+      } catch {}
       return updated
     }
   } catch (e) {
