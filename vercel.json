@@ -1,4 +1,13 @@
 {
+  "headers": [
+    {
+      "source": "/(favicon.*|apple-touch-icon.*|web-app-manifest.*|site.webmanifest)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=0, s-maxage=0, must-revalidate" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
+    }
+  ],
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/index" },
     { "source": "/(.*)", "destination": "/index.html" }
