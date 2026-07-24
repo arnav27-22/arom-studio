@@ -7,10 +7,10 @@
   "url": "https://aromstudio.vercel.app",
   "logo": {
     "@type": "ImageObject",
-    "url": "https://aromstudio.vercel.app/favicon.svg",
+    "url": "https://aromstudio.vercel.app/web-app-manifest-512x512.png",
     "caption": "AROM STUDIO logo"
   },
-  "image": "https://aromstudio.vercel.app/favicon.svg",
+  "image": "https://aromstudio.vercel.app/web-app-manifest-512x512.png",
   "description": "AROM STUDIO is a premium web design and development agency based in Nashik, India. Founded by Arnav Pagare, we specialize in crafting high-performance websites, web applications, SaaS platforms, and digital experiences using Next.js, React, TypeScript, and Tailwind CSS.",
   "slogan": "A digital studio crafting premium experiences.",
   "foundingDate": "2026",

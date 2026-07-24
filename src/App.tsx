@@ -7,7 +7,6 @@ import { WhatsAppButton } from './components/ui/WhatsAppButton'
 import { SiteBackground } from './components/ui/SiteBackground'
 import { Particles } from './components/ui/ParticleBackground'
 import { CookieConsent } from './components/ui/CookieConsent'
-import { SplashScreen } from './components/ui/SplashScreen'
 import { initTracker, trackPageView } from './lib/tracker'
 
 import Home from './pages/Home'
@@ -69,7 +68,6 @@ export default function App() {
 
   return (
     <>
-      <SplashScreen />
       <ScrollToTop />
       <Analytics />
       <CookieConsent />

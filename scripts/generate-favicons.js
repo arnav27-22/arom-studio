@@ -32,6 +32,18 @@ async function generateFavicons() {
     .png()
     .toFile('public/web-app-manifest-512x512.png')
 
+  // 48x48 favicon for Google Search Mobile Favicon crawler
+  await sharp(svgBuffer)
+    .resize(48, 48)
+    .png()
+    .toFile('public/favicon-48x48.png')
+
+  // 144x144 favicon
+  await sharp(svgBuffer)
+    .resize(144, 144)
+    .png()
+    .toFile('public/favicon-144x144.png')
+
   // 48x48 favicon.ico replacement
   await sharp(svgBuffer)
     .resize(48, 48)
