@@ -166,7 +166,7 @@ export default function Agreement() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="text-xs text-white/50 font-body mb-1 block">Advance Payment (%) — minimum 27%</label>
-              <input type="number" min={27} max={100} value={advancePct} onChange={(e) => setAdvancePct(e.target.value)} onBlur={() => clampAdvance(advancePct)} className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white focus:outline-none focus:border-accent/40 font-body" />
+              <input type="number" min={27} max={100} value={advancePct} onChange={(e) => { const r = e.target.value; if (r === '' || r === '-' || Number(r) <= 100) setAdvancePct(r) }} onBlur={() => clampAdvance(advancePct)} className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white focus:outline-none focus:border-accent/40 font-body" />
             </div>
             <div>
               <label className="text-xs text-white/50 font-body mb-1 block">Final Payment (%)</label>
