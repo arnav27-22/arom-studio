@@ -97,14 +97,44 @@ export default async function handler(req, res) {
   // Global Sync Endpoint for Cross-Device Synchronization
   if (pathname === '/api/sync') {
     if (req.method === 'GET') {
-      const [visitors, pdfs, leads, invoices, logs] = await Promise.all([
+      const [visitors, pdfs, leads, invoices, logs, clients, projects, proposals, agreements, payments, content, assets, approvals, timelines, handovers, feedbacks, notifications] = await Promise.all([
         db.read('real_visitors'),
         db.read('real_pdfs'),
         db.read('real_leads'),
         db.read('real_invoices'),
         db.read('system_logs'),
+        db.read('real_clients'),
+        db.read('real_projects'),
+        db.read('real_proposals'),
+        db.read('real_agreements'),
+        db.read('real_payments'),
+        db.read('real_content'),
+        db.read('real_assets'),
+        db.read('real_approvals'),
+        db.read('real_timelines'),
+        db.read('real_handovers'),
+        db.read('real_feedbacks'),
+        db.read('real_notifications'),
       ])
-      return j(res, { visitors: visitors || [], pdfs: pdfs || [], leads: leads || [], invoices: invoices || [], logs: logs || [] })
+      return j(res, {
+        visitors: visitors || [],
+        pdfs: pdfs || [],
+        leads: leads || [],
+        invoices: invoices || [],
+        logs: logs || [],
+        clients: clients.length ? clients : undefined,
+        projects: projects.length ? projects : undefined,
+        proposals: proposals.length ? proposals : undefined,
+        agreements: agreements.length ? agreements : undefined,
+        payments: payments.length ? payments : undefined,
+        content: content.length ? content : undefined,
+        assets: assets.length ? assets : undefined,
+        approvals: approvals.length ? approvals : undefined,
+        timelines: timelines.length ? timelines : undefined,
+        handovers: handovers.length ? handovers : undefined,
+        feedbacks: feedbacks.length ? feedbacks : undefined,
+        notifications: notifications.length ? notifications : undefined,
+      })
     }
 
     if (req.method === 'POST') {
@@ -132,6 +162,8 @@ export default async function handler(req, res) {
         if (!invoices.some(i => i.id === item.id)) {
           await db.append('real_invoices', item)
         }
+      } else if (action === 'save_entity' && body.entity && body.data) {
+        await db.write(`real_${body.entity}`, body.data)
       }
       return j(res, { success: true })
     }

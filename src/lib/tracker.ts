@@ -1,12 +1,17 @@
 import { recordAdminVisit, recordAdminPDF } from '../admin/adminStore'
 
 const SESSION_KEY = 'arom_session_id'
+const ENTRY_PAGE_KEY = 'arom_entry_page'
+const PAGE_VIEWS_KEY = 'arom_page_views_count'
+const SESSION_START_KEY = 'arom_session_start'
 
 function getSessionId(): string {
   let id = sessionStorage.getItem(SESSION_KEY)
   if (!id) {
-    id = crypto.randomUUID()
+    id = 'sess_' + Math.random().toString(36).slice(2, 9)
     sessionStorage.setItem(SESSION_KEY, id)
+    sessionStorage.setItem(SESSION_START_KEY, Date.now().toString())
+    sessionStorage.setItem(PAGE_VIEWS_KEY, '0')
   }
   return id
 }
@@ -16,7 +21,7 @@ function getDeviceInfo() {
   const mobile = /Mobi|Android|iPhone|iPad/i.test(ua)
   const tablet = /Tablet|iPad/i.test(ua) && !/Mobi/i.test(ua)
   return {
-    deviceType: tablet ? 'tablet' : mobile ? 'mobile' : 'desktop',
+    deviceType: tablet ? 'tablet' : mobile ? 'mobile' : 'desktop' as const,
     browser: (() => {
       if (ua.includes('Chrome')) return 'Chrome'
       if (ua.includes('Firefox')) return 'Firefox'
@@ -41,6 +46,9 @@ let currentPage = ''
 
 export function initTracker() {
   currentPage = window.location.pathname
+  if (!sessionStorage.getItem(ENTRY_PAGE_KEY)) {
+    sessionStorage.setItem(ENTRY_PAGE_KEY, currentPage || '/')
+  }
 
   document.addEventListener('scroll', () => {
     const docEl = document.documentElement
@@ -55,9 +63,27 @@ export function trackPageView(page: string, referrer: string) {
   pageEnteredAt = Date.now()
   scrollDepth = 0
 
+  const sessId = getSessionId()
+  const entryPage = sessionStorage.getItem(ENTRY_PAGE_KEY) || page || '/'
+  const pvCount = (parseInt(sessionStorage.getItem(PAGE_VIEWS_KEY) || '0', 10) + 1)
+  sessionStorage.setItem(PAGE_VIEWS_KEY, pvCount.toString())
+
+  const sessStart = parseInt(sessionStorage.getItem(SESSION_START_KEY) || Date.now().toString(), 10)
+  const sessionDuration = Math.max(1, Math.round((Date.now() - sessStart) / 1000))
+  const devInfo = getDeviceInfo()
+
   // Always record visit locally for admin dashboard analytics
   try {
-    recordAdminVisit(page, referrer)
+    recordAdminVisit(page, referrer, {
+      sessionId: sessId,
+      entryPage,
+      pageViewsCount: pvCount,
+      sessionDuration,
+      deviceType: devInfo.deviceType as 'desktop' | 'mobile' | 'tablet',
+      browser: devInfo.browser,
+      os: devInfo.os,
+      isBounce: pvCount === 1 && sessionDuration < 10,
+    })
   } catch (e) {
     console.error(e)
   }
@@ -65,8 +91,11 @@ export function trackPageView(page: string, referrer: string) {
   const payload = {
     page,
     referrer,
-    sessionId: getSessionId(),
-    deviceInfo: getDeviceInfo(),
+    sessionId: sessId,
+    entryPage,
+    pageViewsCount: pvCount,
+    sessionDuration,
+    deviceInfo: devInfo,
   }
 
   fetch('/api/track/pageview', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), keepalive: true }).catch(() => {})
