@@ -3,7 +3,7 @@ import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { UserCheck, Search, Plus, ExternalLink, Mail, Phone, DollarSign, Briefcase, Eye, Trash2, X, Clock, Download } from 'lucide-react'
 import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, type AdminClient } from '../adminStore'
-import { generateAdminReportPDF } from '../../lib/professionalPDF'
+import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function ClientManagement() {
   const [store, setStore] = useState(getAdminStore())
@@ -11,6 +11,20 @@ export function ClientManagement() {
   const [statusFilter, setStatusFilter] = useState<string>('All')
   const [selectedClient, setSelectedClient] = useState<AdminClient | null>(null)
   const [showAddModal, setShowAddModal] = useState(false)
+
+  const handleDownloadClientsPDF = () => {
+    const clients = store.clients || []
+    const headers = ['Company Name', 'Contact Person', 'Email', 'Active Projects', 'Total Revenue', 'Status']
+    const rows = clients.map((c) => [
+      c.companyName,
+      c.contactPerson,
+      c.email,
+      c.activeProjectsCount || 1,
+      `₹${(c.totalRevenue || 0).toLocaleString()}`,
+      c.status,
+    ])
+    exportSectionReportPDF('Client Directory Report', 'AROM Studio Agency Client Management Overview', headers, rows, 'Client_Directory_Report')
+  }
 
   // New Client Form
   const [form, setForm] = useState({
@@ -43,21 +57,6 @@ export function ClientManagement() {
   const activeClients = clients.filter((c) => c.status === 'Active').length
   const onboardingClients = clients.filter((c) => c.status === 'Onboarding').length
   const totalRevenue = clients.reduce((acc, c) => acc + (c.totalRevenue || 0), 0)
-
-  const handleExportPDF = () => {
-    generateAdminReportPDF({
-      sectionTitle: 'Client Management Roster',
-      subtitle: `${clients.length} Active Accounts | Total Revenue: ₹${totalRevenue.toLocaleString()}`,
-      headers: ['Company', 'Contact Person', 'Email', 'Phone', 'Status', 'Total Revenue'],
-      rows: clients.map((c) => [c.companyName, c.contactPerson, c.email, c.phone, c.status, `₹${(c.totalRevenue || 0).toLocaleString()}`]),
-      summaryLines: [
-        `Total Registered Clients: ${totalClients}`,
-        `Active Retainer Clients: ${activeClients}`,
-        `Onboarding Clients: ${onboardingClients}`,
-        `Cumulative Client Revenue: ₹${totalRevenue.toLocaleString()}`,
-      ],
-    })
-  }
 
   const handleAddClient = (e: React.FormEvent) => {
     e.preventDefault()
@@ -190,20 +189,20 @@ export function ClientManagement() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-lg font-heading font-bold text-white flex items-center gap-2">
-            <UserCheck className="h-5 w-5 text-accent" /> Client Account Management
+            <UserCheck className="h-5 w-5 text-accent" /> Client Management
           </h2>
           <p className="text-xs text-white/50">Manage accounts, active projects, revenue history & client timelines</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           <button
-            onClick={handleExportPDF}
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/10 text-white font-semibold text-xs hover:bg-white/20 transition-all border border-white/10 cursor-pointer"
+            onClick={handleDownloadClientsPDF}
+            className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-accent text-black font-semibold text-xs hover:bg-accent/90 transition-all shadow-lg cursor-pointer"
           >
-            <Download className="h-4 w-4 text-accent" /> Export PDF Report
+            <Download className="h-4 w-4" /> Download Clients PDF
           </button>
           <button
             onClick={() => setShowAddModal(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-accent text-black font-semibold text-xs hover:bg-accent/90 transition-all shadow-lg cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 text-white font-semibold text-xs hover:bg-white/20 transition-all border border-white/10 cursor-pointer"
           >
             <Plus className="h-4 w-4" /> Add New Client
           </button>

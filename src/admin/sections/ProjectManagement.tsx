@@ -3,7 +3,7 @@ import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { Briefcase, Search, Plus, CheckCircle2, Clock, Archive, Rocket, Users, X, Eye, Trash2, Download } from 'lucide-react'
 import { getAdminStore, saveAdminStore, moveToRecycleBin, type AdminProject } from '../adminStore'
-import { generateAdminReportPDF } from '../../lib/professionalPDF'
+import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function ProjectManagement() {
   const [store, setStore] = useState(getAdminStore())
@@ -11,6 +11,21 @@ export function ProjectManagement() {
   const [statusFilter, setStatusFilter] = useState<string>('All')
   const [selectedProject, setSelectedProject] = useState<AdminProject | null>(null)
   const [showAddModal, setShowAddModal] = useState(false)
+
+  const handleDownloadProjectsPDF = () => {
+    const projects = store.projects || []
+    const headers = ['Project Title', 'Client Name', 'Status', 'Progress', 'Start Date', 'Due Date', 'Launch']
+    const rows = projects.map((p) => [
+      p.title,
+      p.clientName,
+      p.status,
+      `${p.progress}%`,
+      p.startDate,
+      p.dueDate,
+      p.launchStatus || 'Pending',
+    ])
+    exportSectionReportPDF('Project Management Audit Report', 'AROM Studio Agency Project Delivery Pipeline', headers, rows, 'Projects_Management_Report')
+  }
 
   // Form State
   const [form, setForm] = useState({
@@ -30,21 +45,6 @@ export function ProjectManagement() {
 
   const projects = store.projects || []
   const clients = store.clients || []
-
-  const handleExportProjectsPDF = () => {
-    generateAdminReportPDF({
-      sectionTitle: 'Project Management Audit Report',
-      subtitle: `${projects.length} Total Projects | ${inProgressProjects} In Progress, ${launchedProjects} Launched`,
-      headers: ['Project Title', 'Client Name', 'Status', 'Progress', 'Priority', 'Due Date'],
-      rows: projects.map((p) => [p.title, p.clientName, p.status, `${p.progress}%`, p.priority, p.dueDate]),
-      summaryLines: [
-        `Total Tracked Projects: ${totalProjects}`,
-        `Projects In Progress: ${inProgressProjects}`,
-        `Projects In Client Review: ${inReviewProjects}`,
-        `Successfully Launched Projects: ${launchedProjects}`,
-      ],
-    })
-  }
 
   const handleDeleteProject = (id: string) => {
     const p = projects.find((x) => x.id === id)
@@ -241,16 +241,16 @@ export function ProjectManagement() {
           </h2>
           <p className="text-xs text-white/50">Track build progress, team assignments, milestones, and live launch deployments</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           <button
-            onClick={handleExportProjectsPDF}
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/10 text-white font-semibold text-xs hover:bg-white/20 transition-all border border-white/10 cursor-pointer"
+            onClick={handleDownloadProjectsPDF}
+            className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-accent text-black font-semibold text-xs hover:bg-accent/90 transition-all shadow-lg cursor-pointer"
           >
-            <Download className="h-4 w-4 text-accent" /> Export PDF Report
+            <Download className="h-4 w-4" /> Download Projects PDF
           </button>
           <button
             onClick={() => setShowAddModal(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-accent text-black font-semibold text-xs hover:bg-accent/90 transition-all shadow-lg cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 text-white font-semibold text-xs hover:bg-white/20 transition-all border border-white/10 cursor-pointer"
           >
             <Plus className="h-4 w-4" /> Create New Project
           </button>

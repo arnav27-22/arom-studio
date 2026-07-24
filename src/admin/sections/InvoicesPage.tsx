@@ -3,7 +3,7 @@ import jsPDF from 'jspdf'
 import { Plus, Download, Eye, Trash2, FileText, CheckCircle2, Clock } from 'lucide-react'
 import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, recordAdminInvoice, type AdminInvoice } from '../adminStore'
 import { StatCard } from '../components/StatCard'
-import { generateAdminReportPDF } from '../../lib/professionalPDF'
+import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function InvoicesPage() {
   const [store, setStore] = useState(getAdminStore())
@@ -11,6 +11,20 @@ export function InvoicesPage() {
   const [previewPdfUrl, setPreviewPdfUrl] = useState<string | null>(null)
   const [selectedInvoice, setSelectedInvoice] = useState<AdminInvoice | null>(null)
   const [statusFilter, setStatusFilter] = useState<'All' | 'Paid' | 'Pending' | 'Overdue'>('All')
+
+  const handleDownloadInvoicesPDF = () => {
+    const invoices = store.invoices || []
+    const headers = ['Invoice Number', 'Client Name', 'Created Date', 'Due Date', 'Total Amount', 'Status']
+    const rows = invoices.map((inv) => [
+      inv.invoiceNumber,
+      inv.clientName,
+      formatIST(inv.createdAt).split(',')[0],
+      inv.dueDate,
+      `${inv.currency === 'USD' ? '$' : '₹'}${inv.totalAmount.toLocaleString()}`,
+      inv.status,
+    ])
+    exportSectionReportPDF('Invoices & Financial Audit Log', 'AROM Studio Agency Billing & Invoices', headers, rows, 'Invoices_Financial_Report')
+  }
 
   // Invoice Form State
   const [clientName, setClientName] = useState('')
@@ -32,20 +46,6 @@ export function InvoicesPage() {
   useEffect(() => {
     reloadStore()
   }, [])
-
-  const handleExportInvoicesReportPDF = () => {
-    generateAdminReportPDF({
-      sectionTitle: 'Invoices & Billings Audit Summary',
-      subtitle: `Total Invoices: ${store.invoices.length} | Collected: ₹${totalCollected.toLocaleString('en-IN')}`,
-      headers: ['Invoice #', 'Client Company', 'Email', 'Amount', 'Due Date', 'Status'],
-      rows: store.invoices.map((inv) => [inv.invoiceNumber, inv.clientCompany || inv.clientName, inv.clientEmail, `₹${(inv.totalAmount || 0).toLocaleString('en-IN')}`, inv.dueDate, inv.status]),
-      summaryLines: [
-        `Total Generated Invoices: ${store.invoices.length}`,
-        `Payment Completed Revenue: ₹${totalCollected.toLocaleString('en-IN')}`,
-        `Pending Invoices Balance: ₹${totalPending.toLocaleString('en-IN')}`,
-      ],
-    })
-  }
 
   // Calculations
   const subtotal = items.reduce((acc, item) => acc + item.quantity * item.unitPrice, 0)
@@ -172,11 +172,8 @@ export function InvoicesPage() {
       doc.text(`Discount (${inv.discountRate}%): -${sym}${inv.discountAmount.toLocaleString('en-IN')}`, 135, y)
       y += 6
     }
-    if (inv.includeGST && inv.taxAmount > 0) {
-      doc.text(`GST (${inv.taxRate}%): +${sym}${inv.taxAmount.toLocaleString('en-IN')}`, 135, y)
-      y += 6
-    }
-    y += 2
+    doc.text(`GST/Tax (${inv.taxRate}%): +${sym}${inv.taxAmount.toLocaleString('en-IN')}`, 135, y)
+    y += 8
 
     doc.setFont('helvetica', 'bold')
     doc.setFontSize(12)
@@ -209,7 +206,6 @@ export function InvoicesPage() {
       currency,
       items,
       taxRate,
-      includeGST,
       discountRate,
       subtotal,
       taxAmount,
@@ -271,14 +267,14 @@ export function InvoicesPage() {
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <button
-            onClick={handleExportInvoicesReportPDF}
-            className="flex items-center gap-2 px-4 py-3 bg-white/10 hover:bg-white/20 text-white font-medium text-xs rounded-xl border border-white/10 transition-all cursor-pointer"
+            onClick={handleDownloadInvoicesPDF}
+            className="flex items-center gap-2 px-4 py-3 bg-accent hover:bg-accent/90 text-black font-semibold text-xs rounded-xl shadow-lg shadow-accent/20 transition-all cursor-pointer"
           >
-            <Download className="h-4 w-4 text-accent" /> Export PDF Report
+            <Download className="h-4 w-4" /> Download Invoices PDF
           </button>
           <button
             onClick={() => setShowCreateModal(true)}
-            className="flex items-center gap-2 px-5 py-3 bg-accent hover:bg-accent/90 text-white font-medium text-xs rounded-xl shadow-lg shadow-accent/20 transition-all cursor-pointer"
+            className="flex items-center gap-2 px-5 py-3 bg-white/10 hover:bg-white/20 text-white font-medium text-xs rounded-xl border border-white/10 transition-all cursor-pointer"
           >
             <Plus className="h-4 w-4" /> Create New Invoice
           </button>

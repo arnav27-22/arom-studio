@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { Bell, Mail, FileSpreadsheet, CreditCard, CheckSquare, Rocket, PackageCheck, ShieldAlert, Check, Search, Trash2, Download } from 'lucide-react'
 import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST } from '../adminStore'
-import { generateAdminReportPDF } from '../../lib/professionalPDF'
+import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function NotificationsCenter() {
   const [store, setStore] = useState(getAdminStore())
@@ -13,21 +13,19 @@ export function NotificationsCenter() {
     setStore(getAdminStore())
   }, [])
 
-  const notifications = store.notifications || []
-
-  const handleExportNotificationsPDF = () => {
-    generateAdminReportPDF({
-      sectionTitle: 'System & Agency Notifications Stream',
-      subtitle: `${notifications.length} Total Alerts Recorded | Unread: ${unreadCount}`,
-      headers: ['Time (IST)', 'Alert Category', 'Event Title', 'Message Detail', 'Read Status'],
-      rows: notifications.map((n) => [formatIST(n.createdAt), n.type || 'live', n.title, n.message, n.read ? 'Read' : 'Unread']),
-      summaryLines: [
-        `Total Notifications Logged: ${totalCount}`,
-        `Unread Alerts: ${unreadCount}`,
-        `Read Alerts: ${totalCount - unreadCount}`,
-      ],
-    })
+  const handleDownloadNotificationsPDF = () => {
+    const notifications = store.notifications || []
+    const headers = ['Time (IST)', 'Notification Title', 'Message Details', 'Status']
+    const rows = notifications.map((n) => [
+      formatIST(n.createdAt),
+      n.title,
+      n.message,
+      n.read ? 'Read' : 'Unread',
+    ])
+    exportSectionReportPDF('System Notifications & Alerts Log', 'AROM Studio Central Events & Audit Stream', headers, rows, 'Notifications_Center_Report')
   }
+
+  const notifications = store.notifications || []
 
   const handleDeleteNotification = (id: string, e: React.MouseEvent) => {
     e.stopPropagation()
@@ -44,6 +42,13 @@ export function NotificationsCenter() {
     }
   }
 
+  const handleMarkAllRead = () => {
+    const updatedNotifs = notifications.map((n) => ({ ...n, read: true }))
+    const updated = { ...store, notifications: updatedNotifs }
+    saveAdminStore(updated)
+    setStore(updated)
+  }
+
   const filteredNotifications = notifications.filter((n) => {
     const matchesSearch =
       n.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -54,13 +59,6 @@ export function NotificationsCenter() {
 
   const unreadCount = notifications.filter((n) => !n.read).length
   const totalCount = notifications.length
-
-  const handleMarkAllRead = () => {
-    const updatedNotifs = notifications.map((n) => ({ ...n, read: true }))
-    const updated = { ...store, notifications: updatedNotifs }
-    saveAdminStore(updated)
-    setStore(updated)
-  }
 
   const handleToggleRead = (id: string) => {
     const updatedNotifs = notifications.map((n) =>
@@ -100,12 +98,12 @@ export function NotificationsCenter() {
           </h2>
           <p className="text-xs text-white/50">Central event stream for inquiries, payments, design sign-offs, live deployments & system alerts</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           <button
-            onClick={handleExportNotificationsPDF}
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/10 text-white font-semibold text-xs hover:bg-white/20 transition-all border border-white/10 cursor-pointer"
+            onClick={handleDownloadNotificationsPDF}
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-accent text-black font-semibold text-xs hover:bg-accent/90 transition-all shadow-lg cursor-pointer"
           >
-            <Download className="h-4 w-4 text-accent" /> Export PDF Report
+            <Download className="h-4 w-4" /> Download Notifications PDF
           </button>
           {unreadCount > 0 && (
             <button

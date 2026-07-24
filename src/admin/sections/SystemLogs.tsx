@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { DataTable } from '../components/DataTable'
 import { Download, ShieldCheck } from 'lucide-react'
 import { getAdminStore, formatIST } from '../adminStore'
-import { generateAdminReportPDF } from '../../lib/professionalPDF'
+import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function SystemLogs() {
   const [data, setData] = useState<any[]>(getAdminStore().logs)
@@ -25,17 +25,17 @@ export function SystemLogs() {
     a.click()
   }
 
-  const handleExportSystemLogsPDF = () => {
-    generateAdminReportPDF({
-      sectionTitle: 'System Security & Audit Logs',
-      subtitle: `${data.length} Total System Events Recorded`,
-      headers: ['Timestamp (IST)', 'Category', 'Event Title', 'Severity', 'Detail'],
-      rows: data.map((l) => [formatIST(l.createdAt), l.type || 'system', l.event || l.detail || 'Event', l.severity || 'info', l.detail || '—']),
-      summaryLines: [
-        `Total Logged Events: ${data.length}`,
-        `Audit Log Exported: ${new Date().toLocaleDateString('en-US')}`,
-      ],
-    })
+  const handleDownloadLogsPDF = () => {
+    const logs = data || []
+    const headers = ['Time (IST)', 'Category', 'Event Title', 'Severity', 'Description']
+    const rows = logs.map((l) => [
+      formatIST(l.createdAt),
+      l.type || 'system',
+      l.event || l.detail || 'System Event',
+      l.severity || 'info',
+      l.detail || '—',
+    ])
+    exportSectionReportPDF('System Audit Trail Report', 'AROM Studio System Event & Security Audit Stream', headers, rows, 'System_Logs_Audit_Report')
   }
 
   const filtered = filter
@@ -70,10 +70,10 @@ export function SystemLogs() {
         </div>
 
         <div className="flex items-center gap-2">
-          <button onClick={handleExportSystemLogsPDF} className="flex items-center gap-2 text-xs font-semibold text-white bg-white/10 hover:bg-white/20 border border-white/10 px-4 py-2.5 rounded-xl transition-all cursor-pointer">
-            <Download className="h-3.5 w-3.5 text-accent" /> Export Audit PDF
+          <button onClick={handleDownloadLogsPDF} className="flex items-center gap-2 text-xs font-semibold text-black bg-accent hover:bg-accent/90 px-3.5 py-2.5 rounded-xl transition-all shadow-lg">
+            <Download className="h-4 w-4" /> Download Logs PDF
           </button>
-          <button onClick={exportJSON} className="flex items-center gap-2 text-xs font-medium text-white bg-white/5 hover:bg-white/10 border border-white/10 px-4 py-2.5 rounded-xl transition-all cursor-pointer">
+          <button onClick={exportJSON} className="flex items-center gap-2 text-xs font-medium text-white bg-white/5 hover:bg-white/10 border border-white/10 px-4 py-2.5 rounded-xl transition-all">
             <Download className="h-3.5 w-3.5" /> Export JSON
           </button>
         </div>

@@ -3,7 +3,7 @@ import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { BarChart3, Download } from 'lucide-react'
 import { getAdminStore } from '../adminStore'
-import { generateAdminReportPDF } from '../../lib/professionalPDF'
+import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function PageAnalytics() {
   const [store, setStore] = useState(getAdminStore())
@@ -35,6 +35,18 @@ export function PageAnalytics() {
     bounceRate: Math.max(10, 35 - Math.min(stat.views, 20)),
   }))
 
+  const handleDownloadAnalyticsPDF = () => {
+    const headers = ['Page Route', 'Real Page Views', 'Avg Duration', 'Avg Scroll Depth', 'Bounce Rate']
+    const rows = pages.map((p) => [
+      p.page,
+      p.views,
+      `${p.avgTime}s`,
+      `${p.avgScroll}%`,
+      `${p.bounceRate}%`,
+    ])
+    exportSectionReportPDF('Page Traffic Analytics Audit', 'AROM Studio Route Views & User Engagement', headers, rows, 'Page_Analytics_Report')
+  }
+
   const pageColumns = [
     { key: 'page', label: 'Page Route', render: (v: string) => <span className="text-accent font-medium">{v}</span> },
     { key: 'views', label: 'Real Page Views', render: (v: number) => <span className="font-mono text-white font-bold">{v}</span> },
@@ -45,20 +57,6 @@ export function PageAnalytics() {
 
   const totalViews = pages.reduce((a, b) => a + b.views, 0)
 
-  const handleExportPageAnalyticsPDF = () => {
-    generateAdminReportPDF({
-      sectionTitle: 'Page Analytics & Traffic Breakdown',
-      subtitle: `${pages.length} Unique Pages | ${totalViews} Total Pageviews`,
-      headers: ['Page Route', 'Real Views', 'Avg Duration', 'Avg Scroll', 'Bounce Rate'],
-      rows: pages.map((p) => [p.page, String(p.views), `${p.avgTime}s`, `${p.avgScroll}%`, `${p.bounceRate}%`]),
-      summaryLines: [
-        `Unique Website Pages Visited: ${pages.length}`,
-        `Total Pageviews Recorded: ${totalViews}`,
-        `Highest Traffic Page: ${pages.sort((a, b) => b.views - a.views)[0]?.page || '/'}`,
-      ],
-    })
-  }
-
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -66,13 +64,13 @@ export function PageAnalytics() {
           <h2 className="text-lg font-heading font-bold text-white flex items-center gap-2">
             <BarChart3 className="h-5 w-5 text-accent" /> Page Analytics
           </h2>
-          <p className="text-xs text-white/50">Detailed pageviews, average dwell time &amp; scroll depth metrics</p>
+          <p className="text-xs text-white/50">Comprehensive page views, session duration & engagement metrics by website route</p>
         </div>
         <button
-          onClick={handleExportPageAnalyticsPDF}
-          className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/10 text-white font-semibold text-xs hover:bg-white/20 transition-all border border-white/10 cursor-pointer"
+          onClick={handleDownloadAnalyticsPDF}
+          className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-accent text-black font-semibold text-xs hover:bg-accent/90 transition-all shadow-lg cursor-pointer shrink-0"
         >
-          <Download className="h-4 w-4 text-accent" /> Export PDF Analytics
+          <Download className="h-4 w-4" /> Download Analytics PDF
         </button>
       </div>
 

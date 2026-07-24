@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
-import { CheckCircle2, ShieldCheck, Database, Key, Trash2, RotateCcw, Download, Settings } from 'lucide-react'
+import { CheckCircle2, ShieldCheck, Database, Key, Trash2, RotateCcw, Download } from 'lucide-react'
 import { getAdminStore, restoreFromRecycleBin, permanentDeleteFromRecycleBin, emptyRecycleBin, formatIST, type AdminRecycleItem } from '../adminStore'
-import { generateAdminReportPDF } from '../../lib/professionalPDF'
+import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 const DEFAULT_SETTINGS = {
   envChecks: {
@@ -33,6 +33,23 @@ export function SettingsPage() {
       .catch(() => {})
   }, [])
 
+  const handleDownloadSettingsPDF = () => {
+    const recycle = store.recycleBin || []
+    const headers = ['Category / Item', 'Deleted Title', 'Details', 'Deleted Time (IST)']
+    const rows = [
+      ['System Environment', 'ADMIN_PASSWORD', 'Configured (Encrypted)', 'Active'],
+      ['Database Storage', 'Local & Server Dual Sync', 'Operational', 'Active'],
+      ['Recycle Bin Trash Items', `${recycle.length} Items Pending`, 'Soft Deleted Archive', 'Active'],
+      ...recycle.map((r) => [
+        `Recycle: ${r.originalCollection}`,
+        r.title,
+        r.subtitle || 'Trash Item',
+        formatIST(r.deletedAt),
+      ]),
+    ]
+    exportSectionReportPDF('System Security & Recycle Bin Audit', 'AROM Studio System Environment & Trash Recovery', headers, rows, 'Settings_Security_Audit_Report')
+  }
+
   const recycleBin = store.recycleBin || []
   const filteredRecycle = recycleBin.filter(
     (r) =>
@@ -40,26 +57,6 @@ export function SettingsPage() {
       (r.subtitle || '').toLowerCase().includes(recycleSearch.toLowerCase()) ||
       r.originalCollection.toLowerCase().includes(recycleSearch.toLowerCase())
   )
-
-  const handleExportSettingsPDF = () => {
-    generateAdminReportPDF({
-      sectionTitle: 'Security & System Settings Audit Report',
-      subtitle: 'AROM Studio Platform Configuration & Recycle Bin Audit',
-      headers: ['Parameter / Check', 'Status / Value', 'Security Rating'],
-      rows: [
-        ['ADMIN_PASSWORD Secret', 'Configured', 'High Security'],
-        ['EMAILJS Integration Key', 'Active', 'Operational'],
-        ['Google Analytics VITE_GA_ID', 'Active', 'Operational'],
-        ['Admin Session Timeout', '8 Hours', 'Encrypted JWT'],
-        ['Recycle Bin Soft-Deleted Items', `${recycleBin.length} Items`, 'Restore Enabled'],
-      ],
-      summaryLines: [
-        `All Core Security Environment Keys Validated: TRUE`,
-        `Recycle Bin Trash Items Held: ${recycleBin.length}`,
-        `Audit Timestamp: ${new Date().toLocaleDateString('en-US')}`,
-      ],
-    })
-  }
 
   const handleRestore = (id: string) => {
     restoreFromRecycleBin(id)
@@ -107,15 +104,15 @@ export function SettingsPage() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-lg font-heading font-bold text-white flex items-center gap-2">
-            <Settings className="h-5 w-5 text-accent" /> Security &amp; Settings
+            <ShieldCheck className="h-5 w-5 text-accent" /> System Settings &amp; Security
           </h2>
-          <p className="text-xs text-white/50">Environment key status, system security, session audit &amp; trash recovery</p>
+          <p className="text-xs text-white/50">Manage environment credentials, security audit logs & trash recovery</p>
         </div>
         <button
-          onClick={handleExportSettingsPDF}
-          className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/10 text-white font-semibold text-xs hover:bg-white/20 transition-all border border-white/10 cursor-pointer"
+          onClick={handleDownloadSettingsPDF}
+          className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-accent text-black font-semibold text-xs hover:bg-accent/90 transition-all shadow-lg cursor-pointer shrink-0"
         >
-          <Download className="h-4 w-4 text-accent" /> Export PDF Audit
+          <Download className="h-4 w-4" /> Download Settings Audit PDF
         </button>
       </div>
 

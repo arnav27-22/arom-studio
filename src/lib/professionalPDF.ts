@@ -1163,34 +1163,36 @@ export function generateContentCollectionPDF(data: {
   doc.save(contentFile)
 }
 
-export function generateAdminReportPDF(opts: {
-  sectionTitle: string
-  subtitle?: string
-  headers: string[]
-  rows: string[][]
-  summaryLines?: string[]
-}) {
+export function exportSectionReportPDF(
+  title: string,
+  subtitle: string,
+  headers: string[],
+  rows: (string | number)[][],
+  filenamePrefix: string
+) {
   const doc = createDoc()
   const layout = getPageLayout(doc)
 
   addCoverPage(doc, {
-    title: opts.sectionTitle,
-    subtitle: opts.subtitle || 'AROM Studio Official Executive Report',
-    date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+    title,
+    subtitle,
+    date: new Date().toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' }),
   })
 
   let y = layout.marginTop
-  addHeader(doc, opts.sectionTitle)
+  addHeader(doc, title)
 
-  if (opts.summaryLines && opts.summaryLines.length > 0) {
-    y = writeSection(doc, y, 'Executive Summary', opts.summaryLines, layout)
-  }
+  y = writeSection(doc, y, 'Executive Summary', [
+    `This official report contains detailed record metrics for ${title}.`,
+    `Generated on: ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })} IST`,
+    `Total Logged Entries: ${rows.length}`,
+  ], layout)
 
-  if (opts.headers.length > 0 && opts.rows.length > 0) {
-    const tableRows: TableRow[] = opts.rows.map((r) => ({ cells: r }))
-    y = writeTable(doc, y, opts.headers, tableRows, layout)
-  } else {
-    y = writeSection(doc, y, 'Report Details', ['No records available to export for this section.'], layout)
+  if (rows.length > 0 && headers.length > 0) {
+    const tableRows: TableRow[] = rows.map((r) => ({
+      cells: r.map((c) => String(c ?? '—')),
+    }))
+    y = writeTable(doc, y, headers, tableRows, layout)
   }
 
   y = writeContactFooter(doc, y, layout)
@@ -1198,11 +1200,11 @@ export function generateAdminReportPDF(opts: {
 
   for (let i = 2; i <= doc.getNumberOfPages(); i++) {
     doc.setPage(i)
-    addHeader(doc, opts.sectionTitle)
+    addHeader(doc, title)
   }
 
-  const fileName = `${opts.sectionTitle.replace(/\s+/g, '_')}_Report_${new Date().toISOString().split('T')[0]}.pdf`
-  uploadPDF(doc, opts.sectionTitle, fileName, 'AROM Studio Admin')
-  trackPDFDownload('admin-report', fileName)
+  const fileName = `${filenamePrefix}_${new Date().toISOString().split('T')[0]}.pdf`
+  uploadPDF(doc, title, fileName, 'AROM Studio Admin')
+  trackPDFDownload(filenamePrefix.toLowerCase(), fileName)
   doc.save(fileName)
 }

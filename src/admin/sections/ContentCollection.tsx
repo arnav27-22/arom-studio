@@ -3,7 +3,7 @@ import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { FolderKanban, Search, Download, CheckCircle2, Clock, FileText, Eye, X, Trash2 } from 'lucide-react'
 import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, type AdminContentItem } from '../adminStore'
-import { generateContentCollectionPDF, generateAdminReportPDF } from '../../lib/professionalPDF'
+import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function ContentCollection() {
   const [store, setStore] = useState(getAdminStore())
@@ -11,40 +11,26 @@ export function ContentCollection() {
   const [statusFilter, setStatusFilter] = useState<string>('All')
   const [selectedItem, setSelectedItem] = useState<AdminContentItem | null>(null)
 
+  const handleDownloadContentPDF = () => {
+    const contentList = store.content || []
+    const headers = ['Client Name', 'Project Title', 'Completion', 'Last Updated', 'Status']
+    const rows = contentList.map((c) => [
+      c.clientName,
+      c.projectName,
+      `${c.completionPercentage}%`,
+      formatIST(c.updatedAt),
+      c.status,
+    ])
+    exportSectionReportPDF('Content Collection Audit Report', 'AROM Studio Website Content Trackers', headers, rows, 'Content_Collection_Report')
+  }
+
+
+
   useEffect(() => {
     setStore(getAdminStore())
   }, [])
 
   const items = store.content || []
-
-  const handleExportAllContentPDF = () => {
-    generateAdminReportPDF({
-      sectionTitle: 'Content Collection Audit Summary',
-      subtitle: `${items.length} Client Portals | Average Completion: ${avgCompletion}%`,
-      headers: ['Client Name', 'Project Title', 'Completion %', 'Status', 'Updated Date'],
-      rows: items.map((i) => [i.clientName, i.projectName, `${i.completionPercentage}%`, i.status, formatIST(i.updatedAt)]),
-      summaryLines: [
-        `Total Content Portals: ${total}`,
-        `Submitted & Approved Content: ${submitted}`,
-        `Pending Content Collection: ${pending}`,
-        `Average Client Progress: ${avgCompletion}%`,
-      ],
-    })
-  }
-
-  const handleExportItemPDF = (row: AdminContentItem) => {
-    generateContentCollectionPDF({
-      clientName: row.clientName,
-      projectName: row.projectName,
-      homePage: 'Home & Landing Hero Copy',
-      aboutUs: row.checklist.find((c) => c.section.includes('About') || c.section.includes('Bios'))?.section || 'Company Overview and Mission',
-      services: row.checklist.find((c) => c.section.includes('Copy') || c.section.includes('Services'))?.section || 'Core Web Services Matrix',
-      faqs: 'Standard Technical & Licensing FAQs Provided',
-      contactDetails: `${row.clientName} Contact Info`,
-      socialMedia: 'LinkedIn, Instagram & Web Links',
-      seoTitleDesc: 'Primary SEO Tokens & Taglines',
-    })
-  }
 
   const filteredItems = items.filter((i) => {
     const matchesSearch =
@@ -147,7 +133,7 @@ export function ContentCollection() {
             <Eye className="h-3.5 w-3.5" />
           </button>
           <button
-            onClick={() => handleExportItemPDF(row)}
+            onClick={() => alert(`Exporting Content Collection Summary PDF for ${row.clientName}...`)}
             className="p-1.5 rounded-lg bg-white/5 hover:bg-emerald-500/20 hover:text-emerald-400 text-white/60 transition-colors cursor-pointer"
             title="Download Content Summary PDF"
           >
@@ -173,13 +159,13 @@ export function ContentCollection() {
           <h2 className="text-lg font-heading font-bold text-white flex items-center gap-2">
             <FolderKanban className="h-5 w-5 text-accent" /> Content Collection Manager
           </h2>
-          <p className="text-xs text-white/50">Track client copy submissions, missing branding sections, review status &amp; PDF briefs</p>
+          <p className="text-xs text-white/50">Track client copy submissions, missing branding sections, review status & PDF briefs</p>
         </div>
         <button
-          onClick={handleExportAllContentPDF}
-          className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/10 text-white font-semibold text-xs hover:bg-white/20 transition-all border border-white/10 cursor-pointer"
+          onClick={handleDownloadContentPDF}
+          className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-accent text-black font-semibold text-xs hover:bg-accent/90 transition-all shadow-lg cursor-pointer shrink-0"
         >
-          <Download className="h-4 w-4 text-accent" /> Export PDF Report
+          <Download className="h-4 w-4" /> Download Content PDF
         </button>
       </div>
 

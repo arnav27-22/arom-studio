@@ -7,6 +7,9 @@ export interface AdminVisitor {
   entryPage?: string
   exitPage?: string
   deviceType: 'desktop' | 'mobile' | 'tablet'
+  deviceLabel?: string
+  deviceBrand?: string
+  network?: string
   browser: string
   os: string
   country: string
@@ -69,7 +72,6 @@ export interface AdminInvoice {
   currency: 'INR' | 'USD'
   items: InvoiceItem[]
   taxRate: number
-  includeGST?: boolean
   discountRate: number
   subtotal: number
   taxAmount: number
@@ -294,7 +296,7 @@ const INITIAL_CLIENTS: AdminClient[] = [
     timeline: [
       { date: '2026-06-10', event: 'Client Onboarded' },
       { date: '2026-06-15', event: 'Web Portal Project Started' },
-      { date: '2026-07-01', event: 'First Payment Received (₹7,250)' },
+      { date: '2026-07-01', event: 'First Payment Received ($7,250)' },
     ],
   },
   {
@@ -688,7 +690,7 @@ const INITIAL_NOTIFICATIONS: AdminNotification[] = [
   {
     id: 'notif_3',
     type: 'payment',
-    title: 'Payment Received (₹4,450)',
+    title: 'Payment Received ($4,450)',
     message: 'Invoice INV-2026-002 was paid by LuxeLiving Interior Studio.',
     read: true,
     createdAt: '2026-07-14T09:30:00Z',
@@ -807,31 +809,14 @@ export function restoreFromRecycleBin(recycleId: string) {
   if (!Array.isArray(store.recycleBin)) return
 
   const record = store.recycleBin.find((r) => r.id === recycleId)
-  if (!record || !record.itemData) return
+  if (!record) return
 
   const collection = record.originalCollection
   const currentList = (store[collection] as any[]) || []
-
-  // Ensure restored item is unshifted into destination collection without duplicates
-  const restoredItem = { ...record.itemData }
-  const filteredList = currentList.filter((i: any) => i && i.id !== restoredItem.id)
-  ;(store as any)[collection] = [restoredItem, ...filteredList]
-
-  // Remove from recycleBin
+  ;(store as any)[collection] = [record.itemData, ...currentList]
   store.recycleBin = store.recycleBin.filter((r) => r.id !== recycleId)
 
-  // System audit log
-  store.logs.unshift({
-    id: 'l_' + Math.random().toString(36).slice(2, 9),
-    createdAt: new Date().toISOString(),
-    type: 'system',
-    event: `Restored ${record.title}`,
-    detail: `Restored item ${record.title} back to active ${String(collection)} section.`,
-    severity: 'info',
-  })
-
   saveAdminStore(store)
-  return restoredItem
 }
 
 // Permanently delete a single item from the Recycle Bin
@@ -856,23 +841,20 @@ export async function syncFromCloud(): Promise<StoreData> {
     const res = await fetch('/api/sync')
     if (res.ok) {
       const remote = await res.json()
+      const mergedVisitors = [...(remote.visitors || [])]
+      local.visitors.forEach((v) => { if (!mergedVisitors.some((m) => m.id === v.id)) mergedVisitors.push(v) })
 
-      const mergeById = (remoteItems?: any[], localItems?: any[]) => {
-        const map = new Map<string, any>()
-        if (Array.isArray(remoteItems)) {
-          remoteItems.forEach((item) => { if (item && item.id) map.set(item.id, item) })
-        }
-        if (Array.isArray(localItems)) {
-          localItems.forEach((item) => { if (item && item.id) map.set(item.id, item) })
-        }
-        return Array.from(map.values())
-      }
+      const mergedPdfs = [...(remote.pdfs || [])]
+      local.pdfs.forEach((p) => { if (!mergedPdfs.some((m) => m.id === p.id)) mergedPdfs.push(p) })
 
-      const mergedVisitors = mergeById(remote.visitors, local.visitors)
-      const mergedPdfs = mergeById(remote.pdfs, local.pdfs)
-      const mergedLeads = mergeById(remote.leads, local.leads)
-      const mergedInvoices = mergeById(remote.invoices, local.invoices)
-      const mergedLogs = mergeById(remote.logs, local.logs)
+      const mergedLeads = [...(remote.leads || [])]
+      local.leads.forEach((l) => { if (!mergedLeads.some((m) => m.id === l.id)) mergedLeads.push(l) })
+
+      const mergedInvoices = [...(remote.invoices || [])]
+      local.invoices.forEach((i) => { if (!mergedInvoices.some((m) => m.id === i.id)) mergedInvoices.push(i) })
+
+      const mergedLogs = [...(remote.logs || [])]
+      local.logs.forEach((g) => { if (!mergedLogs.some((m) => m.id === g.id)) mergedLogs.push(g) })
 
       const updated: StoreData = {
         visitors: mergedVisitors.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
@@ -880,18 +862,18 @@ export async function syncFromCloud(): Promise<StoreData> {
         leads: mergedLeads.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
         invoices: mergedInvoices.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
         logs: mergedLogs.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
-        clients: mergeById(remote.clients, local.clients),
-        projects: mergeById(remote.projects, local.projects),
-        proposals: mergeById(remote.proposals, local.proposals),
-        agreements: mergeById(remote.agreements, local.agreements),
-        payments: mergeById(remote.payments, local.payments),
-        content: mergeById(remote.content, local.content),
-        assets: mergeById(remote.assets, local.assets),
-        approvals: mergeById(remote.approvals, local.approvals),
-        timelines: mergeById(remote.timelines, local.timelines),
-        handovers: mergeById(remote.handovers, local.handovers),
-        feedbacks: mergeById(remote.feedbacks, local.feedbacks),
-        notifications: mergeById(remote.notifications, local.notifications),
+        clients: Array.isArray(remote.clients) ? remote.clients : local.clients,
+        projects: Array.isArray(remote.projects) ? remote.projects : local.projects,
+        proposals: Array.isArray(remote.proposals) ? remote.proposals : local.proposals,
+        agreements: Array.isArray(remote.agreements) ? remote.agreements : local.agreements,
+        payments: Array.isArray(remote.payments) ? remote.payments : local.payments,
+        content: Array.isArray(remote.content) ? remote.content : local.content,
+        assets: Array.isArray(remote.assets) ? remote.assets : local.assets,
+        approvals: Array.isArray(remote.approvals) ? remote.approvals : local.approvals,
+        timelines: Array.isArray(remote.timelines) ? remote.timelines : local.timelines,
+        handovers: Array.isArray(remote.handovers) ? remote.handovers : local.handovers,
+        feedbacks: Array.isArray(remote.feedbacks) ? remote.feedbacks : local.feedbacks,
+        notifications: Array.isArray(remote.notifications) ? remote.notifications : local.notifications,
         recycleBin: Array.isArray(remote.recycleBin) ? remote.recycleBin : local.recycleBin,
       }
       try {
@@ -932,6 +914,21 @@ export function recordAdminVisit(page: string, referrer: string = 'Direct', opti
   const mobile = /Mobi|Android|iPhone|iPad/i.test(ua)
   const tablet = /Tablet|iPad/i.test(ua) && !/Mobi/i.test(ua)
 
+  // Detect mobile device brand
+  let brand = options.deviceBrand || ''
+  if (!brand) {
+    if (/iPhone/i.test(ua)) brand = 'Apple iPhone'
+    else if (/iPad/i.test(ua)) brand = 'Apple iPad'
+    else if (/Samsung/i.test(ua)) brand = 'Samsung Galaxy'
+    else if (/Pixel/i.test(ua)) brand = 'Google Pixel'
+    else if (/OnePlus/i.test(ua)) brand = 'OnePlus'
+    else if (/Xiaomi|Redmi|POCO/i.test(ua)) brand = 'Xiaomi/Redmi'
+    else if (/Vivo/i.test(ua)) brand = 'Vivo Mobile'
+    else if (/Oppo/i.test(ua)) brand = 'OPPO Mobile'
+    else if (mobile) brand = 'Mobile Device'
+    else brand = 'Desktop PC'
+  }
+
   // Check returning visitor state from localStorage
   let isReturning = false
   try {
@@ -941,6 +938,9 @@ export function recordAdminVisit(page: string, referrer: string = 'Direct', opti
   } catch {}
 
   const now = new Date().toISOString()
+  const devType = options.deviceType || (tablet ? 'tablet' : mobile ? 'mobile' : 'desktop')
+  const devLabel = options.deviceLabel || (devType === 'desktop' ? 'Desktop (PC)' : 'Mobile')
+
   const newVisit: AdminVisitor = {
     id: options.id || 'v_' + Math.random().toString(36).slice(2, 9),
     sessionId: options.sessionId || 'sess_' + Math.random().toString(36).slice(2, 9),
@@ -949,7 +949,10 @@ export function recordAdminVisit(page: string, referrer: string = 'Direct', opti
     page: page || '/',
     entryPage: options.entryPage || page || '/',
     exitPage: page || '/',
-    deviceType: options.deviceType || (tablet ? 'tablet' : mobile ? 'mobile' : 'desktop'),
+    deviceType: devType,
+    deviceLabel: devLabel,
+    deviceBrand: brand,
+    network: options.network || '5G / Broadband',
     browser: options.browser || (ua.includes('Chrome') ? 'Chrome' : ua.includes('Safari') ? 'Safari' : ua.includes('Firefox') ? 'Firefox' : 'Edge'),
     os: options.os || (ua.includes('Windows') ? 'Windows' : ua.includes('Mac') ? 'macOS' : ua.includes('Android') ? 'Android' : 'iOS'),
     country: options.country || 'India',

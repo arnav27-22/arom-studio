@@ -2,12 +2,25 @@ import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { MessageSquareHeart, Star, CheckCircle2, Search, Lightbulb, Plus, X, Trash2, Download } from 'lucide-react'
 import { getAdminStore, saveAdminStore, moveToRecycleBin, type AdminFeedback } from '../adminStore'
-import { generateAdminReportPDF } from '../../lib/professionalPDF'
+import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function FeedbackManager() {
   const [store, setStore] = useState(getAdminStore())
   const [search, setSearch] = useState('')
   const [showAddModal, setShowAddModal] = useState(false)
+
+  const handleDownloadFeedbacksPDF = () => {
+    const feedbacks = store.feedbacks || []
+    const headers = ['Client Name', 'Company Name', 'Rating', 'Review Summary', 'Testimonial Approved']
+    const rows = feedbacks.map((f) => [
+      f.clientName,
+      f.company,
+      `⭐ ${f.rating}/5`,
+      f.review,
+      f.testimonialApproved ? 'Live on Website' : 'Hidden',
+    ])
+    exportSectionReportPDF('Client Feedback Audit Report', 'AROM Studio Client Testimonials & Feedback Ratings', headers, rows, 'Client_Feedback_Report')
+  }
 
   const [form, setForm] = useState({
     clientName: '',
@@ -22,21 +35,6 @@ export function FeedbackManager() {
   }, [])
 
   const feedbacks = store.feedbacks || []
-
-  const handleExportFeedbackPDF = () => {
-    generateAdminReportPDF({
-      sectionTitle: 'Client Feedback & Reviews Report',
-      subtitle: `${feedbacks.length} Reviews Collected | Average Rating: ⭐ ${avgRating}`,
-      headers: ['Client Name', 'Company Name', 'Rating', 'Review Summary', 'Date'],
-      rows: feedbacks.map((f) => [f.clientName, f.company, `⭐ ${f.rating}.0`, f.review, f.createdAt ? f.createdAt.split('T')[0] : '—']),
-      summaryLines: [
-        `Total Client Reviews Recorded: ${totalReviews}`,
-        `Average Client Satisfaction Rating: ${avgRating} / 5.0 Stars`,
-        `Publicly Approved Testimonials: ${approvedTestimonials}`,
-      ],
-    })
-  }
-
 
   const handleDeleteFeedback = (id: string) => {
     const f = feedbacks.find((x) => x.id === id)
@@ -106,16 +104,16 @@ export function FeedbackManager() {
           </h2>
           <p className="text-xs text-white/50">Client ratings, reviews, showcase permissions & agency improvement suggestions</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           <button
-            onClick={handleExportFeedbackPDF}
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/10 text-white font-semibold text-xs hover:bg-white/20 transition-all border border-white/10 cursor-pointer"
+            onClick={handleDownloadFeedbacksPDF}
+            className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-accent text-black font-semibold text-xs hover:bg-accent/90 transition-all shadow-lg cursor-pointer"
           >
-            <Download className="h-4 w-4 text-accent" /> Export PDF Report
+            <Download className="h-4 w-4" /> Download Feedback PDF
           </button>
           <button
             onClick={() => setShowAddModal(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-accent text-black font-semibold text-xs hover:bg-accent/90 transition-all shadow-lg cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 text-white font-semibold text-xs hover:bg-white/20 transition-all border border-white/10 cursor-pointer"
           >
             <Plus className="h-4 w-4" /> Record Client Review
           </button>

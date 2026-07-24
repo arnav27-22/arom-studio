@@ -94,7 +94,7 @@ export function AdminDashboard({ onLogout }: { onLogout: () => void }) {
           </button>
         </div>
 
-        <nav className="flex-1 overflow-y-auto max-h-[calc(100vh-130px)] p-3 space-y-4 pr-1.5 custom-scrollbar">
+        <nav className="flex-1 overflow-y-auto max-h-[calc(100vh-140px)] p-3 pr-1 space-y-4 font-body scrollbar-thin scrollbar-thumb-white/20 hover:scrollbar-thumb-accent/40">
           {/* System Dashboard Section */}
           <div className="space-y-1">
             <div className="px-3 text-[10px] uppercase tracking-widest font-mono text-white/40 mb-1">

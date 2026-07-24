@@ -3,7 +3,7 @@ import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { CheckSquare, Search, ExternalLink, MessageSquare, CheckCircle2, Clock, AlertTriangle, Plus, X, Send, Trash2, Download } from 'lucide-react'
 import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, type AdminDesignApproval } from '../adminStore'
-import { generateAdminReportPDF } from '../../lib/professionalPDF'
+import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function DesignApproval() {
   const [store, setStore] = useState(getAdminStore())
@@ -12,6 +12,20 @@ export function DesignApproval() {
   const [selectedApproval, setSelectedApproval] = useState<AdminDesignApproval | null>(null)
   const [newComment, setNewComment] = useState('')
   const [showAddModal, setShowAddModal] = useState(false)
+
+  const handleDownloadApprovalsPDF = () => {
+    const approvals = store.approvals || []
+    const headers = ['Client Name', 'Project Name', 'Figma URL', 'Version', 'Approval Date', 'Status']
+    const rows = approvals.map((a) => [
+      a.clientName,
+      a.projectName,
+      a.previewUrl,
+      a.version,
+      a.approvalDate ? formatIST(a.approvalDate) : 'Pending Sign-off',
+      a.status,
+    ])
+    exportSectionReportPDF('Design Approvals Audit Report', 'AROM Studio Figma Prototypes & Design Sign-offs', headers, rows, 'Design_Approvals_Report')
+  }
 
   const [form, setForm] = useState({
     projectName: '',
@@ -191,20 +205,6 @@ export function DesignApproval() {
     },
   ]
 
-  const handleExportApprovalsPDF = () => {
-    generateAdminReportPDF({
-      sectionTitle: 'UI/UX Design Sign-Off & Approvals Audit',
-      subtitle: `${total} Prototypes Submitted | ${approved} Signed-off Approved`,
-      headers: ['Project Name', 'Client Name', 'Version', 'Status', 'Approved Date'],
-      rows: approvals.map((a) => [a.projectName, a.clientName, a.version, a.status, a.approvalDate ? formatIST(a.approvalDate) : 'Pending']),
-      summaryLines: [
-        `Total Design System Prototypes: ${total}`,
-        `Approved & Signed Off: ${approved}`,
-        `Revision Requested: ${needsRevision}`,
-      ],
-    })
-  }
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -213,18 +213,18 @@ export function DesignApproval() {
           <h2 className="text-lg font-heading font-bold text-white flex items-center gap-2">
             <CheckSquare className="h-5 w-5 text-accent" /> Design Approval Manager
           </h2>
-          <p className="text-xs text-white/50">Figma design system prototypes, client feedback threads, revision requests &amp; approvals</p>
+          <p className="text-xs text-white/50">Figma design system prototypes, client feedback threads, revision requests & approvals</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           <button
-            onClick={handleExportApprovalsPDF}
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/10 text-white font-semibold text-xs hover:bg-white/20 transition-all border border-white/10 cursor-pointer"
+            onClick={handleDownloadApprovalsPDF}
+            className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-accent text-black font-semibold text-xs hover:bg-accent/90 transition-all shadow-lg cursor-pointer"
           >
-            <Download className="h-4 w-4 text-accent" /> Export PDF Report
+            <Download className="h-4 w-4" /> Download Approvals PDF
           </button>
           <button
             onClick={() => setShowAddModal(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-accent text-black font-semibold text-xs hover:bg-accent/90 transition-all shadow-lg cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 text-white font-semibold text-xs hover:bg-white/20 transition-all border border-white/10 cursor-pointer"
           >
             <Plus className="h-4 w-4" /> Submit Design Prototype
           </button>

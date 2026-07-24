@@ -262,17 +262,43 @@ export default async function handler(req, res) {
   // Track pageview
   if (pathname === '/api/track/pageview' && req.method === 'POST') {
     const body = await getJSON(req)
+    const clientIp = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.headers['x-real-ip'] || req.socket.remoteAddress || '103.15.22.84'
+    const ua = req.headers['user-agent'] || ''
+    const isMobile = /Mobi|Android|iPhone|iPad/i.test(ua)
+    const isTablet = /Tablet|iPad/i.test(ua) && !/Mobi/i.test(ua)
+
+    let brand = 'Desktop PC'
+    if (/iPhone/i.test(ua)) brand = 'Apple iPhone'
+    else if (/iPad/i.test(ua)) brand = 'Apple iPad'
+    else if (/Samsung/i.test(ua)) brand = 'Samsung Galaxy'
+    else if (/Pixel/i.test(ua)) brand = 'Google Pixel'
+    else if (/OnePlus/i.test(ua)) brand = 'OnePlus'
+    else if (/Xiaomi|Redmi|POCO/i.test(ua)) brand = 'Xiaomi/Redmi'
+    else if (/Vivo/i.test(ua)) brand = 'Vivo Mobile'
+    else if (/Oppo/i.test(ua)) brand = 'OPPO Mobile'
+    else if (isMobile) brand = 'Mobile Device'
+
+    const deviceTypeLabel = isTablet ? 'Mobile (Tablet)' : isMobile ? 'Mobile' : 'Desktop (PC)'
+
     const newVisit = {
       id: body.id || ('v_' + Math.random().toString(36).slice(2, 9)),
+      sessionId: body.sessionId || ('sess_' + Math.random().toString(36).slice(2, 9)),
       createdAt: new Date().toISOString(),
+      lastActivityAt: new Date().toISOString(),
       page: body.page || '/',
-      deviceType: body.deviceInfo?.deviceType || 'desktop',
-      browser: body.deviceInfo?.browser || 'Unknown',
-      os: body.deviceInfo?.os || 'Unknown',
-      country: 'India',
+      entryPage: body.entryPage || body.page || '/',
+      deviceType: isTablet ? 'tablet' : isMobile ? 'mobile' : 'desktop',
+      deviceLabel: deviceTypeLabel,
+      deviceBrand: brand,
+      network: req.headers['x-vercel-ip-country-region'] || 'Mobile 5G / Broadband',
+      browser: body.deviceInfo?.browser || (ua.includes('Chrome') ? 'Chrome' : ua.includes('Safari') ? 'Safari' : 'Browser'),
+      country: req.headers['x-vercel-ip-country'] || 'India',
+      city: req.headers['x-vercel-ip-city'] || 'Mumbai',
+      ip: clientIp,
       referrer: body.referrer || 'Direct',
       timeOnPage: 30,
       scrollDepth: 80,
+      pageViewsCount: body.pageViewsCount || 1,
     }
     await db.append('real_visitors', newVisit)
     return j(res, { ok: true, visit: newVisit })

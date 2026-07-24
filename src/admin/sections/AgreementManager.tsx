@@ -3,7 +3,7 @@ import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { FileSignature, Search, Download, CheckCircle2, Clock, Plus, X, Trash2 } from 'lucide-react'
 import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, type AdminAgreement } from '../adminStore'
-import { generateAdminReportPDF } from '../../lib/professionalPDF'
+import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function AgreementManager() {
   const [store, setStore] = useState(getAdminStore())
@@ -11,24 +11,24 @@ export function AgreementManager() {
   const [statusFilter, setStatusFilter] = useState<string>('All')
   const [showAddModal, setShowAddModal] = useState(false)
 
+  const handleDownloadAgreementsPDF = () => {
+    const agreements = store.agreements || []
+    const headers = ['Agr Number', 'Client Name', 'Client Email', 'Version', 'Signed Date', 'Status']
+    const rows = agreements.map((a) => [
+      a.agreementNumber,
+      a.clientName,
+      a.clientEmail,
+      a.agreementVersion || 'v1.0',
+      a.signedDate ? formatIST(a.signedDate) : 'Not Signed',
+      a.status,
+    ])
+    exportSectionReportPDF('Website Development Contracts Audit', 'AROM Studio Signed Client Agreements', headers, rows, 'Agreements_Audit_Report')
+  }
+
   const handleDeleteAgreement = (id: string) => {
     const a = agreements.find((x) => x.id === id)
     moveToRecycleBin('agreements', id, a?.agreementNumber || a?.clientName, a?.clientName)
     setStore(getAdminStore())
-  }
-
-  const handleExportAgreementsPDF = () => {
-    generateAdminReportPDF({
-      sectionTitle: 'Website Agreement Contracts',
-      subtitle: `${agreements.length} Contracts | ${signedAgreements} Signed, ${pendingAgreements} Pending`,
-      headers: ['Agreement #', 'Client Name', 'Version', 'Signed Date', 'Status'],
-      rows: agreements.map((a) => [a.agreementNumber, a.clientName, a.agreementVersion || 'v1.0', a.signedDate ? formatIST(a.signedDate) : 'Pending', a.status]),
-      summaryLines: [
-        `Total Website Development Contracts: ${totalAgreements}`,
-        `Signed Contracts: ${signedAgreements}`,
-        `Pending Signature Contracts: ${pendingAgreements}`,
-      ],
-    })
   }
 
   const [form, setForm] = useState({
@@ -160,16 +160,16 @@ export function AgreementManager() {
           </h2>
           <p className="text-xs text-white/50">Manage signed website build contracts, terms of service, NDA versions & PDF downloads</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           <button
-            onClick={handleExportAgreementsPDF}
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/10 text-white font-semibold text-xs hover:bg-white/20 transition-all border border-white/10 cursor-pointer"
+            onClick={handleDownloadAgreementsPDF}
+            className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-accent text-black font-semibold text-xs hover:bg-accent/90 transition-all shadow-lg cursor-pointer"
           >
-            <Download className="h-4 w-4 text-accent" /> Export PDF Report
+            <Download className="h-4 w-4" /> Download Agreements PDF
           </button>
           <button
             onClick={() => setShowAddModal(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-accent text-black font-semibold text-xs hover:bg-accent/90 transition-all shadow-lg cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 text-white font-semibold text-xs hover:bg-white/20 transition-all border border-white/10 cursor-pointer"
           >
             <Plus className="h-4 w-4" /> Add Agreement Contract
           </button>

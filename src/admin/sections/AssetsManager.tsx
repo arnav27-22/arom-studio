@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
-import { FolderUp, Search, ExternalLink, Download, CheckCircle2, AlertCircle, Clock, Plus, X, Trash2 } from 'lucide-react'
+import { FolderUp, Search, Plus, ExternalLink, Download, CheckCircle2, AlertCircle, Clock, X, Trash2 } from 'lucide-react'
 import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, type AdminAssetFolder } from '../adminStore'
-import { generateAssetsPDF, generateAdminReportPDF } from '../../lib/professionalPDF'
+import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function AssetsManager() {
   const [store, setStore] = useState(getAdminStore())
@@ -12,35 +12,24 @@ export function AssetsManager() {
   const [selectedAsset, setSelectedAsset] = useState<AdminAssetFolder | null>(null)
   const [showAddModal, setShowAddModal] = useState(false)
 
+  const handleDownloadAssetsPDF = () => {
+    const assets = store.assets || []
+    const headers = ['Client Name', 'Project Name', 'Drive Link', 'Missing Files', 'Folder Status']
+    const rows = assets.map((a) => [
+      a.clientName,
+      a.projectName,
+      a.googleDriveLink,
+      (a.missingFilesCount || 0).toString(),
+      a.folderStatus,
+    ])
+    exportSectionReportPDF('Client Assets Folder Audit', 'AROM Studio Google Drive & Asset Folders', headers, rows, 'Assets_Directory_Report')
+  }
+
   const handleDeleteAsset = (id: string) => {
     const a = store.assets.find((x) => x.id === id)
     moveToRecycleBin('assets', id, a?.clientName || 'Asset Folder', a?.projectName)
     setStore(getAdminStore())
     if (selectedAsset?.id === id) setSelectedAsset(null)
-  }
-
-  const handleExportAllAssetsPDF = () => {
-    generateAdminReportPDF({
-      sectionTitle: 'Client Asset Folders & Drive Audit',
-      subtitle: `${assets.length} Cloud Folders Tracked | ${completeFolders} Complete`,
-      headers: ['Client Name', 'Project Title', 'Folder Status', 'Missing Files', 'Drive Link'],
-      rows: assets.map((a) => [a.clientName, a.projectName, a.folderStatus, `${a.missingFilesCount || 0} missing`, a.googleDriveLink || '—']),
-      summaryLines: [
-        `Total Asset Folders: ${totalFolders}`,
-        `Complete Asset Folders: ${completeFolders}`,
-        `Folders Needing Additional Files: ${needsFilesFolders}`,
-        `Total Missing Assets Across Clients: ${totalMissing}`,
-      ],
-    })
-  }
-
-  const handleExportSingleAssetPDF = (row: AdminAssetFolder) => {
-    generateAssetsPDF({
-      clientName: row.clientName,
-      projectName: row.projectName,
-      folderLink: row.googleDriveLink,
-      categories: (row.checklist || []).map((c) => `${c.name}: ${c.received ? 'Received' : 'Pending'}`),
-    })
   }
 
   const [form, setForm] = useState({
@@ -158,13 +147,15 @@ export function AssetsManager() {
           >
             Checklist
           </button>
-          <button
-            onClick={() => handleExportSingleAssetPDF(row)}
+          <a
+            href={row.googleDriveLink}
+            target="_blank"
+            rel="noopener noreferrer"
             className="p-1.5 rounded-lg bg-white/5 hover:bg-emerald-500/20 hover:text-emerald-400 text-white/60 transition-colors cursor-pointer"
-            title="Download Asset Brief PDF"
+            title="Download Assets"
           >
             <Download className="h-3.5 w-3.5" />
-          </button>
+          </a>
           <button
             onClick={() => handleDeleteAsset(row.id)}
             className="p-1.5 rounded-lg bg-white/5 hover:bg-red-500/20 hover:text-red-400 text-white/60 transition-colors cursor-pointer"
@@ -187,16 +178,16 @@ export function AssetsManager() {
           </h2>
           <p className="text-xs text-white/50">Google Drive links, missing brand assets tracker, folder status & asset checklist</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           <button
-            onClick={handleExportAllAssetsPDF}
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/10 text-white font-semibold text-xs hover:bg-white/20 transition-all border border-white/10 cursor-pointer"
+            onClick={handleDownloadAssetsPDF}
+            className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-accent text-black font-semibold text-xs hover:bg-accent/90 transition-all shadow-lg cursor-pointer"
           >
-            <Download className="h-4 w-4 text-accent" /> Export PDF Report
+            <Download className="h-4 w-4" /> Download Assets PDF
           </button>
           <button
             onClick={() => setShowAddModal(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-accent text-black font-semibold text-xs hover:bg-accent/90 transition-all shadow-lg cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 text-white font-semibold text-xs hover:bg-white/20 transition-all border border-white/10 cursor-pointer"
           >
             <Plus className="h-4 w-4" /> Link Asset Folder
           </button>

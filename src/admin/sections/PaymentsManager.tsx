@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
-import { CreditCard, Search, DollarSign, CheckCircle2, Clock, AlertCircle, Download, Bell, Plus, X, Trash2 } from 'lucide-react'
-import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, type AdminPayment } from '../adminStore'
-import { generateAdminReportPDF } from '../../lib/professionalPDF'
+import { CreditCard, Search, DollarSign, Clock, AlertCircle, Download, Bell, Plus, X, Trash2 } from 'lucide-react'
+import { getAdminStore, saveAdminStore, moveToRecycleBin, type AdminPayment } from '../adminStore'
+import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function PaymentsManager() {
   const [store, setStore] = useState(getAdminStore())
@@ -11,24 +11,24 @@ export function PaymentsManager() {
   const [statusFilter, setStatusFilter] = useState<string>('All')
   const [showAddModal, setShowAddModal] = useState(false)
 
+  const handleDownloadPaymentsPDF = () => {
+    const payments = store.payments || []
+    const headers = ['Invoice #', 'Client Name', 'Amount', 'Due Date', 'Payment Method', 'Status']
+    const rows = payments.map((p) => [
+      p.invoiceNumber,
+      p.clientName,
+      `₹${(p.amount || 0).toLocaleString()}`,
+      p.dueDate,
+      (p as any).paymentMethod || 'Bank Wire Transfer',
+      p.status,
+    ])
+    exportSectionReportPDF('Payments & Retainers Audit Report', 'AROM Studio Revenue & Invoice Log', headers, rows, 'Payments_Audit_Report')
+  }
+
   const handleDeletePayment = (id: string) => {
     const p = payments.find((x) => x.id === id)
     moveToRecycleBin('payments', id, p?.invoiceNumber || p?.clientName, p?.clientName)
     setStore(getAdminStore())
-  }
-
-  const handleExportPaymentsPDF = () => {
-    generateAdminReportPDF({
-      sectionTitle: 'Payment & Revenue Audit Report',
-      subtitle: `Total Collected: ₹${totalCollected.toLocaleString()} | Pending: ₹${pendingAmount.toLocaleString()}`,
-      headers: ['Invoice #', 'Client Name', 'Amount', 'Due Date', 'Status'],
-      rows: payments.map((p) => [p.invoiceNumber, p.clientName, `₹${(p.amount || 0).toLocaleString()}`, p.dueDate, p.status]),
-      summaryLines: [
-        `Total Collected Revenue: ₹${totalCollected.toLocaleString()}`,
-        `Pending Receivables: ₹${pendingAmount.toLocaleString()}`,
-        `Overdue Balances: ₹${overdueAmount.toLocaleString()}`,
-      ],
-    })
   }
 
   const [form, setForm] = useState({
@@ -53,9 +53,9 @@ export function PaymentsManager() {
     return matchesSearch && matchesStatus
   })
 
-  const totalCollected = payments.filter((p) => p.status === 'Paid').reduce((acc, p) => acc + (p.amount || 0), 0)
-  const pendingAmount = payments.filter((p) => p.status === 'Pending').reduce((acc, p) => acc + (p.amount || 0), 0)
-  const overdueAmount = payments.filter((p) => p.status === 'Overdue').reduce((acc, p) => acc + (p.amount || 0), 0)
+  const totalCollected = payments.filter(p => p.status === 'Paid').reduce((s, p) => s + (p.amount || 0), 0)
+  const pendingAmount = payments.filter(p => p.status === 'Pending').reduce((s, p) => s + (p.amount || 0), 0)
+  const overdueAmount = payments.filter(p => p.status === 'Overdue').reduce((s, p) => s + (p.amount || 0), 0)
 
   const handleSendReminder = (id: string) => {
     const updatedPayments = payments.map((p) => {
@@ -94,13 +94,13 @@ export function PaymentsManager() {
   const columns = [
     {
       key: 'invoiceNumber',
-      label: 'Invoice # & Client',
-      render: (v: string, row: AdminPayment) => (
-        <div>
-          <span className="text-accent font-mono font-bold text-xs">{v}</span>
-          <div className="text-white font-medium text-xs mt-0.5">{row.clientName}</div>
-        </div>
-      ),
+      label: 'Invoice #',
+      render: (v: string) => <span className="font-mono text-xs font-bold text-accent">{v}</span>,
+    },
+    {
+      key: 'clientName',
+      label: 'Client Name',
+      render: (v: string) => <span className="text-white text-xs font-medium">{v}</span>,
     },
     {
       key: 'amount',
@@ -114,30 +114,13 @@ export function PaymentsManager() {
     {
       key: 'dueDate',
       label: 'Due Date',
-      render: (v: string) => (
-        <span className="text-white/80 text-xs font-mono">{v}</span>
-      ),
-    },
-    {
-      key: 'paidDate',
-      label: 'Payment Method & Receipt',
-      render: (v: string | undefined, row: AdminPayment) => (
-        <div className="text-xs">
-          {v ? (
-            <span className="text-white/70 flex items-center gap-1 font-mono text-[11px]">
-              <CheckCircle2 className="h-3 w-3 text-emerald-400" /> Paid on {formatIST(v).split(',')[0]}
-            </span>
-          ) : (
-            <span className="text-white/40 font-mono text-[11px]">Reminders: {row.reminderSentCount || 0}</span>
-          )}
-        </div>
-      ),
+      render: (v: string) => <span className="text-white/70 text-xs font-mono">{v}</span>,
     },
     {
       key: 'status',
       label: 'Status',
       render: (v: string) => (
-        <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold border ${
+        <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold border capitalize ${
           v === 'Paid' ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400' :
           v === 'Pending' ? 'bg-amber-500/20 border-amber-500/40 text-amber-400' :
           'bg-red-500/20 border-red-500/40 text-red-400'
@@ -161,13 +144,6 @@ export function PaymentsManager() {
             </button>
           )}
           <button
-            onClick={() => alert(`Opening Invoice ${row.invoiceNumber}...`)}
-            className="p-1.5 rounded-lg bg-white/5 hover:bg-accent/20 hover:text-accent text-white/60 transition-colors cursor-pointer"
-            title="Invoice Link & Receipt"
-          >
-            <Download className="h-3.5 w-3.5" />
-          </button>
-          <button
             onClick={() => handleDeletePayment(row.id)}
             className="p-1.5 rounded-lg bg-white/5 hover:bg-red-500/20 hover:text-red-400 text-white/60 transition-colors cursor-pointer"
             title="Delete Payment Record"
@@ -189,16 +165,16 @@ export function PaymentsManager() {
           </h2>
           <p className="text-xs text-white/50">Track client retainers, pending invoices, overdue balances & payment reminders</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           <button
-            onClick={handleExportPaymentsPDF}
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/10 text-white font-semibold text-xs hover:bg-white/20 transition-all border border-white/10 cursor-pointer"
+            onClick={handleDownloadPaymentsPDF}
+            className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-accent text-black font-semibold text-xs hover:bg-accent/90 transition-all shadow-lg cursor-pointer"
           >
-            <Download className="h-4 w-4 text-accent" /> Export PDF Report
+            <Download className="h-4 w-4" /> Download Payments PDF
           </button>
           <button
             onClick={() => setShowAddModal(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-accent text-black font-semibold text-xs hover:bg-accent/90 transition-all shadow-lg cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 text-white font-semibold text-xs hover:bg-white/20 transition-all border border-white/10 cursor-pointer"
           >
             <Plus className="h-4 w-4" /> Log Payment Milestone
           </button>

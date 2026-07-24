@@ -3,12 +3,26 @@ import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { Mail, CheckCircle2, Archive, Eye, Download, Plus, Trash2 } from 'lucide-react'
 import { getAdminStore, saveAdminStore, formatIST, type AdminLead } from '../adminStore'
-import { generateAdminReportPDF } from '../../lib/professionalPDF'
+import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function Leads() {
   const [store, setStore] = useState(getAdminStore())
   const [full, setFull] = useState<AdminLead | null>(null)
   const [showAddModal, setShowAddModal] = useState(false)
+
+  const handleDownloadLeadsPDF = () => {
+    const leads = store.leads || []
+    const headers = ['Time (IST)', 'Client Name', 'Email', 'Phone', 'Service', 'Status']
+    const rows = leads.map((l) => [
+      formatIST(l.createdAt),
+      l.name,
+      l.email,
+      l.phone || '—',
+      l.service || 'Website Project',
+      l.status,
+    ])
+    exportSectionReportPDF('Form Inquiries & Leads Audit', 'AROM Studio Website Lead Inquiries', headers, rows, 'Form_Leads_Report')
+  }
 
   // Add lead form state
   const [name, setName] = useState('')
@@ -22,26 +36,6 @@ export function Leads() {
   useEffect(() => {
     reload()
   }, [])
-
-  const leads = store.leads || []
-  const newLeads = leads.filter((l) => !l.status || l.status === 'New').length
-  const respondedLeads = leads.filter((l) => l.status === 'Responded').length
-  const viewedLeads = leads.filter((l) => l.status === 'Viewed').length
-
-  const handleExportLeadsPDF = () => {
-    generateAdminReportPDF({
-      sectionTitle: 'Contact Form Leads & Inquiries Report',
-      subtitle: `${leads.length} Inquiries Received | New: ${newLeads} | Responded: ${respondedLeads}`,
-      headers: ['Received (IST)', 'Lead Name', 'Email', 'Phone', 'Service Interested', 'Status'],
-      rows: leads.map((l) => [formatIST(l.createdAt), l.name, l.email, l.phone || '—', l.service || 'Website Build', l.status]),
-      summaryLines: [
-        `Total Contact Inquiries: ${leads.length}`,
-        `New Pending Leads: ${newLeads}`,
-        `Responded Inquiries: ${respondedLeads}`,
-        `Viewed Inquiries: ${viewedLeads}`,
-      ],
-    })
-  }
 
   const updateStatus = (id: string, status: AdminLead['status']) => {
     const s = getAdminStore()
@@ -96,6 +90,7 @@ export function Leads() {
     a.click()
   }
 
+  const leads = store.leads || []
 
   const columns = [
     { key: 'createdAt', label: 'Date (IST)', render: (v: string) => formatIST(v) },
@@ -146,13 +141,13 @@ export function Leads() {
           <StatCard label="Responded" value={leads.filter(l => l.status === 'Responded').length} icon={<CheckCircle2 className="h-4 w-4 text-emerald-400" />} />
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <button onClick={handleExportLeadsPDF} className="flex items-center gap-1.5 text-xs font-semibold text-white bg-white/10 hover:bg-white/20 border border-white/10 px-3.5 py-2.5 rounded-xl transition-all cursor-pointer">
-            <Download className="h-4 w-4 text-accent" /> Export PDF Report
+          <button onClick={handleDownloadLeadsPDF} className="flex items-center gap-1.5 text-xs font-semibold text-black bg-accent hover:bg-accent/90 px-3.5 py-2.5 rounded-xl transition-all shadow-lg">
+            <Download className="h-4 w-4" /> Download Leads PDF
           </button>
-          <button onClick={() => setShowAddModal(true)} className="flex items-center gap-1.5 text-xs font-medium text-white bg-accent hover:bg-accent/90 px-4 py-2.5 rounded-xl transition-all shadow-lg shadow-accent/20 cursor-pointer">
+          <button onClick={() => setShowAddModal(true)} className="flex items-center gap-1.5 text-xs font-medium text-white bg-white/10 hover:bg-white/20 border border-white/10 px-4 py-2.5 rounded-xl transition-all">
             <Plus className="h-4 w-4" /> Add Lead
           </button>
-          <button onClick={exportCSV} className="flex items-center gap-1.5 text-xs font-medium text-white bg-white/5 hover:bg-white/10 border border-white/10 px-4 py-2.5 rounded-xl transition-all cursor-pointer">
+          <button onClick={exportCSV} className="flex items-center gap-1.5 text-xs font-medium text-white bg-white/5 hover:bg-white/10 border border-white/10 px-4 py-2.5 rounded-xl transition-all">
             <Download className="h-4 w-4" /> CSV
           </button>
         </div>

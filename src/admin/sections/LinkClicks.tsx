@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { DataTable } from '../components/DataTable'
-import { MousePointer2, Download } from 'lucide-react'
-import { generateAdminReportPDF } from '../../lib/professionalPDF'
+import { MousePointer2 } from 'lucide-react'
 
 export function LinkClicks() {
   const [data, setData] = useState<any>(null)
@@ -13,7 +12,7 @@ export function LinkClicks() {
       .catch(() => {})
   }, [])
 
-  if (!data) return <div className="text-sm text-white/50">Loading link click telemetry...</div>
+  if (!data) return <div className="text-sm text-text-secondary">Loading...</div>
 
   const columns = [
     { key: 'createdAt', label: 'Time', render: (v: string) => new Date(v).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) },
@@ -22,42 +21,16 @@ export function LinkClicks() {
     { key: 'page', label: 'Page' },
   ]
 
-  const handleExportClicksPDF = () => {
-    const clicksList = data.clicks || []
-    generateAdminReportPDF({
-      sectionTitle: 'Link Clicks & Call-to-Action Analytics',
-      subtitle: `${data.total || 0} Total Recorded CTA Interactions`,
-      headers: ['Time (IST)', 'Type', 'Button / Link Label', 'Source Page Route'],
-      rows: clicksList.map((c: any) => [
-        new Date(c.createdAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
-        c.type || 'click',
-        c.label || 'CTA Button',
-        c.page || '/',
-      ]),
-      summaryLines: [
-        `Total CTA Interactions: ${data.total || 0}`,
-        `Top CTA Button: ${Object.entries(data.byLabel || {}).sort(([, a], [, b]) => (b as number) - (a as number))[0]?.[0] || 'Contact Us'}`,
-      ],
-    })
-  }
-
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between gap-4">
-        <div className="glass rounded-[24px] p-4 flex items-center gap-3 border border-white/10">
+      <div className="flex items-center gap-4">
+        <div className="glass rounded-[--radius-card] p-4 flex items-center gap-3">
           <MousePointer2 className="h-5 w-5 text-accent" />
           <div>
-            <p className="text-2xl font-bold text-white">{data.total}</p>
-            <p className="text-[11px] text-white/50">Total Clicks</p>
+            <p className="text-2xl font-bold text-text-primary">{data.total}</p>
+            <p className="text-[11px] text-text-secondary">Total Clicks</p>
           </div>
         </div>
-
-        <button
-          onClick={handleExportClicksPDF}
-          className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/10 text-white font-semibold text-xs hover:bg-white/20 transition-all border border-white/10 cursor-pointer"
-        >
-          <Download className="h-4 w-4 text-accent" /> Export PDF Clicks Report
-        </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

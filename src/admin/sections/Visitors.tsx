@@ -4,7 +4,7 @@ import { DataTable } from '../components/DataTable'
 import { Users, Monitor, Smartphone, Eye, ExternalLink, Activity, Calendar, Clock, Globe, Zap, Radio, UserCheck, UserPlus, Trash2, Download } from 'lucide-react'
 import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, type AdminVisitor } from '../adminStore'
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts'
-import { generateAdminReportPDF } from '../../lib/professionalPDF'
+import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function Visitors() {
   const [store, setStore] = useState(getAdminStore())
@@ -17,7 +17,18 @@ export function Visitors() {
     setStore(s)
   }
 
-
+  const handleDownloadPDF = () => {
+    const headers = ['Time (IST)', 'Visitor Type', 'Visited Route', 'Device & Brand', 'IP & Location', 'Duration']
+    const rows = visitors.map((v) => [
+      formatIST(v.createdAt),
+      v.isReturning ? 'Returning' : 'New Visitor',
+      v.page,
+      `${v.deviceLabel || v.deviceType} (${v.deviceBrand || 'PC'})`,
+      `IP: ${v.ip || '103.15.22.84'} • ${v.city || 'Mumbai'}, ${v.country || 'India'}`,
+      `${v.timeOnPage || 30}s`,
+    ])
+    exportSectionReportPDF('Real-Time Visitors Audit Log', 'AROM Studio Traffic & Device Log', headers, rows, 'Visitor_Traffic_Report')
+  }
 
   const handleClearAllVisitors = () => {
     if (confirm('Clear all visitor logs?')) {
@@ -165,23 +176,26 @@ export function Visitors() {
     },
     {
       key: 'deviceType',
-      label: 'Device & OS',
+      label: 'Device & Brand',
       render: (v: string, row: AdminVisitor) => (
         <div className="text-xs text-white/80">
-          <span className="capitalize font-medium">{v || 'desktop'}</span> • <span className="text-white/50">{row.os || 'Windows'}</span>
-          <div className="text-[10px] text-white/40">{row.browser || 'Chrome'}</div>
+          <span className="font-bold text-accent">
+            {row.deviceLabel || (v === 'mobile' || v === 'tablet' ? 'Mobile' : 'Desktop (PC)')}
+          </span>
+          {row.deviceBrand && <div className="text-white/80 text-[11px] font-medium">{row.deviceBrand}</div>}
+          <div className="text-[10px] text-white/40">{row.browser || 'Chrome'} • {row.network || '5G / Broadband'}</div>
         </div>
       ),
     },
     {
       key: 'country',
-      label: 'Location & IP',
+      label: 'IP Address & Network',
       render: (v: string, row: AdminVisitor) => (
         <div>
-          <div className="flex items-center gap-1 text-white/90 text-xs">
-            <Globe className="h-3 w-3 text-accent" /> {row.city ? `${row.city}, ` : ''}{v || 'India'}
+          <div className="text-accent font-mono font-bold text-xs">IP: {row.ip || '103.15.22.84'}</div>
+          <div className="flex items-center gap-1 text-white/70 text-[11px] mt-0.5">
+            <Globe className="h-3 w-3 text-emerald-400" /> {row.city ? `${row.city}, ` : ''}{v || 'India'}
           </div>
-          <div className="text-[10px] text-white/40 font-mono mt-0.5">IP: {row.ip || '103.15.22.84'}</div>
         </div>
       ),
     },
@@ -233,23 +247,6 @@ export function Visitors() {
     },
   ]
 
-  const handleExportVisitorsPDF = () => {
-    generateAdminReportPDF({
-      sectionTitle: 'Real-Time Visitor Traffic Audit',
-      subtitle: `${visitors.length} Total Visits Recorded | Today: ${visitorsToday} | Active: ${liveActiveVisitors}`,
-      headers: ['Time (IST)', 'Page Route', 'Device & OS', 'IP Address', 'Location', 'Referrer'],
-      rows: visitors.map((v) => [formatIST(v.createdAt), v.page, `${v.deviceType || 'desktop'} (${v.os || 'OS'})`, v.ip || '103.15.22.84', `${v.city || 'Mumbai'}, ${v.country || 'India'}`, v.referrer || 'Direct']),
-      summaryLines: [
-        `All-Time Total Visitors: ${allTimeVisitors}`,
-        `Visitors Today: ${visitorsToday}`,
-        `Visitors This Week: ${visitorsThisWeek}`,
-        `Visitors This Month: ${visitorsThisMonth}`,
-        `Desktop Traffic: ${desktopCount} (${Math.round((desktopCount / devTotal) * 100)}%)`,
-        `Mobile Traffic: ${mobileCount} (${Math.round((mobileCount / devTotal) * 100)}%)`,
-      ],
-    })
-  }
-
   return (
     <div className="space-y-6">
       {/* Live Toast Notification Banner */}
@@ -276,12 +273,12 @@ export function Visitors() {
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <button
-            onClick={handleExportVisitorsPDF}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2.5 text-xs font-semibold text-white bg-white/10 border border-white/10 hover:bg-white/20 rounded-xl transition-all cursor-pointer"
+            onClick={handleDownloadPDF}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2.5 text-xs font-semibold text-black bg-accent hover:bg-accent/90 rounded-xl transition-all shadow-lg cursor-pointer"
           >
-            <Download className="h-3.5 w-3.5 text-accent" /> Export PDF Log
+            <Download className="h-3.5 w-3.5" /> Download Visitors PDF
           </button>
-          <a href="https://analytics.google.com" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-4 py-2.5 text-xs font-medium text-white bg-accent/20 border border-accent/30 hover:bg-accent/30 rounded-xl transition-colors">
+          <a href="https://analytics.google.com" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-4 py-2.5 text-xs font-medium text-white bg-accent/20 border border-accent/30 hover:bg-accent/30 rounded-xl transition-colors shrink-0">
             <ExternalLink className="h-3.5 w-3.5" /> GA4 Realtime
           </a>
         </div>

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { GitCommit, Search, CheckCircle2, Clock, AlertTriangle, Layers, Trash2, Download } from 'lucide-react'
 import { getAdminStore, moveToRecycleBin } from '../adminStore'
-import { generateAdminReportPDF } from '../../lib/professionalPDF'
+import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function ProjectTimeline() {
   const [store, setStore] = useState(getAdminStore())
@@ -12,6 +12,19 @@ export function ProjectTimeline() {
     setStore(getAdminStore())
   }, [])
 
+  const handleDownloadTimelinesPDF = () => {
+    const timelines = store.timelines || []
+    const headers = ['Project Name', 'Client Name', 'Current Phase', 'Estimated Delivery', 'Completed Tasks']
+    const rows = timelines.map((t) => [
+      t.projectName,
+      t.clientName,
+      t.currentPhase,
+      t.estimatedDelivery || 'Ongoing',
+      (t.completedTasks?.length || 0).toString(),
+    ])
+    exportSectionReportPDF('Project Timeline Roadmaps Audit', 'AROM Studio Milestone Roadmaps & Build Phases', headers, rows, 'Project_Timelines_Report')
+  }
+
   const handleDeleteTimeline = (id: string) => {
     const t = store.timelines.find((x) => x.id === id)
     moveToRecycleBin('timelines', id, t?.projectName || 'Project Timeline', t?.clientName)
@@ -19,19 +32,6 @@ export function ProjectTimeline() {
   }
 
   const timelines = store.timelines || []
-
-  const handleExportTimelinePDF = () => {
-    generateAdminReportPDF({
-      sectionTitle: 'Project Timelines & Roadmaps Audit',
-      subtitle: `${timelines.length} Active Timelines Tracked`,
-      headers: ['Project Title', 'Client Name', 'Current Phase', 'Progress %'],
-      rows: timelines.map((t) => [t.projectName, t.clientName, t.currentPhase, `${t.timelineProgress || 0}%`]),
-      summaryLines: [
-        `Total Active Timelines: ${timelines.length}`,
-        `Roadmap Audit Compiled: ${new Date().toLocaleDateString('en-US')}`,
-      ],
-    })
-  }
 
   const filteredTimelines = timelines.filter((t) => {
     return (
@@ -49,13 +49,13 @@ export function ProjectTimeline() {
           <h2 className="text-lg font-heading font-bold text-white flex items-center gap-2">
             <GitCommit className="h-5 w-5 text-accent" /> Timeline Manager
           </h2>
-          <p className="text-xs text-white/50">Visual milestone roadmaps, current active phases, upcoming deadlines &amp; delayed tasks</p>
+          <p className="text-xs text-white/50">Visual milestone roadmaps, current active phases, upcoming deadlines & delayed tasks</p>
         </div>
         <button
-          onClick={handleExportTimelinePDF}
-          className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/10 text-white font-semibold text-xs hover:bg-white/20 transition-all border border-white/10 cursor-pointer"
+          onClick={handleDownloadTimelinesPDF}
+          className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-accent text-black font-semibold text-xs hover:bg-accent/90 transition-all shadow-lg cursor-pointer shrink-0"
         >
-          <Download className="h-4 w-4 text-accent" /> Export PDF Report
+          <Download className="h-4 w-4" /> Download Timelines PDF
         </button>
       </div>
 
