@@ -64,12 +64,21 @@ export default function Agreement() {
 
   const finalPct = String(100 - Number(advancePct))
 
-  const clampAdvance = (val: string) => {
-    const cleaned = val.trim()
-    if (cleaned === '') { setAdvancePct('27'); return }
-    const n = Number(cleaned)
+  const couldReachValid = (val: string) => {
+    if (val === '') return true
+    for (let n = 27; n <= 100; n++) {
+      if (String(n).startsWith(val)) return true
+    }
+    return false
+  }
+
+  const handleAdvanceChange = (raw: string) => {
+    if (raw === '' || raw === '-') { setAdvancePct(raw); return }
+    const n = Number(raw)
     if (isNaN(n)) return
-    setAdvancePct(String(Math.max(27, Math.min(100, n))))
+    if (n > 100) { setAdvancePct('100'); return }
+    if (n < 27 && !couldReachValid(raw)) { setAdvancePct('27'); return }
+    setAdvancePct(raw)
   }
 
   const toggleService = (s: string) => {
@@ -166,7 +175,7 @@ export default function Agreement() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="text-xs text-white/50 font-body mb-1 block">Advance Payment (%) — minimum 27%</label>
-              <input type="number" min={27} max={100} value={advancePct} onChange={(e) => { const r = e.target.value; if (r === '' || r === '-' || Number(r) <= 100) setAdvancePct(r) }} onBlur={() => clampAdvance(advancePct)} className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white focus:outline-none focus:border-accent/40 font-body" />
+              <input type="number" min={27} max={100} value={advancePct} onChange={(e) => handleAdvanceChange(e.target.value)} onBlur={() => { if (advancePct.trim() === '' || Number(advancePct) < 27) setAdvancePct('27') }} className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white focus:outline-none focus:border-accent/40 font-body" />
             </div>
             <div>
               <label className="text-xs text-white/50 font-body mb-1 block">Final Payment (%)</label>
