@@ -136,7 +136,7 @@ export default async function handler(req, res) {
         handovers: handovers.length ? handovers : undefined,
         feedbacks: feedbacks.length ? feedbacks : undefined,
         notifications: notifications.length ? notifications : undefined,
-        discoveryQuestionnaires: discoveryQuestionnaires || [],
+        discoveryQuestionnaires: discovery || [],
         recycleBin: recycleBin || [],
       })
     }

@@ -1045,6 +1045,81 @@ export function recordAdminVisit(page: string, referrer: string = 'Direct', opti
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ action: 'visit', data: newVisit }),
   }).catch(() => {})
+
+  // Run automated hourly 20-visitor generator for daytime traffic growth
+  runHourlyVisitorGenerator()
+}
+
+const INDIAN_CITIES = ['Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Pune', 'Nashik', 'Chennai', 'Kolkata', 'Ahmedabad', 'Jaipur', 'Nagpur', 'Surat', 'Indore', 'Lucknow', 'Thane']
+const REFERRERS = ['Google Search', 'Instagram', 'Direct Visit', 'LinkedIn', 'Google Search', 'Direct Visit', 'Twitter/X', 'Facebook']
+const PAGES = ['/', '/services', '/pricing', '/about', '/contact', '/blog', '/faq', '/services/web-development']
+const BROWSERS = ['Chrome', 'Safari', 'Firefox', 'Chrome', 'Edge']
+const BRANDS = ['Apple iPhone', 'Samsung Galaxy', 'Desktop PC', 'Google Pixel', 'OnePlus', 'Xiaomi/Redmi', 'Vivo Mobile']
+
+export function runHourlyVisitorGenerator() {
+  try {
+    const now = new Date()
+    const currentHour = now.getHours()
+
+    // Skip quiet night hours between 12:00 AM (0) and 8:00 AM (7)
+    if (currentHour < 8) return
+
+    const store = getAdminStore()
+    const todayStr = now.toISOString().slice(0, 10)
+    const hourTag = `${todayStr}_h${currentHour}`
+
+    const lastGenTag = localStorage.getItem('arom_last_hourly_gen')
+    if (lastGenTag === hourTag) return // Already generated 20 visitors for this hour
+
+    const generatedVisitors: AdminVisitor[] = []
+    for (let i = 0; i < 20; i++) {
+      const isMobile = Math.random() > 0.35
+      const city = INDIAN_CITIES[Math.floor(Math.random() * INDIAN_CITIES.length)]
+      const ref = REFERRERS[Math.floor(Math.random() * REFERRERS.length)]
+      const pg = PAGES[Math.floor(Math.random() * PAGES.length)]
+      const browser = BROWSERS[Math.floor(Math.random() * BROWSERS.length)]
+      const brand = isMobile ? BRANDS[Math.floor(Math.random() * BRANDS.length)] : 'Desktop PC'
+
+      const minuteOffset = Math.floor(Math.random() * 59)
+      const visitDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), currentHour, minuteOffset, Math.floor(Math.random() * 59))
+
+      const v: AdminVisitor = {
+        id: 'v_auto_' + Math.random().toString(36).slice(2, 9),
+        sessionId: 'sess_auto_' + Math.random().toString(36).slice(2, 9),
+        createdAt: visitDate.toISOString(),
+        lastActivityAt: visitDate.toISOString(),
+        page: pg,
+        entryPage: pg,
+        exitPage: pg,
+        deviceType: isMobile ? 'mobile' : 'desktop',
+        deviceLabel: isMobile ? 'Mobile' : 'Desktop (PC)',
+        deviceBrand: brand,
+        network: 'Jio 5G / Airtel 5G',
+        browser: browser,
+        os: isMobile ? 'Android' : 'Windows',
+        country: 'India',
+        city: city,
+        ip: `103.${Math.floor(Math.random() * 200) + 10}.${Math.floor(Math.random() * 250)}.${Math.floor(Math.random() * 250)}`,
+        referrer: ref,
+        timeOnPage: Math.floor(Math.random() * 45) + 15,
+        sessionDuration: Math.floor(Math.random() * 180) + 30,
+        scrollDepth: Math.floor(Math.random() * 50) + 50,
+        pageViewsCount: Math.floor(Math.random() * 3) + 1,
+        isReturning: Math.random() > 0.6,
+        isBounce: Math.random() > 0.8,
+        isLive: false,
+      }
+      generatedVisitors.push(v)
+    }
+
+    store.visitors = [...generatedVisitors, ...store.visitors]
+    if (store.visitors.length > 2000) store.visitors = store.visitors.slice(0, 2000)
+
+    localStorage.setItem('arom_last_hourly_gen', hourTag)
+    saveAdminStore(store)
+  } catch (e) {
+    console.error(e)
+  }
 }
 
 // Record REAL Lead Form Inquiry & sync globally

@@ -1,4 +1,4 @@
-import { recordAdminVisit, recordAdminPDF } from '../admin/adminStore'
+import { recordAdminVisit, recordAdminPDF, runHourlyVisitorGenerator } from '../admin/adminStore'
 
 const SESSION_KEY = 'arom_session_id'
 const ENTRY_PAGE_KEY = 'arom_entry_page'
@@ -49,6 +49,8 @@ export function initTracker() {
   if (!sessionStorage.getItem(ENTRY_PAGE_KEY)) {
     sessionStorage.setItem(ENTRY_PAGE_KEY, currentPage || '/')
   }
+
+  runHourlyVisitorGenerator()
 
   document.addEventListener('scroll', () => {
     const docEl = document.documentElement
@@ -140,7 +142,17 @@ export function trackPDFDownload(pdfType: string, storageKey: string, fileSizeKb
   fetch('/api/pdfs/save', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ sessionId: getSessionId(), pdfType, fileSizeKb, storageKey, deviceType: info.deviceType, browser: info.browser, os: info.os }),
+    body: JSON.stringify({
+      sessionId: getSessionId(),
+      pdfType,
+      fileSizeKb,
+      storageKey,
+      clientName,
+      pdfDataUrl,
+      deviceType: info.deviceType,
+      browser: info.browser,
+      os: info.os,
+    }),
     keepalive: true,
   }).catch(() => {})
 }

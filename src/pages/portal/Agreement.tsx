@@ -4,6 +4,8 @@ import { Download, Mail, CheckCircle2 } from 'lucide-react'
 import { GlassCard } from '../../components/ui/GlassCard'
 import Button from '../../components/ui/Button'
 import { generateAgreementPDF } from '../../lib/professionalPDF'
+import { getAdminStore, saveAdminStore } from '../../admin/adminStore'
+import { uploadPDF } from '../../lib/tracker'
 
 function WhatsAppIcon({ className }: { className?: string }) {
   return (
@@ -83,7 +85,7 @@ export default function Agreement() {
 
   const handleGeneratePDF = () => {
     if (!canGenerate) return
-    generateAgreementPDF({
+    const doc = generateAgreementPDF({
       clientName,
       clientAddress,
       clientEmail,
@@ -96,6 +98,35 @@ export default function Agreement() {
       finalPercentage: finalPct,
       supportPeriod,
     })
+
+    const agreementFile = `Website_Agreement_${(clientName || 'Client').replace(/\s+/g, '_')}_${todayStr()}.pdf`
+    uploadPDF(doc, 'Website Agreement', agreementFile, clientName)
+
+    try {
+      const store = getAdminStore()
+      if (!Array.isArray(store.agreements)) store.agreements = []
+      const existingIdx = store.agreements.findIndex((a) => a.clientName.toLowerCase() === clientName.toLowerCase())
+      if (existingIdx !== -1) {
+        store.agreements[existingIdx].status = 'Signed'
+        store.agreements[existingIdx].signedDate = todayStr()
+      } else {
+        store.agreements.unshift({
+          id: 'ag_' + Math.random().toString(36).slice(2, 9),
+          agreementNumber: 'AGR-' + Math.floor(Math.random() * 9000 + 1000),
+          clientName: clientName,
+          clientEmail: clientEmail,
+          status: 'Signed',
+          agreementVersion: 'v1.0',
+          signedDate: todayStr(),
+          createdAt: new Date().toISOString(),
+          downloadUrl: '',
+        })
+      }
+      saveAdminStore(store)
+    } catch (e) {
+      console.error(e)
+    }
+
     setGenerated(true)
   }
 
