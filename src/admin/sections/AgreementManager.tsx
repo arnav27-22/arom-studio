@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { FileSignature, Search, Download, CheckCircle2, Clock, Plus, X, Trash2 } from 'lucide-react'
-import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, type AdminAgreement } from '../adminStore'
+import { getAdminStore, saveAdminStore, syncFromCloud, moveToRecycleBin, formatIST, type AdminAgreement } from '../adminStore'
 import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function AgreementManager() {
@@ -40,6 +40,10 @@ export function AgreementManager() {
 
   useEffect(() => {
     setStore(getAdminStore())
+    const timer = setInterval(() => {
+      syncFromCloud().then((updated) => setStore(updated))
+    }, 3000)
+    return () => clearInterval(timer)
   }, [])
 
   const agreements = store.agreements || []

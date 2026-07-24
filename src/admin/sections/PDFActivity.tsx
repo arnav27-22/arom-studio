@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { FileText, Download, Eye, Trash2, X } from 'lucide-react'
-import { getAdminStore, moveToRecycleBin, formatIST, type AdminPDF } from '../adminStore'
+import { getAdminStore, syncFromCloud, moveToRecycleBin, formatIST, type AdminPDF } from '../adminStore'
 import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function PDFActivity() {
@@ -15,6 +15,11 @@ export function PDFActivity() {
 
   useEffect(() => {
     reload()
+    // Realtime 3-second Cloud Database Sync
+    const timer = setInterval(() => {
+      syncFromCloud().then(() => reload())
+    }, 3000)
+    return () => clearInterval(timer)
   }, [])
 
   const handleDownloadPdfArchivePDF = () => {

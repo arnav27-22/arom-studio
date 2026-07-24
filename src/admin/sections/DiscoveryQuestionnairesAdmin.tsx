@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { FileQuestion, Search, Download, Eye, X, Trash2, CheckCircle2, Clock } from 'lucide-react'
-import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, type AdminDiscoveryQuestionnaire } from '../adminStore'
+import { getAdminStore, saveAdminStore, syncFromCloud, moveToRecycleBin, formatIST, type AdminDiscoveryQuestionnaire } from '../adminStore'
 import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function DiscoveryQuestionnairesAdmin() {
@@ -13,6 +13,10 @@ export function DiscoveryQuestionnairesAdmin() {
 
   useEffect(() => {
     setStore(getAdminStore())
+    const timer = setInterval(() => {
+      syncFromCloud().then((updated) => setStore(updated))
+    }, 3000)
+    return () => clearInterval(timer)
   }, [])
 
   const items = store.discoveryQuestionnaires || []
