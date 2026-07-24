@@ -25,7 +25,7 @@ export function ProjectTimeline() {
       sectionTitle: 'Project Timelines & Roadmaps Audit',
       subtitle: `${timelines.length} Active Timelines Tracked`,
       headers: ['Project Title', 'Client Name', 'Current Phase', 'Progress %'],
-      rows: timelines.map((t) => [t.projectName, t.clientName, t.currentPhase, `${t.overallProgress || 0}%`]),
+      rows: timelines.map((t) => [t.projectName, t.clientName, t.currentPhase, `${t.timelineProgress || 0}%`]),
       summaryLines: [
         `Total Active Timelines: ${timelines.length}`,
         `Roadmap Audit Compiled: ${new Date().toLocaleDateString('en-US')}`,

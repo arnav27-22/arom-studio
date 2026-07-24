@@ -24,21 +24,21 @@ export function Leads() {
   }, [])
 
   const leads = store.leads || []
-  const newLeads = leads.filter((l) => l.status === 'New').length
-  const contactedLeads = leads.filter((l) => l.status === 'Contacted').length
-  const closedLeads = leads.filter((l) => l.status === 'Closed').length
+  const newLeads = leads.filter((l) => !l.status || l.status === 'New').length
+  const respondedLeads = leads.filter((l) => l.status === 'Responded').length
+  const viewedLeads = leads.filter((l) => l.status === 'Viewed').length
 
   const handleExportLeadsPDF = () => {
     generateAdminReportPDF({
       sectionTitle: 'Contact Form Leads & Inquiries Report',
-      subtitle: `${leads.length} Inquiries Received | New: ${newLeads} | Contacted: ${contactedLeads}`,
+      subtitle: `${leads.length} Inquiries Received | New: ${newLeads} | Responded: ${respondedLeads}`,
       headers: ['Received (IST)', 'Lead Name', 'Email', 'Phone', 'Service Interested', 'Status'],
       rows: leads.map((l) => [formatIST(l.createdAt), l.name, l.email, l.phone || '—', l.service || 'Website Build', l.status]),
       summaryLines: [
         `Total Contact Inquiries: ${leads.length}`,
-        `New Unread Leads: ${newLeads}`,
-        `In Progress / Contacted Leads: ${contactedLeads}`,
-        `Closed & Converted Leads: ${closedLeads}`,
+        `New Pending Leads: ${newLeads}`,
+        `Responded Inquiries: ${respondedLeads}`,
+        `Viewed Inquiries: ${viewedLeads}`,
       ],
     })
   }
@@ -96,7 +96,6 @@ export function Leads() {
     a.click()
   }
 
-  const leads = store.leads || []
 
   const columns = [
     { key: 'createdAt', label: 'Date (IST)', render: (v: string) => formatIST(v) },

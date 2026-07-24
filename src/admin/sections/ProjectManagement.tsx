@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
-import { Briefcase, Search, Plus, CheckCircle2, Clock, Archive, Rocket, Users, X, Eye, Trash2, Download, FileText } from 'lucide-react'
+import { Briefcase, Search, Plus, CheckCircle2, Clock, Archive, Rocket, Users, X, Eye, Trash2, Download } from 'lucide-react'
 import { getAdminStore, saveAdminStore, moveToRecycleBin, type AdminProject } from '../adminStore'
 import { generateAdminReportPDF } from '../../lib/professionalPDF'
 

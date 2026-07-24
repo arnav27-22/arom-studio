@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
-import { FileSpreadsheet, Search, Plus, Download, Copy, CheckCircle2, Eye, Clock, FileText, X, Trash2 } from 'lucide-react'
+import { FileSpreadsheet, Search, Plus, Download, CheckCircle2, Eye, Clock, FileText, X, Trash2 } from 'lucide-react'
 import { getAdminStore, saveAdminStore, moveToRecycleBin, type AdminProposal } from '../adminStore'
 import { generateProposalPDF, generateAdminReportPDF } from '../../lib/professionalPDF'
 
@@ -26,6 +26,18 @@ export function ProposalManager() {
   }, [])
 
   const proposals = store.proposals || []
+
+  const handleDownloadPDF = (p: AdminProposal) => {
+    generateProposalPDF({
+      proposalNumber: p.proposalNumber,
+      clientName: p.clientName,
+      clientEmail: p.clientEmail,
+      projectName: p.title || 'Web Development Project',
+      amount: p.amount,
+      validUntil: p.validUntil,
+      scopeItems: [p.scopeSummary || 'Custom UI Design & Web Engineering Services'],
+    })
+  }
 
   const filteredProposals = proposals.filter((p) => {
     const matchesSearch =

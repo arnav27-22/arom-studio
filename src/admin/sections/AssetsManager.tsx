@@ -158,15 +158,13 @@ export function AssetsManager() {
           >
             Checklist
           </button>
-          <a
-            href={row.googleDriveLink}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            onClick={() => handleExportSingleAssetPDF(row)}
             className="p-1.5 rounded-lg bg-white/5 hover:bg-emerald-500/20 hover:text-emerald-400 text-white/60 transition-colors cursor-pointer"
-            title="Download Assets"
+            title="Download Asset Brief PDF"
           >
             <Download className="h-3.5 w-3.5" />
-          </a>
+          </button>
           <button
             onClick={() => handleDeleteAsset(row.id)}
             className="p-1.5 rounded-lg bg-white/5 hover:bg-red-500/20 hover:text-red-400 text-white/60 transition-colors cursor-pointer"
