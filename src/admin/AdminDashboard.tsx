@@ -80,10 +80,10 @@ export function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const currentSection = allSections.find((s) => s.id === active)
 
   return (
-    <div className="min-h-screen text-white font-body flex bg-bg">
+    <div className="min-h-screen text-white font-body flex bg-transparent relative z-10">
       {sidebarOpen && <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-40 md:hidden" onClick={() => setSidebarOpen(false)} />}
 
-      <aside className={`fixed md:sticky top-0 left-0 z-50 h-screen w-64 bg-bg/95 backdrop-blur-2xl border-r border-white/10 flex flex-col transition-transform md:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:block shrink-0`}>
+      <aside className={`fixed md:sticky top-0 left-0 z-50 h-screen w-64 bg-bg/85 backdrop-blur-2xl border-r border-white/10 flex flex-col transition-transform md:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:block shrink-0`}>
         <div className="p-5 border-b border-white/10 flex items-center justify-between">
           <div>
             <h2 className="text-base font-heading font-bold text-white tracking-wider">AROM STUDIO</h2>
