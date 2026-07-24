@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { Bell, Mail, FileSpreadsheet, CreditCard, CheckSquare, Rocket, PackageCheck, ShieldAlert, Check, Search, Trash2 } from 'lucide-react'
-import { getAdminStore, saveAdminStore, formatIST } from '../adminStore'
+import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST } from '../adminStore'
 
 export function NotificationsCenter() {
   const [store, setStore] = useState(getAdminStore())
@@ -16,10 +16,9 @@ export function NotificationsCenter() {
 
   const handleDeleteNotification = (id: string, e: React.MouseEvent) => {
     e.stopPropagation()
-    const updatedNotifs = notifications.filter((n) => n.id !== id)
-    const updated = { ...store, notifications: updatedNotifs }
-    saveAdminStore(updated)
-    setStore(updated)
+    const n = notifications.find((x) => x.id === id)
+    moveToRecycleBin('notifications', id, n?.title || 'Notification', n?.message)
+    setStore(getAdminStore())
   }
 
   const handleClearAll = () => {

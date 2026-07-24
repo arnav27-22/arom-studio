@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { CheckCircle2, ShieldCheck, Database, Key } from 'lucide-react'
+import { CheckCircle2, ShieldCheck, Database, Key, Trash2, RotateCcw } from 'lucide-react'
+import { getAdminStore, restoreFromRecycleBin, permanentDeleteFromRecycleBin, emptyRecycleBin, formatIST, type AdminRecycleItem } from '../adminStore'
 
 const DEFAULT_SETTINGS = {
   envChecks: {
@@ -16,8 +17,13 @@ const DEFAULT_SETTINGS = {
 
 export function SettingsPage() {
   const [data, setData] = useState<any>(DEFAULT_SETTINGS)
+  const [store, setStore] = useState(getAdminStore())
+  const [recycleSearch, setRecycleSearch] = useState('')
+
+  const reloadStore = () => setStore(getAdminStore())
 
   useEffect(() => {
+    reloadStore()
     fetch('/api/admin/settings', { credentials: 'include' })
       .then((r) => r.json())
       .then((d) => {
@@ -26,8 +32,143 @@ export function SettingsPage() {
       .catch(() => {})
   }, [])
 
+  const recycleBin = store.recycleBin || []
+  const filteredRecycle = recycleBin.filter(
+    (r) =>
+      r.title.toLowerCase().includes(recycleSearch.toLowerCase()) ||
+      (r.subtitle || '').toLowerCase().includes(recycleSearch.toLowerCase()) ||
+      r.originalCollection.toLowerCase().includes(recycleSearch.toLowerCase())
+  )
+
+  const handleRestore = (id: string) => {
+    restoreFromRecycleBin(id)
+    reloadStore()
+  }
+
+  const handlePermanentDelete = (id: string) => {
+    if (confirm('Permanently delete this item? This action cannot be undone.')) {
+      permanentDeleteFromRecycleBin(id)
+      reloadStore()
+    }
+  }
+
+  const handleEmptyBin = () => {
+    if (confirm('Empty entire Recycle Bin? All items inside will be permanently deleted.')) {
+      emptyRecycleBin()
+      reloadStore()
+    }
+  }
+
+  const getCollectionBadge = (col: string) => {
+    const colMap: Record<string, string> = {
+      clients: 'Clients',
+      projects: 'Projects',
+      proposals: 'Proposals',
+      agreements: 'Agreements',
+      payments: 'Payments',
+      content: 'Content',
+      assets: 'Assets',
+      approvals: 'Design Approvals',
+      timelines: 'Timelines',
+      handovers: 'Handovers',
+      feedbacks: 'Feedback',
+      notifications: 'Notifications',
+      invoices: 'Invoices',
+      leads: 'Leads',
+      pdfs: 'PDFs',
+      visitors: 'Visitors',
+    }
+    return colMap[col] || col
+  }
+
   return (
-    <div className="space-y-6 max-w-3xl">
+    <div className="space-y-6 max-w-4xl">
+      {/* Recycle Bin & Trash Recovery */}
+      <div className="glass rounded-[24px] p-6 border border-accent/30 space-y-4 shadow-2xl">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
+          <div>
+            <h3 className="text-sm font-heading font-bold text-white uppercase tracking-wider flex items-center gap-2">
+              <Trash2 className="h-4 w-4 text-accent" /> Recycle Bin &amp; Trash Recovery
+            </h3>
+            <p className="text-xs text-white/50 mt-0.5">
+              Items deleted from any section are safely held here. You can restore them anytime or permanently delete them.
+            </p>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="px-3 py-1 rounded-full bg-accent/10 border border-accent/30 text-accent font-mono text-xs font-bold">
+              {recycleBin.length} Recycled Items
+            </span>
+            {recycleBin.length > 0 && (
+              <button
+                onClick={handleEmptyBin}
+                className="px-3 py-1.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 text-xs font-medium transition-all cursor-pointer flex items-center gap-1"
+              >
+                <Trash2 className="h-3.5 w-3.5" /> Empty Bin
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Search */}
+        {recycleBin.length > 0 && (
+          <input
+            type="text"
+            placeholder="Search recycled items by name, email, or category..."
+            value={recycleSearch}
+            onChange={(e) => setRecycleSearch(e.target.value)}
+            className="w-full px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-white/40 focus:outline-none focus:border-accent"
+          />
+        )}
+
+        {/* Items List */}
+        <div className="space-y-2 max-h-96 overflow-y-auto pr-1">
+          {filteredRecycle.length > 0 ? (
+            filteredRecycle.map((item: AdminRecycleItem) => (
+              <div
+                key={item.id}
+                className="p-3.5 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
+              >
+                <div className="space-y-0.5 flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded bg-accent/20 border border-accent/40 text-accent text-[10px] font-mono font-bold capitalize">
+                      {getCollectionBadge(item.originalCollection)}
+                    </span>
+                    <h4 className="font-bold text-white font-heading">{item.title}</h4>
+                  </div>
+                  {item.subtitle && <p className="text-white/60 text-[11px]">{item.subtitle}</p>}
+                  <span className="text-[10px] text-white/40 font-mono block">
+                    Deleted at: {formatIST(item.deletedAt)}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={() => handleRestore(item.id)}
+                    className="px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-semibold transition-all cursor-pointer flex items-center gap-1"
+                    title="Restore item back to original section"
+                  >
+                    <RotateCcw className="h-3.5 w-3.5" /> Restore Item
+                  </button>
+                  <button
+                    onClick={() => handlePermanentDelete(item.id)}
+                    className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 transition-all cursor-pointer"
+                    title="Permanently Delete"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="text-center py-8 text-white/40 text-xs font-body">
+              {recycleBin.length === 0
+                ? 'Recycle Bin is empty. Items deleted from any admin section will appear here for easy recovery.'
+                : 'No items matching current search.'}
+            </div>
+          )}
+        </div>
+      </div>
+
       <div className="glass rounded-[24px] p-6 border border-white/10">
         <h3 className="text-xs font-semibold text-accent uppercase tracking-wider mb-4 flex items-center gap-2">
           <ShieldCheck className="h-4 w-4" /> System Health &amp; Environment

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { FolderUp, Search, ExternalLink, Download, CheckCircle2, AlertCircle, Clock, Plus, X, Trash2 } from 'lucide-react'
-import { getAdminStore, saveAdminStore, formatIST, type AdminAssetFolder } from '../adminStore'
+import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, type AdminAssetFolder } from '../adminStore'
 
 export function AssetsManager() {
   const [store, setStore] = useState(getAdminStore())
@@ -12,12 +12,10 @@ export function AssetsManager() {
   const [showAddModal, setShowAddModal] = useState(false)
 
   const handleDeleteAsset = (id: string) => {
-    if (confirm('Delete this asset folder link?')) {
-      const updated = { ...store, assets: store.assets.filter((a) => a.id !== id) }
-      saveAdminStore(updated)
-      setStore(updated)
-      if (selectedAsset?.id === id) setSelectedAsset(null)
-    }
+    const a = store.assets.find((x) => x.id === id)
+    moveToRecycleBin('assets', id, a?.clientName || 'Asset Folder', a?.projectName)
+    setStore(getAdminStore())
+    if (selectedAsset?.id === id) setSelectedAsset(null)
   }
 
   const [form, setForm] = useState({

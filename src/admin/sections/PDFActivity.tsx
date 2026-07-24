@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { FileText, Download, Eye, Trash2, X } from 'lucide-react'
-import { getAdminStore, saveAdminStore, formatIST, type AdminPDF } from '../adminStore'
+import { getAdminStore, moveToRecycleBin, formatIST, type AdminPDF } from '../adminStore'
 
 export function PDFActivity() {
   const [data, setData] = useState<AdminPDF[]>(getAdminStore().pdfs)
@@ -28,12 +28,9 @@ export function PDFActivity() {
   }
 
   const handleDelete = (id: string) => {
-    if (confirm('Delete this archived PDF document?')) {
-      const s = getAdminStore()
-      s.pdfs = s.pdfs.filter((p) => p.id !== id)
-      saveAdminStore(s)
-      reload()
-    }
+    const pdf = data.find((p) => p.id === id)
+    moveToRecycleBin('pdfs', id, pdf?.title || pdf?.pdfType || 'PDF Document', pdf?.clientName)
+    reload()
   }
 
   const columns = [

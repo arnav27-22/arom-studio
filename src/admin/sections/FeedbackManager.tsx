@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { MessageSquareHeart, Star, CheckCircle2, Search, Lightbulb, Plus, X, Trash2 } from 'lucide-react'
-import { getAdminStore, saveAdminStore, type AdminFeedback } from '../adminStore'
+import { getAdminStore, saveAdminStore, moveToRecycleBin, type AdminFeedback } from '../adminStore'
 
 export function FeedbackManager() {
   const [store, setStore] = useState(getAdminStore())
@@ -23,11 +23,9 @@ export function FeedbackManager() {
   const feedbacks = store.feedbacks || []
 
   const handleDeleteFeedback = (id: string) => {
-    if (confirm('Delete this client review?')) {
-      const updated = { ...store, feedbacks: store.feedbacks.filter((f) => f.id !== id) }
-      saveAdminStore(updated)
-      setStore(updated)
-    }
+    const f = feedbacks.find((x) => x.id === id)
+    moveToRecycleBin('feedbacks', id, f?.clientName || 'Feedback', f?.company)
+    setStore(getAdminStore())
   }
 
   const filteredFeedbacks = feedbacks.filter((f) => {

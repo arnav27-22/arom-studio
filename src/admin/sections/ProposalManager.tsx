@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { FileSpreadsheet, Search, Plus, Download, Copy, CheckCircle2, Eye, Clock, FileText, X, Trash2 } from 'lucide-react'
-import { getAdminStore, saveAdminStore, type AdminProposal } from '../adminStore'
+import { getAdminStore, saveAdminStore, moveToRecycleBin, type AdminProposal } from '../adminStore'
 
 export function ProposalManager() {
   const [store, setStore] = useState(getAdminStore())
@@ -41,12 +41,10 @@ export function ProposalManager() {
   const totalValue = proposals.reduce((acc, p) => acc + (p.amount || 0), 0)
 
   const handleDeleteProposal = (id: string) => {
-    if (confirm('Delete this proposal?')) {
-      const updated = { ...store, proposals: store.proposals.filter((p) => p.id !== id) }
-      saveAdminStore(updated)
-      setStore(updated)
-      if (selectedProposal?.id === id) setSelectedProposal(null)
-    }
+    const p = proposals.find((x) => x.id === id)
+    moveToRecycleBin('proposals', id, p?.proposalNumber, p?.clientName)
+    setStore(getAdminStore())
+    if (selectedProposal?.id === id) setSelectedProposal(null)
   }
 
   const handleGenerateProposal = (e: React.FormEvent) => {

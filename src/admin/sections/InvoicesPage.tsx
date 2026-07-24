@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import jsPDF from 'jspdf'
 import { Plus, Download, Eye, Trash2, FileText, CheckCircle2, Clock } from 'lucide-react'
-import { getAdminStore, saveAdminStore, formatIST, recordAdminInvoice, type AdminInvoice } from '../adminStore'
+import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, recordAdminInvoice, type AdminInvoice } from '../adminStore'
 import { StatCard } from '../components/StatCard'
 
 export function InvoicesPage() {
@@ -224,12 +224,9 @@ export function InvoicesPage() {
   }
 
   const handleDeleteInvoice = (id: string) => {
-    if (confirm('Delete this invoice record?')) {
-      const s = getAdminStore()
-      s.invoices = s.invoices.filter((i) => i.id !== id)
-      saveAdminStore(s)
-      reloadStore()
-    }
+    const inv = store.invoices.find((x) => x.id === id)
+    moveToRecycleBin('invoices', id, inv?.invoiceNumber || inv?.clientName, inv?.clientName)
+    reloadStore()
   }
 
   const filteredInvoices = statusFilter === 'All'

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { CreditCard, Search, DollarSign, CheckCircle2, Clock, AlertCircle, Download, Bell, Plus, X, Trash2 } from 'lucide-react'
-import { getAdminStore, saveAdminStore, formatIST, type AdminPayment } from '../adminStore'
+import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, type AdminPayment } from '../adminStore'
 
 export function PaymentsManager() {
   const [store, setStore] = useState(getAdminStore())
@@ -11,11 +11,9 @@ export function PaymentsManager() {
   const [showAddModal, setShowAddModal] = useState(false)
 
   const handleDeletePayment = (id: string) => {
-    if (confirm('Delete this payment record?')) {
-      const updated = { ...store, payments: store.payments.filter((p) => p.id !== id) }
-      saveAdminStore(updated)
-      setStore(updated)
-    }
+    const p = payments.find((x) => x.id === id)
+    moveToRecycleBin('payments', id, p?.invoiceNumber || p?.clientName, p?.clientName)
+    setStore(getAdminStore())
   }
 
   const [form, setForm] = useState({

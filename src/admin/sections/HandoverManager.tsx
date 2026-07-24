@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { PackageCheck, Search, Download, ExternalLink, Key, Globe, Server, CheckCircle2, Clock, Plus, X, Trash2 } from 'lucide-react'
-import { getAdminStore, saveAdminStore, type AdminHandover } from '../adminStore'
+import { getAdminStore, saveAdminStore, moveToRecycleBin, type AdminHandover } from '../adminStore'
 
 export function HandoverManager() {
   const [store, setStore] = useState(getAdminStore())
@@ -12,12 +12,10 @@ export function HandoverManager() {
   const [showAddModal, setShowAddModal] = useState(false)
 
   const handleDeleteHandover = (id: string) => {
-    if (confirm('Delete this handover record?')) {
-      const updated = { ...store, handovers: store.handovers.filter((h) => h.id !== id) }
-      saveAdminStore(updated)
-      setStore(updated)
-      if (selectedHandover?.id === id) setSelectedHandover(null)
-    }
+    const h = store.handovers.find((x) => x.id === id)
+    moveToRecycleBin('handovers', id, h?.projectName || 'Project Handover', h?.clientName)
+    setStore(getAdminStore())
+    if (selectedHandover?.id === id) setSelectedHandover(null)
   }
 
   const [form, setForm] = useState({

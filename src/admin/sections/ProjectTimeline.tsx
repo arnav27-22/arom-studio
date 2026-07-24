@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { GitCommit, Search, CheckCircle2, Clock, AlertTriangle, Layers, Trash2 } from 'lucide-react'
-import { getAdminStore, saveAdminStore } from '../adminStore'
+import { getAdminStore, moveToRecycleBin } from '../adminStore'
 
 export function ProjectTimeline() {
   const [store, setStore] = useState(getAdminStore())
@@ -12,11 +12,9 @@ export function ProjectTimeline() {
   }, [])
 
   const handleDeleteTimeline = (id: string) => {
-    if (confirm('Delete this project timeline?')) {
-      const updated = { ...store, timelines: store.timelines.filter((t) => t.id !== id) }
-      saveAdminStore(updated)
-      setStore(updated)
-    }
+    const t = store.timelines.find((x) => x.id === id)
+    moveToRecycleBin('timelines', id, t?.projectName || 'Project Timeline', t?.clientName)
+    setStore(getAdminStore())
   }
 
   const timelines = store.timelines || []

@@ -97,7 +97,7 @@ export default async function handler(req, res) {
   // Global Sync Endpoint for Cross-Device Synchronization
   if (pathname === '/api/sync') {
     if (req.method === 'GET') {
-      const [visitors, pdfs, leads, invoices, logs, clients, projects, proposals, agreements, payments, content, assets, approvals, timelines, handovers, feedbacks, notifications] = await Promise.all([
+      const [visitors, pdfs, leads, invoices, logs, clients, projects, proposals, agreements, payments, content, assets, approvals, timelines, handovers, feedbacks, notifications, recycleBin] = await Promise.all([
         db.read('real_visitors'),
         db.read('real_pdfs'),
         db.read('real_leads'),
@@ -115,6 +115,7 @@ export default async function handler(req, res) {
         db.read('real_handovers'),
         db.read('real_feedbacks'),
         db.read('real_notifications'),
+        db.read('real_recycle_bin'),
       ])
       return j(res, {
         visitors: visitors || [],
@@ -134,6 +135,7 @@ export default async function handler(req, res) {
         handovers: handovers.length ? handovers : undefined,
         feedbacks: feedbacks.length ? feedbacks : undefined,
         notifications: notifications.length ? notifications : undefined,
+        recycleBin: recycleBin || [],
       })
     }
 
@@ -179,6 +181,7 @@ export default async function handler(req, res) {
         if (Array.isArray(item.pdfs)) await db.write('real_pdfs', item.pdfs)
         if (Array.isArray(item.invoices)) await db.write('real_invoices', item.invoices)
         if (Array.isArray(item.leads)) await db.write('real_leads', item.leads)
+        if (Array.isArray(item.recycleBin)) await db.write('real_recycle_bin', item.recycleBin)
       } else if (action === 'save_entity' && body.entity && body.data) {
         await db.write(`real_${body.entity}`, body.data)
       }

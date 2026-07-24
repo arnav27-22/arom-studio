@@ -245,6 +245,15 @@ export interface AdminNotification {
   link?: string
 }
 
+export interface AdminRecycleItem {
+  id: string
+  originalCollection: keyof StoreData
+  itemData: any
+  title: string
+  subtitle?: string
+  deletedAt: string
+}
+
 const STORAGE_KEY = 'arom_admin_global_real_store_v7'
 
 export interface StoreData {
@@ -265,6 +274,7 @@ export interface StoreData {
   handovers: AdminHandover[]
   feedbacks: AdminFeedback[]
   notifications: AdminNotification[]
+  recycleBin: AdminRecycleItem[]
 }
 
 const INITIAL_CLIENTS: AdminClient[] = [
@@ -702,6 +712,7 @@ const CLEAN_INITIAL_DATA: StoreData = {
   handovers: INITIAL_HANDOVERS,
   feedbacks: INITIAL_FEEDBACKS,
   notifications: INITIAL_NOTIFICATIONS,
+  recycleBin: [],
 }
 
 // Load local storage data helper
@@ -728,6 +739,7 @@ export function getAdminStore(): StoreData {
         handovers: Array.isArray(parsed.handovers) ? parsed.handovers : INITIAL_HANDOVERS,
         feedbacks: Array.isArray(parsed.feedbacks) ? parsed.feedbacks : INITIAL_FEEDBACKS,
         notifications: Array.isArray(parsed.notifications) ? parsed.notifications : INITIAL_NOTIFICATIONS,
+        recycleBin: Array.isArray(parsed.recycleBin) ? parsed.recycleBin : [],
       }
     }
   } catch (e) {
@@ -753,6 +765,70 @@ export function saveAdminStore(data: StoreData) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ action: 'save_store', data }),
   }).catch(() => {})
+}
+
+// Move any deleted item into the Recycle Bin (Soft Delete)
+export function moveToRecycleBin(
+  collection: keyof StoreData,
+  itemId: string,
+  title?: string,
+  subtitle?: string
+) {
+  const store = getAdminStore()
+  const list = store[collection] as any[]
+  if (!Array.isArray(list)) return
+
+  const itemIndex = list.findIndex((i) => i.id === itemId)
+  if (itemIndex === -1) return
+
+  const deletedItem = list[itemIndex]
+  const updatedList = list.filter((i) => i.id !== itemId)
+  ;(store as any)[collection] = updatedList
+
+  const recycleRecord: AdminRecycleItem = {
+    id: 'rec_' + Math.random().toString(36).slice(2, 9),
+    originalCollection: collection,
+    itemData: deletedItem,
+    title: title || deletedItem.name || deletedItem.title || deletedItem.companyName || deletedItem.projectName || deletedItem.clientName || 'Deleted Item',
+    subtitle: subtitle || deletedItem.email || deletedItem.clientName || deletedItem.status || String(collection),
+    deletedAt: new Date().toISOString(),
+  }
+
+  if (!Array.isArray(store.recycleBin)) store.recycleBin = []
+  store.recycleBin.unshift(recycleRecord)
+
+  saveAdminStore(store)
+}
+
+// Restore an item from the Recycle Bin back to its original collection
+export function restoreFromRecycleBin(recycleId: string) {
+  const store = getAdminStore()
+  if (!Array.isArray(store.recycleBin)) return
+
+  const record = store.recycleBin.find((r) => r.id === recycleId)
+  if (!record) return
+
+  const collection = record.originalCollection
+  const currentList = (store[collection] as any[]) || []
+  ;(store as any)[collection] = [record.itemData, ...currentList]
+  store.recycleBin = store.recycleBin.filter((r) => r.id !== recycleId)
+
+  saveAdminStore(store)
+}
+
+// Permanently delete a single item from the Recycle Bin
+export function permanentDeleteFromRecycleBin(recycleId: string) {
+  const store = getAdminStore()
+  if (!Array.isArray(store.recycleBin)) return
+  store.recycleBin = store.recycleBin.filter((r) => r.id !== recycleId)
+  saveAdminStore(store)
+}
+
+// Empty the entire Recycle Bin permanently
+export function emptyRecycleBin() {
+  const store = getAdminStore()
+  store.recycleBin = []
+  saveAdminStore(store)
 }
 
 // Global Cloud Sync: Syncs data from cloud server so Admin on Device B sees events from Device A
@@ -795,6 +871,7 @@ export async function syncFromCloud(): Promise<StoreData> {
         handovers: Array.isArray(remote.handovers) ? remote.handovers : local.handovers,
         feedbacks: Array.isArray(remote.feedbacks) ? remote.feedbacks : local.feedbacks,
         notifications: Array.isArray(remote.notifications) ? remote.notifications : local.notifications,
+        recycleBin: Array.isArray(remote.recycleBin) ? remote.recycleBin : local.recycleBin,
       }
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))

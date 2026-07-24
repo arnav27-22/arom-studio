@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { Briefcase, Search, Plus, CheckCircle2, Clock, Archive, Rocket, Users, X, Eye, Trash2 } from 'lucide-react'
-import { getAdminStore, saveAdminStore, type AdminProject } from '../adminStore'
+import { getAdminStore, saveAdminStore, moveToRecycleBin, type AdminProject } from '../adminStore'
 
 export function ProjectManagement() {
   const [store, setStore] = useState(getAdminStore())
@@ -31,13 +31,10 @@ export function ProjectManagement() {
   const clients = store.clients || []
 
   const handleDeleteProject = (id: string) => {
-    if (confirm('Are you sure you want to delete this project?')) {
-      const updatedProjects = store.projects.filter((p) => p.id !== id)
-      const updated = { ...store, projects: updatedProjects }
-      saveAdminStore(updated)
-      setStore(updated)
-      if (selectedProject?.id === id) setSelectedProject(null)
-    }
+    const p = projects.find((x) => x.id === id)
+    moveToRecycleBin('projects', id, p?.title, p?.clientName)
+    setStore(getAdminStore())
+    if (selectedProject?.id === id) setSelectedProject(null)
   }
 
   const filteredProjects = projects.filter((p) => {

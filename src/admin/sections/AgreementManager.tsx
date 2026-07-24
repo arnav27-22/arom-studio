@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { FileSignature, Search, Download, CheckCircle2, Clock, Plus, X, Trash2 } from 'lucide-react'
-import { getAdminStore, saveAdminStore, formatIST, type AdminAgreement } from '../adminStore'
+import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, type AdminAgreement } from '../adminStore'
 
 export function AgreementManager() {
   const [store, setStore] = useState(getAdminStore())
@@ -11,11 +11,9 @@ export function AgreementManager() {
   const [showAddModal, setShowAddModal] = useState(false)
 
   const handleDeleteAgreement = (id: string) => {
-    if (confirm('Delete this agreement?')) {
-      const updated = { ...store, agreements: store.agreements.filter((a) => a.id !== id) }
-      saveAdminStore(updated)
-      setStore(updated)
-    }
+    const a = agreements.find((x) => x.id === id)
+    moveToRecycleBin('agreements', id, a?.agreementNumber || a?.clientName, a?.clientName)
+    setStore(getAdminStore())
   }
 
   const [form, setForm] = useState({

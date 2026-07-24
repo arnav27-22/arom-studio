@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { UserCheck, Search, Plus, ExternalLink, Mail, Phone, DollarSign, Briefcase, Eye, Trash2, X, Clock } from 'lucide-react'
-import { getAdminStore, saveAdminStore, formatIST, type AdminClient } from '../adminStore'
+import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, type AdminClient } from '../adminStore'
 
 export function ClientManagement() {
   const [store, setStore] = useState(getAdminStore())
@@ -72,12 +72,10 @@ export function ClientManagement() {
   }
 
   const handleDeleteClient = (id: string) => {
-    if (confirm('Are you sure you want to delete this client?')) {
-      const updated = { ...store, clients: store.clients.filter((c) => c.id !== id) }
-      saveAdminStore(updated)
-      setStore(updated)
-      if (selectedClient?.id === id) setSelectedClient(null)
-    }
+    const c = store.clients.find((x) => x.id === id)
+    moveToRecycleBin('clients', id, c?.companyName, c?.email)
+    setStore(getAdminStore())
+    if (selectedClient?.id === id) setSelectedClient(null)
   }
 
   const columns = [

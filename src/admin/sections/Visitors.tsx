@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { Users, Monitor, Smartphone, Eye, ExternalLink, Activity, Calendar, Clock, Globe, Zap, Radio, UserCheck, UserPlus, Trash2 } from 'lucide-react'
-import { getAdminStore, saveAdminStore, formatIST, type AdminVisitor } from '../adminStore'
+import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, type AdminVisitor } from '../adminStore'
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts'
 
 export function Visitors() {
@@ -16,12 +16,7 @@ export function Visitors() {
     setStore(s)
   }
 
-  const handleDeleteVisitor = (id: string) => {
-    const updatedVisitors = visitors.filter((v) => v.id !== id)
-    const updated = { ...store, visitors: updatedVisitors }
-    saveAdminStore(updated)
-    setStore(updated)
-  }
+
 
   const handleClearAllVisitors = () => {
     if (confirm('Clear all visitor logs?')) {
@@ -29,6 +24,12 @@ export function Visitors() {
       saveAdminStore(updated)
       setStore(updated)
     }
+  }
+
+  const handleDeleteVisitor = (id: string) => {
+    const v = store.visitors.find((x) => x.id === id)
+    moveToRecycleBin('visitors', id, `${v?.page || '/'} (${v?.city || 'Visitor'})`, v?.browser || 'Browser')
+    reload()
   }
 
   useEffect(() => {

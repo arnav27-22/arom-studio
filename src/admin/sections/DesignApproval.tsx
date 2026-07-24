@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { CheckSquare, Search, ExternalLink, MessageSquare, CheckCircle2, Clock, AlertTriangle, Plus, X, Send, Trash2 } from 'lucide-react'
-import { getAdminStore, saveAdminStore, formatIST, type AdminDesignApproval } from '../adminStore'
+import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, type AdminDesignApproval } from '../adminStore'
 
 export function DesignApproval() {
   const [store, setStore] = useState(getAdminStore())
@@ -26,12 +26,10 @@ export function DesignApproval() {
   const approvals = store.approvals || []
 
   const handleDeleteApproval = (id: string) => {
-    if (confirm('Delete this design approval record?')) {
-      const updated = { ...store, approvals: store.approvals.filter((a) => a.id !== id) }
-      saveAdminStore(updated)
-      setStore(updated)
-      if (selectedApproval?.id === id) setSelectedApproval(null)
-    }
+    const a = approvals.find((x) => x.id === id)
+    moveToRecycleBin('approvals', id, a?.projectName || 'Design Approval', a?.clientName)
+    setStore(getAdminStore())
+    if (selectedApproval?.id === id) setSelectedApproval(null)
   }
 
   const filteredApprovals = approvals.filter((a) => {

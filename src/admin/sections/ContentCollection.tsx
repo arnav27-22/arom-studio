@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { FolderKanban, Search, Download, CheckCircle2, Clock, FileText, Eye, X, Trash2 } from 'lucide-react'
-import { getAdminStore, saveAdminStore, formatIST, type AdminContentItem } from '../adminStore'
+import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, type AdminContentItem } from '../adminStore'
 
 export function ContentCollection() {
   const [store, setStore] = useState(getAdminStore())
@@ -10,14 +10,7 @@ export function ContentCollection() {
   const [statusFilter, setStatusFilter] = useState<string>('All')
   const [selectedItem, setSelectedItem] = useState<AdminContentItem | null>(null)
 
-  const handleDeleteContent = (id: string) => {
-    if (confirm('Delete this content collection item?')) {
-      const updated = { ...store, content: store.content.filter((c) => c.id !== id) }
-      saveAdminStore(updated)
-      setStore(updated)
-      if (selectedItem?.id === id) setSelectedItem(null)
-    }
-  }
+
 
   useEffect(() => {
     setStore(getAdminStore())
@@ -57,6 +50,13 @@ export function ContentCollection() {
     if (selectedItem?.id === contentId) {
       setSelectedItem(updatedContent.find((x) => x.id === contentId) || null)
     }
+  }
+
+  const handleDeleteContent = (id: string) => {
+    const item = items.find((x) => x.id === id)
+    moveToRecycleBin('content', id, item?.clientName || 'Content Item', item?.projectName)
+    setStore(getAdminStore())
+    if (selectedItem?.id === id) setSelectedItem(null)
   }
 
   const columns = [
