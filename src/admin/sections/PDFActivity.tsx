@@ -3,6 +3,7 @@ import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { FileText, Download, Eye, Trash2, X } from 'lucide-react'
 import { getAdminStore, moveToRecycleBin, formatIST, type AdminPDF } from '../adminStore'
+import { generateAdminReportPDF } from '../../lib/professionalPDF'
 
 export function PDFActivity() {
   const [data, setData] = useState<AdminPDF[]>(getAdminStore().pdfs)
@@ -15,6 +16,22 @@ export function PDFActivity() {
   useEffect(() => {
     reload()
   }, [])
+
+  const totalPdfs = data.length
+  const avgSize = totalPdfs > 0 ? Math.round(data.reduce((acc, curr) => acc + (curr.fileSizeKb || 180), 0) / totalPdfs) : 0
+
+  const handleExportPDFArchive = () => {
+    generateAdminReportPDF({
+      sectionTitle: 'PDF Document Archive Report',
+      subtitle: `${totalPdfs} Total PDF Documents Archived | Average Size: ${avgSize} KB`,
+      headers: ['Time (IST)', 'Document Title / Type', 'Client / User', 'Size (KB)', 'Device'],
+      rows: data.map((pdf) => [formatIST(pdf.createdAt), pdf.title || pdf.pdfType, pdf.clientName || 'User', `${pdf.fileSizeKb || 180} KB`, pdf.deviceType || 'desktop']),
+      summaryLines: [
+        `Total Archived PDF Documents: ${totalPdfs}`,
+        `Average Document File Size: ${avgSize} KB`,
+      ],
+    })
+  }
 
   const handleDownload = (pdf: AdminPDF) => {
     if (pdf.pdfDataUrl) {
@@ -49,35 +66,47 @@ export function PDFActivity() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setPreviewPdf(row)}
-            className="flex items-center gap-1 text-xs text-white/80 bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg border border-white/10 transition-colors"
-            title="View exact PDF in modal"
+            className="p-1.5 rounded-lg bg-white/5 hover:bg-accent/20 hover:text-accent text-white/60 transition-colors cursor-pointer"
+            title="Preview PDF Document"
           >
-            <Eye className="h-3.5 w-3.5" /> View PDF
+            <Eye className="h-3.5 w-3.5" />
           </button>
           <button
             onClick={() => handleDownload(row)}
-            className="flex items-center gap-1 text-xs text-white bg-accent/20 hover:bg-accent/30 px-3 py-1.5 rounded-lg border border-accent/30 transition-colors"
-            title="Download PDF to device"
+            className="p-1.5 rounded-lg bg-white/5 hover:bg-emerald-500/20 hover:text-emerald-400 text-white/60 transition-colors cursor-pointer"
+            title="Download PDF File"
           >
-            <Download className="h-3.5 w-3.5" /> Download
+            <Download className="h-3.5 w-3.5" />
           </button>
           <button
             onClick={() => handleDelete(row.id)}
-            className="p-1.5 text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 rounded-lg border border-red-500/20 transition-colors"
-            title="Delete PDF document"
+            className="p-1.5 rounded-lg bg-white/5 hover:bg-red-500/20 hover:text-red-400 text-white/60 transition-colors cursor-pointer"
+            title="Delete PDF"
           >
             <Trash2 className="h-3.5 w-3.5" />
           </button>
         </div>
-      )
+      ),
     },
   ]
 
-  const totalPdfs = data.length
-  const avgSize = totalPdfs > 0 ? Math.round(data.reduce((acc, p) => acc + (p.fileSizeKb || 180), 0) / totalPdfs) : 0
-
   return (
     <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-lg font-heading font-bold text-white flex items-center gap-2">
+            <FileText className="h-5 w-5 text-accent" /> PDF Documents Archive
+          </h2>
+          <p className="text-xs text-white/50">Stored proposals, contracts, client summaries &amp; generated files</p>
+        </div>
+        <button
+          onClick={handleExportPDFArchive}
+          className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/10 text-white font-semibold text-xs hover:bg-white/20 transition-all border border-white/10 cursor-pointer"
+        >
+          <Download className="h-4 w-4 text-accent" /> Export PDF Summary
+        </button>
+      </div>
+
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatCard label="Total Real PDFs Generated" value={totalPdfs} icon={<FileText className="h-4 w-4 text-accent" />} />
         <StatCard label="Average PDF File Size" value={`${avgSize} KB`} icon={<FileText className="h-4 w-4 text-accent" />} />

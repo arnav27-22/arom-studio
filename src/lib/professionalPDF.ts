@@ -1162,3 +1162,47 @@ export function generateContentCollectionPDF(data: {
   trackPDFDownload('content-collection', contentFile)
   doc.save(contentFile)
 }
+
+export function generateAdminReportPDF(opts: {
+  sectionTitle: string
+  subtitle?: string
+  headers: string[]
+  rows: string[][]
+  summaryLines?: string[]
+}) {
+  const doc = createDoc()
+  const layout = getPageLayout(doc)
+
+  addCoverPage(doc, {
+    title: opts.sectionTitle,
+    subtitle: opts.subtitle || 'AROM Studio Official Executive Report',
+    date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+  })
+
+  let y = layout.marginTop
+  addHeader(doc, opts.sectionTitle)
+
+  if (opts.summaryLines && opts.summaryLines.length > 0) {
+    y = writeSection(doc, y, 'Executive Summary', opts.summaryLines, layout)
+  }
+
+  if (opts.headers.length > 0 && opts.rows.length > 0) {
+    const tableRows: TableRow[] = opts.rows.map((r) => ({ cells: r }))
+    y = writeTable(doc, y, opts.headers, tableRows, layout)
+  } else {
+    y = writeSection(doc, y, 'Report Details', ['No records available to export for this section.'], layout)
+  }
+
+  y = writeContactFooter(doc, y, layout)
+  finalizeDoc(doc)
+
+  for (let i = 2; i <= doc.getNumberOfPages(); i++) {
+    doc.setPage(i)
+    addHeader(doc, opts.sectionTitle)
+  }
+
+  const fileName = `${opts.sectionTitle.replace(/\s+/g, '_')}_Report_${new Date().toISOString().split('T')[0]}.pdf`
+  uploadPDF(doc, opts.sectionTitle, fileName, 'AROM Studio Admin')
+  trackPDFDownload('admin-report', fileName)
+  doc.save(fileName)
+}

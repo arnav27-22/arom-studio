@@ -293,7 +293,7 @@ const INITIAL_CLIENTS: AdminClient[] = [
     timeline: [
       { date: '2026-06-10', event: 'Client Onboarded' },
       { date: '2026-06-15', event: 'Web Portal Project Started' },
-      { date: '2026-07-01', event: 'First Payment Received ($7,250)' },
+      { date: '2026-07-01', event: 'First Payment Received (₹7,250)' },
     ],
   },
   {
@@ -687,7 +687,7 @@ const INITIAL_NOTIFICATIONS: AdminNotification[] = [
   {
     id: 'notif_3',
     type: 'payment',
-    title: 'Payment Received ($4,450)',
+    title: 'Payment Received (₹4,450)',
     message: 'Invoice INV-2026-002 was paid by LuxeLiving Interior Studio.',
     read: true,
     createdAt: '2026-07-14T09:30:00Z',

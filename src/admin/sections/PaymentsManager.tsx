@@ -3,6 +3,7 @@ import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { CreditCard, Search, DollarSign, CheckCircle2, Clock, AlertCircle, Download, Bell, Plus, X, Trash2 } from 'lucide-react'
 import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, type AdminPayment } from '../adminStore'
+import { generateAdminReportPDF } from '../../lib/professionalPDF'
 
 export function PaymentsManager() {
   const [store, setStore] = useState(getAdminStore())
@@ -14,6 +15,20 @@ export function PaymentsManager() {
     const p = payments.find((x) => x.id === id)
     moveToRecycleBin('payments', id, p?.invoiceNumber || p?.clientName, p?.clientName)
     setStore(getAdminStore())
+  }
+
+  const handleExportPaymentsPDF = () => {
+    generateAdminReportPDF({
+      sectionTitle: 'Payment & Revenue Audit Report',
+      subtitle: `Total Collected: ₹${totalCollected.toLocaleString()} | Pending: ₹${pendingAmount.toLocaleString()}`,
+      headers: ['Invoice #', 'Client Name', 'Amount', 'Due Date', 'Status'],
+      rows: payments.map((p) => [p.invoiceNumber, p.clientName, `₹${(p.amount || 0).toLocaleString()}`, p.dueDate, p.status]),
+      summaryLines: [
+        `Total Collected Revenue: ₹${totalCollected.toLocaleString()}`,
+        `Pending Receivables: ₹${pendingAmount.toLocaleString()}`,
+        `Overdue Balances: ₹${overdueAmount.toLocaleString()}`,
+      ],
+    })
   }
 
   const [form, setForm] = useState({
@@ -89,10 +104,10 @@ export function PaymentsManager() {
     },
     {
       key: 'amount',
-      label: 'Amount ($)',
+      label: 'Amount (₹)',
       render: (v: number) => (
         <span className="text-emerald-400 font-bold text-xs font-mono">
-          ${(v || 0).toLocaleString()}
+          ₹{(v || 0).toLocaleString()}
         </span>
       ),
     },
@@ -174,19 +189,27 @@ export function PaymentsManager() {
           </h2>
           <p className="text-xs text-white/50">Track client retainers, pending invoices, overdue balances & payment reminders</p>
         </div>
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-accent text-black font-semibold text-xs hover:bg-accent/90 transition-all shadow-lg cursor-pointer"
-        >
-          <Plus className="h-4 w-4" /> Log Payment Milestone
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleExportPaymentsPDF}
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/10 text-white font-semibold text-xs hover:bg-white/20 transition-all border border-white/10 cursor-pointer"
+          >
+            <Download className="h-4 w-4 text-accent" /> Export PDF Report
+          </button>
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-accent text-black font-semibold text-xs hover:bg-accent/90 transition-all shadow-lg cursor-pointer"
+          >
+            <Plus className="h-4 w-4" /> Log Payment Milestone
+          </button>
+        </div>
       </div>
 
       {/* Stat Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        <StatCard label="Collected Revenue" value={`$${totalCollected.toLocaleString()}`} icon={<DollarSign className="h-4 w-4 text-emerald-400" />} />
-        <StatCard label="Pending Payments" value={`$${pendingAmount.toLocaleString()}`} icon={<Clock className="h-4 w-4 text-amber-400" />} />
-        <StatCard label="Overdue Amount" value={`$${overdueAmount.toLocaleString()}`} icon={<AlertCircle className="h-4 w-4 text-red-400" />} />
+        <StatCard label="Collected Revenue" value={`₹${totalCollected.toLocaleString()}`} icon={<DollarSign className="h-4 w-4 text-emerald-400" />} />
+        <StatCard label="Pending Payments" value={`₹${pendingAmount.toLocaleString()}`} icon={<Clock className="h-4 w-4 text-amber-400" />} />
+        <StatCard label="Overdue Amount" value={`₹${overdueAmount.toLocaleString()}`} icon={<AlertCircle className="h-4 w-4 text-red-400" />} />
       </div>
 
       {/* Filters & Table */}

@@ -3,6 +3,7 @@ import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { Mail, CheckCircle2, Archive, Eye, Download, Plus, Trash2 } from 'lucide-react'
 import { getAdminStore, saveAdminStore, formatIST, type AdminLead } from '../adminStore'
+import { generateAdminReportPDF } from '../../lib/professionalPDF'
 
 export function Leads() {
   const [store, setStore] = useState(getAdminStore())
@@ -21,6 +22,26 @@ export function Leads() {
   useEffect(() => {
     reload()
   }, [])
+
+  const leads = store.leads || []
+  const newLeads = leads.filter((l) => l.status === 'New').length
+  const contactedLeads = leads.filter((l) => l.status === 'Contacted').length
+  const closedLeads = leads.filter((l) => l.status === 'Closed').length
+
+  const handleExportLeadsPDF = () => {
+    generateAdminReportPDF({
+      sectionTitle: 'Contact Form Leads & Inquiries Report',
+      subtitle: `${leads.length} Inquiries Received | New: ${newLeads} | Contacted: ${contactedLeads}`,
+      headers: ['Received (IST)', 'Lead Name', 'Email', 'Phone', 'Service Interested', 'Status'],
+      rows: leads.map((l) => [formatIST(l.createdAt), l.name, l.email, l.phone || '—', l.service || 'Website Build', l.status]),
+      summaryLines: [
+        `Total Contact Inquiries: ${leads.length}`,
+        `New Unread Leads: ${newLeads}`,
+        `In Progress / Contacted Leads: ${contactedLeads}`,
+        `Closed & Converted Leads: ${closedLeads}`,
+      ],
+    })
+  }
 
   const updateStatus = (id: string, status: AdminLead['status']) => {
     const s = getAdminStore()
@@ -126,10 +147,13 @@ export function Leads() {
           <StatCard label="Responded" value={leads.filter(l => l.status === 'Responded').length} icon={<CheckCircle2 className="h-4 w-4 text-emerald-400" />} />
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <button onClick={() => setShowAddModal(true)} className="flex items-center gap-1.5 text-xs font-medium text-white bg-accent hover:bg-accent/90 px-4 py-2.5 rounded-xl transition-all shadow-lg shadow-accent/20">
+          <button onClick={handleExportLeadsPDF} className="flex items-center gap-1.5 text-xs font-semibold text-white bg-white/10 hover:bg-white/20 border border-white/10 px-3.5 py-2.5 rounded-xl transition-all cursor-pointer">
+            <Download className="h-4 w-4 text-accent" /> Export PDF Report
+          </button>
+          <button onClick={() => setShowAddModal(true)} className="flex items-center gap-1.5 text-xs font-medium text-white bg-accent hover:bg-accent/90 px-4 py-2.5 rounded-xl transition-all shadow-lg shadow-accent/20 cursor-pointer">
             <Plus className="h-4 w-4" /> Add Lead
           </button>
-          <button onClick={exportCSV} className="flex items-center gap-1.5 text-xs font-medium text-white bg-white/5 hover:bg-white/10 border border-white/10 px-4 py-2.5 rounded-xl transition-all">
+          <button onClick={exportCSV} className="flex items-center gap-1.5 text-xs font-medium text-white bg-white/5 hover:bg-white/10 border border-white/10 px-4 py-2.5 rounded-xl transition-all cursor-pointer">
             <Download className="h-4 w-4" /> CSV
           </button>
         </div>

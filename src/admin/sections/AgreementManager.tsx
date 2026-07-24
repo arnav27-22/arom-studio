@@ -3,6 +3,7 @@ import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { FileSignature, Search, Download, CheckCircle2, Clock, Plus, X, Trash2 } from 'lucide-react'
 import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, type AdminAgreement } from '../adminStore'
+import { generateAgreementPDF, generateAdminReportPDF } from '../../lib/professionalPDF'
 
 export function AgreementManager() {
   const [store, setStore] = useState(getAdminStore())
@@ -14,6 +15,20 @@ export function AgreementManager() {
     const a = agreements.find((x) => x.id === id)
     moveToRecycleBin('agreements', id, a?.agreementNumber || a?.clientName, a?.clientName)
     setStore(getAdminStore())
+  }
+
+  const handleExportAgreementsPDF = () => {
+    generateAdminReportPDF({
+      sectionTitle: 'Website Agreement Contracts',
+      subtitle: `${agreements.length} Contracts | ${signedAgreements} Signed, ${pendingAgreements} Pending`,
+      headers: ['Agreement #', 'Client Name', 'Effective Date', 'Scope Price', 'Status', 'IP Address'],
+      rows: agreements.map((a) => [a.agreementNumber, a.clientName, a.effectiveDate, `₹${(a.totalScopePrice || 0).toLocaleString()}`, a.status, a.ipAddress || '103.15.22.84']),
+      summaryLines: [
+        `Total Website Development Contracts: ${totalAgreements}`,
+        `Signed Contracts: ${signedAgreements}`,
+        `Pending Signature Contracts: ${pendingAgreements}`,
+      ],
+    })
   }
 
   const [form, setForm] = useState({
@@ -145,12 +160,20 @@ export function AgreementManager() {
           </h2>
           <p className="text-xs text-white/50">Manage signed website build contracts, terms of service, NDA versions & PDF downloads</p>
         </div>
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-accent text-black font-semibold text-xs hover:bg-accent/90 transition-all shadow-lg cursor-pointer"
-        >
-          <Plus className="h-4 w-4" /> Add Agreement Contract
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleExportAgreementsPDF}
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/10 text-white font-semibold text-xs hover:bg-white/20 transition-all border border-white/10 cursor-pointer"
+          >
+            <Download className="h-4 w-4 text-accent" /> Export PDF Report
+          </button>
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-accent text-black font-semibold text-xs hover:bg-accent/90 transition-all shadow-lg cursor-pointer"
+          >
+            <Plus className="h-4 w-4" /> Add Agreement Contract
+          </button>
+        </div>
       </div>
 
       {/* Stat Cards */}

@@ -3,6 +3,7 @@ import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { FileSpreadsheet, Search, Plus, Download, Copy, CheckCircle2, Eye, Clock, FileText, X, Trash2 } from 'lucide-react'
 import { getAdminStore, saveAdminStore, moveToRecycleBin, type AdminProposal } from '../adminStore'
+import { generateProposalPDF, generateAdminReportPDF } from '../../lib/professionalPDF'
 
 export function ProposalManager() {
   const [store, setStore] = useState(getAdminStore())
@@ -45,6 +46,21 @@ export function ProposalManager() {
     moveToRecycleBin('proposals', id, p?.proposalNumber, p?.clientName)
     setStore(getAdminStore())
     if (selectedProposal?.id === id) setSelectedProposal(null)
+  }
+
+  const handleExportAllProposalsPDF = () => {
+    generateAdminReportPDF({
+      sectionTitle: 'Proposal Management Summary',
+      subtitle: `${proposals.length} Proposals | Total Value: ₹${totalValue.toLocaleString()}`,
+      headers: ['Proposal #', 'Client Name', 'Title', 'Value', 'Valid Until', 'Status'],
+      rows: proposals.map((p) => [p.proposalNumber, p.clientName, p.title, `₹${(p.amount || 0).toLocaleString()}`, p.validUntil, p.status]),
+      summaryLines: [
+        `Total Proposals Created: ${totalProposals}`,
+        `Accepted Proposals: ${acceptedProposals}`,
+        `Pending Proposals: ${pendingProposals}`,
+        `Total Pipeline Value: ₹${totalValue.toLocaleString()}`,
+      ],
+    })
   }
 
   const handleGenerateProposal = (e: React.FormEvent) => {
@@ -108,10 +124,10 @@ export function ProposalManager() {
     },
     {
       key: 'amount',
-      label: 'Value ($)',
+      label: 'Value (₹)',
       render: (v: number) => (
         <span className="text-emerald-400 font-bold text-xs font-mono">
-          ${(v || 0).toLocaleString()}
+          ₹{(v || 0).toLocaleString()}
         </span>
       ),
     },
@@ -143,25 +159,18 @@ export function ProposalManager() {
       render: (_: string, row: AdminProposal) => (
         <div className="flex items-center gap-2">
           <button
-            onClick={() => setSelectedProposal(row)}
-            className="p-1.5 rounded-lg bg-white/5 hover:bg-accent/20 hover:text-accent text-white/60 transition-colors cursor-pointer"
-            title="Preview Scope Summary"
-          >
-            <Eye className="h-3.5 w-3.5" />
-          </button>
-          <button
-            onClick={() => handleDuplicateProposal(row)}
-            className="p-1.5 rounded-lg bg-white/5 hover:bg-purple-500/20 hover:text-purple-300 text-white/60 transition-colors cursor-pointer"
-            title="Duplicate Proposal"
-          >
-            <Copy className="h-3.5 w-3.5" />
-          </button>
-          <button
-            onClick={() => alert(`Downloading Proposal ${row.proposalNumber} PDF...`)}
+            onClick={() => handleDownloadPDF(row)}
             className="p-1.5 rounded-lg bg-white/5 hover:bg-emerald-500/20 hover:text-emerald-400 text-white/60 transition-colors cursor-pointer"
-            title="Download PDF"
+            title="Download Proposal PDF"
           >
             <Download className="h-3.5 w-3.5" />
+          </button>
+          <button
+            onClick={() => setSelectedProposal(row)}
+            className="p-1.5 rounded-lg bg-white/5 hover:bg-accent/20 hover:text-accent text-white/60 transition-colors cursor-pointer"
+            title="View Details"
+          >
+            <Eye className="h-3.5 w-3.5" />
           </button>
           <button
             onClick={() => handleDeleteProposal(row.id)}
@@ -185,12 +194,20 @@ export function ProposalManager() {
           </h2>
           <p className="text-xs text-white/50">Draft, send, track client views, duplicate and generate proposal documents</p>
         </div>
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-accent text-black font-semibold text-xs hover:bg-accent/90 transition-all shadow-lg cursor-pointer"
-        >
-          <Plus className="h-4 w-4" /> Generate New Proposal
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleExportAllProposalsPDF}
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/10 text-white font-semibold text-xs hover:bg-white/20 transition-all border border-white/10 cursor-pointer"
+          >
+            <Download className="h-4 w-4 text-accent" /> Export PDF Report
+          </button>
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-accent text-black font-semibold text-xs hover:bg-accent/90 transition-all shadow-lg cursor-pointer"
+          >
+            <Plus className="h-4 w-4" /> Generate New Proposal
+          </button>
+        </div>
       </div>
 
       {/* Stat Cards */}
@@ -198,7 +215,7 @@ export function ProposalManager() {
         <StatCard label="Total Proposals" value={totalProposals} icon={<FileSpreadsheet className="h-4 w-4 text-accent" />} />
         <StatCard label="Accepted Proposals" value={acceptedProposals} icon={<CheckCircle2 className="h-4 w-4 text-emerald-400" />} />
         <StatCard label="Pending Decision" value={pendingProposals} icon={<Clock className="h-4 w-4 text-amber-400" />} />
-        <StatCard label="Pipeline Value" value={`$${totalValue.toLocaleString()}`} icon={<FileText className="h-4 w-4 text-emerald-400" />} />
+        <StatCard label="Pipeline Value" value={`₹${totalValue.toLocaleString()}`} icon={<FileText className="h-4 w-4 text-emerald-400" />} />
       </div>
 
       {/* Filters & Table */}

@@ -3,6 +3,7 @@ import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { PackageCheck, Search, Download, ExternalLink, Key, Globe, Server, CheckCircle2, Clock, Plus, X, Trash2 } from 'lucide-react'
 import { getAdminStore, saveAdminStore, moveToRecycleBin, type AdminHandover } from '../adminStore'
+import { generateAdminReportPDF } from '../../lib/professionalPDF'
 
 export function HandoverManager() {
   const [store, setStore] = useState(getAdminStore())
@@ -16,6 +17,20 @@ export function HandoverManager() {
     moveToRecycleBin('handovers', id, h?.projectName || 'Project Handover', h?.clientName)
     setStore(getAdminStore())
     if (selectedHandover?.id === id) setSelectedHandover(null)
+  }
+
+  const handleExportHandoversPDF = () => {
+    generateAdminReportPDF({
+      sectionTitle: 'Project Handover Dossier Audit',
+      subtitle: `${handovers.length} Total Handover Packages | Delivered: ${delivered}`,
+      headers: ['Project Name', 'Client Name', 'Domain', 'Hosting Platform', 'Status'],
+      rows: handovers.map((h) => [h.projectName, h.clientName, h.domain, h.hosting, h.status]),
+      summaryLines: [
+        `Total Handover Packages: ${total}`,
+        `Delivered Packages: ${delivered}`,
+        `Ready for Handover: ${ready}`,
+      ],
+    })
   }
 
   const [form, setForm] = useState({
@@ -173,12 +188,20 @@ export function HandoverManager() {
           </h2>
           <p className="text-xs text-white/50">Manage source code ZIP downloads, GitHub links, admin credentials, DNS domain configs & warranty support</p>
         </div>
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-accent text-black font-semibold text-xs hover:bg-accent/90 transition-all shadow-lg cursor-pointer"
-        >
-          <Plus className="h-4 w-4" /> Create Handover Package
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleExportHandoversPDF}
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/10 text-white font-semibold text-xs hover:bg-white/20 transition-all border border-white/10 cursor-pointer"
+          >
+            <Download className="h-4 w-4 text-accent" /> Export PDF Report
+          </button>
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-accent text-black font-semibold text-xs hover:bg-accent/90 transition-all shadow-lg cursor-pointer"
+          >
+            <Plus className="h-4 w-4" /> Create Handover Package
+          </button>
+        </div>
       </div>
 
       {/* Stat Cards */}

@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
-import { UserCheck, Search, Plus, ExternalLink, Mail, Phone, DollarSign, Briefcase, Eye, Trash2, X, Clock } from 'lucide-react'
+import { UserCheck, Search, Plus, ExternalLink, Mail, Phone, DollarSign, Briefcase, Eye, Trash2, X, Clock, Download } from 'lucide-react'
 import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, type AdminClient } from '../adminStore'
+import { generateAdminReportPDF } from '../../lib/professionalPDF'
 
 export function ClientManagement() {
   const [store, setStore] = useState(getAdminStore())
@@ -126,7 +127,7 @@ export function ClientManagement() {
       label: 'Total Revenue',
       render: (v: number) => (
         <span className="text-emerald-400 font-bold text-xs font-mono">
-          ${(v || 0).toLocaleString()}
+          ₹{(v || 0).toLocaleString()}
         </span>
       ),
     },
@@ -174,16 +175,24 @@ export function ClientManagement() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-lg font-heading font-bold text-white flex items-center gap-2">
-            <UserCheck className="h-5 w-5 text-accent" /> Client Management
+            <UserCheck className="h-5 w-5 text-accent" /> Client Account Management
           </h2>
           <p className="text-xs text-white/50">Manage accounts, active projects, revenue history & client timelines</p>
         </div>
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-accent text-black font-semibold text-xs hover:bg-accent/90 transition-all shadow-lg cursor-pointer"
-        >
-          <Plus className="h-4 w-4" /> Add New Client
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleExportPDF}
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/10 text-white font-semibold text-xs hover:bg-white/20 transition-all border border-white/10 cursor-pointer"
+          >
+            <Download className="h-4 w-4 text-accent" /> Export PDF Report
+          </button>
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-accent text-black font-semibold text-xs hover:bg-accent/90 transition-all shadow-lg cursor-pointer"
+          >
+            <Plus className="h-4 w-4" /> Add New Client
+          </button>
+        </div>
       </div>
 
       {/* Stat Cards */}
@@ -191,7 +200,7 @@ export function ClientManagement() {
         <StatCard label="Total Clients" value={totalClients} icon={<UserCheck className="h-4 w-4 text-accent" />} />
         <StatCard label="Active Retainers" value={activeClients} icon={<Briefcase className="h-4 w-4 text-emerald-400" />} />
         <StatCard label="In Onboarding" value={onboardingClients} icon={<Clock className="h-4 w-4 text-amber-400" />} />
-        <StatCard label="Total Revenue" value={`$${totalRevenue.toLocaleString()}`} icon={<DollarSign className="h-4 w-4 text-emerald-400" />} />
+        <StatCard label="Total Revenue" value={`₹${totalRevenue.toLocaleString()}`} icon={<DollarSign className="h-4 w-4 text-emerald-400" />} />
       </div>
 
       {/* Filter & Search Bar */}

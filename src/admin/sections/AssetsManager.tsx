@@ -3,6 +3,7 @@ import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { FolderUp, Search, ExternalLink, Download, CheckCircle2, AlertCircle, Clock, Plus, X, Trash2 } from 'lucide-react'
 import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, type AdminAssetFolder } from '../adminStore'
+import { generateAssetsPDF, generateAdminReportPDF } from '../../lib/professionalPDF'
 
 export function AssetsManager() {
   const [store, setStore] = useState(getAdminStore())
@@ -16,6 +17,30 @@ export function AssetsManager() {
     moveToRecycleBin('assets', id, a?.clientName || 'Asset Folder', a?.projectName)
     setStore(getAdminStore())
     if (selectedAsset?.id === id) setSelectedAsset(null)
+  }
+
+  const handleExportAllAssetsPDF = () => {
+    generateAdminReportPDF({
+      sectionTitle: 'Client Asset Folders & Drive Audit',
+      subtitle: `${assets.length} Cloud Folders Tracked | ${completeFolders} Complete`,
+      headers: ['Client Name', 'Project Title', 'Folder Status', 'Missing Files', 'Drive Link'],
+      rows: assets.map((a) => [a.clientName, a.projectName, a.folderStatus, `${a.missingFilesCount || 0} missing`, a.googleDriveLink || '—']),
+      summaryLines: [
+        `Total Asset Folders: ${totalFolders}`,
+        `Complete Asset Folders: ${completeFolders}`,
+        `Folders Needing Additional Files: ${needsFilesFolders}`,
+        `Total Missing Assets Across Clients: ${totalMissing}`,
+      ],
+    })
+  }
+
+  const handleExportSingleAssetPDF = (row: AdminAssetFolder) => {
+    generateAssetsPDF({
+      clientName: row.clientName,
+      driveLink: row.googleDriveLink,
+      receivedItems: (row.checklist || []).filter((c) => c.received).map((c) => c.name),
+      pendingItems: (row.checklist || []).filter((c) => !c.received).map((c) => c.name),
+    })
   }
 
   const [form, setForm] = useState({
@@ -164,12 +189,20 @@ export function AssetsManager() {
           </h2>
           <p className="text-xs text-white/50">Google Drive links, missing brand assets tracker, folder status & asset checklist</p>
         </div>
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-accent text-black font-semibold text-xs hover:bg-accent/90 transition-all shadow-lg cursor-pointer"
-        >
-          <Plus className="h-4 w-4" /> Link Asset Folder
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleExportAllAssetsPDF}
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/10 text-white font-semibold text-xs hover:bg-white/20 transition-all border border-white/10 cursor-pointer"
+          >
+            <Download className="h-4 w-4 text-accent" /> Export PDF Report
+          </button>
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-accent text-black font-semibold text-xs hover:bg-accent/90 transition-all shadow-lg cursor-pointer"
+          >
+            <Plus className="h-4 w-4" /> Link Asset Folder
+          </button>
+        </div>
       </div>
 
       {/* Stat Cards */}

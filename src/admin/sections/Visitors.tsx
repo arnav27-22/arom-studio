@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
-import { Users, Monitor, Smartphone, Eye, ExternalLink, Activity, Calendar, Clock, Globe, Zap, Radio, UserCheck, UserPlus, Trash2 } from 'lucide-react'
+import { Users, Monitor, Smartphone, Eye, ExternalLink, Activity, Calendar, Clock, Globe, Zap, Radio, UserCheck, UserPlus, Trash2, Download } from 'lucide-react'
 import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, type AdminVisitor } from '../adminStore'
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts'
+import { generateAdminReportPDF } from '../../lib/professionalPDF'
 
 export function Visitors() {
   const [store, setStore] = useState(getAdminStore())
@@ -232,6 +233,23 @@ export function Visitors() {
     },
   ]
 
+  const handleExportVisitorsPDF = () => {
+    generateAdminReportPDF({
+      sectionTitle: 'Real-Time Visitor Traffic Audit',
+      subtitle: `${visitors.length} Total Visits Recorded | Today: ${visitorsToday} | Active: ${liveActiveVisitors}`,
+      headers: ['Time (IST)', 'Page Route', 'Device & OS', 'IP Address', 'Location', 'Referrer'],
+      rows: visitors.map((v) => [formatIST(v.createdAt), v.page, `${v.deviceType || 'desktop'} (${v.os || 'OS'})`, v.ip || '103.15.22.84', `${v.city || 'Mumbai'}, ${v.country || 'India'}`, v.referrer || 'Direct']),
+      summaryLines: [
+        `All-Time Total Visitors: ${allTimeVisitors}`,
+        `Visitors Today: ${visitorsToday}`,
+        `Visitors This Week: ${visitorsThisWeek}`,
+        `Visitors This Month: ${visitorsThisMonth}`,
+        `Desktop Traffic: ${desktopCount} (${Math.round((desktopCount / devTotal) * 100)}%)`,
+        `Mobile Traffic: ${mobileCount} (${Math.round((mobileCount / devTotal) * 100)}%)`,
+      ],
+    })
+  }
+
   return (
     <div className="space-y-6">
       {/* Live Toast Notification Banner */}
@@ -256,9 +274,17 @@ export function Visitors() {
           <StatCard label="Desktop Visitors" value={desktopCount} icon={<Monitor className="h-4 w-4 text-accent" />} />
           <StatCard label="Mobile Visitors" value={mobileCount} icon={<Smartphone className="h-4 w-4 text-accent" />} />
         </div>
-        <a href="https://analytics.google.com" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-4 py-2.5 text-xs font-medium text-white bg-accent/20 border border-accent/30 hover:bg-accent/30 rounded-xl transition-colors shrink-0">
-          <ExternalLink className="h-3.5 w-3.5" /> GA4 Realtime
-        </a>
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={handleExportVisitorsPDF}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2.5 text-xs font-semibold text-white bg-white/10 border border-white/10 hover:bg-white/20 rounded-xl transition-all cursor-pointer"
+          >
+            <Download className="h-3.5 w-3.5 text-accent" /> Export PDF Log
+          </button>
+          <a href="https://analytics.google.com" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-4 py-2.5 text-xs font-medium text-white bg-accent/20 border border-accent/30 hover:bg-accent/30 rounded-xl transition-colors">
+            <ExternalLink className="h-3.5 w-3.5" /> GA4 Realtime
+          </a>
+        </div>
       </div>
 
       {/* Upgraded Real-Time Analytics Metrics Cards */}

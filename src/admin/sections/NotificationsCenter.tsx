@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
-import { Bell, Mail, FileSpreadsheet, CreditCard, CheckSquare, Rocket, PackageCheck, ShieldAlert, Check, Search, Trash2 } from 'lucide-react'
+import { Bell, Mail, FileSpreadsheet, CreditCard, CheckSquare, Rocket, PackageCheck, ShieldAlert, Check, Search, Trash2, Download } from 'lucide-react'
 import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST } from '../adminStore'
+import { generateAdminReportPDF } from '../../lib/professionalPDF'
 
 export function NotificationsCenter() {
   const [store, setStore] = useState(getAdminStore())
@@ -13,6 +14,20 @@ export function NotificationsCenter() {
   }, [])
 
   const notifications = store.notifications || []
+
+  const handleExportNotificationsPDF = () => {
+    generateAdminReportPDF({
+      sectionTitle: 'System & Agency Notifications Stream',
+      subtitle: `${notifications.length} Total Alerts Recorded | Unread: ${unreadCount}`,
+      headers: ['Time (IST)', 'Alert Category', 'Event Title', 'Message Detail', 'Read Status'],
+      rows: notifications.map((n) => [formatIST(n.createdAt), n.type || 'live', n.title, n.message, n.read ? 'Read' : 'Unread']),
+      summaryLines: [
+        `Total Notifications Logged: ${totalCount}`,
+        `Unread Alerts: ${unreadCount}`,
+        `Read Alerts: ${totalCount - unreadCount}`,
+      ],
+    })
+  }
 
   const handleDeleteNotification = (id: string, e: React.MouseEvent) => {
     e.stopPropagation()
@@ -86,6 +101,12 @@ export function NotificationsCenter() {
           <p className="text-xs text-white/50">Central event stream for inquiries, payments, design sign-offs, live deployments & system alerts</p>
         </div>
         <div className="flex items-center gap-2">
+          <button
+            onClick={handleExportNotificationsPDF}
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/10 text-white font-semibold text-xs hover:bg-white/20 transition-all border border-white/10 cursor-pointer"
+          >
+            <Download className="h-4 w-4 text-accent" /> Export PDF Report
+          </button>
           {unreadCount > 0 && (
             <button
               onClick={handleMarkAllRead}

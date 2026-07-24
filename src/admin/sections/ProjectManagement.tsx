@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
-import { Briefcase, Search, Plus, CheckCircle2, Clock, Archive, Rocket, Users, X, Eye, Trash2 } from 'lucide-react'
+import { Briefcase, Search, Plus, CheckCircle2, Clock, Archive, Rocket, Users, X, Eye, Trash2, Download, FileText } from 'lucide-react'
 import { getAdminStore, saveAdminStore, moveToRecycleBin, type AdminProject } from '../adminStore'
+import { generateAdminReportPDF } from '../../lib/professionalPDF'
 
 export function ProjectManagement() {
   const [store, setStore] = useState(getAdminStore())
@@ -29,6 +30,21 @@ export function ProjectManagement() {
 
   const projects = store.projects || []
   const clients = store.clients || []
+
+  const handleExportProjectsPDF = () => {
+    generateAdminReportPDF({
+      sectionTitle: 'Project Management Audit Report',
+      subtitle: `${projects.length} Total Projects | ${inProgressProjects} In Progress, ${launchedProjects} Launched`,
+      headers: ['Project Title', 'Client Name', 'Status', 'Progress', 'Priority', 'Due Date'],
+      rows: projects.map((p) => [p.title, p.clientName, p.status, `${p.progress}%`, p.priority, p.dueDate]),
+      summaryLines: [
+        `Total Tracked Projects: ${totalProjects}`,
+        `Projects In Progress: ${inProgressProjects}`,
+        `Projects In Client Review: ${inReviewProjects}`,
+        `Successfully Launched Projects: ${launchedProjects}`,
+      ],
+    })
+  }
 
   const handleDeleteProject = (id: string) => {
     const p = projects.find((x) => x.id === id)
@@ -225,12 +241,20 @@ export function ProjectManagement() {
           </h2>
           <p className="text-xs text-white/50">Track build progress, team assignments, milestones, and live launch deployments</p>
         </div>
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-accent text-black font-semibold text-xs hover:bg-accent/90 transition-all shadow-lg cursor-pointer"
-        >
-          <Plus className="h-4 w-4" /> Create New Project
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleExportProjectsPDF}
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/10 text-white font-semibold text-xs hover:bg-white/20 transition-all border border-white/10 cursor-pointer"
+          >
+            <Download className="h-4 w-4 text-accent" /> Export PDF Report
+          </button>
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-accent text-black font-semibold text-xs hover:bg-accent/90 transition-all shadow-lg cursor-pointer"
+          >
+            <Plus className="h-4 w-4" /> Create New Project
+          </button>
+        </div>
       </div>
 
       {/* Stat Cards */}
