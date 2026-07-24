@@ -3,6 +3,7 @@ import {
   generateDesignApprovalPDF,
   generateRevisionsPDF,
   generateAssetsPDF,
+  exportSectionReportPDF,
 } from './professionalPDF'
 
 interface PDFSection {
@@ -67,23 +68,10 @@ export function generatePDF({ filename, title, sections }: PDFOptions) {
     })
     return
   }
-  // Fallback: basic text blob
-  const text = [
-    title.toUpperCase(),
-    '='.repeat(title.length),
-    `Generated: ${new Date().toLocaleDateString('en-IN')}`,
-    '',
-    ...sections.flatMap((s) => [s.title, ...s.content, '']),
-    '',
-    'AROM STUDIO',
-    'aromstudio27@gmail.com',
-    'https://aromstudio.vercel.app',
-  ].join('\n')
-  const blob = new Blob([text], { type: 'text/plain' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = filename
-  a.click()
-  URL.revokeObjectURL(url)
+
+  // Fallback: Real branded PDF report
+  const headers = ['Section Title', 'Content Details']
+  const rows = sections.map((s) => [s.title, s.content.join('\n')])
+  const prefix = filename.replace(/\.pdf$/i, '')
+  exportSectionReportPDF(title, 'AROM Studio Official Client Document', headers, rows, prefix)
 }

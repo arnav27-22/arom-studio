@@ -3,7 +3,7 @@ import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { FolderKanban, Search, Download, CheckCircle2, Clock, FileText, Eye, X, Trash2 } from 'lucide-react'
 import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, type AdminContentItem } from '../adminStore'
-import { exportSectionReportPDF } from '../../lib/professionalPDF'
+import { exportSectionReportPDF, generateContentCollectionPDF } from '../../lib/professionalPDF'
 
 export function ContentCollection() {
   const [store, setStore] = useState(getAdminStore())
@@ -133,7 +133,17 @@ export function ContentCollection() {
             <Eye className="h-3.5 w-3.5" />
           </button>
           <button
-            onClick={() => alert(`Exporting Content Collection Summary PDF for ${row.clientName}...`)}
+            onClick={() => generateContentCollectionPDF({
+              clientName: row.clientName,
+              projectName: row.projectName,
+              homePage: `Home Page Content for ${row.projectName} (${row.clientName}). Includes Hero Section, CTA buttons, and feature showcase.`,
+              aboutUs: `About Us section for ${row.clientName}. Company mission statement, values, and team overview.`,
+              services: `Services list and service descriptions provided for ${row.projectName}.`,
+              faqs: `Frequently Asked Questions and customer support answers for ${row.clientName}.`,
+              contactDetails: `Contact email, phone number, address, and business operating hours for ${row.clientName}.`,
+              socialMedia: `Instagram, LinkedIn, Facebook, and Twitter handles for ${row.clientName}.`,
+              seoTitleDesc: `Meta title and description tags configured for ${row.projectName}.`,
+            })}
             className="p-1.5 rounded-lg bg-white/5 hover:bg-emerald-500/20 hover:text-emerald-400 text-white/60 transition-colors cursor-pointer"
             title="Download Content Summary PDF"
           >

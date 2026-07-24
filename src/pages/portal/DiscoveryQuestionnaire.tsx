@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Download, CheckCircle2 } from 'lucide-react'
 import { trackPDFDownload, uploadPDF } from '../../lib/tracker'
+import { recordAdminDiscoveryQuestionnaire } from '../../admin/adminStore'
 import { GlassCard } from '../../components/ui/GlassCard'
 import Button from '../../components/ui/Button'
 import jsPDF from 'jspdf'
@@ -312,6 +313,18 @@ export default function DiscoveryQuestionnaire() {
   const handleDownload = () => {
     if (!declaration) return
     generateQuestionnairePDF(data)
+    recordAdminDiscoveryQuestionnaire({
+      fullName: data.fullName,
+      company: data.company,
+      email: data.email,
+      phone: data.phone,
+      website: data.website,
+      budget: data.budget,
+      urgency: data.urgency,
+      preferredLaunchDate: data.launchDate,
+      contentProvider: data.contentProvider,
+      fullData: data,
+    })
   }
 
   const canDownload = data.fullName.trim() !== '' && declaration

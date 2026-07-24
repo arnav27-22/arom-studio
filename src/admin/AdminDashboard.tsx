@@ -28,6 +28,8 @@ import { ProjectTimeline } from './sections/ProjectTimeline'
 import { HandoverManager } from './sections/HandoverManager'
 import { FeedbackManager } from './sections/FeedbackManager'
 import { NotificationsCenter } from './sections/NotificationsCenter'
+import { DiscoveryQuestionnairesAdmin } from './sections/DiscoveryQuestionnairesAdmin'
+import { FileQuestion } from 'lucide-react'
 
 import { syncFromCloud } from './adminStore'
 
@@ -48,6 +50,7 @@ const agencySections = [
   { id: 'proposals', label: 'Proposal Manager', icon: FileSpreadsheet },
   { id: 'agreements', label: 'Agreement Manager', icon: FileSignature },
   { id: 'payments', label: 'Payments', icon: CreditCard },
+  { id: 'discovery', label: 'Discovery Questionnaires', icon: FileQuestion },
   { id: 'content', label: 'Content Collection', icon: FolderKanban },
   { id: 'assets', label: 'Assets Manager', icon: FolderUp },
   { id: 'approvals', label: 'Design Approval', icon: CheckSquare },
@@ -194,6 +197,7 @@ export function AdminDashboard({ onLogout }: { onLogout: () => void }) {
               {active === 'proposals' && <ProposalManager />}
               {active === 'agreements' && <AgreementManager />}
               {active === 'payments' && <PaymentsManager />}
+              {active === 'discovery' && <DiscoveryQuestionnairesAdmin />}
               {active === 'content' && <ContentCollection />}
               {active === 'assets' && <AssetsManager />}
               {active === 'approvals' && <DesignApproval />}

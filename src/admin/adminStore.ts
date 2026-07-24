@@ -248,6 +248,23 @@ export interface AdminNotification {
   link?: string
 }
 
+export interface AdminDiscoveryQuestionnaire {
+  id: string
+  fullName: string
+  company: string
+  email: string
+  phone?: string
+  website?: string
+  budget?: string
+  urgency?: string
+  preferredLaunchDate?: string
+  contentProvider?: string
+  status: 'New' | 'Reviewed' | 'Proposal Sent' | 'Archived'
+  createdAt: string
+  pdfDataUrl?: string
+  fullData?: any
+}
+
 export interface AdminRecycleItem {
   id: string
   originalCollection: keyof StoreData
@@ -277,6 +294,7 @@ export interface StoreData {
   handovers: AdminHandover[]
   feedbacks: AdminFeedback[]
   notifications: AdminNotification[]
+  discoveryQuestionnaires: AdminDiscoveryQuestionnaire[]
   recycleBin: AdminRecycleItem[]
 }
 
@@ -697,6 +715,37 @@ const INITIAL_NOTIFICATIONS: AdminNotification[] = [
   },
 ]
 
+const INITIAL_DISCOVERY_QUESTIONNAIRES: AdminDiscoveryQuestionnaire[] = [
+  {
+    id: 'dq_1',
+    fullName: 'Ramesh Kumar',
+    company: 'Apex Innovations Global',
+    email: 'ramesh@apexinnovations.com',
+    phone: '+91 98765 43210',
+    website: 'https://apexinnovations.com',
+    budget: '₹50,000–₹1,00,000',
+    urgency: 'High',
+    preferredLaunchDate: '2026-08-15',
+    contentProvider: 'Client',
+    status: 'Reviewed',
+    createdAt: '2026-07-20T10:30:00Z',
+  },
+  {
+    id: 'dq_2',
+    fullName: 'Priya Sharma',
+    company: 'LuxeLiving Studio',
+    email: 'priya@luxeliving.co.in',
+    phone: '+91 98220 11223',
+    website: 'https://luxeliving.co.in',
+    budget: '₹25,000–₹50,000',
+    urgency: 'Medium',
+    preferredLaunchDate: '2026-09-01',
+    contentProvider: 'Both',
+    status: 'New',
+    createdAt: '2026-07-22T14:15:00Z',
+  },
+]
+
 const CLEAN_INITIAL_DATA: StoreData = {
   visitors: [],
   leads: [],
@@ -715,6 +764,7 @@ const CLEAN_INITIAL_DATA: StoreData = {
   handovers: INITIAL_HANDOVERS,
   feedbacks: INITIAL_FEEDBACKS,
   notifications: INITIAL_NOTIFICATIONS,
+  discoveryQuestionnaires: INITIAL_DISCOVERY_QUESTIONNAIRES,
   recycleBin: [],
 }
 
@@ -742,6 +792,7 @@ export function getAdminStore(): StoreData {
         handovers: Array.isArray(parsed.handovers) ? parsed.handovers : INITIAL_HANDOVERS,
         feedbacks: Array.isArray(parsed.feedbacks) ? parsed.feedbacks : INITIAL_FEEDBACKS,
         notifications: Array.isArray(parsed.notifications) ? parsed.notifications : INITIAL_NOTIFICATIONS,
+        discoveryQuestionnaires: Array.isArray(parsed.discoveryQuestionnaires) ? parsed.discoveryQuestionnaires : INITIAL_DISCOVERY_QUESTIONNAIRES,
         recycleBin: Array.isArray(parsed.recycleBin) ? parsed.recycleBin : [],
       }
     }
@@ -874,6 +925,7 @@ export async function syncFromCloud(): Promise<StoreData> {
         handovers: Array.isArray(remote.handovers) ? remote.handovers : local.handovers,
         feedbacks: Array.isArray(remote.feedbacks) ? remote.feedbacks : local.feedbacks,
         notifications: Array.isArray(remote.notifications) ? remote.notifications : local.notifications,
+        discoveryQuestionnaires: Array.isArray(remote.discoveryQuestionnaires) ? remote.discoveryQuestionnaires : local.discoveryQuestionnaires,
         recycleBin: Array.isArray(remote.recycleBin) ? remote.recycleBin : local.recycleBin,
       }
       try {
@@ -1053,5 +1105,35 @@ export function recordAdminInvoice(invoice: Omit<AdminInvoice, 'id' | 'createdAt
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ action: 'invoice', data: newInv }),
+  }).catch(() => {})
+}
+
+// Record REAL Discovery Questionnaire Submission & sync globally
+export function recordAdminDiscoveryQuestionnaire(dq: Omit<AdminDiscoveryQuestionnaire, 'id' | 'createdAt' | 'status'>) {
+  const store = getAdminStore()
+  const now = new Date().toISOString()
+  const newDq: AdminDiscoveryQuestionnaire = {
+    ...dq,
+    id: 'dq_' + Math.random().toString(36).slice(2, 9),
+    createdAt: now,
+    status: 'New',
+  }
+  if (!Array.isArray(store.discoveryQuestionnaires)) store.discoveryQuestionnaires = []
+  store.discoveryQuestionnaires.unshift(newDq)
+  if (!Array.isArray(store.notifications)) store.notifications = []
+  store.notifications.unshift({
+    id: 'n_' + Math.random().toString(36).slice(2, 9),
+    type: 'inquiry',
+    title: '📋 New Discovery Questionnaire Submitted',
+    message: `Questionnaire submitted by ${newDq.fullName} (${newDq.company || 'Client'}) with budget ${newDq.budget || 'Custom'}.`,
+    read: false,
+    createdAt: now,
+  })
+  saveAdminStore(store)
+
+  fetch('/api/sync', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'discovery', data: newDq }),
   }).catch(() => {})
 }

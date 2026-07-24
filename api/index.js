@@ -116,6 +116,7 @@ export default async function handler(req, res) {
         db.read('real_feedbacks'),
         db.read('real_notifications'),
         db.read('real_recycle_bin'),
+        db.read('real_discovery'),
       ])
       return j(res, {
         visitors: visitors || [],
@@ -135,6 +136,7 @@ export default async function handler(req, res) {
         handovers: handovers.length ? handovers : undefined,
         feedbacks: feedbacks.length ? feedbacks : undefined,
         notifications: notifications.length ? notifications : undefined,
+        discoveryQuestionnaires: discoveryQuestionnaires || [],
         recycleBin: recycleBin || [],
       })
     }
@@ -164,6 +166,11 @@ export default async function handler(req, res) {
         if (!invoices.some(i => i.id === item.id)) {
           await db.append('real_invoices', item)
         }
+      } else if (action === 'discovery') {
+        const discovery = await db.read('real_discovery')
+        if (!discovery.some(d => d.id === item.id)) {
+          await db.append('real_discovery', item)
+        }
       } else if (action === 'save_store' && item) {
         if (Array.isArray(item.clients)) await db.write('real_clients', item.clients)
         if (Array.isArray(item.projects)) await db.write('real_projects', item.projects)
@@ -177,6 +184,7 @@ export default async function handler(req, res) {
         if (Array.isArray(item.handovers)) await db.write('real_handovers', item.handovers)
         if (Array.isArray(item.feedbacks)) await db.write('real_feedbacks', item.feedbacks)
         if (Array.isArray(item.notifications)) await db.write('real_notifications', item.notifications)
+        if (Array.isArray(item.discoveryQuestionnaires)) await db.write('real_discovery', item.discoveryQuestionnaires)
         if (Array.isArray(item.visitors)) await db.write('real_visitors', item.visitors)
         if (Array.isArray(item.pdfs)) await db.write('real_pdfs', item.pdfs)
         if (Array.isArray(item.invoices)) await db.write('real_invoices', item.invoices)
