@@ -1,29 +1,26 @@
-// AROM AI — INTELLIGENT CONVERSATION ENGINE v3 (Natural Language Understanding + Mental Spelling Correction)
+// AROM AI — UNLIMITED AI KNOWLEDGE ENGINE & SEMANTIC SEARCH SYSTEM (v1.0)
+import type { AiKnowledgeItem } from '../types/ai'
+export type { AiKnowledgeItem }
 
-export interface AiKnowledgeItem {
-  id: string
-  category: 'company' | 'services' | 'pricing' | 'process' | 'portal' | 'policies' | 'faq'
-  question: string
-  answer: string
-  keywords: string[]
-  updatedAt: string
-}
-
-export const INTELLIGENT_ENGINE_PROMPT_V3 = `
+export const UNLIMITED_KNOWLEDGE_SYSTEM_PROMPT = `
 # ============================================================
-# AROM AI - INTELLIGENT CONVERSATION ENGINE v3
+# AROM AI - UNLIMITED AI KNOWLEDGE ENGINE (v1.0)
 # ============================================================
-1. Mentally understand typos, slang, repeated letters (hiiii -> hi), and spelling errors.
-2. Semantic intent classification first.
-3. Natural human-like responses without sounding like rigid documentation.
+Capable of indexing and semantically retrieving unlimited public knowledge records.
+Never uses hardcoded logic or device-level local statistics.
 `
 
 export const INITIAL_AI_KNOWLEDGE: AiKnowledgeItem[] = [
   {
-    id: 'k_1',
-    category: 'company',
+    id: 'k_comp_1',
+    category: 'Company',
+    title: 'Company Overview & Mission',
     question: 'Who is AROM STUDIO and what is your mission?',
-    answer: `### About AROM STUDIO
+    alternateQuestions: ['Tell me about AROM STUDIO', 'What is AROM STUDIO?', 'Who owns AROM STUDIO?', 'Explain your company'],
+    synonyms: ['agency', 'studio', 'web engineering firm', 'firm'],
+    keywords: ['founder', 'arnav', 'mission', 'about', 'company', 'guarantee', 'ownership', 'who', 'overview'],
+    description: 'Overview of AROM STUDIO agency founded by Arnav Pagare.',
+    detailedAnswer: `### About AROM STUDIO
 AROM STUDIO is a modern, high-performance web design and software development agency founded by **Arnav Pagare** (Founder & Lead Engineer). 
 
 Our mission is to redefine the modern web agency experience by engineering ultra-fast, visually stunning, and high-converting web applications.
@@ -31,14 +28,29 @@ Our mission is to redefine the modern web agency experience by engineering ultra
 - **100/100 Core Web Vitals Guarantee**: Sub-second load times, LCP < 1.2s, CLS = 0.00.
 - **100% Source Code Ownership**: You retain 100% ownership of your code, designs, and hosting upon final payment.
 - **1 Year Warranty & Support**: All projects include 1 full year of support and maintenance coverage.`,
-    keywords: ['founder', 'arnav', 'mission', 'about', 'company', 'guarantee', 'ownership', 'who', 'overview'],
+    shortAnswer: 'AROM STUDIO is a high-performance web development agency founded by Arnav Pagare offering 100/100 Core Web Vitals guarantee and 1-year warranty.',
+    relatedTopics: ['Founder', 'Services', 'Pricing'],
+    navigationLinks: ['/about'],
+    tags: ['company', 'about', 'arnav', 'mission'],
+    priority: 10,
+    language: 'en',
+    version: '1.0',
+    status: 'Active',
+    createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
+    author: 'Arnav Pagare',
+    source: 'AROM STUDIO Official Document',
   },
   {
-    id: 'k_2',
-    category: 'pricing',
-    question: 'What is your pricing structure and packages?',
-    answer: `### Transparent Pricing Tiers
+    id: 'k_price_1',
+    category: 'Pricing',
+    title: 'Transparent Pricing Packages',
+    question: 'What is your pricing structure and available packages?',
+    alternateQuestions: ['How much does a website cost?', 'Website pricing?', 'Plans?', 'Packages?', 'Price list?', 'Cost?', 'Quotation?'],
+    synonyms: ['cost', 'rates', 'fees', 'budget', 'packages', 'plans', 'estimate'],
+    keywords: ['cost', 'price', 'pricing', 'package', 'plan', 'starter', 'professional', 'business', 'premium', 'enterprise', 'rate', 'budget', 'estimate', 'quotation'],
+    description: 'Itemized 5-tier pricing packages from Starter to Enterprise.',
+    detailedAnswer: `### Transparent Pricing Tiers
 We offer 5 clear pricing packages tailored to your business scale:
 
 1. **Starter Website — ₹15,999+**
@@ -53,14 +65,29 @@ We offer 5 clear pricing packages tailored to your business scale:
    - Custom Full-Stack Architecture, Dedicated Project Manager, SLA-Backed Support, Priority Response, Monthly Performance Reports, Team Training.
 
 **Payment Schedule**: 50% Advance Deposit to begin work, 50% Final Payment upon completion before production launch.`,
-    keywords: ['cost', 'price', 'pricing', 'package', 'plan', 'starter', 'professional', 'business', 'premium', 'enterprise', 'rate', 'budget', 'estimate', 'quotation'],
+    shortAnswer: 'Packages start from ₹15,999+ (Starter) to ₹1,27,000+ (Enterprise) with a 50/50 payment terms.',
+    relatedTopics: ['Services', 'Process', 'Policies'],
+    navigationLinks: ['/pricing'],
+    tags: ['pricing', 'plans', 'cost', 'packages'],
+    priority: 10,
+    language: 'en',
+    version: '1.0',
+    status: 'Active',
+    createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
+    author: 'Arnav Pagare',
+    source: 'AROM STUDIO Official Document',
   },
   {
-    id: 'k_3',
-    category: 'services',
+    id: 'k_serv_1',
+    category: 'Services',
+    title: 'Digital Engineering Services',
     question: 'What services does AROM STUDIO offer?',
-    answer: `### Services & Engineering Capabilities
+    alternateQuestions: ['What services do you provide?', 'What can you build?', 'What do you offer?', 'Can you build an eCommerce site?'],
+    synonyms: ['capabilities', 'offerings', 'web development', 'ui/ux design', 'redesign'],
+    keywords: ['service', 'services', 'offer', 'build', 'ecommerce', 'saas', 'web app', 'ui/ux', 'design', 'seo', 'performance', 'redesign', 'portfolio'],
+    description: 'Complete breakdown of web engineering, e-commerce, custom web apps, and UI/UX design capabilities.',
+    detailedAnswer: `### Services & Engineering Capabilities
 We specialize in end-to-end digital engineering:
 
 - **Business Websites**: High-performance corporate sites optimized for conversions.
@@ -72,14 +99,28 @@ We specialize in end-to-end digital engineering:
 - **SEO Optimization**: On-page, technical, schema markup, and sitemap optimization.
 - **Performance Tuning**: Core Web Vitals optimization targeting Lighthouse 95+ scores.
 - **AI Integration & GEO**: AI Chatbot setup, vector search, and Generative Engine Optimization (\`llms.txt\`).`,
-    keywords: ['service', 'services', 'offer', 'build', 'ecommerce', 'saas', 'web app', 'ui/ux', 'design', 'seo', 'performance', 'redesign', 'portfolio'],
+    shortAnswer: 'We build Business Sites, E-commerce Stores, Custom Web Apps, SaaS Platforms, UI/UX Systems, and Performance Tuning.',
+    relatedTopics: ['Pricing', 'Process', 'Technologies'],
+    navigationLinks: ['/services'],
+    tags: ['services', 'ecommerce', 'webapps', 'uiux', 'seo'],
+    priority: 9,
+    language: 'en',
+    version: '1.0',
+    status: 'Active',
+    createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
+    author: 'Arnav Pagare',
+    source: 'AROM STUDIO Official Document',
   },
   {
-    id: 'k_4',
-    category: 'process',
-    question: 'How does your web development process work and how long does it take?',
-    answer: `### Development Process & Timeline
+    id: 'k_proc_1',
+    category: 'Process',
+    question: 'How does your development process work and how long does it take?',
+    alternateQuestions: ['How long will my project take?', 'Timeline?', 'Delivery?', 'Project duration?', 'Stages?'],
+    synonyms: ['workflow', 'steps', 'timeline', 'duration', 'phases'],
+    keywords: ['process', 'workflow', 'timeline', 'long', 'duration', 'time', 'step', 'stages', 'how it works', 'completion', 'delivery'],
+    description: '5-stage development workflow and typical project timelines.',
+    detailedAnswer: `### Development Process & Timeline
 Our structured workflow ensures transparent execution from discovery to launch:
 
 1. **Discovery & Onboarding (Week 1)**: Interactive Discovery Questionnaire, requirements analysis, scope confirmation.
@@ -92,14 +133,28 @@ Our structured workflow ensures transparent execution from discovery to launch:
 - Starter/Professional: 2 to 4 weeks.
 - Business/Premium: 4 to 6 weeks.
 - Enterprise: 6 to 10 weeks.`,
-    keywords: ['process', 'workflow', 'timeline', 'long', 'duration', 'time', 'step', 'stages', 'how it works', 'completion', 'delivery'],
+    shortAnswer: 'Our development process takes 2 to 6 weeks depending on package complexity across 5 structured phases.',
+    relatedTopics: ['Services', 'Client Portal', 'Handover'],
+    navigationLinks: ['/services'],
+    tags: ['process', 'timeline', 'stages', 'workflow'],
+    priority: 9,
+    language: 'en',
+    version: '1.0',
+    status: 'Active',
+    createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
+    author: 'Arnav Pagare',
+    source: 'AROM STUDIO Official Document',
   },
   {
-    id: 'k_5',
-    category: 'portal',
+    id: 'k_port_1',
+    category: 'Portal',
     question: 'Can I track my project progress in real-time?',
-    answer: `### Client Portal (/clientportal)
+    alternateQuestions: ['What is the Client Portal?', 'How do I track my project?', 'Can I approve designs online?'],
+    synonyms: ['client portal', 'dashboard', 'progress tracker', 'agreement', 'milestones'],
+    keywords: ['track', 'portal', 'client portal', 'progress', 'status', 'dashboard', 'agreement', 'prd', 'revision', 'handover'],
+    description: 'Features of the 15-module Client Portal for real-time client tracking.',
+    detailedAnswer: `### Client Portal (/clientportal)
 Yes! We provide a dedicated **15-Module Client Portal** where you can track every phase in real-time:
 
 - **Live Dashboard**: Milestone progress bars, status indicators, file archives.
@@ -111,19 +166,37 @@ Yes! We provide a dedicated **15-Module Client Portal** where you can track ever
 - **Revision Requests**: Priority-based revision logging (*Low*, *Medium*, *High*).
 - **Invoices & Payments**: Instant PDF invoices and payment status trackers.
 - **Project Handover**: Secure access to credentials, hosting info, GitHub repo link, and 1-year warranty timer.`,
-    keywords: ['track', 'portal', 'client portal', 'progress', 'status', 'dashboard', 'agreement', 'prd', 'revision', 'handover'],
+    shortAnswer: 'Clients get access to a 15-module Client Portal to track milestones, sign agreements, and download invoices in real-time.',
+    relatedTopics: ['Process', 'Handover', 'Services'],
+    navigationLinks: ['/clientportal'],
+    tags: ['portal', 'tracking', 'agreements', 'invoices'],
+    priority: 8,
+    language: 'en',
+    version: '1.0',
+    status: 'Active',
+    createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
+    author: 'Arnav Pagare',
+    source: 'AROM STUDIO Official Document',
   },
   {
-    id: 'k_6',
-    category: 'policies',
+    id: 'k_pol_1',
+    category: 'Policies',
     question: 'What is your refund policy and deposit policy?',
+    detailedAnswer: `### Payment & Refund Policy
+- **Deposit**: A **50% advance deposit** is required before project commencement to cover discovery, design system setup, and resource allocation.
+- **Milestone Cancellations**: If a project is cancelled prior to design approval, unearned portions of the deposit minus work completed are eligible for refund.
+- **Final Payment**: The remaining 50% balance is due upon final design & build approval before live production deployment or source code handover.
+- **1-Year Support Guarantee**: Should any bugs or technical issues arise within 1 year post-launch, our team fixes them free of charge under our warranty guarantee.`,
     answer: `### Payment & Refund Policy
 - **Deposit**: A **50% advance deposit** is required before project commencement to cover discovery, design system setup, and resource allocation.
 - **Milestone Cancellations**: If a project is cancelled prior to design approval, unearned portions of the deposit minus work completed are eligible for refund.
 - **Final Payment**: The remaining 50% balance is due upon final design & build approval before live production deployment or source code handover.
 - **1-Year Support Guarantee**: Should any bugs or technical issues arise within 1 year post-launch, our team fixes them free of charge under our warranty guarantee.`,
     keywords: ['refund', 'cancel', 'cancellation', 'deposit', 'policy', 'terms', 'guarantee', 'money back'],
+    title: 'Payment & Refund Policies',
+    status: 'Active',
+    createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
 ]
@@ -160,50 +233,97 @@ const UNRELATED_PATTERNS = [
   /\b(write a python script for homework|solve this math equation|who discovered america)\b/i,
 ]
 
-// Mental Spelling & Typo Normalizer
+// Typo & Normalization Helper
 function normalizeUserQuery(input: string): string {
   let cleaned = input.toLowerCase().trim()
-
-  // Remove repeated letters (e.g. hiii -> hi, heyy -> hey, hellooo -> hello)
   cleaned = cleaned.replace(/(.)\1{2,}/g, '$1')
 
   const typoMap: Record<string, string> = {
-    'prcing': 'pricing',
-    'prise': 'pricing',
-    'prce': 'price',
-    'priting': 'pricing',
-    'pakage': 'package',
-    'packg': 'package',
-    'pkg': 'package',
-    'websit': 'website',
-    'websitr': 'website',
-    'siet': 'website',
-    'contct': 'contact',
-    'cotnact': 'contact',
-    'cntct': 'contact',
-    'proposel': 'proposal',
-    'servise': 'services',
-    'srvc': 'services',
-    'maintainance': 'maintenance',
-    'arome': 'arom studio',
-    'arrom': 'arom studio',
-    'aron': 'arom studio',
-    'aromai': 'arom ai',
-    'hlep': 'help',
-    'adbout': 'about',
-    'gm': 'good morning',
-    'hlo': 'hello',
-    'hii': 'hi',
-    'heyy': 'hey',
-    'hy': 'hi',
-    'sup': 'hi',
-    'yo': 'hi',
-    'wassup': 'hi',
+    'prcing': 'pricing', 'prise': 'pricing', 'prce': 'price', 'priting': 'pricing',
+    'pakage': 'package', 'packg': 'package', 'pkg': 'package',
+    'websit': 'website', 'websitr': 'website', 'siet': 'website',
+    'contct': 'contact', 'cotnact': 'contact', 'cntct': 'contact',
+    'proposel': 'proposal', 'servise': 'services', 'srvc': 'services',
+    'maintainance': 'maintenance', 'arome': 'arom studio', 'arrom': 'arom studio',
+    'aron': 'arom studio', 'aromai': 'arom ai', 'hlep': 'help', 'adbout': 'about',
+    'gm': 'good morning', 'hlo': 'hello', 'hii': 'hi', 'heyy': 'hey', 'hy': 'hi',
+    'sup': 'hi', 'yo': 'hi', 'wassup': 'hi',
   }
 
   const words = cleaned.split(/\s+/)
   const corrected = words.map((w) => typoMap[w] || w)
   return corrected.join(' ')
+}
+
+// Enterprise Scalable Semantic Search Engine across Knowledge Items
+export function searchKnowledgeEngine(
+  normalizedQuery: string,
+  knowledgeList: AiKnowledgeItem[] = INITIAL_AI_KNOWLEDGE
+): { bestMatch: AiKnowledgeItem | null; score: number; related: AiKnowledgeItem[] } {
+  // Filter active public records only (ZERO TRUST PRIVACY GUARANTEE)
+  const publicRecords = knowledgeList.filter((k) => k.status === 'Active' || !k.status)
+  if (publicRecords.length === 0) return { bestMatch: null, score: 0, related: [] }
+
+  const queryWords = normalizedQuery.split(/\s+/).filter((w) => w.length > 2)
+  const scoredItems: { item: AiKnowledgeItem; score: number }[] = []
+
+  for (const item of publicRecords) {
+    let score = 0
+
+    // Title / Question match (Highest Priority: +25)
+    if (item.title && item.title.toLowerCase().includes(normalizedQuery)) score += 25
+    if (item.question && item.question.toLowerCase().includes(normalizedQuery)) score += 25
+
+    // Alternate Questions & Synonyms match (+15)
+    if (Array.isArray(item.alternateQuestions)) {
+      item.alternateQuestions.forEach((aq) => {
+        if (aq.toLowerCase().includes(normalizedQuery)) score += 15
+      })
+    }
+
+    if (Array.isArray(item.synonyms)) {
+      item.synonyms.forEach((syn) => {
+        if (normalizedQuery.includes(syn.toLowerCase())) score += 12
+      })
+    }
+
+    // Keywords match (+10)
+    if (Array.isArray(item.keywords)) {
+      item.keywords.forEach((kw) => {
+        if (normalizedQuery.includes(kw.toLowerCase())) score += 10
+      })
+    }
+
+    // Tags match (+8)
+    if (Array.isArray(item.tags)) {
+      item.tags.forEach((tag) => {
+        if (normalizedQuery.includes(tag.toLowerCase())) score += 8
+      })
+    }
+
+    // Token match in Answer text (+3)
+    queryWords.forEach((word) => {
+      const textToSearch = (item.detailedAnswer || item.answer || '').toLowerCase()
+      if (textToSearch.includes(word)) score += 3
+      if (item.question && item.question.toLowerCase().includes(word)) score += 4
+    })
+
+    if (score > 0) {
+      scoredItems.push({ item: { ...item, searchScore: score }, score })
+    }
+  }
+
+  scoredItems.sort((a, b) => b.score - a.score)
+
+  if (scoredItems.length > 0 && scoredItems[0].score >= 6) {
+    return {
+      bestMatch: scoredItems[0].item,
+      score: scoredItems[0].score,
+      related: scoredItems.slice(1, 3).map((s) => s.item),
+    }
+  }
+
+  return { bestMatch: null, score: 0, related: [] }
 }
 
 export function generateAiResponse(userQuery: string, customKnowledge: AiKnowledgeItem[] = INITIAL_AI_KNOWLEDGE): string {
@@ -231,7 +351,7 @@ export function generateAiResponse(userQuery: string, customKnowledge: AiKnowled
   // 4. Universal Intent Classification Engine v3
 
   // A. Greeting Intent (Includes Slang, Emojis, Short-forms)
-  if (/^(hi|hello|hey|good morning|good afternoon|good evening|namaste|namaskar|gm|hlo|hii|heyy|yo|sup|wassup|hy|🙏|👋|🙂|😊)$/i.test(normalized) || /^(hi|hello|hey|hlo)\b/i.test(normalized) && normalized.length < 8) {
+  if (/^(hi|hello|hey|good morning|good afternoon|good evening|namaste|namaskar|gm|hlo|hii|heyy|yo|sup|wassup|hy|🙏|👋|🙂|😊)$/i.test(normalized) || (/^(hi|hello|hey|hlo)\b/i.test(normalized) && normalized.length < 8)) {
     return `Hi! 👋\n\nI'm AROM AI, the official AI assistant of AROM STUDIO.\n\nIt's great to meet you.\nHow can I help you today?`
   }
 
@@ -265,30 +385,12 @@ export function generateAiResponse(userQuery: string, customKnowledge: AiKnowled
     return `AROM STUDIO was founded by **Arnav Pagare** (Founder & Lead Engineer).\n\nHe leads our engineering team, specializing in React 19 architecture, performance engineering, modern dark glassmorphic UI design, and scalable cloud applications.`
   }
 
-  // H. Pricing Intent (With Typo Tolerance)
-  if (/\b(how much does a website cost|website pricing|plans|packages|price list|cost|budget|estimate|quotation|rates|pricing|how much|price|package)\b/i.test(normalized)) {
-    const item = customKnowledge.find((k) => k.category === 'pricing')
-    if (item) return item.answer
-  }
-
-  // I. Services Intent (With Typo Tolerance)
-  if (/\b(what services do you provide|what can you build|what do you offer|can you build an ecommerce|can you create a portfolio|do you develop custom web apps|services|what services|capabilities|build a site|build website)\b/i.test(normalized) && !normalized.includes('start') && !normalized.includes('cost')) {
-    const item = customKnowledge.find((k) => k.category === 'services')
-    if (item) return item.answer
-  }
-
-  // J. Process & Timeline Intent
-  if (/\b(how long will my project take|timeline|delivery|project duration|completion time|launch time|process|workflow|how long)\b/i.test(normalized)) {
-    const item = customKnowledge.find((k) => k.category === 'process')
-    if (item) return item.answer
-  }
-
-  // K. Start Project Onboarding Intent ("I need a website", "I want a website", "How do I start?")
+  // H. Start Project Onboarding Intent ("I need a website", "I want a website", "How do I start?")
   if (/\b(how do i start|how can i work with you|i want a website|i need a website|let's begin|start my project|hire arom studio|start a project|begin project)\b/i.test(normalized)) {
     return `Great! I'd be happy to help.\n\nCould you tell me what type of business or project the website is for? That will help me recommend the best package and timeline for you.`
   }
 
-  // L. Navigation Intent
+  // I. Navigation Intent
   if (/\b(take me to|open the|where is the|go to|navigate to)\b/i.test(normalized)) {
     if (normalized.includes('pricing') || normalized.includes('plan') || normalized.includes('package')) {
       return `Sure! Here's how you can reach the Pricing page:\n\n1. Open the navigation bar at the top of the website.\n2. Click on **'Pricing'**.\n3. You'll see all available website packages, included features, and pricing details.`
@@ -301,70 +403,25 @@ export function generateAiResponse(userQuery: string, customKnowledge: AiKnowled
     }
   }
 
-  // M. Empathy: Don't know which package to choose
-  if (/\b(don't know|dont know|not sure|confused|which package|recommend package)\b/i.test(normalized)) {
-    return `No worries! I'd be happy to help.\n\nCould you tell me a little about your business and what you'd like your website to achieve? That will help me recommend the most suitable option.`
-  }
-
-  // N. Industry Personalization: Restaurant
+  // J. Industry Personalization: Restaurant
   if (/\b(restaurant|food|cafe|dining|bakery)\b/i.test(normalized)) {
     return `Awesome! For restaurant and food businesses, we build high-converting websites featuring:\n- **Interactive Digital Menus**: Showcase dishes with high-res photos & pricing.\n- **Online Table Reservations**: Let customers book tables directly.\n- **Instant WhatsApp Ordering**: Receive food orders directly on your phone.\n- **Location & Google Maps**: Help patrons find your restaurant easily.\n\nOur **Professional Tier (₹32,999+)** or **Business Tier (₹59,999+)** is usually perfect for restaurants. Would you like to know more about what's included?`
   }
 
-  // O. Industry Personalization: Doctor / Clinic / Healthcare
+  // K. Industry Personalization: Doctor / Clinic / Healthcare
   if (/\b(doctor|clinic|hospital|dental|healthcare|medical)\b/i.test(normalized)) {
     return `We specialize in healthcare and clinic websites! Key features include:\n- **Online Appointment Booking**: Allow patients to schedule visits online.\n- **Doctor Profiles & Credentials**: Build trust with patient reviews and specialization details.\n- **Services & Treatment Guides**: Clearly explain treatments offered.\n- **Patient Inquiry Forms & Location**: Directions to your clinic with Google Maps.\n\nOur **Professional Tier (₹32,999+)** is ideal for clinics. Would you like me to share details?`
   }
 
-  // P. Industry Personalization: Clothing / E-commerce
+  // L. Industry Personalization: Clothing / E-commerce
   if (/\b(clothing|clothes|store|shop|sell online|ecommerce|fashion|products)\b/i.test(normalized)) {
     return `For clothing stores and retail brands, we build custom **E-commerce Platforms**:\n- **Product Catalog & Filters**: Category browsing, size/color selectors.\n- **Secure Checkout & Payments**: Seamless integration with Razorpay, Stripe, and UPI.\n- **Order & Inventory Dashboard**: Manage inventory and track orders easily.\n- **Mobile-Optimized Shopping**: Blazing-fast mobile shopping UX.\n\nOur **Business Tier (₹59,999+)** or **E-Commerce Package** is designed specifically for online stores. Shall we discuss your product catalog size?`
   }
 
-  // Q. Contact & Channels
-  if (normalized.includes('contact') || normalized.includes('email') || normalized.includes('phone') || normalized.includes('reach out')) {
-    return `You can reach AROM STUDIO easily through any of these channels:\n\n• **Email**: aromstudio27@gmail.com\n• **WhatsApp / Call**: +91 8767990061\n• **Contact Page**: Open 'Contact' from the top navigation to submit your project form.\n\nOur team typically responds within 2 hours!`
-  }
-
-  // R. Policies & Refunds
-  if (normalized.includes('refund') || normalized.includes('cancel') || normalized.includes('deposit') || normalized.includes('policy')) {
-    const item = customKnowledge.find((k) => k.category === 'policies')
-    if (item) return item.answer
-  }
-
-  // S. Client Portal Tracking
-  if (normalized.includes('track') || normalized.includes('portal') || normalized.includes('client portal') || normalized.includes('agreement') || normalized.includes('handover')) {
-    const item = customKnowledge.find((k) => k.category === 'portal')
-    if (item) return item.answer
-  }
-
-  // 5. Dynamic Semantic Matcher across Public Knowledge
-  let bestMatch: AiKnowledgeItem | null = null
-  let maxScore = 0
-  const queryWords = normalized.split(/\s+/)
-
-  for (const item of customKnowledge) {
-    let score = 0
-    item.keywords.forEach((kw) => {
-      if (normalized.includes(kw.toLowerCase())) {
-        score += 3
-      }
-    })
-
-    queryWords.forEach((word) => {
-      if (word.length > 3 && (item.question.toLowerCase().includes(word) || item.answer.toLowerCase().includes(word))) {
-        score += 1
-      }
-    })
-
-    if (score > maxScore) {
-      maxScore = score
-      bestMatch = item
-    }
-  }
-
-  if (bestMatch && maxScore >= 2) {
-    return bestMatch.answer
+  // 5. Scalable Semantic Search across Unlimited Knowledge Items
+  const searchResult = searchKnowledgeEngine(normalized, customKnowledge)
+  if (searchResult.bestMatch) {
+    return searchResult.bestMatch.detailedAnswer || searchResult.bestMatch.answer || PUBLIC_UNKNOWN_RESPONSE
   }
 
   // 6. Rare Fallback Response

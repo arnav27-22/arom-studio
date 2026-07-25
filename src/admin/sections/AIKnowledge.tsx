@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
-import { Brain, Plus, Edit, Trash2, Save, X, BookOpen, Key, RefreshCw } from 'lucide-react'
+import { Brain, Plus, Edit, Trash2, Save, X, BookOpen, Key, RefreshCw, Layers } from 'lucide-react'
 import { getAiKnowledge, saveAiKnowledge } from '../../lib/aiStore'
-import { INITIAL_AI_KNOWLEDGE, type AiKnowledgeItem } from '../../lib/aiEngine'
+import { INITIAL_AI_KNOWLEDGE } from '../../lib/aiEngine'
+import type { AiKnowledgeItem } from '../../types/ai'
 
 export function AIKnowledge() {
   const [items, setItems] = useState<AiKnowledgeItem[]>(getAiKnowledge())
@@ -11,10 +12,13 @@ export function AIKnowledge() {
   const [editingItem, setEditingItem] = useState<AiKnowledgeItem | null>(null)
 
   // Form State
-  const [category, setCategory] = useState<AiKnowledgeItem['category']>('company')
+  const [title, setTitle] = useState('')
+  const [category, setCategory] = useState<string>('Company')
   const [question, setQuestion] = useState('')
-  const [answer, setAnswer] = useState('')
+  const [alternateQuestionsStr, setAlternateQuestionsStr] = useState('')
   const [keywordsStr, setKeywordsStr] = useState('')
+  const [detailedAnswer, setDetailedAnswer] = useState('')
+  const [status, setStatus] = useState<'Active' | 'Archived' | 'Draft'>('Active')
 
   const reload = () => {
     setItems(getAiKnowledge())
@@ -26,38 +30,56 @@ export function AIKnowledge() {
 
   const handleOpenCreate = () => {
     setEditingItem(null)
-    setCategory('company')
+    setTitle('')
+    setCategory('Company')
     setQuestion('')
-    setAnswer('')
+    setAlternateQuestionsStr('')
     setKeywordsStr('')
+    setDetailedAnswer('')
+    setStatus('Active')
     setModalOpen(true)
   }
 
   const handleOpenEdit = (item: AiKnowledgeItem) => {
     setEditingItem(item)
-    setCategory(item.category)
+    setTitle(item.title || item.question)
+    setCategory(item.category || 'Company')
     setQuestion(item.question)
-    setAnswer(item.answer)
-    setKeywordsStr(item.keywords.join(', '))
+    setAlternateQuestionsStr(Array.isArray(item.alternateQuestions) ? item.alternateQuestions.join(', ') : '')
+    setKeywordsStr(Array.isArray(item.keywords) ? item.keywords.join(', ') : '')
+    setDetailedAnswer(item.detailedAnswer || (item as any).answer || '')
+    setStatus(item.status || 'Active')
     setModalOpen(true)
   }
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!question.trim() || !answer.trim()) return
+    if (!question.trim() || !detailedAnswer.trim()) return
 
     const keywords = keywordsStr
       .split(',')
       .map((k) => k.trim().toLowerCase())
       .filter(Boolean)
 
+    const alternateQuestions = alternateQuestionsStr
+      .split(',')
+      .map((q) => q.trim())
+      .filter(Boolean)
+
     const newItem: AiKnowledgeItem = {
       id: editingItem ? editingItem.id : 'k_' + Math.random().toString(36).slice(2, 9),
       category,
+      title: title.trim() || question.trim(),
       question: question.trim(),
-      answer: answer.trim(),
-      keywords: keywords.length ? keywords : [category],
+      alternateQuestions: alternateQuestions.length ? alternateQuestions : undefined,
+      keywords: keywords.length ? keywords : [category.toLowerCase()],
+      detailedAnswer: detailedAnswer.trim(),
+      shortAnswer: detailedAnswer.slice(0, 140) + '...',
+      status,
+      createdAt: editingItem?.createdAt || new Date().toISOString(),
       updatedAt: new Date().toISOString(),
+      author: 'Admin',
+      source: 'AROM STUDIO Knowledge Engine',
     }
 
     let updatedList = [...items]
@@ -74,7 +96,7 @@ export function AIKnowledge() {
   }
 
   const handleDelete = (id: string) => {
-    if (confirm('Delete this AI knowledge entry?')) {
+    if (confirm('Delete this AI knowledge record?')) {
       const updated = items.filter((i) => i.id !== id)
       saveAiKnowledge(updated)
       reload()
@@ -91,11 +113,11 @@ export function AIKnowledge() {
   const columns = [
     {
       key: 'question',
-      label: 'Question / Topic',
+      label: 'Title & Primary Question',
       render: (_: string, row: AiKnowledgeItem) => (
         <div>
-          <p className="text-white font-medium hover:text-accent transition-colors line-clamp-1">{row.question}</p>
-          <p className="text-white/40 text-[10px] font-mono mt-0.5">Keywords: {row.keywords.join(', ')}</p>
+          <p className="text-white font-medium hover:text-accent transition-colors line-clamp-1">{row.title || row.question}</p>
+          <p className="text-white/40 text-[10px] font-mono mt-0.5">Keywords: {Array.isArray(row.keywords) ? row.keywords.join(', ') : ''}</p>
         </div>
       ),
     },
@@ -109,10 +131,19 @@ export function AIKnowledge() {
       ),
     },
     {
+      key: 'status',
+      label: 'Status',
+      render: (v: string) => (
+        <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wider border ${v === 'Active' ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' : 'text-amber-400 bg-amber-500/10 border-amber-500/20'}`}>
+          {v || 'Active'}
+        </span>
+      ),
+    },
+    {
       key: 'updatedAt',
       label: 'Last Updated',
       render: (v: string) => (
-        <span className="text-xs text-white/70">{new Date(v).toLocaleDateString()}</span>
+        <span className="text-xs text-white/70">{v ? new Date(v).toLocaleDateString() : 'System'}</span>
       ),
     },
     {
@@ -123,14 +154,14 @@ export function AIKnowledge() {
           <button
             onClick={() => handleOpenEdit(row)}
             className="p-1.5 text-blue-400 hover:text-white bg-blue-500/10 hover:bg-blue-500/20 rounded-lg border border-blue-500/20 transition-colors cursor-pointer"
-            title="Edit Knowledge Rule"
+            title="Edit Knowledge Item"
           >
             <Edit className="h-3.5 w-3.5" />
           </button>
           <button
             onClick={() => handleDelete(row.id)}
             className="p-1.5 text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 rounded-lg border border-red-500/20 transition-colors cursor-pointer"
-            title="Delete Rule"
+            title="Delete Item"
           >
             <Trash2 className="h-3.5 w-3.5" />
           </button>
@@ -144,9 +175,9 @@ export function AIKnowledge() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-lg font-heading font-bold text-white flex items-center gap-2">
-            <Brain className="h-5 w-5 text-accent" /> AROM AI Knowledge Base &amp; System Rules
+            <Brain className="h-5 w-5 text-accent" /> AROM AI Unlimited Knowledge Engine (v1.0)
           </h2>
-          <p className="text-xs text-white/50">Manage custom Q&amp;A rules, service guidelines, and system knowledge for AROM AI</p>
+          <p className="text-xs text-white/50">Manage scalable public knowledge items, semantic indexing, and categories for AROM AI</p>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -165,21 +196,21 @@ export function AIKnowledge() {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard label="Total Knowledge Rules" value={items.length} icon={<Brain className="h-4 w-4 text-accent" />} />
-        <StatCard label="Categories" value={[...new Set(items.map((i) => i.category))].length} icon={<BookOpen className="h-4 w-4 text-accent" />} />
-        <StatCard label="Out-of-Scope Protection" value="Active" icon={<Key className="h-4 w-4 text-emerald-400" />} />
-        <StatCard label="Knowledge Version" value="v1.4 Live" icon={<Brain className="h-4 w-4 text-accent" />} />
+        <StatCard label="Total Knowledge Items" value={items.length} icon={<Brain className="h-4 w-4 text-accent" />} />
+        <StatCard label="Active Public Categories" value={[...new Set(items.map((i) => i.category))].length} icon={<BookOpen className="h-4 w-4 text-accent" />} />
+        <StatCard label="Public Access Security" value="Strict Active" icon={<Key className="h-4 w-4 text-emerald-400" />} />
+        <StatCard label="Semantic Engine" value="v1.0 Unlimited" icon={<Layers className="h-4 w-4 text-accent" />} />
       </div>
 
       <div className="glass rounded-[24px] p-6 border border-white/10">
         <h3 className="text-xs font-semibold text-accent uppercase tracking-wider mb-4">
-          Configured AI Knowledge Items ({items.length})
+          Indexed Public Knowledge Base ({items.length})
         </h3>
         {items.length > 0 ? (
           <DataTable columns={columns} data={items} />
         ) : (
           <div className="text-center py-8 text-white/40 text-xs font-body">
-            No custom knowledge rules configured yet.
+            No public knowledge items indexed.
           </div>
         )}
       </div>
@@ -192,7 +223,7 @@ export function AIKnowledge() {
               <div className="flex items-center gap-2">
                 <Brain className="h-5 w-5 text-accent" />
                 <h3 className="font-heading text-lg text-white">
-                  {editingItem ? 'Edit AI Knowledge Rule' : 'Add AI Knowledge Rule'}
+                  {editingItem ? 'Edit Knowledge Item' : 'Add Knowledge Item'}
                 </h3>
               </div>
               <button onClick={() => setModalOpen(false)} className="p-1 text-white/50 hover:text-white rounded-lg">
@@ -201,38 +232,55 @@ export function AIKnowledge() {
             </div>
 
             <form onSubmit={handleSave} className="flex-1 overflow-y-auto pt-6 space-y-4 pr-2">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                   <label className="text-xs text-white/60 font-body mb-1 block">Category</label>
-                  <select
+                  <input
+                    type="text"
                     value={category}
-                    onChange={(e) => setCategory(e.target.value as any)}
+                    onChange={(e) => setCategory(e.target.value)}
+                    placeholder="e.g. Services, Pricing, FAQs"
+                    className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white focus:outline-none focus:border-accent/40 font-body"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-white/60 font-body mb-1 block">Status</label>
+                  <select
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value as any)}
                     className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white focus:outline-none focus:border-accent/40 font-body bg-black"
                   >
-                    <option value="company">Company &amp; Founder</option>
-                    <option value="services">Services &amp; Capabilities</option>
-                    <option value="pricing">Pricing &amp; Packages</option>
-                    <option value="process">Process &amp; Timeline</option>
-                    <option value="portal">Client Portal</option>
-                    <option value="admin">Admin Dashboard</option>
-                    <option value="policies">Policies &amp; Deposit</option>
-                    <option value="faq">Tech Stack &amp; FAQ</option>
+                    <option value="Active">Active (Public)</option>
+                    <option value="Draft">Draft</option>
+                    <option value="Archived">Archived</option>
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs text-white/60 font-body mb-1 block">Trigger Keywords (comma separated)</label>
+                  <label className="text-xs text-white/60 font-body mb-1 block">Keywords (comma separated)</label>
                   <input
                     type="text"
                     value={keywordsStr}
                     onChange={(e) => setKeywordsStr(e.target.value)}
-                    placeholder="e.g. price, cost, budget, rate"
+                    placeholder="price, cost, budget"
                     className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white focus:outline-none focus:border-accent/40 font-body"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-xs text-white/60 font-body mb-1 block">Question / Intent Topic *</label>
+                <label className="text-xs text-white/60 font-body mb-1 block">Title / Topic Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="e.g. Professional Website Tier Features"
+                  className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white focus:outline-none focus:border-accent/40 font-body"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs text-white/60 font-body mb-1 block">Primary Question *</label>
                 <input
                   type="text"
                   required
@@ -244,13 +292,24 @@ export function AIKnowledge() {
               </div>
 
               <div>
-                <label className="text-xs text-white/60 font-body mb-1 block">Structured Answer (Markdown supported: ###, -, **bold**) *</label>
+                <label className="text-xs text-white/60 font-body mb-1 block">Alternate Questions (comma separated)</label>
+                <input
+                  type="text"
+                  value={alternateQuestionsStr}
+                  onChange={(e) => setAlternateQuestionsStr(e.target.value)}
+                  placeholder="e.g. Tell me about professional plan, What does tier 2 cost?"
+                  className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white focus:outline-none focus:border-accent/40 font-body"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs text-white/60 font-body mb-1 block">Detailed Answer (Markdown supported) *</label>
                 <textarea
-                  rows={8}
+                  rows={6}
                   required
-                  value={answer}
-                  onChange={(e) => setAnswer(e.target.value)}
-                  placeholder="Write the exact response content..."
+                  value={detailedAnswer}
+                  onChange={(e) => setDetailedAnswer(e.target.value)}
+                  placeholder="Write the full response content..."
                   className="w-full bg-white/5 border border-white/10 rounded-[16px] p-4 text-xs font-mono text-white/90 focus:outline-none focus:border-accent/40 leading-relaxed"
                 />
               </div>
@@ -267,7 +326,7 @@ export function AIKnowledge() {
                   type="submit"
                   className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-accent text-black font-semibold text-xs hover:bg-accent/90 transition-all shadow-lg cursor-pointer"
                 >
-                  <Save className="h-4 w-4" /> Save Rule
+                  <Save className="h-4 w-4" /> Save Knowledge Record
                 </button>
               </div>
             </form>
