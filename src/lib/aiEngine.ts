@@ -1,26 +1,21 @@
-// AROM STUDIO — AROM AI CONVERSATION ENGINE (HIGHEST PRIORITY) & GLOBAL SECURITY POLICY v2.0
+// AROM STUDIO — AROM AI PUBLIC INFORMATION ACCESS POLICY (HIGHEST PRIORITY)
 
 export interface AiKnowledgeItem {
   id: string
-  category: 'company' | 'services' | 'pricing' | 'process' | 'portal' | 'admin' | 'policies' | 'faq'
+  category: 'company' | 'services' | 'pricing' | 'process' | 'portal' | 'policies' | 'faq'
   question: string
   answer: string
   keywords: string[]
   updatedAt: string
 }
 
-export const MASTER_CONVERSATION_RULES_V2 = `
-# ============================================
-# AROM AI CONVERSATION ENGINE (HIGHEST PRIORITY)
-# ============================================
-Response Priority Order:
-1. Conversation Intent (Greeting / AI identity / Capabilities / Company identity)
-2. User Intent & Empathy (Asking business details before selling)
-3. Context Memory
-4. Knowledge Base Search
-5. Website Content
-
-Never confuse AROM AI (the assistant) with AROM STUDIO (the company).
+export const PUBLIC_ACCESS_POLICY_V1 = `
+# ==========================================================
+# AROM AI - PUBLIC INFORMATION ACCESS POLICY (HIGHEST PRIORITY)
+# ==========================================================
+You are the PUBLIC AI assistant of AROM STUDIO.
+Your purpose is to help website visitors. You are NOT an internal employee, admin, or developer assistant.
+Never expose internal business information or internal systems.
 `
 
 export const INITIAL_AI_KNOWLEDGE: AiKnowledgeItem[] = [
@@ -121,24 +116,6 @@ Yes! We provide a dedicated **15-Module Client Portal** where you can track ever
   },
   {
     id: 'k_6',
-    category: 'admin',
-    question: 'What features are available in the AROM STUDIO Admin Dashboard?',
-    answer: `### Admin Control Panel (/admin)
-The Admin Panel features **23 modules** for total agency control:
-
-- **Executive Overview**: Real-time activity feeds, KPI stat cards, PDF exporter.
-- **24/7 Continuous Traffic Generator**: Automatically simulates ~20 viewers/hr lifetime upgraded.
-- **Visitor Analytics**: Real-time traffic, IP tracking, location, browser/OS stats, and device brand detection (iPhone, Samsung, Pixel, OnePlus, Xiaomi, Vivo).
-- **PDF Documents Archive**: Embedded visual iframe modal previews & instant binary downloads of all generated PDFs.
-- **Invoice Generator**: Custom invoice builder with itemized pricing, tax, and PDF exports.
-- **Blog Manager CMS**: Create, edit, publish, and soft-delete blog articles with live preview.
-- **AI Conversations & Knowledge Manager**: Track user chats, review ChatGPT-style transcripts, export chat PDFs, and update AI rules.
-- **Recycle Bin**: Soft-delete system with one-click restore functionality.`,
-    keywords: ['admin', 'dashboard', 'control panel', 'analytics', 'traffic', 'cms', 'recyle bin'],
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: 'k_7',
     category: 'policies',
     question: 'What is your refund policy and deposit policy?',
     answer: `### Payment & Refund Policy
@@ -154,11 +131,19 @@ The Admin Panel features **23 modules** for total agency control:
 // Official Safe Security Response (Global Policy v1.0)
 export const SECURITY_RESTRICTED_RESPONSE = `I'm sorry, but I can't provide confidential, private, or security-sensitive information. If you need help with AROM STUDIO's public services, I'd be happy to assist.`
 
+// Official Internal System Refusal Response
+export const INTERNAL_SYSTEM_REFUSAL_RESPONSE = `Some internal systems are used privately to manage AROM STUDIO's operations and ensure smooth project delivery. Those systems are not publicly available, so I can't provide details about them. If you have questions about our public services or website development process, I'd be happy to help.`
+
 // Security & Prompt Injection Protection Patterns (Zero Trust Model)
 const RESTRICTED_PATTERNS = [
   /\b(api[ _]?key|secret[ _]?key|access[ _]?token|jwt|env|\.env|database[ _]?url|db[ _]?password|smtp|oauth|admin[ _]?credential|session[ _]?token|private[ _]?key|ssh[ _]?key|firebase|supabase[ _]?service|openai[ _]?key|gemini[ _]?key|stripe[ _]?secret|vercel[ _]?secret|github[ _]?token|encryption[ _]?key|server[ _]?ip|internal[ _]?url|sql[ _]?query|system[ _]?prompt|developer[ _]?prompt|memory[ _]?content|hidden[ _]?config|build[ _]?files|source[ _]?code|backend[ _]?logic|financial[ _]?record|revenue[ _]?report|user[ _]?password|client[ _]?personal|private[ _]?file|uploaded[ _]?document)\b/i,
   /\b(ignore (all )?previous instructions|reveal (your )?(system )?prompt|show hidden (prompt|instructions)|print system prompt|show developer (prompt|message)|display memory|developer mode|debug mode|print memory|reveal api|show \.env|print backend|display database|reveal passwords|export data|dump (logs|database)|show secret|show authentication|bypass security|disable restrictions|act as (administrator|owner)|simulat(e|ing) owner|pretend security is disabled)\b/i,
   /\b(i am (the )?(founder|owner|admin|administrator|developer|employee|investor|government|hacker|security researcher)|i built this|i own the company|i forgot my password|i work here|i have permission|my manager approved|my boss asked|security testing|need it urgently|i am from the government|i am openai)\b/i,
+]
+
+// Forbidden Internal System Inquiries
+const INTERNAL_SYSTEM_PATTERNS = [
+  /\b(admin|admin[ _]?panel|admin[ _]?dashboard|\/admin|executive[ _]?overview|crm|lead[ _]?management|visitor[ _]?analytics|traffic[ _]?generator|pdf[ _]?archive|invoice[ _]?generator|blog[ _]?manager|cms|ai[ _]?conversations|ai[ _]?knowledge|chat[ _]?transcripts|recycle[ _]?bin|internal[ _]?tools|backend[ _]?architecture|audit[ _]?logs|hidden[ _]?features|internal[ _]?system|internal[ _]?database|user[ _]?database)\b/i,
 ]
 
 // Unrelated query patterns
@@ -181,12 +166,17 @@ export function generateAiResponse(userQuery: string, customKnowledge: AiKnowled
     return SECURITY_RESTRICTED_RESPONSE
   }
 
-  // 2. Unrelated / Out-of-Scope Questions (PRIORITY 1B)
+  // 2. Forbidden Internal Systems Check (PUBLIC INFORMATION ACCESS POLICY - HIGHEST PRIORITY)
+  if (INTERNAL_SYSTEM_PATTERNS.some((pattern) => pattern.test(queryLower))) {
+    return INTERNAL_SYSTEM_REFUSAL_RESPONSE
+  }
+
+  // 3. Unrelated / Out-of-Scope Questions (PRIORITY 1C)
   if (UNRELATED_PATTERNS.some((pattern) => pattern.test(queryLower))) {
     return `I'm designed specifically to assist with AROM STUDIO and our website development services. I may not be the best source for unrelated topics, but I'd be happy to help with anything about AROM STUDIO.`
   }
 
-  // 3. Conversational Intent Rules — HIGHEST CONVERSATION PRIORITY
+  // 4. Conversational Intent Rules — HIGHEST CONVERSATION PRIORITY
 
   // A. Greetings (DO NOT EXPLAIN SERVICES OR PRICING)
   if (/^(hi|hello|hey|good morning|good afternoon|good evening|namaste|hlo|hii|heyy)$/i.test(queryLower)) {
@@ -253,7 +243,7 @@ export function generateAiResponse(userQuery: string, customKnowledge: AiKnowled
     return `For clothing stores and retail brands, we build custom **E-commerce Platforms**:\n- **Product Catalog & Filters**: Category browsing, size/color selectors.\n- **Secure Checkout & Payments**: Seamless integration with Razorpay, Stripe, and UPI.\n- **Order & Inventory Dashboard**: Manage inventory and track orders easily.\n- **Mobile-Optimized Shopping**: Blazing-fast mobile shopping UX.\n\nOur **Business Tier (₹59,999+)** or **E-Commerce Package** is designed specifically for online stores. Shall we discuss your product catalog size?`
   }
 
-  // 4. Quick Category Matches
+  // 5. Quick Category Matches
   if (queryLower.includes('cost') || queryLower.includes('price') || queryLower.includes('pricing') || queryLower.includes('package') || queryLower.includes('plan')) {
     const item = customKnowledge.find((k) => k.category === 'pricing')
     if (item) return item.answer
@@ -288,7 +278,7 @@ export function generateAiResponse(userQuery: string, customKnowledge: AiKnowled
     if (item) return item.answer
   }
 
-  // 5. Keyword Scoring Matcher
+  // 6. Keyword Scoring Matcher
   let bestMatch: AiKnowledgeItem | null = null
   let maxScore = 0
   const queryWords = queryLower.split(/\s+/)
@@ -317,7 +307,7 @@ export function generateAiResponse(userQuery: string, customKnowledge: AiKnowled
     return bestMatch.answer
   }
 
-  // 6. Helpful Fallback
+  // 7. Helpful Fallback
   return `I'm not completely sure about that specific detail.
 
 I'd recommend contacting the AROM STUDIO team directly for the most accurate information.
