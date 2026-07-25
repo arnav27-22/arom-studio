@@ -1,6 +1,5 @@
-import { motion } from 'framer-motion'
-import { SOCIAL_LINKS } from '../../constants/navigation'
 import { useState } from 'react'
+import { SOCIAL_LINKS } from '../../constants/navigation'
 
 function WhatsAppIcon({ className }: { className?: string }) {
   return (
@@ -15,39 +14,23 @@ export function WhatsAppButton() {
   const [isHovered, setIsHovered] = useState(false)
 
   return (
-    <motion.a
+    <a
       href={SOCIAL_LINKS.whatsapp}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Chat with us on WhatsApp"
-      className="fixed bottom-6 right-4 md:right-8 z-40 flex items-center gap-3 rounded-full bg-whatsapp text-white shadow-lg"
+      className="fixed bottom-6 right-4 md:right-8 z-40 flex items-center gap-3 rounded-full bg-whatsapp text-white shadow-lg hover:shadow-[0_0_20px_2px_rgba(37,211,102,0.4)] transition-all duration-300 p-3 hover:px-5"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      animate={{
-        boxShadow: [
-          '0 0 0 0 rgba(37, 211, 102, 0.4)',
-          '0 0 0 12px rgba(37, 211, 102, 0)',
-        ],
-      }}
-      transition={{
-        duration: 2,
-        repeat: Infinity,
-        repeatType: 'loop',
-      }}
-      style={{ padding: isHovered ? '12px 20px 12px 16px' : '12px' }}
     >
       <WhatsAppIcon className="h-6 w-6 shrink-0" />
-      <motion.span
-        initial={{ width: 0, opacity: 0 }}
-        animate={{
-          width: isHovered ? 'auto' : 0,
-          opacity: isHovered ? 1 : 0,
-        }}
-        transition={{ duration: 0.2 }}
-        className="text-sm font-body font-medium whitespace-nowrap overflow-hidden"
+      <span
+        className={`text-sm font-body font-medium whitespace-nowrap overflow-hidden transition-all duration-300 ${
+          isHovered ? 'max-w-xs opacity-100 ml-1' : 'max-w-0 opacity-0'
+        }`}
       >
         Chat with us
-      </motion.span>
-    </motion.a>
+      </span>
+    </a>
   )
 }

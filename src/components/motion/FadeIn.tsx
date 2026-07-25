@@ -13,15 +13,15 @@ interface FadeInProps {
 
 const easeOut: [number, number, number, number] = [0.25, 0.1, 0.25, 1]
 
-export function FadeIn({ children, delay = 0, direction = 'up', duration = 0.7, className, once = true }: FadeInProps) {
+export function FadeIn({ children, delay = 0, direction = 'up', duration = 0.6, className, once = true }: FadeInProps) {
   const ref = useRef(null)
   const isInView = useInView(ref, { once, margin: '-50px' })
 
   const directionMap = {
-    up: { y: 30 },
-    down: { y: -30 },
-    left: { x: 30 },
-    right: { x: -30 },
+    up: { y: 20 },
+    down: { y: -20 },
+    left: { x: 20 },
+    right: { x: -20 },
     none: { y: 0 },
   }
 
@@ -30,14 +30,12 @@ export function FadeIn({ children, delay = 0, direction = 'up', duration = 0.7, 
       ref={ref}
       initial={{
         opacity: 0,
-        filter: 'blur(4px)',
         ...directionMap[direction],
       }}
       animate={
         isInView
           ? {
               opacity: 1,
-              filter: 'blur(0px)',
               x: 0,
               y: 0,
             }
@@ -65,7 +63,7 @@ export function StaggerContainer({ children, className, delay = 0 }: { children:
         hidden: {},
         visible: {
           transition: {
-            staggerChildren: 0.1,
+            staggerChildren: 0.08,
             delayChildren: delay,
           },
         },
@@ -81,12 +79,11 @@ export function StaggerItem({ children, className }: { children: React.ReactNode
   return (
     <motion.div
       variants={{
-        hidden: { opacity: 0, y: 20, filter: 'blur(4px)' },
+        hidden: { opacity: 0, y: 15 },
         visible: {
           opacity: 1,
           y: 0,
-          filter: 'blur(0px)',
-          transition: { duration: 0.6, ease: easeOut },
+          transition: { duration: 0.5, ease: easeOut },
         },
       }}
       className={className}

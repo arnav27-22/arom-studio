@@ -29,7 +29,8 @@ import { HandoverManager } from './sections/HandoverManager'
 import { FeedbackManager } from './sections/FeedbackManager'
 import { NotificationsCenter } from './sections/NotificationsCenter'
 import { DiscoveryQuestionnairesAdmin } from './sections/DiscoveryQuestionnairesAdmin'
-import { FileQuestion } from 'lucide-react'
+import { BlogManager } from './sections/BlogManager'
+import { FileQuestion, BookOpen } from 'lucide-react'
 
 import { syncFromCloud } from './adminStore'
 
@@ -45,6 +46,7 @@ const systemSections = [
 ]
 
 const agencySections = [
+  { id: 'blogs', label: 'Blog Manager', icon: BookOpen },
   { id: 'clients', label: 'Clients', icon: UserCheck },
   { id: 'projects', label: 'Projects', icon: Briefcase },
   { id: 'proposals', label: 'Proposal Manager', icon: FileSpreadsheet },
@@ -191,7 +193,8 @@ export function AdminDashboard({ onLogout }: { onLogout: () => void }) {
               {active === 'logs' && <SystemLogs />}
               {active === 'settings' && <SettingsPage />}
 
-              {/* 12 Agency Management Sections */}
+              {/* 13 Agency Management Sections */}
+              {active === 'blogs' && <BlogManager />}
               {active === 'clients' && <ClientManagement />}
               {active === 'projects' && <ProjectManagement />}
               {active === 'proposals' && <ProposalManager />}

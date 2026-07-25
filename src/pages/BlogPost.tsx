@@ -2,18 +2,19 @@ import { useParams, Link, Navigate } from 'react-router-dom'
 import { Section, Container } from '../components/ui/Section'
 import { SEO } from '../components/ui/SEO'
 import { GlassCard } from '../components/ui/GlassCard'
-import { BLOG_POSTS } from '../data/blog'
+import { getAdminBlogs } from '../admin/adminStore'
 import { Clock, Calendar, ArrowLeft, User } from 'lucide-react'
 
 export default function BlogPost() {
   const { slug } = useParams<{ slug: string }>()
-  const post = BLOG_POSTS.find((p) => p.slug === slug)
+  const posts = getAdminBlogs()
+  const post = posts.find((p) => p.slug === slug)
 
   if (!post) {
     return <Navigate to="/blog" replace />
   }
 
-  const relatedPosts = BLOG_POSTS.filter((p) => p.slug !== slug).slice(0, 3)
+  const relatedPosts = posts.filter((p) => p.slug !== slug).slice(0, 3)
 
   return (
     <main id="main-content" className="pt-32">

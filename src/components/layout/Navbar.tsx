@@ -21,7 +21,7 @@ export function Navbar() {
 
   return (
     <>
-      <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-accent focus:text-white focus:rounded-lg">
+      <a href="#main-content" className="skip-link">
         Skip to main content
       </a>
       <nav
@@ -52,7 +52,7 @@ export function Navbar() {
                     'text-sm font-body font-light rounded-full px-4 py-2 transition-all duration-200',
                     location.pathname === link.href
                       ? 'text-white bg-white/10'
-                      : 'text-white/65 hover:text-white hover:bg-white/5',
+                      : 'text-white/80 hover:text-white hover:bg-white/5',
                   )}
                 >
                   {link.label}
@@ -76,7 +76,7 @@ export function Navbar() {
             {/* Mobile Hamburger */}
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="md:hidden p-2 text-white/80 hover:text-white ml-2"
+              className="md:hidden p-2 text-white/90 hover:text-white ml-2"
               aria-label="Toggle navigation menu"
               aria-expanded={mobileOpen}
               aria-controls="mobile-menu"
@@ -115,7 +115,7 @@ export function Navbar() {
                     'text-3xl font-heading transition-colors duration-200',
                     location.pathname === link.href
                       ? 'text-white'
-                      : 'text-white/40 hover:text-white',
+                      : 'text-white/70 hover:text-white',
                   )}
                 >
                   {link.label}

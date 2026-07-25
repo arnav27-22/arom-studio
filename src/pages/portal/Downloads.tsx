@@ -15,25 +15,24 @@ const downloads = [
 
 const categories = [...new Set(downloads.map((d) => d.category))]
 
+import { exportSectionReportPDF } from '../../lib/professionalPDF'
+
 export default function Downloads() {
-  const handleDownload = (name: string) => {
-    const text = [
-      `${name.toUpperCase()} — AROM STUDIO`,
-      '================================',
-      `This is a placeholder for: ${name}`,
-      `Generated: ${new Date().toLocaleDateString('en-IN')}`,
-      '',
-      'AROM STUDIO',
-      'aromstudio27@gmail.com',
-      'https://aromstudio.vercel.app',
-    ].join('\n')
-    const blob = new Blob([text], { type: 'text/plain' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `${name.replace(/\s+/g, '_')}.txt`
-    a.click()
-    URL.revokeObjectURL(url)
+  const handleDownload = (name: string, desc: string) => {
+    const filenamePrefix = name.replace(/\s+/g, '_')
+    exportSectionReportPDF(
+      name,
+      desc,
+      ['Item', 'Details'],
+      [
+        ['Document Title', name],
+        ['Description', desc],
+        ['Agency', 'AROM Studio'],
+        ['Status', 'Official Client Copy'],
+        ['Generated On', new Date().toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' }) + ' IST'],
+      ],
+      filenamePrefix
+    )
   }
 
   return (
@@ -67,8 +66,8 @@ export default function Downloads() {
                     </div>
                   </div>
                   <button
-                    onClick={() => handleDownload(dl.name)}
-                    className="p-2 text-white/30 hover:text-accent transition-colors shrink-0"
+                    onClick={() => handleDownload(dl.name, dl.desc)}
+                    className="p-2 text-white/30 hover:text-accent transition-colors shrink-0 font-body"
                   >
                     <Download className="h-4 w-4" />
                   </button>

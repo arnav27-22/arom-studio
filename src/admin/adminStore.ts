@@ -1,3 +1,6 @@
+import type { BlogPost } from '../data/blog'
+import { BLOG_POSTS } from '../data/blog'
+
 export interface AdminVisitor {
   id: string
   sessionId?: string
@@ -295,6 +298,7 @@ export interface StoreData {
   feedbacks: AdminFeedback[]
   notifications: AdminNotification[]
   discoveryQuestionnaires: AdminDiscoveryQuestionnaire[]
+  blogs: BlogPost[]
   recycleBin: AdminRecycleItem[]
 }
 
@@ -765,6 +769,7 @@ const CLEAN_INITIAL_DATA: StoreData = {
   feedbacks: INITIAL_FEEDBACKS,
   notifications: INITIAL_NOTIFICATIONS,
   discoveryQuestionnaires: INITIAL_DISCOVERY_QUESTIONNAIRES,
+  blogs: BLOG_POSTS,
   recycleBin: [],
 }
 
@@ -793,6 +798,7 @@ export function getAdminStore(): StoreData {
         feedbacks: Array.isArray(parsed.feedbacks) ? parsed.feedbacks : INITIAL_FEEDBACKS,
         notifications: Array.isArray(parsed.notifications) ? parsed.notifications : INITIAL_NOTIFICATIONS,
         discoveryQuestionnaires: Array.isArray(parsed.discoveryQuestionnaires) ? parsed.discoveryQuestionnaires : INITIAL_DISCOVERY_QUESTIONNAIRES,
+        blogs: Array.isArray(parsed.blogs) && parsed.blogs.length > 0 ? parsed.blogs : BLOG_POSTS,
         recycleBin: Array.isArray(parsed.recycleBin) ? parsed.recycleBin : [],
       }
     }
@@ -811,6 +817,14 @@ export function saveAdminStore(data: StoreData) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
   } catch (e) {
     console.error('Failed to save admin store:', e)
+    // Fallback: If localStorage quota exceeded due to large PDF base64 data, strip pdfDataUrl for older entries in local storage
+    try {
+      const strippedData = {
+        ...data,
+        pdfs: Array.isArray(data.pdfs) ? data.pdfs.map((p, idx) => idx > 5 ? { ...p, pdfDataUrl: undefined } : p) : []
+      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(strippedData))
+    } catch {}
   }
 
   // Backup store on backend database
@@ -930,6 +944,7 @@ export async function syncFromCloud(): Promise<StoreData> {
         feedbacks: mergeList(remote.feedbacks, local.feedbacks),
         notifications: mergeList(remote.notifications, local.notifications),
         discoveryQuestionnaires: mergeList(remote.discoveryQuestionnaires, local.discoveryQuestionnaires),
+        blogs: Array.isArray(remote.blogs) && remote.blogs.length > 0 ? remote.blogs : (local.blogs || BLOG_POSTS),
         recycleBin: mergeList(remote.recycleBin, local.recycleBin),
       }
       try {
@@ -1058,64 +1073,75 @@ const BRANDS = ['Apple iPhone', 'Samsung Galaxy', 'Desktop PC', 'Google Pixel', 
 
 export function runHourlyVisitorGenerator() {
   try {
-    const now = new Date()
-    const currentHour = now.getHours()
+    const now = Date.now()
+    const LAST_TS_KEY = 'arom_last_hourly_ts'
+    const lastTs = parseInt(localStorage.getItem(LAST_TS_KEY) || '0', 10)
 
-    // Skip quiet night hours between 12:00 AM (0) and 8:00 AM (7)
-    if (currentHour < 8) return
+    const oneHourMs = 3600000
+    let hoursElapsed = 0
+    if (!lastTs) {
+      hoursElapsed = 1
+    } else {
+      hoursElapsed = Math.floor((now - lastTs) / oneHourMs)
+    }
+
+    if (hoursElapsed <= 0) return
+
+    // Cap maximum catchup batch to 48 hours
+    const batchesToRun = Math.min(hoursElapsed, 48)
 
     const store = getAdminStore()
-    const todayStr = now.toISOString().slice(0, 10)
-    const hourTag = `${todayStr}_h${currentHour}`
-
-    const lastGenTag = localStorage.getItem('arom_last_hourly_gen')
-    if (lastGenTag === hourTag) return // Already generated 20 visitors for this hour
-
     const generatedVisitors: AdminVisitor[] = []
-    for (let i = 0; i < 20; i++) {
-      const isMobile = Math.random() > 0.35
-      const city = INDIAN_CITIES[Math.floor(Math.random() * INDIAN_CITIES.length)]
-      const ref = REFERRERS[Math.floor(Math.random() * REFERRERS.length)]
-      const pg = PAGES[Math.floor(Math.random() * PAGES.length)]
-      const browser = BROWSERS[Math.floor(Math.random() * BROWSERS.length)]
-      const brand = isMobile ? BRANDS[Math.floor(Math.random() * BRANDS.length)] : 'Desktop PC'
 
-      const minuteOffset = Math.floor(Math.random() * 59)
-      const visitDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), currentHour, minuteOffset, Math.floor(Math.random() * 59))
+    for (let b = 0; b < batchesToRun; b++) {
+      const batchTime = new Date(now - (batchesToRun - 1 - b) * oneHourMs)
+      const currentHour = batchTime.getHours()
 
-      const v: AdminVisitor = {
-        id: 'v_auto_' + Math.random().toString(36).slice(2, 9),
-        sessionId: 'sess_auto_' + Math.random().toString(36).slice(2, 9),
-        createdAt: visitDate.toISOString(),
-        lastActivityAt: visitDate.toISOString(),
-        page: pg,
-        entryPage: pg,
-        exitPage: pg,
-        deviceType: isMobile ? 'mobile' : 'desktop',
-        deviceLabel: isMobile ? 'Mobile' : 'Desktop (PC)',
-        deviceBrand: brand,
-        network: 'Jio 5G / Airtel 5G',
-        browser: browser,
-        os: isMobile ? 'Android' : 'Windows',
-        country: 'India',
-        city: city,
-        ip: `103.${Math.floor(Math.random() * 200) + 10}.${Math.floor(Math.random() * 250)}.${Math.floor(Math.random() * 250)}`,
-        referrer: ref,
-        timeOnPage: Math.floor(Math.random() * 45) + 15,
-        sessionDuration: Math.floor(Math.random() * 180) + 30,
-        scrollDepth: Math.floor(Math.random() * 50) + 50,
-        pageViewsCount: Math.floor(Math.random() * 3) + 1,
-        isReturning: Math.random() > 0.6,
-        isBounce: Math.random() > 0.8,
-        isLive: false,
+      for (let i = 0; i < 20; i++) {
+        const isMobile = Math.random() > 0.35
+        const city = INDIAN_CITIES[Math.floor(Math.random() * INDIAN_CITIES.length)]
+        const ref = REFERRERS[Math.floor(Math.random() * REFERRERS.length)]
+        const pg = PAGES[Math.floor(Math.random() * PAGES.length)]
+        const browser = BROWSERS[Math.floor(Math.random() * BROWSERS.length)]
+        const brand = isMobile ? BRANDS[Math.floor(Math.random() * BRANDS.length)] : 'Desktop PC'
+
+        const minuteOffset = Math.floor(Math.random() * 59)
+        const visitDate = new Date(batchTime.getFullYear(), batchTime.getMonth(), batchTime.getDate(), currentHour, minuteOffset, Math.floor(Math.random() * 59))
+
+        const v: AdminVisitor = {
+          id: 'v_auto_' + Math.random().toString(36).slice(2, 9),
+          sessionId: 'sess_auto_' + Math.random().toString(36).slice(2, 9),
+          createdAt: visitDate.toISOString(),
+          lastActivityAt: visitDate.toISOString(),
+          page: pg,
+          entryPage: pg,
+          exitPage: pg,
+          deviceType: isMobile ? 'mobile' : 'desktop',
+          deviceLabel: isMobile ? 'Mobile' : 'Desktop (PC)',
+          deviceBrand: brand,
+          network: 'Jio 5G / Airtel 5G',
+          browser: browser,
+          os: isMobile ? 'Android' : 'Windows',
+          country: 'India',
+          city: city,
+          ip: `103.${Math.floor(Math.random() * 200) + 10}.${Math.floor(Math.random() * 250)}.${Math.floor(Math.random() * 250)}`,
+          referrer: ref,
+          timeOnPage: Math.floor(Math.random() * 45) + 15,
+          sessionDuration: Math.floor(Math.random() * 180) + 30,
+          scrollDepth: Math.floor(Math.random() * 50) + 50,
+          pageViewsCount: Math.floor(Math.random() * 3) + 1,
+          isReturning: Math.random() > 0.6,
+          isBounce: Math.random() > 0.8,
+          isLive: false,
+        }
+        generatedVisitors.push(v)
       }
-      generatedVisitors.push(v)
     }
 
     store.visitors = [...generatedVisitors, ...store.visitors]
-    if (store.visitors.length > 2000) store.visitors = store.visitors.slice(0, 2000)
+    if (store.visitors.length > 5000) store.visitors = store.visitors.slice(0, 5000)
 
-    localStorage.setItem('arom_last_hourly_gen', hourTag)
+    localStorage.setItem(LAST_TS_KEY, String(now))
     saveAdminStore(store)
   } catch (e) {
     console.error(e)
@@ -1159,7 +1185,19 @@ export function recordAdminPDF(pdf: Omit<AdminPDF, 'id' | 'createdAt'>) {
     id: 'p_' + Math.random().toString(36).slice(2, 9),
     createdAt: new Date().toISOString(),
   }
+  if (!Array.isArray(store.pdfs)) store.pdfs = []
   store.pdfs.unshift(newPdf)
+  
+  if (!Array.isArray(store.notifications)) store.notifications = []
+  store.notifications.unshift({
+    id: 'n_' + Math.random().toString(36).slice(2, 9),
+    type: 'inquiry',
+    title: '📄 New PDF Document Generated',
+    message: `${newPdf.clientName || 'Client'} generated ${newPdf.pdfType || 'PDF Document'} (${newPdf.title}).`,
+    read: false,
+    createdAt: newPdf.createdAt,
+  })
+
   saveAdminStore(store)
 
   fetch('/api/sync', {
@@ -1215,4 +1253,38 @@ export function recordAdminDiscoveryQuestionnaire(dq: Omit<AdminDiscoveryQuestio
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ action: 'discovery', data: newDq }),
   }).catch(() => {})
+}
+
+// Record/Save or Update Blog Post & sync globally
+export function recordAdminBlog(blog: BlogPost) {
+  const store = getAdminStore()
+  if (!Array.isArray(store.blogs)) store.blogs = [...BLOG_POSTS]
+
+  const index = store.blogs.findIndex((b) => b.slug === blog.slug)
+  if (index !== -1) {
+    store.blogs[index] = blog
+  } else {
+    store.blogs.unshift(blog)
+  }
+
+  saveAdminStore(store)
+}
+
+// Delete Blog Post & sync globally
+export function deleteAdminBlog(slug: string) {
+  const store = getAdminStore()
+  if (!Array.isArray(store.blogs)) return
+
+  const target = store.blogs.find((b) => b.slug === slug)
+  if (target) {
+    moveToRecycleBin('blogs', slug, target.title, `Category: ${target.category}`)
+  }
+
+  store.blogs = store.blogs.filter((b) => b.slug !== slug)
+  saveAdminStore(store)
+}
+
+export function getAdminBlogs(): BlogPost[] {
+  const store = getAdminStore()
+  return Array.isArray(store.blogs) && store.blogs.length > 0 ? store.blogs : BLOG_POSTS
 }

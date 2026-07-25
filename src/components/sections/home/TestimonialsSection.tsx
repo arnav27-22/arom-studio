@@ -44,12 +44,12 @@ export function TestimonialsSection() {
           {testimonials.map((t) => (
             <GlassCard key={t.id} className="flex flex-col" hover>
               <Stars rating={t.rating} />
-              <blockquote className="text-sm text-white/75 font-body font-light leading-relaxed flex-1 mb-6 italic">
+              <blockquote className="text-sm text-white/85 font-body font-light leading-relaxed flex-1 mb-6 italic">
                 &ldquo;{t.quote}&rdquo;
               </blockquote>
               <div>
                 <p className="text-sm font-body font-medium text-white">{t.client}</p>
-                <p className="text-xs text-white/40 font-body">{t.company}</p>
+                <p className="text-xs text-white/75 font-body">{t.company}</p>
               </div>
             </GlassCard>
           ))}

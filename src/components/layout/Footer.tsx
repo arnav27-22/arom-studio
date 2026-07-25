@@ -43,13 +43,13 @@ export function Footer() {
             <Link to="/" className="inline-flex items-center gap-2 mb-4">
               <span className="font-heading text-white text-xl">AROM STUDIO</span>
             </Link>
-            <p className="text-sm text-white/50 font-body font-light leading-relaxed max-w-xs">
+            <p className="text-sm text-white/80 font-body font-light leading-relaxed max-w-xs">
               Crafting premium digital experiences for ambitious businesses. Based in India, serving globally.
             </p>
             <div className="flex items-center gap-3 mt-6">
               <a
                 href={SOCIAL_LINKS.email}
-                className="w-10 h-10 rounded-full glass flex items-center justify-center text-white/60 hover:text-accent transition-colors"
+                className="w-10 h-10 rounded-full glass flex items-center justify-center text-white/80 hover:text-accent transition-colors"
                 aria-label="Email"
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
@@ -58,7 +58,7 @@ export function Footer() {
                 href={SOCIAL_LINKS.whatsapp}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full glass flex items-center justify-center text-white/60 hover:text-whatsapp transition-colors"
+                className="w-10 h-10 rounded-full glass flex items-center justify-center text-white/80 hover:text-whatsapp transition-colors"
                 aria-label="WhatsApp"
               >
                 <svg viewBox="0 0 24 24" className="h-4 w-4">
@@ -70,7 +70,7 @@ export function Footer() {
                 href={SOCIAL_LINKS.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full glass flex items-center justify-center text-white/60 hover:text-accent transition-colors"
+                className="w-10 h-10 rounded-full glass flex items-center justify-center text-white/80 hover:text-accent transition-colors"
                 aria-label="Instagram"
               >
                 <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
@@ -83,7 +83,7 @@ export function Footer() {
             <div key={title} className="col-span-1 md:col-span-2">
               <Link
                 to={title === 'Services' ? '/services' : title === 'Company' ? '/about' : '/privacy'}
-                className="text-xs font-body font-semibold text-white/40 hover:text-accent uppercase tracking-wider mb-4 flex items-center gap-1.5 hover:gap-2.5 transition-all duration-200 group w-full"
+                className="text-xs font-body font-semibold text-white/75 hover:text-accent uppercase tracking-wider mb-4 flex items-center gap-1.5 hover:gap-2.5 transition-all duration-200 group w-full"
               >
                 {title}
                 <ArrowUpRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 shrink-0" />
@@ -93,7 +93,7 @@ export function Footer() {
                   <li key={link.href}>
                     <Link
                       to={link.href}
-                      className="text-sm text-white/60 hover:text-white transition-colors duration-200 font-body font-light"
+                      className="text-sm text-white/80 hover:text-white transition-colors duration-200 font-body font-light"
                     >
                       {link.label}
                     </Link>
@@ -107,7 +107,7 @@ export function Footer() {
           <div className="col-span-2 md:col-span-2">
             <Link
               to="/contact"
-              className="text-xs font-body font-semibold text-white/40 hover:text-accent uppercase tracking-wider mb-4 flex items-center gap-1.5 hover:gap-2.5 transition-all duration-200 group w-full"
+              className="text-xs font-body font-semibold text-white/75 hover:text-accent uppercase tracking-wider mb-4 flex items-center gap-1.5 hover:gap-2.5 transition-all duration-200 group w-full"
             >
               Contact
               <ArrowUpRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 shrink-0" />
@@ -116,7 +116,7 @@ export function Footer() {
               <li>
                 <a
                   href={SOCIAL_LINKS.email}
-                  className="text-sm text-white/60 hover:text-white transition-colors duration-200 font-body font-light"
+                  className="text-sm text-white/80 hover:text-white transition-colors duration-200 font-body font-light"
                 >
                   aromstudio27@gmail.com
                 </a>
@@ -126,7 +126,7 @@ export function Footer() {
                   href={SOCIAL_LINKS.whatsapp}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm text-white/60 hover:text-whatsapp transition-colors duration-200 font-body font-light inline-flex items-center gap-1"
+                  className="text-sm text-white/80 hover:text-whatsapp transition-colors duration-200 font-body font-light inline-flex items-center gap-1"
                 >
                   WhatsApp
                   <ArrowUpRight className="h-3 w-3" />
@@ -146,17 +146,17 @@ export function Footer() {
 
         {/* Bottom */}
         <div className="mt-16 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-white/30 font-body">
+          <p className="text-xs text-white/75 font-body">
             &copy; {currentYear} AROM STUDIO. All rights reserved. Crafted with precision in India.
           </p>
           <div className="flex items-center gap-4">
-            <Link to="/privacy" className="text-xs text-white/30 hover:text-white/60 transition-colors font-body">
+            <Link to="/privacy" className="text-xs text-white/75 hover:text-white transition-colors font-body">
               Privacy
             </Link>
-            <Link to="/terms" className="text-xs text-white/30 hover:text-white/60 transition-colors font-body">
+            <Link to="/terms" className="text-xs text-white/75 hover:text-white transition-colors font-body">
               Terms
             </Link>
-            <Link to="/refund" className="text-xs text-white/30 hover:text-white/60 transition-colors font-body">
+            <Link to="/refund" className="text-xs text-white/75 hover:text-white transition-colors font-body">
               Refund Policy
             </Link>
           </div>

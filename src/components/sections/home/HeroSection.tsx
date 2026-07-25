@@ -41,7 +41,6 @@ function TypeWriter({ texts, typingSpeed = 80, deletingSpeed = 50, pauseDuration
 
 function BlurText({ text, delay = 0 }: { text: string; delay?: number }) {
   const [triggered, setTriggered] = useState(false)
-  const [animKey, setAnimKey] = useState(0)
   const ref = useRef(null)
 
   useEffect(() => {
@@ -49,9 +48,6 @@ function BlurText({ text, delay = 0 }: { text: string; delay?: number }) {
       ([entry]) => {
         if (entry.isIntersecting) {
           setTriggered(true)
-          setAnimKey((k) => k + 1)
-        } else {
-          setTriggered(false)
         }
       },
       { threshold: 0.1 },
@@ -66,16 +62,15 @@ function BlurText({ text, delay = 0 }: { text: string; delay?: number }) {
     <p ref={ref} className="flex flex-wrap justify-center" style={{ rowGap: '0.1em' }}>
       {words.map((word, i) => (
         <motion.span
-          key={`${animKey}-${i}`}
+          key={i}
           className="inline-block"
           style={{ marginRight: '0.28em' }}
-          initial={{ filter: 'blur(10px)', opacity: 0, y: 50 }}
-          animate={triggered ? { filter: ['blur(20px)', 'blur(8px)', 'blur(0px)'], opacity: [0, 0.5, 1], y: [50, -5, 0] } : {}}
+          initial={{ opacity: 0, y: 25 }}
+          animate={triggered ? { opacity: 1, y: 0 } : {}}
           transition={{
-            duration: 0.7,
-            times: [0, 0.5, 1],
+            duration: 0.5,
             ease: 'easeOut',
-            delay: delay + i * 0.1,
+            delay: delay + i * 0.08,
           }}
         >
           {word}
@@ -88,35 +83,34 @@ function BlurText({ text, delay = 0 }: { text: string; delay?: number }) {
 export function HeroSection() {
   return (
     <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
-
       <div className="relative z-10 flex flex-col items-center text-center px-4 max-w-5xl mx-auto pt-32">
         {/* Badge Row */}
         <motion.div
-          initial={{ filter: 'blur(10px)', opacity: 0, y: 20 }}
-          animate={{ filter: 'blur(0px)', opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4, ease: 'easeOut' }}
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' }}
           className="flex flex-wrap items-center justify-center gap-2 mb-8"
         >
           <div className="glass inline-flex items-center gap-2 rounded-full px-4 py-1.5">
             <span className="bg-white text-black text-xs font-semibold px-3 py-0.5 rounded-full">Premium</span>
-            <span className="text-xs text-white/80 font-body font-light">Web Design & Development Agency — India</span>
+            <span className="text-xs text-white/90 font-body font-light">Web Design &amp; Development Agency — India</span>
           </div>
         </motion.div>
 
         {/* Trust Badges */}
         <motion.div
-          initial={{ filter: 'blur(10px)', opacity: 0, y: 20 }}
-          animate={{ filter: 'blur(0px)', opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.5, ease: 'easeOut' }}
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3, ease: 'easeOut' }}
           className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-8"
         >
           {[
             { icon: <Check className="h-3 w-3" />, text: 'All India Service' },
             { icon: <Shield className="h-3 w-3" />, text: 'Free Domain Included' },
-            { icon: <Zap className="h-3 w-3" />, text: 'Lighthouse 95+' },
+            { icon: <Zap className="h-3 w-3" />, text: 'Lighthouse 100' },
             { icon: <Globe className="h-3 w-3" />, text: 'Custom Domain Setup' },
           ].map((badge) => (
-            <span key={badge.text} className="glass inline-flex items-center gap-1.5 rounded-full px-2.5 sm:px-3 py-1.5 text-[10px] sm:text-xs text-white/60 font-body">
+            <span key={badge.text} className="glass inline-flex items-center gap-1.5 rounded-full px-2.5 sm:px-3 py-1.5 text-[10px] sm:text-xs text-white/80 font-body">
               <span className="text-accent">{badge.icon}</span>
               {badge.text}
             </span>
@@ -125,9 +119,9 @@ export function HeroSection() {
 
         {/* Headline */}
         <motion.h1
-          initial={{ filter: 'blur(10px)', opacity: 0, y: 20 }}
-          animate={{ filter: 'blur(0px)', opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.6, ease: 'easeOut' }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.4, ease: 'easeOut' }}
           className="font-heading text-[clamp(32px,7vw,80px)] text-white leading-[0.85] tracking-[-1.5px] max-w-4xl"
         >
           We Build{' '}
@@ -135,24 +129,24 @@ export function HeroSection() {
             <TypeWriter texts={['Business Websites', 'E-commerce Websites', 'Custom Web Apps', 'SaaS Platforms', 'UI/UX Design', 'Website Redesign', 'SEO Optimization']} />
           </span>
           <div className="h-2" />
-          <span className="text-[clamp(28px,6vw,70px)] text-white/80"><BlurText text="That Grow Businesses" delay={0.9} /></span>
+          <span className="text-[clamp(28px,6vw,70px)] text-white/90"><BlurText text="That Grow Businesses" delay={0.6} /></span>
         </motion.h1>
 
         {/* Subheading */}
         <motion.p
-          initial={{ filter: 'blur(10px)', opacity: 0, y: 20 }}
-          animate={{ filter: 'blur(0px)', opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 1.2, ease: 'easeOut' }}
-          className="mt-6 text-sm md:text-base text-white/80 max-w-2xl font-body font-light leading-relaxed"
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.7, ease: 'easeOut' }}
+          className="mt-6 text-sm md:text-base text-white/85 max-w-2xl font-body font-light leading-relaxed"
         >
           We build high-performance websites and digital products for startups, growing businesses, and enterprises — combining exceptional design with engineering excellence.
         </motion.p>
 
         {/* CTA Buttons */}
         <motion.div
-          initial={{ filter: 'blur(10px)', opacity: 0, y: 20 }}
-          animate={{ filter: 'blur(0px)', opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 1.5, ease: 'easeOut' }}
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.8, ease: 'easeOut' }}
           className="flex flex-wrap items-center justify-center gap-4 mt-8"
         >
           <Link
@@ -169,12 +163,12 @@ export function HeroSection() {
             View Plans
             <ArrowUpRight className="h-4 w-4" />
           </Link>
-          <span className="hidden sm:inline text-white/20 font-body font-light text-sm">|</span>
+          <span className="hidden sm:inline text-white/40 font-body font-light text-sm">|</span>
           <a
             href="https://forms.gle/fGwvkaTRdtb5ZH3x6"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm md:text-base text-white/50 hover:text-white transition-colors duration-200 font-body font-light inline-flex items-center gap-2"
+            className="text-sm md:text-base text-white/80 hover:text-white transition-colors duration-200 font-body font-light inline-flex items-center gap-2"
           >
             Book Consultation
           </a>
@@ -182,9 +176,9 @@ export function HeroSection() {
 
         {/* Stats */}
         <motion.div
-          initial={{ filter: 'blur(10px)', opacity: 0, y: 20 }}
-          animate={{ filter: 'blur(0px)', opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 1.8, ease: 'easeOut' }}
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.9, ease: 'easeOut' }}
           className="grid grid-cols-3 gap-3 md:gap-4 mt-12"
         >
           <div className="glass rounded-[20px] p-3 sm:p-4 md:p-5">
@@ -192,26 +186,24 @@ export function HeroSection() {
               <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
             </svg>
             <p className="font-heading text-3xl sm:text-5xl md:text-6xl text-white tracking-[-1px] leading-none">250+</p>
-            <p className="text-[10px] sm:text-sm text-white/60 font-body font-light mt-1 sm:mt-1.5">Cities</p>
+            <p className="text-[10px] sm:text-sm text-white/80 font-body font-light mt-1 sm:mt-1.5">Cities</p>
           </div>
           <div className="glass rounded-[20px] p-3 sm:p-4 md:p-5">
             <svg className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-white/80 mb-2 sm:mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
             </svg>
             <p className="font-heading text-3xl sm:text-5xl md:text-6xl text-white tracking-[-1px] leading-none">All India</p>
-            <p className="text-[10px] sm:text-sm text-white/60 font-body font-light mt-1 sm:mt-1.5">Service</p>
+            <p className="text-[10px] sm:text-sm text-white/80 font-body font-light mt-1 sm:mt-1.5">Service</p>
           </div>
           <div className="glass rounded-[20px] p-3 sm:p-4 md:p-5">
             <svg className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-white/80 mb-2 sm:mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
-            <p className="font-heading text-3xl sm:text-5xl md:text-6xl text-white tracking-[-1px] leading-none">95+</p>
-            <p className="text-[10px] sm:text-sm text-white/60 font-body font-light mt-1 sm:mt-1.5">Lighthouse Score</p>
+            <p className="font-heading text-3xl sm:text-5xl md:text-6xl text-white tracking-[-1px] leading-none">100/100</p>
+            <p className="text-[10px] sm:text-sm text-white/80 font-body font-light mt-1 sm:mt-1.5">Lighthouse Score</p>
           </div>
         </motion.div>
       </div>
-
-
     </section>
   )
 }

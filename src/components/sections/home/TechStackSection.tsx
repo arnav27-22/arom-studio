@@ -38,7 +38,7 @@ export function TechStackSection() {
                   {technologies
                     .filter((t) => t.category === cat)
                     .map((tech) => (
-                      <div key={tech.name} className="text-sm text-white/70 font-body font-light">
+                      <div key={tech.name} className="text-sm text-white/80 font-body font-light">
                         {tech.name}
                       </div>
                     ))}

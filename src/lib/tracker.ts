@@ -157,12 +157,17 @@ export function trackPDFDownload(pdfType: string, storageKey: string, fileSizeKb
   }).catch(() => {})
 }
 
-export function uploadPDF(doc: any, pdfType: string, storageKey: string, clientName: string = 'Client') {
+export function uploadPDF(docOrUrl: any, pdfType: string, storageKey: string, clientName: string = 'Client') {
   try {
-    const dataUrl = doc.output('datauristring')
-    const fileSizeKb = Math.round(dataUrl.length / 1333)
+    let dataUrl = ''
+    if (typeof docOrUrl === 'string') {
+      dataUrl = docOrUrl
+    } else if (docOrUrl && typeof docOrUrl.output === 'function') {
+      dataUrl = docOrUrl.output('datauristring')
+    }
+    const fileSizeKb = dataUrl ? Math.round(dataUrl.length / 1333) : 180
     trackPDFDownload(pdfType, storageKey, fileSizeKb, dataUrl, clientName)
   } catch (e) {
-    console.error(e)
+    console.error('Failed in uploadPDF:', e)
   }
 }

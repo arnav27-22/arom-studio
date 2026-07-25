@@ -27,7 +27,7 @@ export function CTABanner() {
             <br />
             <span className="text-accent">Something Premium?</span>
           </h2>
-          <p className="mt-6 text-base md:text-lg text-white/60 font-body font-light max-w-lg mx-auto">
+          <p className="mt-6 text-base md:text-lg text-white/80 font-body font-light max-w-lg mx-auto">
             Let&apos;s discuss your project over a free consultation. No pressure, just possibilities.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">

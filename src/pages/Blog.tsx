@@ -3,10 +3,12 @@ import { Section, Container } from '../components/ui/Section'
 import { SEO } from '../components/ui/SEO'
 import { GlassCard } from '../components/ui/GlassCard'
 import { FadeIn } from '../components/motion/FadeIn'
-import { BLOG_POSTS } from '../data/blog'
+import { getAdminBlogs } from '../admin/adminStore'
 import { Clock, Calendar, ArrowRight } from 'lucide-react'
 
 export default function Blog() {
+  const posts = getAdminBlogs()
+
   return (
     <main id="main-content" className="pt-32">
       <SEO
@@ -26,7 +28,7 @@ export default function Blog() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {BLOG_POSTS.map((post, index) => (
+            {posts.map((post, index) => (
               <FadeIn key={post.slug} delay={index * 0.05}>
                 <GlassCard className="h-full flex flex-col justify-between p-6">
                   <div>

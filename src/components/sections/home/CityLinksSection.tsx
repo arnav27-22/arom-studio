@@ -25,7 +25,7 @@ export function CityLinksSection() {
                 className="glass rounded-[18px] px-4 py-3 flex items-center gap-2.5 group hover:border-accent/30 transition-all"
               >
                 <MapPin className="h-3.5 w-3.5 text-accent shrink-0" />
-                <span className="text-sm text-white/70 font-body font-light group-hover:text-white transition-colors truncate">
+                <span className="text-sm text-white/80 font-body font-light group-hover:text-white transition-colors truncate">
                   {city}
                 </span>
               </Link>
@@ -34,9 +34,9 @@ export function CityLinksSection() {
         </div>
 
         <FadeIn delay={0.5}>
-          <p className="text-center text-sm text-white/40 font-body mt-6">
+          <p className="text-center text-sm text-white/75 font-body mt-6">
             And 250+ more cities across India —{' '}
-            <Link to="/sitemap.xml" className="text-accent hover:underline">View all</Link>
+            <Link to="/sitemap.xml" className="text-accent hover:underline font-medium">View all</Link>
           </p>
         </FadeIn>
       </Container>

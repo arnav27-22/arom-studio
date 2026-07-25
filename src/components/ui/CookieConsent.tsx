@@ -32,19 +32,19 @@ export function CookieConsent() {
         >
           <div className="space-y-3">
             <h3 className="text-sm font-heading text-white">Privacy &amp; Cookies</h3>
-            <p className="text-xs text-white/60 font-body leading-relaxed">
+            <p className="text-xs text-white/80 font-body leading-relaxed">
               We use essential cookies and analytics to enhance your experience and analyze website traffic.
             </p>
             <div className="flex items-center gap-3 pt-1">
               <button
                 onClick={handleAccept}
-                className="glass-strong text-xs font-body font-medium text-white px-4 py-2 rounded-full hover:bg-white/10 transition-colors"
+                className="glass-strong text-xs font-body font-medium text-white px-4 py-2 rounded-full hover:bg-white/10 transition-colors cursor-pointer"
               >
                 Accept All
               </button>
               <button
                 onClick={handleReject}
-                className="text-xs font-body text-white/50 hover:text-white px-3 py-2 transition-colors"
+                className="text-xs font-body text-white/75 hover:text-white px-3 py-2 transition-colors cursor-pointer"
               >
                 Reject Non-Essential
               </button>

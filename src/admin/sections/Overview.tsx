@@ -1,14 +1,20 @@
 import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { Users, FileText, Mail, Eye, Activity, Download } from 'lucide-react'
-import { getAdminStore, formatIST } from '../adminStore'
+import { getAdminStore, formatIST, runHourlyVisitorGenerator } from '../adminStore'
 import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function Overview() {
   const [store, setStore] = useState(getAdminStore())
 
   useEffect(() => {
+    runHourlyVisitorGenerator()
     setStore(getAdminStore())
+    const timer = setInterval(() => {
+      runHourlyVisitorGenerator()
+      setStore(getAdminStore())
+    }, 10000)
+    return () => clearInterval(timer)
   }, [])
 
   const visitors = store.visitors || []

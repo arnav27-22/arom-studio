@@ -34,13 +34,13 @@ export function ServicesSection() {
           description="From business websites to custom SaaS platforms, we build digital products that combine premium design with engineering excellence. Global service with Free Domain."
         />
 
-        <div className="mb-10 flex flex-wrap items-center justify-center gap-3 text-xs text-white/50 font-body">
+        <div className="mb-10 flex flex-wrap items-center justify-center gap-3 text-xs text-white/80 font-body">
           <span className="flex items-center gap-1"><Check className="h-3 w-3 text-accent" /> Global Service</span>
-          <span className="text-white/20">|</span>
+          <span className="text-white/40">|</span>
           <span className="flex items-center gap-1"><Check className="h-3 w-3 text-accent" /> Free Domain (1 Year)</span>
-          <span className="text-white/20">|</span>
+          <span className="text-white/40">|</span>
           <span className="flex items-center gap-1"><Check className="h-3 w-3 text-accent" /> Custom Domain Setup</span>
-          <span className="text-white/20">|</span>
+          <span className="text-white/40">|</span>
           <span className="flex items-center gap-1"><Check className="h-3 w-3 text-accent" /> WhatsApp Integration</span>
         </div>
 
@@ -57,7 +57,7 @@ export function ServicesSection() {
                 <h3 className="font-heading text-2xl md:text-3xl text-white tracking-[-1px] leading-none mb-3">
                   {service.title}
                 </h3>
-                <p className="text-sm text-white/60 font-body font-light leading-relaxed flex-1">
+                <p className="text-sm text-white/80 font-body font-light leading-relaxed flex-1">
                   {service.description}
                 </p>
                 <div className="flex items-center justify-end mt-5 pt-4 border-t border-white/5">

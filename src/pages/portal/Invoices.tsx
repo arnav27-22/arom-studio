@@ -14,28 +14,24 @@ const statusStyles: Record<string, string> = {
   upcoming: 'bg-white/10 text-white/50 border-white/10',
 }
 
+import { exportSectionReportPDF } from '../../lib/professionalPDF'
+
 const handleDownload = (inv: typeof invoices[0]) => {
-  const text = [
-    'INVOICE — AROM STUDIO',
-    '=====================',
-    `Invoice #: ${inv.id}`,
-    `Date: ${inv.issueDate}`,
-    `Due: ${inv.dueDate}`,
-    `Description: ${inv.description}`,
-    `Amount: ${inv.amount}`,
-    `Status: ${inv.status.toUpperCase()}`,
-    '=====================',
-    'AROM STUDIO',
-    'aromstudio27@gmail.com',
-    'https://aromstudio.vercel.app',
-  ].join('\n')
-  const blob = new Blob([text], { type: 'text/plain' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `${inv.id}.txt`
-  a.click()
-  URL.revokeObjectURL(url)
+  exportSectionReportPDF(
+    `Invoice ${inv.id}`,
+    inv.description,
+    ['Field', 'Details'],
+    [
+      ['Invoice Number', inv.id],
+      ['Issue Date', inv.issueDate],
+      ['Due Date', inv.dueDate],
+      ['Description', inv.description],
+      ['Total Amount', inv.amount],
+      ['Payment Status', inv.status.toUpperCase()],
+      ['Agency', 'AROM Studio'],
+    ],
+    inv.id
+  )
 }
 
 export default function Invoices() {
