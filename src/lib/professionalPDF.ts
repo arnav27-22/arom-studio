@@ -1,5 +1,77 @@
 import jsPDF from 'jspdf'
 import { trackPDFDownload, uploadPDF } from './tracker'
+export interface InvoiceItemData {
+  id: string
+  description: string
+  quantity: number
+  unitPrice: number
+}
+
+export interface AdminInvoiceData {
+  id: string
+  invoiceNumber: string
+  createdAt: string
+  dueDate: string
+  clientName: string
+  clientEmail: string
+  clientPhone?: string
+  clientCompany?: string
+  currency: 'INR' | 'USD'
+  items: InvoiceItemData[]
+  taxRate: number
+  discountRate: number
+  subtotal: number
+  taxAmount: number
+  discountAmount: number
+  totalAmount: number
+  status: 'Paid' | 'Pending' | 'Overdue'
+  notes?: string
+}
+
+export interface QData {
+  fullName: string
+  company: string
+  designation: string
+  email: string
+  phone: string
+  website: string
+  businessDesc: string
+  services: string
+  yearsBusiness: string
+  differentiator: string
+  whyWebsite: string[]
+  goals: string
+  ageGroups: string[]
+  targetLocation: string[]
+  competitors: string
+  likeCompetitors: string
+  dislikeCompetitors: string
+  inspiration1: string
+  reason1: string
+  inspiration2: string
+  reason2: string
+  inspiration3: string
+  reason3: string
+  branding: Record<string, boolean>
+  pages: string[]
+  features: string[]
+  contentProvider: string
+  contentItems: string[]
+  ownDomain: string
+  domainName: string
+  ownHosting: string
+  hostingProvider: string
+  requireSEO: string
+  targetKeywords: string
+  targetCities: string
+  startDate: string
+  launchDate: string
+  urgency: string
+  budget: string
+  communication: string[]
+  meetingTime: string
+  additionalNotes: string
+}
 
 const BRAND = {
   name: 'AROM Studio',
@@ -23,13 +95,171 @@ function fmtDate(iso: string): string {
   return `${MONTHS[parseInt(m, 10) - 1]} ${parseInt(d, 10)}, ${y}`
 }
 
+const MARGIN_LEFT = 18
+const MARGIN_RIGHT = 18
+const MARGIN_TOP = 22
+const MARGIN_BOTTOM = 20
+const HEADER_HEIGHT = 14
+const FOOTER_HEIGHT = 14
+const SECTION_GAP = 6
+
 export interface TableRow {
   cells: string[]
   isHeader?: boolean
 }
 
+export interface PageLayout {
+  marginLeft: number
+  marginRight: number
+  marginTop: number
+  marginBottom: number
+  headerHeight: number
+  footerHeight: number
+  contentWidth: number
+  contentTop: number
+  contentBottom: number
+  contentHeight: number
+  pageWidth: number
+  pageHeight: number
+}
+
 export function createDoc(): jsPDF {
   return new jsPDF('p', 'mm', 'a4')
+}
+
+export function getPageLayout(doc: jsPDF): PageLayout {
+  const pw = doc.internal.pageSize.getWidth()
+  const ph = doc.internal.pageSize.getHeight()
+  return {
+    marginLeft: MARGIN_LEFT,
+    marginRight: MARGIN_RIGHT,
+    marginTop: MARGIN_TOP,
+    marginBottom: MARGIN_BOTTOM,
+    headerHeight: HEADER_HEIGHT,
+    footerHeight: FOOTER_HEIGHT,
+    contentWidth: pw - MARGIN_LEFT - MARGIN_RIGHT,
+    contentTop: MARGIN_TOP + 2,
+    contentBottom: ph - MARGIN_BOTTOM - FOOTER_HEIGHT - 2,
+    contentHeight: ph - MARGIN_TOP - MARGIN_BOTTOM - HEADER_HEIGHT - FOOTER_HEIGHT,
+    pageWidth: pw,
+    pageHeight: ph,
+  }
+}
+
+function getUsableBottom(doc: jsPDF, layout: PageLayout): number {
+  return layout.contentBottom
+}
+
+function countPages(doc: jsPDF, skipCover: boolean): number {
+  const n = doc.getNumberOfPages()
+  return skipCover ? Math.max(0, n - 1) : n
+}
+
+function fmtDateTime(): string {
+  const now = new Date()
+  return now.toLocaleDateString('en-IN', {
+    year: 'numeric', month: 'short', day: 'numeric',
+    hour: '2-digit', minute: '2-digit',
+  })
+}
+
+export function checkPageBreak(
+  doc: jsPDF,
+  layout: PageLayout,
+  y: number,
+  needed: number,
+  headerTitle?: string
+): number {
+  const maxY = layout.contentBottom
+  if (y + needed > maxY) {
+    doc.addPage()
+    if (headerTitle) addHeader(doc, headerTitle)
+    return layout.contentTop
+  }
+  return y
+}
+
+function writeTextBlock(
+  doc: jsPDF,
+  text: string,
+  x: number,
+  y: number,
+  width: number,
+  lineHeight: number,
+  fontSize: number,
+  color: { r: number; g: number; b: number },
+  style: 'normal' | 'bold' | 'italic' = 'normal',
+  align: 'left' | 'center' | 'right' = 'left',
+  indent: number = 0
+): number {
+  doc.setFont('helvetica', style)
+  doc.setFontSize(fontSize)
+  doc.setTextColor(color.r, color.g, color.b)
+  const lines = doc.splitTextToSize(text, width)
+  for (const line of lines) {
+    doc.text(line, x + indent, y)
+    y += lineHeight
+  }
+  return y
+}
+
+export function addHeader(doc: jsPDF, documentTitle: string) {
+  const pw = doc.internal.pageSize.getWidth()
+  const ph = doc.internal.pageSize.getHeight()
+
+  doc.setFillColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
+  doc.rect(0, 0, pw, HEADER_HEIGHT, 'F')
+
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(7.5)
+  doc.setTextColor(255, 255, 255)
+  doc.text(BRAND.nameUpper, 15, 9)
+
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(7)
+  const titleLines = doc.splitTextToSize(documentTitle, pw * 0.45)
+  const titleX = pw / 2
+  for (let i = 0; i < titleLines.length; i++) {
+    const tY = 7 + i * 4
+    if (tY < HEADER_HEIGHT - 2) {
+      doc.text(titleLines[i], titleX, tY, { align: 'center' })
+    }
+  }
+
+  doc.setFontSize(6.5)
+  doc.setTextColor(220, 230, 245)
+  doc.text(fmtDateTime(), pw - 15, 9, { align: 'right' })
+}
+
+export function finalizeDoc(doc: jsPDF) {
+  const pw = doc.internal.pageSize.getWidth()
+  const ph = doc.internal.pageSize.getHeight()
+  const totalPages = doc.getNumberOfPages()
+
+  for (let i = 1; i <= totalPages; i++) {
+    doc.setPage(i)
+    if (i === 1) continue
+
+    const contentNum = i - 1
+    const totalContent = totalPages - 1
+
+    doc.setDrawColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
+    doc.setLineWidth(0.3)
+    doc.line(MARGIN_LEFT, ph - FOOTER_HEIGHT + 2, pw - MARGIN_RIGHT, ph - FOOTER_HEIGHT + 2)
+
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(6.5)
+    doc.setTextColor(BRAND.light.r, BRAND.light.g, BRAND.light.b)
+    doc.text(`${BRAND.nameUpper}  |  ${BRAND.email}  |  ${BRAND.url}`, MARGIN_LEFT, ph - 8)
+
+    doc.setFont('helvetica', 'bold')
+    doc.text(`Page ${contentNum} of ${totalContent}`, pw - MARGIN_RIGHT, ph - 8, { align: 'right' })
+
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(5.5)
+    doc.setTextColor(BRAND.muted.r, BRAND.muted.g, BRAND.muted.b)
+    doc.text(`Generated ${fmtDateTime()}`, pw - MARGIN_RIGHT, ph - 4, { align: 'right' })
+  }
 }
 
 export function addCoverPage(
@@ -47,60 +277,62 @@ export function addCoverPage(
   const pw = doc.internal.pageSize.getWidth()
   const ph = doc.internal.pageSize.getHeight()
 
-  // Full background
   doc.setFillColor(245, 247, 250)
   doc.rect(0, 0, pw, ph, 'F')
 
-  // Top accent bar
   doc.setFillColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
-  doc.rect(0, 0, pw, 6, 'F')
+  doc.rect(0, 0, pw, 8, 'F')
 
-  // Decorative side element
   doc.setFillColor(235, 240, 248)
   for (let i = 0; i < 20; i++) {
     doc.rect(pw - 50, 60 + i * 28, 80, 12, 'F')
   }
 
-  // Brand name
   doc.setFont('helvetica', 'bold')
-  doc.setFontSize(28)
+  doc.setFontSize(30)
   doc.setTextColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
-  doc.text(BRAND.name, pw / 2, 70, { align: 'center' })
+  doc.text(BRAND.name, pw / 2, 72, { align: 'center' })
 
-  // Tagline
   doc.setFontSize(9)
   doc.setTextColor(BRAND.light.r, BRAND.light.g, BRAND.light.b)
   doc.setFont('helvetica', 'normal')
-  doc.text('Web Design & Development Agency', pw / 2, 78, { align: 'center' })
+  doc.text('Web Design & Development Agency', pw / 2, 80, { align: 'center' })
 
-  // Divider
   doc.setDrawColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
   doc.setLineWidth(0.7)
-  doc.line(pw / 2 - 30, 86, pw / 2 + 30, 86)
+  doc.line(pw / 2 - 30, 88, pw / 2 + 30, 88)
 
-  // Title
   doc.setFont('helvetica', 'bold')
-  doc.setFontSize(22)
+  doc.setFontSize(24)
   doc.setTextColor(BRAND.dark.r, BRAND.dark.g, BRAND.dark.b)
-  doc.text(opts.title, pw / 2, 110, { align: 'center' })
+  const titleLines = doc.splitTextToSize(opts.title, pw - 60)
+  let titleY = 112
+  for (const tl of titleLines) {
+    doc.text(tl, pw / 2, titleY, { align: 'center' })
+    titleY += 10
+  }
 
   if (opts.subtitle) {
     doc.setFont('helvetica', 'normal')
     doc.setFontSize(11)
     doc.setTextColor(BRAND.mid.r, BRAND.mid.g, BRAND.mid.b)
-    doc.text(opts.subtitle, pw / 2, 120, { align: 'center' })
+    const subLines = doc.splitTextToSize(opts.subtitle, pw - 60)
+    for (const sl of subLines) {
+      doc.text(sl, pw / 2, titleY, { align: 'center' })
+      titleY += 6
+    }
   }
 
-  // Info box
   const hasEmail = !!opts.clientEmail
   const hasPhone = !!opts.clientPhone
   const contactRows = (hasEmail ? 1 : 0) + (hasPhone ? 1 : 0)
-  let rowCount = 2 // agency + date always
+  let rowCount = 3
   if (opts.clientName) rowCount++
+  if (opts.reference) rowCount = Math.max(rowCount, 4)
   rowCount += contactRows
-  const boxHeight = rowCount * 12 + 4
+  const boxHeight = rowCount * 11 + 4
 
-  const boxY = 140
+  const boxY = Math.max(titleY + 16, 140)
   doc.setFillColor(255, 255, 255)
   doc.setDrawColor(BRAND.muted.r, BRAND.muted.g, BRAND.muted.b)
   doc.setLineWidth(0.3)
@@ -108,127 +340,84 @@ export function addCoverPage(
 
   let infoY = boxY + 8
 
-  // Agency
   doc.setFont('helvetica', 'bold')
-  doc.setFontSize(9)
+  doc.setFontSize(8.5)
   doc.setTextColor(BRAND.mid.r, BRAND.mid.g, BRAND.mid.b)
   doc.text('AGENCY', pw / 2 - 55, infoY)
   doc.setFont('helvetica', 'normal')
+  doc.setFontSize(9.5)
   doc.setTextColor(BRAND.dark.r, BRAND.dark.g, BRAND.dark.b)
-  doc.setFontSize(10)
   doc.text(BRAND.name, pw / 2 + 10, infoY)
-  infoY += 12
+  infoY += 11
 
-  // Client
   if (opts.clientName) {
     doc.setFont('helvetica', 'bold')
-    doc.setFontSize(9)
+    doc.setFontSize(8.5)
     doc.setTextColor(BRAND.mid.r, BRAND.mid.g, BRAND.mid.b)
     doc.text('CLIENT', pw / 2 - 55, infoY)
     doc.setFont('helvetica', 'normal')
-    doc.setFontSize(10)
+    doc.setFontSize(9.5)
     doc.setTextColor(BRAND.dark.r, BRAND.dark.g, BRAND.dark.b)
-    doc.text(opts.clientName, pw / 2 + 10, infoY)
-    infoY += 12
+    const clientLines = doc.splitTextToSize(opts.clientName, 70)
+    doc.text(clientLines[0], pw / 2 + 10, infoY)
+    infoY += 11
   }
 
-  // Contact — email above, phone below
   if (hasEmail || hasPhone) {
     const labelX = pw / 2 - 55
     const valX = pw / 2 + 10
     doc.setFont('helvetica', 'bold')
-    doc.setFontSize(9)
+    doc.setFontSize(8.5)
     doc.setTextColor(BRAND.mid.r, BRAND.mid.g, BRAND.mid.b)
     doc.text('CONTACT', labelX, infoY)
     doc.setFont('helvetica', 'normal')
-    doc.setFontSize(10)
+    doc.setFontSize(9.5)
     doc.setTextColor(BRAND.dark.r, BRAND.dark.g, BRAND.dark.b)
     if (hasEmail) {
       doc.text(opts.clientEmail || '', valX, infoY)
-      infoY += 12
+      infoY += 11
     }
     if (hasPhone) {
       doc.text(opts.clientPhone || '', valX, infoY)
-      infoY += 12
+      infoY += 11
     }
   }
 
-  // Date
   doc.setFont('helvetica', 'bold')
-  doc.setFontSize(9)
+  doc.setFontSize(8.5)
   doc.setTextColor(BRAND.mid.r, BRAND.mid.g, BRAND.mid.b)
   doc.text('DATE', pw / 2 - 55, infoY)
   doc.setFont('helvetica', 'normal')
-  doc.setFontSize(10)
+  doc.setFontSize(9.5)
   doc.setTextColor(BRAND.dark.r, BRAND.dark.g, BRAND.dark.b)
-  doc.text(opts.date || new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }), pw / 2 + 10, infoY)
+  doc.text(
+    opts.date || new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+    pw / 2 + 10, infoY
+  )
+  infoY += 11
 
-  // Bottom bar
+  if (opts.reference) {
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(8.5)
+    doc.setTextColor(BRAND.mid.r, BRAND.mid.g, BRAND.mid.b)
+    doc.text('REFERENCE', pw / 2 - 55, infoY)
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(9.5)
+    doc.setTextColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
+    doc.text(opts.reference, pw / 2 + 10, infoY)
+  }
+
   doc.setFillColor(BRAND.dark.r, BRAND.dark.g, BRAND.dark.b)
-  doc.rect(0, ph - 30, pw, 30, 'F')
+  doc.rect(0, ph - 28, pw, 28, 'F')
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(7)
   doc.setTextColor(180)
-  doc.text(`${BRAND.nameUpper}  |  ${BRAND.email}  |  ${BRAND.phone}  |  ${BRAND.url}`, pw / 2, ph - 15, { align: 'center' })
+  doc.text(
+    `${BRAND.nameUpper}  |  ${BRAND.email}  |  ${BRAND.phone}  |  ${BRAND.url}`,
+    pw / 2, ph - 14, { align: 'center' }
+  )
 
   doc.addPage()
-}
-
-export interface PageStyles {
-  marginLeft: number
-  marginRight: number
-  marginTop: number
-  marginBottom: number
-  contentWidth: number
-}
-
-export function getPageLayout(doc: jsPDF): PageStyles {
-  const pw = doc.internal.pageSize.getWidth()
-  return {
-    marginLeft: 20,
-    marginRight: 20,
-    marginTop: 25,
-    marginBottom: 20,
-    contentWidth: pw - 40,
-  }
-}
-
-export function addHeader(doc: jsPDF, documentTitle: string) {
-  const pw = doc.internal.pageSize.getWidth()
-  doc.setFillColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
-  doc.rect(0, 0, pw, 12, 'F')
-  doc.setFont('helvetica', 'bold')
-  doc.setFontSize(7)
-  doc.setTextColor(255, 255, 255)
-  doc.text(BRAND.nameUpper, 15, 8)
-  doc.setFont('helvetica', 'normal')
-  doc.text(documentTitle, pw / 2, 8, { align: 'center' })
-  doc.setFontSize(6)
-  doc.text(new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }), pw - 15, 8, { align: 'right' })
-}
-
-export function addFooter(doc: jsPDF) {
-  const pw = doc.internal.pageSize.getWidth()
-  const ph = doc.internal.pageSize.getHeight()
-  doc.setDrawColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
-  doc.setLineWidth(0.3)
-  doc.line(15, ph - 16, pw - 15, ph - 16)
-  doc.setFont('helvetica', 'normal')
-  doc.setFontSize(6.5)
-  doc.setTextColor(BRAND.light.r, BRAND.light.g, BRAND.light.b)
-  doc.text(`${BRAND.nameUpper}  |  ${BRAND.email}  |  ${BRAND.url}`, 15, ph - 9)
-  doc.setFont('helvetica', 'normal')
-  doc.text(`Page ${doc.getNumberOfPages()}`, pw - 15, ph - 9, { align: 'right' })
-}
-
-export function checkPage(doc: jsPDF, y: number, needed: number = 20): number {
-  const ph = doc.internal.pageSize.getHeight()
-  if (y + needed > ph - 22) {
-    doc.addPage()
-    addHeader(doc, '')
-    return 25
-  }
-  return y
 }
 
 export function writeSection(
@@ -236,67 +425,74 @@ export function writeSection(
   y: number,
   title: string,
   bodyLines: string[],
-  layout: PageStyles,
+  layout: PageLayout,
   checkboxes?: boolean,
   keepTogether?: boolean
 ): number {
+  const maxY = layout.contentBottom
+  const lineH = checkboxes ? 8.5 : 5.5
+  const sectionTitleFontSize = 10.5
+  const bodyFontSize = 8.5
+
+  let estimatedTotal = 12
   if (keepTogether) {
-    const f = 'helvetica'
-    doc.setFont(f, 'normal')
-    doc.setFontSize(9)
-    const lh = checkboxes ? 9 : 6
-    let total = 0
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(bodyFontSize)
     for (const line of bodyLines) {
-      if (line === '') { total += 1; continue }
+      if (line === '') { estimatedTotal += 3; continue }
       const isBullet = line.startsWith('  -') || line.startsWith('  •')
       const text = isBullet ? line.trim().replace(/^[-•]\s*/, '').replace(/\*\*/g, '') : line.replace(/\*\*/g, '')
-      const w = isBullet ? (checkboxes ? layout.contentWidth - 25 : layout.contentWidth - 10) : layout.contentWidth
-      total += doc.splitTextToSize(text, w).length
+      const w = isBullet ? layout.contentWidth - 12 : layout.contentWidth
+      estimatedTotal += doc.splitTextToSize(text, w).length * lineH
     }
-    const est = 16 + total * lh + 8
-    const ph = doc.internal.pageSize.getHeight()
-    if (y + est > ph - 22) {
+    estimatedTotal += 6
+    if (estimatedTotal < maxY - layout.contentTop && y + estimatedTotal > maxY) {
       doc.addPage()
-      addHeader(doc, '')
-      y = 25
+      return layout.contentTop
     }
   }
 
-  y = checkPage(doc, y, 20)
+  y = checkPageBreak(doc, layout, y, 14)
 
-  // Section title with left accent bar
   doc.setFillColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
-  doc.rect(layout.marginLeft, y - 3, 2, 10, 'F')
+  doc.rect(layout.marginLeft, y - 2.5, 2.5, 9, 'F')
+
   doc.setFont('helvetica', 'bold')
-  doc.setFontSize(11)
+  doc.setFontSize(sectionTitleFontSize)
   doc.setTextColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
-  doc.text(title, layout.marginLeft + 6, y + 3)
-  y += 16
+  const titleWrapped = doc.splitTextToSize(title, layout.contentWidth - 8)
+  for (const tw of titleWrapped) {
+    doc.text(tw, layout.marginLeft + 7, y + 3)
+    y += 5.5
+  }
+  y += 8
 
   doc.setFont('helvetica', 'normal')
-  doc.setFontSize(9)
+  doc.setFontSize(bodyFontSize)
   doc.setTextColor(BRAND.mid.r, BRAND.mid.g, BRAND.mid.b)
-
-  const lineH = checkboxes ? 9 : 6
 
   for (const line of bodyLines) {
     if (line.startsWith('  -') || line.startsWith('  •')) {
       const text = line.trim().replace(/^[-•]\s*/, '').replace(/\*\*/g, '')
-      const split = doc.splitTextToSize(text, layout.contentWidth - 25)
-      const totalNeeded = split.length * lineH + 4
-      y = checkPage(doc, y, totalNeeded)
+      const wrapWidth = checkboxes ? layout.contentWidth - 26 : layout.contentWidth - 12
+      const split = doc.splitTextToSize(text, wrapWidth)
+      const totalNeeded = split.length * lineH + 3
+      y = checkPageBreak(doc, layout, y, Math.min(totalNeeded, lineH + 3))
+
       if (checkboxes) {
         const bx = layout.marginLeft + 5
         const by = y - 1
         doc.setDrawColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
         doc.setLineWidth(0.4)
-        doc.rect(bx, by, 3.5, 3.5, 'S')
+        doc.rect(bx, by, 3.2, 3.2, 'S')
         doc.setLineWidth(0.5)
-        doc.line(bx + 0.8, by + 2.2, bx + 1.5, by + 2.8)
-        doc.line(bx + 1.5, by + 2.8, bx + 2.8, by + 0.5)
-        doc.setFontSize(9)
+        doc.line(bx + 0.7, by + 2, bx + 1.4, by + 2.6)
+        doc.line(bx + 1.4, by + 2.6, bx + 2.7, by + 0.4)
+
+        doc.setFontSize(bodyFontSize)
         doc.setTextColor(BRAND.mid.r, BRAND.mid.g, BRAND.mid.b)
         for (const s of split) {
+          y = checkPageBreak(doc, layout, y, lineH)
           doc.text(s, layout.marginLeft + 12, y)
           y += lineH
         }
@@ -305,34 +501,47 @@ export function writeSection(
         doc.setFontSize(5)
         doc.setTextColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
         doc.text('●', layout.marginLeft + 5, y + 1)
-        doc.setFontSize(9)
+        doc.setFontSize(bodyFontSize)
         doc.setTextColor(BRAND.mid.r, BRAND.mid.g, BRAND.mid.b)
         for (const s of split) {
+          y = checkPageBreak(doc, layout, y, lineH)
           doc.text(s, layout.marginLeft + 10, y)
           y += lineH
         }
       }
     } else if (line.startsWith('___')) {
-      // Divider
-      y = checkPage(doc, y, 6)
+      y = checkPageBreak(doc, layout, y, 6)
       doc.setDrawColor(BRAND.muted.r, BRAND.muted.g, BRAND.muted.b)
       doc.setLineWidth(0.2)
       doc.line(layout.marginLeft, y, layout.marginLeft + layout.contentWidth, y)
       y += 4
     } else if (line === '') {
-      y += 4
+      y += 3
+    } else if (line.startsWith('**') && line.endsWith('**')) {
+      const clean = line.replace(/\*\*/g, '')
+      doc.setFont('helvetica', 'bold')
+      doc.setFontSize(bodyFontSize)
+      doc.setTextColor(BRAND.dark.r, BRAND.dark.g, BRAND.dark.b)
+      const split = doc.splitTextToSize(clean, layout.contentWidth)
+      for (const s of split) {
+        y = checkPageBreak(doc, layout, y, lineH)
+        doc.text(s, layout.marginLeft, y)
+        y += lineH
+      }
+      doc.setFont('helvetica', 'normal')
+      doc.setFontSize(bodyFontSize)
+      doc.setTextColor(BRAND.mid.r, BRAND.mid.g, BRAND.mid.b)
     } else {
       const clean = line.replace(/\*\*/g, '')
       const split = doc.splitTextToSize(clean, layout.contentWidth)
-      const totalNeeded = split.length * lineH + 4
-      y = checkPage(doc, y, totalNeeded)
       for (const s of split) {
+        y = checkPageBreak(doc, layout, y, lineH)
         doc.text(s, layout.marginLeft, y)
         y += lineH
       }
     }
   }
-  y += 6
+  y += 5
   return y
 }
 
@@ -341,64 +550,145 @@ export function writeTable(
   y: number,
   headers: string[],
   rows: TableRow[],
-  layout: PageStyles
+  layout: PageLayout
 ): number {
   const colCount = headers.length
-  const colWidth = layout.contentWidth / colCount
-  const rowHeight = 8
+  const cellPadding = 2.5
+  const headerFontSize = 7.5
+  const cellFontSize = 7.5
+  const cellLineH = 4
+  const headerRowH = 8
 
-  // Header row
-  y = checkPage(doc, y, rowHeight + 6)
-  doc.setFillColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
-  doc.rect(layout.marginLeft, y, layout.contentWidth, rowHeight, 'F')
-  doc.setFont('helvetica', 'bold')
-  doc.setFontSize(8)
-  doc.setTextColor(255, 255, 255)
-  headers.forEach((h, i) => {
-    doc.text(h, layout.marginLeft + colWidth * i + 3, y + 5.5)
+  if (colCount === 0) return y
+
+  const tempDoc = new jsPDF('p', 'mm', 'a4')
+  tempDoc.setFont('helvetica', 'normal')
+  tempDoc.setFontSize(cellFontSize)
+
+  const headerWidths = headers.map((h) => {
+    const w = tempDoc.getTextWidth(h) + cellPadding * 2 + 4
+    return Math.max(w, 18)
   })
-  y += rowHeight
 
-  // Data rows
+  const dataWidths: number[] = new Array(colCount).fill(0)
+  for (const row of rows) {
+    for (let ci = 0; ci < Math.min(row.cells.length, colCount); ci++) {
+      const text = String(row.cells[ci] || '')
+      const lines = tempDoc.splitTextToSize(text, 80)
+      let maxW = 0
+      for (const line of lines) {
+        const w = tempDoc.getTextWidth(line) + cellPadding * 2 + 4
+        maxW = Math.max(maxW, w)
+      }
+      dataWidths[ci] = Math.max(dataWidths[ci], maxW)
+    }
+  }
+
+  const colWidths: number[] = []
+  for (let i = 0; i < colCount; i++) {
+    colWidths[i] = Math.max(headerWidths[i], dataWidths[i])
+  }
+
+  const totalWidth = colWidths.reduce((s, w) => s + w, 0)
+  if (totalWidth > layout.contentWidth) {
+    const scale = layout.contentWidth / totalWidth
+    for (let i = 0; i < colCount; i++) {
+      colWidths[i] = Math.max(colWidths[i] * scale, 15)
+    }
+  } else if (totalWidth < layout.contentWidth) {
+    const extra = (layout.contentWidth - totalWidth) / colCount
+    for (let i = 0; i < colCount; i++) {
+      colWidths[i] += extra
+    }
+  }
+
+  const drawTableHeader = (startY: number): number => {
+    doc.setFillColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
+    doc.rect(layout.marginLeft, startY, layout.contentWidth, headerRowH, 'F')
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(headerFontSize)
+    doc.setTextColor(255, 255, 255)
+    let xPos = layout.marginLeft
+    headers.forEach((h, i) => {
+      const maxW = colWidths[i] - cellPadding * 2
+      const displayText = doc.splitTextToSize(h, Math.max(maxW, 5))[0] || h
+      doc.text(displayText, xPos + cellPadding, startY + 5.5)
+      xPos += colWidths[i]
+    })
+    return startY + headerRowH
+  }
+
+  y = checkPageBreak(doc, layout, y, headerRowH + 4)
+  y = drawTableHeader(y)
+
   doc.setFont('helvetica', 'normal')
-  doc.setFontSize(8)
-  rows.forEach((row, ri) => {
-    y = checkPage(doc, y, rowHeight)
+  doc.setFontSize(cellFontSize)
+  doc.setTextColor(BRAND.dark.r, BRAND.dark.g, BRAND.dark.b)
+
+  for (let ri = 0; ri < rows.length; ri++) {
+    const row = rows[ri]
+    let maxLines = 1
+    const wrappedCells: string[][] = row.cells.map((cell, ci) => {
+      const maxW = Math.max(colWidths[ci] - cellPadding * 2, 5)
+      const lines = doc.splitTextToSize(String(cell || ''), maxW)
+      maxLines = Math.max(maxLines, lines.length)
+      return lines
+    })
+    const rowH = Math.max(headerRowH, maxLines * cellLineH + cellPadding * 2)
+
+    const maxY = layout.contentBottom
+    if (y + rowH > maxY) {
+      doc.addPage()
+      y = layout.contentTop
+      y = drawTableHeader(y)
+    }
+
     if (ri % 2 === 1) {
       doc.setFillColor(BRAND.bgLight.r, BRAND.bgLight.g, BRAND.bgLight.b)
-      doc.rect(layout.marginLeft, y, layout.contentWidth, rowHeight, 'F')
+      doc.rect(layout.marginLeft, y, layout.contentWidth, rowH, 'F')
     }
-    doc.setTextColor(BRAND.dark.r, BRAND.dark.g, BRAND.dark.b)
+
     if (row.isHeader) {
       doc.setFont('helvetica', 'bold')
-    }
-    row.cells.forEach((cell, ci) => {
-      doc.text(cell, layout.marginLeft + colWidth * ci + 3, y + 5.5)
-    })
-    if (row.isHeader) {
+    } else {
       doc.setFont('helvetica', 'normal')
     }
-    y += rowHeight
-  })
+    doc.setFontSize(cellFontSize)
+    doc.setTextColor(BRAND.dark.r, BRAND.dark.g, BRAND.dark.b)
 
-  // Bottom border
+    let xPos = layout.marginLeft
+    for (let ci = 0; ci < wrappedCells.length; ci++) {
+      const lines = wrappedCells[ci]
+      let lineY = y + cellPadding + 2
+      for (const ln of lines) {
+        doc.text(ln, xPos + cellPadding, lineY)
+        lineY += cellLineH
+      }
+      xPos += colWidths[ci]
+    }
+    y += rowH
+
+    doc.setDrawColor(BRAND.muted.r, BRAND.muted.g, BRAND.muted.b)
+    doc.setLineWidth(0.15)
+    doc.line(layout.marginLeft, y, layout.marginLeft + layout.contentWidth, y)
+  }
+
   doc.setDrawColor(BRAND.muted.r, BRAND.muted.g, BRAND.muted.b)
-  doc.setLineWidth(0.2)
+  doc.setLineWidth(0.25)
   doc.line(layout.marginLeft, y, layout.marginLeft + layout.contentWidth, y)
-  y += 6
+  y += 5
   return y
 }
 
 export function writeSignatureBlock(
   doc: jsPDF,
   y: number,
-  layout: PageStyles,
+  layout: PageLayout,
   clientName: string,
   date: string
 ): number {
-  y = checkPage(doc, y, 50)
+  y = checkPageBreak(doc, layout, y, 55)
 
-  // Divider
   doc.setDrawColor(BRAND.muted.r, BRAND.muted.g, BRAND.muted.b)
   doc.setLineWidth(0.3)
   doc.line(layout.marginLeft, y, layout.marginLeft + layout.contentWidth, y)
@@ -410,10 +700,8 @@ export function writeSignatureBlock(
   doc.text('Accepted and agreed by:', layout.marginLeft, y)
   y += 8
 
-  // Two columns
   const halfWidth = layout.contentWidth / 2 - 5
 
-  // Client
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(8)
   doc.setTextColor(BRAND.light.r, BRAND.light.g, BRAND.light.b)
@@ -428,7 +716,6 @@ export function writeSignatureBlock(
   doc.text(clientName || '_________________________', layout.marginLeft, y + 2)
   y += 7
 
-  // AROM Studio
   const rightX = layout.marginLeft + halfWidth + 10
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(8)
@@ -441,7 +728,6 @@ export function writeSignatureBlock(
   doc.setFontSize(9)
   doc.setTextColor(BRAND.dark.r, BRAND.dark.g, BRAND.dark.b)
   doc.text('Arnav (Founder)', rightX, y - 7)
-  doc.setFont('helvetica', 'normal')
   doc.setFontSize(8)
   doc.setTextColor(BRAND.light.r, BRAND.light.g, BRAND.light.b)
   doc.text(`Date: ${date}`, rightX, y)
@@ -450,43 +736,109 @@ export function writeSignatureBlock(
   return y
 }
 
-export function writeContactFooter(doc: jsPDF, y: number, layout: PageStyles): number {
-  y = checkPage(doc, y, 30)
+export function writeContactFooter(doc: jsPDF, y: number, layout: PageLayout): number {
+  y = checkPageBreak(doc, layout, y, 24)
   doc.setDrawColor(BRAND.muted.r, BRAND.muted.g, BRAND.muted.b)
   doc.setLineWidth(0.3)
   doc.line(layout.marginLeft, y, layout.marginLeft + layout.contentWidth, y)
-  y += 8
+  y += 7
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(8)
   doc.setTextColor(BRAND.light.r, BRAND.light.g, BRAND.light.b)
   doc.text('Contact Information', layout.marginLeft, y)
   y += 5
   doc.setFont('helvetica', 'normal')
-  doc.setFontSize(8)
+  doc.setFontSize(7.5)
   doc.setTextColor(BRAND.mid.r, BRAND.mid.g, BRAND.mid.b)
-  doc.text(`${BRAND.nameUpper}  |  Website: ${BRAND.url}  |  Email: ${BRAND.email}  |  Phone: ${BRAND.phone}`, layout.marginLeft, y)
-  y += 8
+  const contactLine = `${BRAND.nameUpper}  |  Website: ${BRAND.url}  |  Email: ${BRAND.email}  |  Phone: ${BRAND.phone}`
+  const contactWrapped = doc.splitTextToSize(contactLine, layout.contentWidth)
+  for (const cl of contactWrapped) {
+    doc.text(cl, layout.marginLeft, y)
+    y += 4.5
+  }
+  y += 2
   return y
 }
 
-export function finalizeDoc(doc: jsPDF) {
-  const pageCount = doc.getNumberOfPages()
-  const pw = doc.internal.pageSize.getWidth()
-  const ph = doc.internal.pageSize.getHeight()
-  for (let i = 1; i <= pageCount; i++) {
-    doc.setPage(i)
-    if (i === 1) continue
-    const contentNum = i - 1
-    const totalContent = pageCount - 1
-    doc.setDrawColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
-    doc.setLineWidth(0.3)
-    doc.line(15, ph - 16, pw - 15, ph - 16)
-    doc.setFont('helvetica', 'normal')
-    doc.setFontSize(6.5)
-    doc.setTextColor(BRAND.light.r, BRAND.light.g, BRAND.light.b)
-    doc.text(`${BRAND.nameUpper}  |  ${BRAND.email}  |  ${BRAND.url}`, 15, ph - 9)
-    doc.text(`Page ${contentNum} of ${totalContent}`, pw - 15, ph - 9, { align: 'right' })
+export function addImage(
+  doc: jsPDF,
+  imgData: string,
+  format: 'JPEG' | 'PNG',
+  x: number,
+  y: number,
+  maxWidth: number,
+  maxHeight: number
+): { x: number; y: number; w: number; h: number } {
+  doc.addImage(imgData, format, x, y, maxWidth, maxHeight)
+  return { x, y, w: maxWidth, h: maxHeight }
+}
+
+export function writeMessageBubble(
+  doc: jsPDF,
+  y: number,
+  sender: 'user' | 'ai',
+  message: string,
+  timestamp: string,
+  layout: PageLayout
+): number {
+  const bubblePadding = 4
+  const maxBubbleWidth = layout.contentWidth * 0.75
+  const fontSize = 8
+  const lineH = 4.5
+
+  y = checkPageBreak(doc, layout, y, 16)
+
+  doc.setFont('helvetica', sender === 'user' ? 'bold' : 'normal')
+  doc.setFontSize(7)
+  doc.setTextColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
+  const senderLabel = sender === 'user' ? 'YOU' : 'AROM AI'
+  doc.text(senderLabel, layout.marginLeft, y)
+  y += 3.5
+
+  doc.setFontSize(6)
+  doc.setTextColor(BRAND.light.r, BRAND.light.g, BRAND.light.b)
+  doc.text(timestamp, layout.marginLeft + (sender === 'user' ? 0 : layout.contentWidth - maxBubbleWidth), y)
+  y += 1
+
+  const lines = doc.splitTextToSize(message, maxBubbleWidth - bubblePadding * 2)
+  const bubbleH = Math.max(lines.length * lineH + bubblePadding * 2, 10)
+
+  const bubbleX = sender === 'user' ? layout.marginLeft : layout.marginLeft + layout.contentWidth - maxBubbleWidth
+  const bubbleColor = sender === 'user'
+    ? { r: 235, g: 243, b: 255 }
+    : { r: 245, g: 245, b: 250 }
+
+  doc.setFillColor(bubbleColor.r, bubbleColor.g, bubbleColor.b)
+  doc.setDrawColor(BRAND.muted.r, BRAND.muted.g, BRAND.muted.b)
+  doc.setLineWidth(0.2)
+  doc.roundedRect(bubbleX, y, maxBubbleWidth, bubbleH, 2, 2, 'FD')
+
+  y += bubblePadding + 1
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(fontSize)
+  doc.setTextColor(BRAND.dark.r, BRAND.dark.g, BRAND.dark.b)
+  for (const line of lines) {
+    doc.text(line, bubbleX + bubblePadding, y)
+    y += lineH
   }
+
+  y += bubblePadding + 1
+  return y
+}
+
+function applyContentPageHeaders(doc: jsPDF, title: string) {
+  for (let i = 2; i <= doc.getNumberOfPages(); i++) {
+    doc.setPage(i)
+    addHeader(doc, title)
+  }
+}
+
+function generateReference(prefix: string): string {
+  return `${prefix}-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 9999)).padStart(4, '0')}`
+}
+
+function today(): string {
+  return new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
 }
 
 export function generateProposalPDF(data: {
@@ -510,35 +862,22 @@ export function generateProposalPDF(data: {
   const doc = createDoc()
   const layout = getPageLayout(doc)
 
-  // Cover page
   addCoverPage(doc, {
     title: 'Project Proposal',
     subtitle: data.projectName,
     clientName: data.clientName,
     date: data.date,
-    reference: `PRO-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`,
+    reference: generateReference('PRO'),
   })
 
-  let y = layout.marginTop
-
-  // Page header
+  let y = layout.contentTop
   addHeader(doc, 'Project Proposal')
 
-  // 1. Executive Summary
-  y = writeSection(doc, y, 'Executive Summary', [
-    data.executiveSummary,
-  ], layout)
-
-  // 2. Project Objectives
+  y = writeSection(doc, y, 'Executive Summary', [data.executiveSummary], layout)
   y = writeSection(doc, y, 'Project Objectives', data.objectives.map((o) => `  • ${o}`), layout)
-
-  // 3. Scope of Work
   y = writeSection(doc, y, 'Scope of Work', data.scope.map((s) => `  • ${s}`), layout)
-
-  // 4. Deliverables
   y = writeSection(doc, y, 'Deliverables', data.deliverables.map((d) => `  • ${d}`), layout)
 
-  // 5. Timeline with Milestones
   const timelineLines: string[] = []
   data.milestones.forEach((m) => {
     timelineLines.push(`**${m.phase}**`)
@@ -547,34 +886,20 @@ export function generateProposalPDF(data: {
   })
   y = writeSection(doc, y, 'Timeline & Milestones', timelineLines, layout)
 
-  // 6. Pricing Table
-  const headers = ['Service', 'Description', 'Amount']
-  const rows: TableRow[] = data.pricingItems.map((item) => ({
+  const pHeaders = ['Service', 'Description', 'Amount']
+  const pRows: TableRow[] = data.pricingItems.map((item) => ({
     cells: [item.service, item.description, item.amount],
   }))
-  rows.push({
-    cells: ['', 'Total Investment', data.totalAmount],
-    isHeader: true,
-  })
+  pRows.push({ cells: ['', 'Total Investment', data.totalAmount], isHeader: true })
   y = writeSection(doc, y, 'Pricing', [], layout)
-  y = writeTable(doc, y, headers, rows, layout)
+  y = writeTable(doc, y, pHeaders, pRows, layout)
 
-  // 7. Payment Schedule
   y = writeSection(doc, y, 'Payment Schedule', data.paymentSchedule.map((p) => `  • ${p}`), layout)
-
-  // 8. Assumptions
   y = writeSection(doc, y, 'Assumptions', data.assumptions.map((a) => `  • ${a}`), layout)
-
-  // 9. Exclusions
   y = writeSection(doc, y, 'Exclusions', data.exclusions.map((e) => `  • ${e}`), layout)
-
-  // 10. Technologies
   y = writeSection(doc, y, 'Technologies', [`Technologies & platforms to be used: ${data.technologies.join(', ')}.`], layout)
-
-  // 11. Support
   y = writeSection(doc, y, 'Support', [data.supportDescription], layout)
 
-  // 12. Acceptance & Signature
   y = writeSection(doc, y, 'Acceptance', [
     'This proposal is valid for 14 days from the date of issue.',
     'To accept this proposal, please sign below and return it to AROM Studio.',
@@ -583,18 +908,11 @@ export function generateProposalPDF(data: {
     'Payment terms and conditions are subject to the Website Development Agreement which will be provided upon acceptance.',
   ], layout)
 
-  y = writeSignatureBlock(doc, y, layout, data.clientName, new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }))
-
+  y = writeSignatureBlock(doc, y, layout, data.clientName, today())
   y = writeContactFooter(doc, y, layout)
 
-  // Finalize
   finalizeDoc(doc)
-
-  // Add header titles to all content pages
-  for (let i = 2; i <= doc.getNumberOfPages(); i++) {
-    doc.setPage(i)
-    addHeader(doc, 'Project Proposal')
-  }
+  applyContentPageHeaders(doc, 'Project Proposal')
 
   const proposalFile = `Proposal_${data.clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`
   uploadPDF(doc, 'Proposal Document', proposalFile, data.clientName)
@@ -624,11 +942,11 @@ export function generateAgreementPDF(data: {
     clientName: data.clientName || '[Client Name]',
     clientEmail: data.clientEmail,
     clientPhone: data.clientPhone,
-    date: data.effectiveDate ? fmtDate(data.effectiveDate) : new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
-    reference: `AGR-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`,
+    date: data.effectiveDate ? fmtDate(data.effectiveDate) : today(),
+    reference: generateReference('AGR'),
   })
 
-  let y = layout.marginTop
+  let y = layout.contentTop
   addHeader(doc, 'Website Development Agreement')
 
   const allServices = [
@@ -637,10 +955,8 @@ export function generateAgreementPDF(data: {
     'CMS Integration', 'SEO Optimization', 'Website Deployment',
   ]
   const services = data.selectedServices.length > 0 ? data.selectedServices : allServices
-
   const effDate = data.effectiveDate ? fmtDate(data.effectiveDate) : '_______________'
 
-  // Parties
   y = writeSection(doc, y, 'Parties', [
     'This Website Development Agreement ("Agreement") is entered into between:',
     '',
@@ -655,7 +971,6 @@ export function generateAgreementPDF(data: {
     '  - I confirm that the party information above is accurate and I have read the Parties section.',
   ], layout, true, true)
 
-  // 1. Project Overview
   y = writeSection(doc, y, '1. Project Overview', [
     'The Client has requested AROM Studio to design and/or develop a website.',
     'The specific project requirements, deliverables, pricing, and timeline will be defined in the approved Project Proposal.',
@@ -664,7 +979,6 @@ export function generateAgreementPDF(data: {
     '  - I have read and agree to Section 1: Project Overview',
   ], layout, true, true)
 
-  // 2. Scope of Work
   y = writeSection(doc, y, '2. Scope of Work', [
     'AROM Studio agrees to provide the services specified in the approved Project Proposal.',
     'Services may include:',
@@ -675,7 +989,6 @@ export function generateAgreementPDF(data: {
     '  - I have read and agree to Section 2: Scope of Work',
   ], layout, true, true)
 
-  // 3. Timeline
   y = writeSection(doc, y, '3. Project Timeline', [
     `The estimated project duration will be defined in the Project Proposal. Current estimate: ${data.timeline || '4-6 Weeks'}.`,
     'The timeline may change if:',
@@ -688,7 +1001,6 @@ export function generateAgreementPDF(data: {
     '  - I have read and agree to Section 3: Project Timeline',
   ], layout, true, true)
 
-  // 4. Payment Terms
   y = writeSection(doc, y, '4. Payment Terms', [
     'Payment schedule:',
     `  • ${data.advancePercentage || '50'}% Advance before project commencement.`,
@@ -700,7 +1012,6 @@ export function generateAgreementPDF(data: {
     '  - I have read and agree to Section 4: Payment Terms',
   ], layout, true, true)
 
-  // 5. Client Responsibilities
   y = writeSection(doc, y, '5. Client Responsibilities', [
     'The Client agrees to provide:',
     '  • Logo, Brand Colors, Images, Videos',
@@ -713,7 +1024,6 @@ export function generateAgreementPDF(data: {
     '  - I have read and agree to Section 5: Client Responsibilities',
   ], layout, true, true)
 
-  // 6. Communication
   y = writeSection(doc, y, '6. Project Communication', [
     'The Client should provide timely feedback and approvals to avoid unnecessary delays.',
     'Preferred communication methods include: Email, WhatsApp, Google Meet, Zoom, Phone Call.',
@@ -722,7 +1032,6 @@ export function generateAgreementPDF(data: {
     '  - I have read and agree to 6. Project Communication',
   ], layout, true, true)
 
-  // 7. Revisions
   y = writeSection(doc, y, '7. Revisions', [
     'Revision limits are defined per project tier: Basic (2 revision rounds), Standard (3 revision rounds), Premium (Unlimited until design approval).',
     'Requests outside the original scope or beyond the revision limit may require additional charges.',
@@ -731,14 +1040,12 @@ export function generateAgreementPDF(data: {
     '  - I have read and agree to 7. Revisions',
   ], layout, true, true)
 
-  // 8. Change Requests
   y = writeSection(doc, y, '8. Change Requests', [
     'If the Client requests additional pages, new features, major design changes, third-party integrations, or functional changes, AROM Studio will provide a revised quotation before starting the additional work.',
     '',
     '  - I have read and agree to 8. Change Requests',
   ], layout, true, true)
 
-  // 9-22. Remaining sections
   const remainingSections: [string, string, string[]][] = [
     ['9. Domain & Hosting', '9. Domain & Hosting', [
       'Unless specifically included in the proposal, domain registration and hosting purchase are the Client\'s responsibility.',
@@ -796,7 +1103,6 @@ export function generateAgreementPDF(data: {
     ], layout, true, true)
   }
 
-  // 23. Legal Policies
   y = writeSection(doc, y, 'Legal Policies', [
     'The following legal policies apply to all services provided by AROM Studio.',
     '',
@@ -833,7 +1139,6 @@ export function generateAgreementPDF(data: {
     '  - I have read and agree to the Refund Policy',
   ], layout, true, true)
 
-  // Client Declaration
   y = writeSection(doc, y, 'Client Declaration', [
     `I, ${data.clientName || '[Client Name]'}, confirm that:`,
     '  • I have read and understood all sections of this Agreement including the Entire Agreement clause, Browser Support, and Digital Acceptance.',
@@ -845,15 +1150,11 @@ export function generateAgreementPDF(data: {
     '  - I hereby declare that I have read, understood, and agree to all terms and conditions of this Website Development Agreement. This declaration is required to proceed.',
   ], layout, true, true)
 
-  // Signature
-  y = writeSignatureBlock(doc, y, layout, data.clientName, new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }))
+  y = writeSignatureBlock(doc, y, layout, data.clientName, today())
   y = writeContactFooter(doc, y, layout)
 
   finalizeDoc(doc)
-  for (let i = 2; i <= doc.getNumberOfPages(); i++) {
-    doc.setPage(i)
-    addHeader(doc, 'Website Development Agreement')
-  }
+  applyContentPageHeaders(doc, 'Website Development Agreement')
 
   const agreementFile = `Website_Development_Agreement_${data.clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`
   uploadPDF(doc, 'Website Agreement Contract', agreementFile, data.clientName)
@@ -881,21 +1182,21 @@ export function generateHandoverPDF(data: {
     title: 'Website Handover Document',
     subtitle: data.projectName,
     clientName: data.clientName,
-    date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
-    reference: `HAN-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`,
+    date: today(),
+    reference: generateReference('HAN'),
   })
 
-  let y = layout.marginTop
+  let y = layout.contentTop
   addHeader(doc, 'Website Handover')
 
   y = writeSection(doc, y, 'Project Details', [
     `**Client:** ${data.clientName}`,
     `**Project:** ${data.projectName}`,
-    `**Handover Date:** ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`,
+    `**Handover Date:** ${today()}`,
   ], layout)
 
-  const headers = ['Item', 'Details']
-  const rows: TableRow[] = [
+  const hHeaders = ['Item', 'Details']
+  const hRows: TableRow[] = [
     { cells: ['Website URL', data.websiteUrl] },
     { cells: ['Admin Login', data.adminUrl] },
     { cells: ['Hosting Provider', data.hostingProvider] },
@@ -903,7 +1204,7 @@ export function generateHandoverPDF(data: {
     { cells: ['Source Code', data.sourceCode] },
     { cells: ['Documentation', data.documentation] },
   ]
-  y = writeTable(doc, y, headers, rows, layout)
+  y = writeTable(doc, y, hHeaders, hRows, layout)
 
   y = writeSection(doc, y, 'Free Domain (Subdomain)', [
     'A free subdomain is provided for staging or production:',
@@ -933,14 +1234,11 @@ export function generateHandoverPDF(data: {
     '  • Review analytics and tracking setup',
   ], layout)
 
-  y = writeSignatureBlock(doc, y, layout, data.clientName, new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }))
+  y = writeSignatureBlock(doc, y, layout, data.clientName, today())
   y = writeContactFooter(doc, y, layout)
 
   finalizeDoc(doc)
-  for (let i = 2; i <= doc.getNumberOfPages(); i++) {
-    doc.setPage(i)
-    addHeader(doc, 'Website Handover')
-  }
+  applyContentPageHeaders(doc, 'Website Handover')
 
   const handoverFile = `Handover_${data.clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`
   uploadPDF(doc, 'handover', handoverFile)
@@ -958,41 +1256,38 @@ export function generateDesignApprovalPDF(items: { page: string; status: string;
   addCoverPage(doc, {
     title: 'Design Approval Report',
     subtitle: `${approved} of ${total} designs approved`,
-    date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
-    reference: `DES-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`,
+    date: today(),
+    reference: generateReference('DES'),
   })
 
-  let y = layout.marginTop
+  let y = layout.contentTop
   addHeader(doc, 'Design Approval Report')
 
-  const headers = ['Page', 'Status', 'Notes']
-  const rows: TableRow[] = items.map((item) => ({
+  const daHeaders = ['Page', 'Status', 'Notes']
+  const daRows: TableRow[] = items.map((item) => ({
     cells: [
       item.page,
       item.status === 'approved' ? 'APPROVED' : item.status === 'changes' ? 'CHANGES REQUESTED' : 'PENDING',
       item.notes || '—',
     ],
   }))
-  y = writeTable(doc, y, headers, rows, layout)
+  y = writeTable(doc, y, daHeaders, daRows, layout)
 
   y = writeSection(doc, y, 'Summary', [
     `Total Designs: ${total}`,
     `Approved: ${approved}`,
     `Changes Requested: ${items.filter((d) => d.status === 'changes').length}`,
     `Pending: ${items.filter((d) => d.status === 'pending').length}`,
-    `Overall Progress: ${Math.round((approved / total) * 100)}%`,
+    `Overall Progress: ${total > 0 ? Math.round((approved / total) * 100) : 0}%`,
     '',
     'Once all designs are approved, development will proceed as per the project timeline.',
   ], layout)
 
-  y = writeSignatureBlock(doc, y, layout, 'Client', new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }))
+  y = writeSignatureBlock(doc, y, layout, 'Client', today())
   y = writeContactFooter(doc, y, layout)
 
   finalizeDoc(doc)
-  for (let i = 2; i <= doc.getNumberOfPages(); i++) {
-    doc.setPage(i)
-    addHeader(doc, 'Design Approval Report')
-  }
+  applyContentPageHeaders(doc, 'Design Approval Report')
 
   const designFile = `Design_Approval_${new Date().toISOString().split('T')[0]}.pdf`
   uploadPDF(doc, 'design-approval', designFile)
@@ -1007,10 +1302,10 @@ export function generateRevisionsPDF(revisions: { page: string; priority: string
   addCoverPage(doc, {
     title: 'Revision Requests',
     subtitle: `${revisions.length} revision(s) documented`,
-    date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+    date: today(),
   })
 
-  let y = layout.marginTop
+  let y = layout.contentTop
   addHeader(doc, 'Revision Requests')
 
   if (revisions.length === 0) {
@@ -1025,11 +1320,11 @@ export function generateRevisionsPDF(revisions: { page: string; priority: string
     return
   }
 
-  const headers = ['Page', 'Priority', 'Status', 'Description']
-  const rows: TableRow[] = revisions.map((r) => ({
+  const rHeaders = ['Page', 'Priority', 'Status', 'Description']
+  const rRows: TableRow[] = revisions.map((r) => ({
     cells: [r.page, r.priority.toUpperCase(), r.status.toUpperCase(), r.description],
   }))
-  y = writeTable(doc, y, headers, rows, layout)
+  y = writeTable(doc, y, rHeaders, rRows, layout)
 
   y = writeSection(doc, y, 'Notes', [
     'Revision priority levels: LOW (cosmetic), MEDIUM (moderate changes), HIGH (critical).',
@@ -1037,14 +1332,11 @@ export function generateRevisionsPDF(revisions: { page: string; priority: string
     'Major redesigns or out-of-scope requests will be quoted separately.',
   ], layout)
 
-  y = writeSignatureBlock(doc, y, layout, 'Client', new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }))
+  y = writeSignatureBlock(doc, y, layout, 'Client', today())
   y = writeContactFooter(doc, y, layout)
 
   finalizeDoc(doc)
-  for (let i = 2; i <= doc.getNumberOfPages(); i++) {
-    doc.setPage(i)
-    addHeader(doc, 'Revision Requests')
-  }
+  applyContentPageHeaders(doc, 'Revision Requests')
 
   const revFile2 = `Revisions_${new Date().toISOString().split('T')[0]}.pdf`
   uploadPDF(doc, 'revisions', revFile2)
@@ -1065,16 +1357,16 @@ export function generateAssetsPDF(data: {
     title: 'Assets Upload Summary',
     subtitle: data.projectName,
     clientName: data.clientName,
-    date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+    date: today(),
   })
 
-  let y = layout.marginTop
+  let y = layout.contentTop
   addHeader(doc, 'Assets Upload Summary')
 
   y = writeSection(doc, y, 'Project Information', [
     `**Client:** ${data.clientName}`,
     `**Project:** ${data.projectName}`,
-    `**Date:** ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`,
+    `**Date:** ${today()}`,
     `**Drive Folder:** ${data.folderLink}`,
   ], layout)
 
@@ -1086,14 +1378,11 @@ export function generateAssetsPDF(data: {
     'Accepted formats: Images (PNG, JPG, SVG, WebP), Videos (MP4, MOV), Documents (PDF, DOCX), Fonts (TTF, OTF, WOFF).',
   ], layout)
 
-  y = writeSignatureBlock(doc, y, layout, data.clientName, new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }))
+  y = writeSignatureBlock(doc, y, layout, data.clientName, today())
   y = writeContactFooter(doc, y, layout)
 
   finalizeDoc(doc)
-  for (let i = 2; i <= doc.getNumberOfPages(); i++) {
-    doc.setPage(i)
-    addHeader(doc, 'Assets Upload Summary')
-  }
+  applyContentPageHeaders(doc, 'Assets Upload Summary')
 
   const assetsFile = `Assets_Summary_${data.clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`
   uploadPDF(doc, 'Assets Upload Summary', assetsFile, data.clientName)
@@ -1119,10 +1408,10 @@ export function generateContentCollectionPDF(data: {
     title: 'Content Collection',
     subtitle: data.projectName,
     clientName: data.clientName,
-    date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+    date: today(),
   })
 
-  let y = layout.marginTop
+  let y = layout.contentTop
   addHeader(doc, 'Content Collection')
 
   const contentSections: [string, string][] = [
@@ -1135,11 +1424,9 @@ export function generateContentCollectionPDF(data: {
     ['SEO Title & Description', data.seoTitleDesc],
   ]
 
-  for (const [title, content] of contentSections) {
+  for (const [secTitle, content] of contentSections) {
     if (!content.trim()) continue
-    y = writeSection(doc, y, title, [
-      content,
-    ], layout)
+    y = writeSection(doc, y, secTitle, [content], layout)
   }
 
   y = writeSection(doc, y, 'Next Steps', [
@@ -1148,14 +1435,11 @@ export function generateContentCollectionPDF(data: {
     'For any changes or updates, please contact AROM Studio via email or WhatsApp.',
   ], layout)
 
-  y = writeSignatureBlock(doc, y, layout, data.clientName, new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }))
+  y = writeSignatureBlock(doc, y, layout, data.clientName, today())
   y = writeContactFooter(doc, y, layout)
 
   finalizeDoc(doc)
-  for (let i = 2; i <= doc.getNumberOfPages(); i++) {
-    doc.setPage(i)
-    addHeader(doc, 'Content Collection')
-  }
+  applyContentPageHeaders(doc, 'Content Collection')
 
   const contentFile = `Content_Collection_${data.clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`
   uploadPDF(doc, 'Content Collection Summary', contentFile, data.clientName)
@@ -1179,7 +1463,7 @@ export function exportSectionReportPDF(
     date: new Date().toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' }),
   })
 
-  let y = layout.marginTop
+  let y = layout.contentTop
   addHeader(doc, title)
 
   y = writeSection(doc, y, 'Executive Summary', [
@@ -1198,13 +1482,292 @@ export function exportSectionReportPDF(
   y = writeContactFooter(doc, y, layout)
   finalizeDoc(doc)
 
-  for (let i = 2; i <= doc.getNumberOfPages(); i++) {
-    doc.setPage(i)
-    addHeader(doc, title)
-  }
+  applyContentPageHeaders(doc, title)
 
   const fileName = `${filenamePrefix}_${new Date().toISOString().split('T')[0]}.pdf`
   uploadPDF(doc, title, fileName, 'AROM Studio Admin')
   trackPDFDownload(filenamePrefix.toLowerCase(), fileName)
   doc.save(fileName)
+}
+
+export function generateInvoicePDF(inv: AdminInvoiceData): jsPDF {
+  const doc = createDoc()
+  const layout = getPageLayout(doc)
+  const pw = layout.pageWidth
+  const sym = inv.currency === 'INR' ? '₹' : '$'
+
+  doc.setFillColor(BRAND.dark.r, BRAND.dark.g, BRAND.dark.b)
+  doc.rect(0, 0, pw, 45, 'F')
+
+  doc.setTextColor(255, 255, 255)
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(22)
+  doc.text(BRAND.nameUpper, layout.marginLeft, 20)
+
+  doc.setFontSize(10)
+  doc.setFont('helvetica', 'normal')
+  doc.setTextColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
+  doc.text('PREMIUM DIGITAL AGENCY', layout.marginLeft, 26)
+
+  doc.setTextColor(200, 200, 210)
+  doc.setFontSize(9)
+  doc.text(`${BRAND.email}  |  ${BRAND.phone}  |  ${BRAND.url}`, layout.marginLeft, 34)
+
+  doc.setFontSize(20)
+  doc.setFont('helvetica', 'bold')
+  doc.setTextColor(255, 255, 255)
+  doc.text('INVOICE', pw - layout.marginRight, 22, { align: 'right' })
+  doc.setFontSize(10)
+  doc.setFont('helvetica', 'normal')
+  doc.setTextColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
+  doc.text(inv.invoiceNumber, pw - layout.marginRight, 29, { align: 'right' })
+
+  let y = 58
+
+  doc.setTextColor(BRAND.dark.r, BRAND.dark.g, BRAND.dark.b)
+  doc.setFontSize(10)
+  doc.setFont('helvetica', 'bold')
+  doc.text('BILLED TO:', layout.marginLeft, y)
+  y += 5
+  doc.setFont('helvetica', 'normal')
+  doc.text(inv.clientName, layout.marginLeft, y)
+  y += 5
+  if (inv.clientCompany) {
+    doc.text(inv.clientCompany, layout.marginLeft, y)
+    y += 5
+  }
+  doc.text(inv.clientEmail, layout.marginLeft, y)
+  y += 5
+  if (inv.clientPhone) {
+    doc.text(inv.clientPhone, layout.marginLeft, y)
+    y += 5
+  }
+
+  const metaY = 58
+  doc.setFont('helvetica', 'bold')
+  doc.text('INVOICE DETAILS:', pw - layout.marginRight - 60, metaY)
+  doc.setFont('helvetica', 'normal')
+  const createdDate = inv.createdAt
+    ? new Date(inv.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
+    : '—'
+  doc.text(`Date: ${createdDate}`, pw - layout.marginRight - 60, metaY + 6)
+  doc.text(`Due Date: ${inv.dueDate}`, pw - layout.marginRight - 60, metaY + 12)
+  doc.text(`Status: ${inv.status.toUpperCase()}`, pw - layout.marginRight - 60, metaY + 18)
+
+  y = Math.max(y + 8, 95)
+
+  doc.setFillColor(240, 243, 248)
+  doc.rect(layout.marginLeft, y, layout.contentWidth, 8, 'F')
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(9)
+  doc.setTextColor(BRAND.mid.r, BRAND.mid.g, BRAND.mid.b)
+  doc.text('DESCRIPTION', layout.marginLeft + 3, y + 5.5)
+  doc.text('QTY', layout.marginLeft + 105, y + 5.5)
+  doc.text('PRICE', layout.marginLeft + 130, y + 5.5)
+  doc.text('TOTAL', layout.marginLeft + 160, y + 5.5)
+
+  y += 12
+  doc.setFont('helvetica', 'normal')
+  doc.setTextColor(BRAND.dark.r, BRAND.dark.g, BRAND.dark.b)
+  doc.setFontSize(9)
+
+  const itemStartY = y
+  for (const item of inv.items) {
+    y = checkPageBreak(doc, layout, y, 8)
+    const lineTotal = item.quantity * item.unitPrice
+    const descLines = doc.splitTextToSize(item.description, 95)
+    doc.text(descLines[0], layout.marginLeft + 3, y)
+    doc.text(item.quantity.toString(), layout.marginLeft + 107, y)
+    doc.text(`${sym}${item.unitPrice.toLocaleString('en-IN')}`, layout.marginLeft + 130, y)
+    doc.text(`${sym}${lineTotal.toLocaleString('en-IN')}`, layout.marginLeft + 160, y)
+    y += 8
+    for (let i = 1; i < descLines.length; i++) {
+      y = checkPageBreak(doc, layout, y, 8)
+      doc.text(descLines[i], layout.marginLeft + 3, y)
+      y += 8
+    }
+  }
+
+  if (y < itemStartY + 20) y = itemStartY + 20
+
+  doc.setDrawColor(220, 220, 230)
+  doc.line(layout.marginLeft, y, pw - layout.marginRight, y)
+  y += 10
+
+  const summaryX = pw - layout.marginRight - 60
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(9)
+  doc.text(`Subtotal: ${sym}${inv.subtotal.toLocaleString('en-IN')}`, summaryX, y)
+  y += 6
+  if (inv.discountAmount > 0) {
+    doc.text(`Discount (${inv.discountRate}%): -${sym}${inv.discountAmount.toLocaleString('en-IN')}`, summaryX, y)
+    y += 6
+  }
+  doc.text(`GST/Tax (${inv.taxRate}%): +${sym}${inv.taxAmount.toLocaleString('en-IN')}`, summaryX, y)
+  y += 8
+
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(12)
+  doc.setTextColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
+  doc.text(`Total Due: ${sym}${inv.totalAmount.toLocaleString('en-IN')}`, summaryX, y)
+
+  y = Math.max(y + 20, layout.contentBottom - 30)
+  doc.setFontSize(8)
+  doc.setFont('helvetica', 'italic')
+  doc.setTextColor(BRAND.light.r, BRAND.light.g, BRAND.light.b)
+  doc.text(`Notes: ${inv.notes || 'Thank you for your business.'}`, layout.marginLeft, y)
+  y += 5
+  doc.text(`${BRAND.nameUpper} • Crafting Precision Digital Products`, layout.marginLeft, y)
+
+  return doc
+}
+
+export function generateDiscoveryQuestionnairePDF(data: QData) {
+  const doc = createDoc()
+  const layout = getPageLayout(doc)
+  const pw = layout.pageWidth
+
+  doc.setFillColor(245, 247, 250)
+  doc.rect(0, 0, pw, layout.pageHeight, 'F')
+  doc.setFillColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
+  doc.rect(0, 0, pw, 6, 'F')
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(26)
+  doc.setTextColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
+  doc.text('AROM Studio', pw / 2, 70, { align: 'center' })
+  doc.setFontSize(9)
+  doc.setTextColor(BRAND.light.r, BRAND.light.g, BRAND.light.b)
+  doc.text('Web Design & Development Agency', pw / 2, 78, { align: 'center' })
+  doc.setDrawColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
+  doc.setLineWidth(0.5)
+  doc.line(pw / 2 - 25, 84, pw / 2 + 25, 84)
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(20)
+  doc.setTextColor(BRAND.dark.r, BRAND.dark.g, BRAND.dark.b)
+  doc.text('Discovery Questionnaire', pw / 2, 105, { align: 'center' })
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(10)
+  doc.setTextColor(BRAND.mid.r, BRAND.mid.g, BRAND.mid.b)
+  doc.text(`Prepared for: ${data.fullName || 'Client'}`, pw / 2, 118, { align: 'center' })
+  doc.text(`Date: ${today()}`, pw / 2, 126, { align: 'center' })
+  doc.setFillColor(BRAND.dark.r, BRAND.dark.g, BRAND.dark.b)
+  doc.rect(0, layout.pageHeight - 25, pw, 25, 'F')
+  doc.setFontSize(7)
+  doc.setTextColor(180)
+  doc.text(`${BRAND.nameUpper}  |  ${BRAND.email}  |  ${BRAND.phone}  |  ${BRAND.url}`, pw / 2, layout.pageHeight - 12, { align: 'center' })
+  doc.addPage()
+
+  addHeader(doc, 'Discovery Questionnaire')
+
+  let y = layout.contentTop
+
+  const writeLabel = (label: string, value: string) => {
+    y = checkPageBreak(doc, layout, y, 10)
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(9)
+    doc.setTextColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
+    doc.text(label, layout.marginLeft, y)
+    y += 4
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(9)
+    doc.setTextColor(BRAND.dark.r, BRAND.dark.g, BRAND.dark.b)
+    const split = doc.splitTextToSize(value || '—', layout.contentWidth)
+    for (const s of split) {
+      y = checkPageBreak(doc, layout, y, 4.5)
+      doc.text(s, layout.marginLeft, y)
+      y += 4.5
+    }
+    y += 3
+  }
+
+  const writeArray = (label: string, arr: string[]) => {
+    writeLabel(label, arr.length > 0 ? arr.join(', ') : 'None selected')
+  }
+
+  writeLabel('Full Name', data.fullName)
+  writeLabel('Company / Business Name', data.company)
+  writeLabel('Designation', data.designation)
+  writeLabel('Email Address', data.email)
+  writeLabel('Phone Number', data.phone)
+  writeLabel('Website (if any)', data.website)
+  writeLabel('Business Description', data.businessDesc)
+  writeLabel('Products / Services Offered', data.services)
+  writeLabel('Years in Business', data.yearsBusiness)
+  writeLabel('Differentiator', data.differentiator)
+  writeArray('Why Website?', data.whyWebsite)
+  writeLabel('Top 3 Goals', data.goals)
+  writeArray('Age Groups', data.ageGroups)
+  writeArray('Target Location', data.targetLocation)
+  writeLabel('Competitors', data.competitors)
+  writeLabel('What you like about competitors', data.likeCompetitors)
+  writeLabel('What you dislike', data.dislikeCompetitors)
+  writeLabel('Inspiration 1', data.inspiration1 ? `${data.inspiration1} — ${data.reason1}` : '')
+  writeLabel('Inspiration 2', data.inspiration2 ? `${data.inspiration2} — ${data.reason2}` : '')
+  writeLabel('Inspiration 3', data.inspiration3 ? `${data.inspiration3} — ${data.reason3}` : '')
+  writeLabel('Branding', Object.entries(data.branding).filter(([, v]) => v).map(([k]) => k).join(', ') || 'None')
+  writeArray('Required Pages', data.pages)
+  writeArray('Required Features', data.features)
+  writeLabel('Content Provider', data.contentProvider)
+  writeArray('Content Items', data.contentItems)
+  writeLabel('Own Domain?', data.ownDomain)
+  writeLabel('Domain Name', data.domainName)
+  writeLabel('Own Hosting?', data.ownHosting)
+  writeLabel('Hosting Provider', data.hostingProvider)
+  writeLabel('Require SEO?', data.requireSEO)
+  writeLabel('Target Keywords', data.targetKeywords)
+  writeLabel('Target Cities', data.targetCities)
+  writeLabel('Preferred Start Date', data.startDate)
+  writeLabel('Preferred Launch Date', data.launchDate)
+  writeLabel('Urgency', data.urgency)
+  writeLabel('Budget', data.budget)
+  writeArray('Preferred Communication', data.communication)
+  writeLabel('Preferred Meeting Time', data.meetingTime)
+  writeLabel('Additional Notes', data.additionalNotes)
+
+  y = checkPageBreak(doc, layout, y, 45)
+  y += 6
+  doc.setDrawColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
+  doc.setLineWidth(0.3)
+  doc.line(layout.marginLeft, y, pw - layout.marginRight, y)
+  y += 10
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(10)
+  doc.setTextColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
+  doc.text('Declaration', layout.marginLeft, y)
+  y += 7
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(9)
+  doc.setTextColor(BRAND.dark.r, BRAND.dark.g, BRAND.dark.b)
+  doc.text('I confirm that the information provided in this questionnaire is accurate and complete to the best of my knowledge.', layout.marginLeft, y)
+  y += 8
+  doc.text(`Client Name: ${data.fullName || '_________________________'}`, layout.marginLeft, y)
+  y += 7
+  doc.text(`Date: ${today()}`, layout.marginLeft, y)
+  y += 12
+
+  doc.setDrawColor(BRAND.muted.r, BRAND.muted.g, BRAND.muted.b)
+  doc.line(layout.marginLeft, y, pw - layout.marginRight, y)
+  y += 8
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(9)
+  doc.setTextColor(BRAND.light.r, BRAND.light.g, BRAND.light.b)
+  doc.text('INTERNAL USE ONLY', pw / 2, y, { align: 'center' })
+  y += 7
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(8)
+  doc.setTextColor(BRAND.light.r, BRAND.light.g, BRAND.light.b)
+  doc.text('Lead ID: ______________________', layout.marginLeft, y); y += 5
+  doc.text('Sales Representative: ______________________', layout.marginLeft, y); y += 5
+  doc.text('Discovery Call Date: ______________________', layout.marginLeft, y); y += 5
+  doc.text('Proposal Due Date: ______________________', layout.marginLeft, y); y += 5
+  doc.text('Estimated Budget: ______________________', layout.marginLeft, y); y += 5
+  doc.text('Lead Status: ____ New ____ Qualified ____ Proposal Sent ____ Negotiation ____ Won ____ Lost', layout.marginLeft, y)
+
+  finalizeDoc(doc)
+  applyContentPageHeaders(doc, 'Discovery Questionnaire')
+
+  const dqFile = `Discovery_Questionnaire_${(data.fullName || 'Client').replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`
+  uploadPDF(doc, 'Discovery Questionnaire', dqFile, data.fullName || 'Client')
+  trackPDFDownload('discovery-questionnaire', dqFile)
+  doc.save(dqFile)
 }

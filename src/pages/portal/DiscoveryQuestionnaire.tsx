@@ -1,10 +1,9 @@
 import { useState } from 'react'
 import { Download, CheckCircle2 } from 'lucide-react'
-import { trackPDFDownload, uploadPDF } from '../../lib/tracker'
+import { generateDiscoveryQuestionnairePDF } from '../../lib/professionalPDF'
 import { recordAdminDiscoveryQuestionnaire } from '../../admin/adminStore'
 import { GlassCard } from '../../components/ui/GlassCard'
 import Button from '../../components/ui/Button'
-import jsPDF from 'jspdf'
 
 interface QData {
   fullName: string
@@ -136,174 +135,6 @@ function BrandingCheckbox({ data, setData }: { data: QData; setData: (d: QData) 
   )
 }
 
-function generateQuestionnairePDF(data: QData) {
-  const doc = new jsPDF('p', 'mm', 'a4')
-  const pw = doc.internal.pageSize.getWidth()
-  const ph = doc.internal.pageSize.getHeight()
-  let y = 20
-
-  const addFooter = () => {
-    doc.setFontSize(7)
-    doc.setTextColor(130)
-    doc.text('AROM STUDIO | aromstudio27@gmail.com | https://arom-studio.vercel.app', pw / 2, ph - 10, { align: 'center' })
-    doc.text(`Page ${doc.getNumberOfPages()}`, pw / 2, ph - 5, { align: 'center' })
-  }
-
-  const checkPage = (n = 20) => {
-    if (y + n > ph - 18) { addFooter(); doc.addPage(); y = 20 }
-  }
-
-  const writeLabel = (label: string, value: string) => {
-    checkPage(8)
-    doc.setFont('helvetica', 'bold')
-    doc.setFontSize(9)
-    doc.setTextColor(78, 133, 191)
-    doc.text(label, 15, y)
-    y += 4
-    doc.setFont('helvetica', 'normal')
-    doc.setFontSize(9)
-    doc.setTextColor(50)
-    const split = doc.splitTextToSize(value || '—', pw - 30)
-    for (const s of split) { doc.text(s, 15, y); y += 4.5 }
-    y += 3
-  }
-
-  const writeArray = (label: string, arr: string[]) => {
-    writeLabel(label, arr.length > 0 ? arr.join(', ') : 'None selected')
-  }
-
-  // Cover page
-  doc.setFillColor(245, 247, 250)
-  doc.rect(0, 0, pw, ph, 'F')
-  doc.setFillColor(78, 133, 191)
-  doc.rect(0, 0, pw, 6, 'F')
-  doc.setFont('helvetica', 'bold')
-  doc.setFontSize(26)
-  doc.setTextColor(78, 133, 191)
-  doc.text('AROM Studio', pw / 2, 70, { align: 'center' })
-  doc.setFontSize(9)
-  doc.setTextColor(120)
-  doc.text('Web Design & Development Agency', pw / 2, 78, { align: 'center' })
-  doc.setDrawColor(78, 133, 191)
-  doc.setLineWidth(0.5)
-  doc.line(pw / 2 - 25, 84, pw / 2 + 25, 84)
-  doc.setFont('helvetica', 'bold')
-  doc.setFontSize(20)
-  doc.setTextColor(40)
-  doc.text('Discovery Questionnaire', pw / 2, 105, { align: 'center' })
-  doc.setFont('helvetica', 'normal')
-  doc.setFontSize(10)
-  doc.setTextColor(80)
-  doc.text(`Prepared for: ${data.fullName || 'Client'}`, pw / 2, 118, { align: 'center' })
-  doc.text(`Date: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`, pw / 2, 126, { align: 'center' })
-  doc.setFillColor(30, 30, 35)
-  doc.rect(0, ph - 25, pw, 25, 'F')
-  doc.setFontSize(7)
-  doc.setTextColor(180)
-  doc.text('AROM STUDIO | aromstudio27@gmail.com | +91 8767990061 | https://arom-studio.vercel.app', pw / 2, ph - 12, { align: 'center' })
-  doc.addPage()
-
-  // Content pages
-  doc.setFillColor(78, 133, 191)
-  doc.rect(0, 0, pw, 10, 'F')
-  doc.setFont('helvetica', 'bold')
-  doc.setFontSize(7)
-  doc.setTextColor(255)
-  doc.text('AROM STUDIO', 12, 7)
-  doc.setFont('helvetica', 'normal')
-  doc.text('Discovery Questionnaire', pw / 2, 7, { align: 'center' })
-  doc.text(new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }), pw - 12, 7, { align: 'right' })
-
-  y = 22
-
-  writeLabel('Full Name', data.fullName)
-  writeLabel('Company / Business Name', data.company)
-  writeLabel('Designation', data.designation)
-  writeLabel('Email Address', data.email)
-  writeLabel('Phone Number', data.phone)
-  writeLabel('Website (if any)', data.website)
-  writeLabel('Business Description', data.businessDesc)
-  writeLabel('Products / Services Offered', data.services)
-  writeLabel('Years in Business', data.yearsBusiness)
-  writeLabel('Differentiator', data.differentiator)
-  writeArray('Why Website?', data.whyWebsite)
-  writeLabel('Top 3 Goals', data.goals)
-  writeArray('Age Groups', data.ageGroups)
-  writeArray('Target Location', data.targetLocation)
-  writeLabel('Competitors', data.competitors)
-  writeLabel('What you like about competitors', data.likeCompetitors)
-  writeLabel('What you dislike', data.dislikeCompetitors)
-  writeLabel('Inspiration 1', data.inspiration1 ? `${data.inspiration1} — ${data.reason1}` : '')
-  writeLabel('Inspiration 2', data.inspiration2 ? `${data.inspiration2} — ${data.reason2}` : '')
-  writeLabel('Inspiration 3', data.inspiration3 ? `${data.inspiration3} — ${data.reason3}` : '')
-  writeLabel('Branding', Object.entries(data.branding).filter(([, v]) => v).map(([k]) => k).join(', ') || 'None')
-  writeArray('Required Pages', data.pages)
-  writeArray('Required Features', data.features)
-  writeLabel('Content Provider', data.contentProvider)
-  writeArray('Content Items', data.contentItems)
-  writeLabel('Own Domain?', data.ownDomain)
-  writeLabel('Domain Name', data.domainName)
-  writeLabel('Own Hosting?', data.ownHosting)
-  writeLabel('Hosting Provider', data.hostingProvider)
-  writeLabel('Require SEO?', data.requireSEO)
-  writeLabel('Target Keywords', data.targetKeywords)
-  writeLabel('Target Cities', data.targetCities)
-  writeLabel('Preferred Start Date', data.startDate)
-  writeLabel('Preferred Launch Date', data.launchDate)
-  writeLabel('Urgency', data.urgency)
-  writeLabel('Budget', data.budget)
-  writeArray('Preferred Communication', data.communication)
-  writeLabel('Preferred Meeting Time', data.meetingTime)
-  writeLabel('Additional Notes', data.additionalNotes)
-
-  // Declaration
-  checkPage(30)
-  y += 6
-  doc.setDrawColor(78, 133, 191)
-  doc.setLineWidth(0.3)
-  doc.line(15, y, pw - 15, y)
-  y += 10
-  doc.setFont('helvetica', 'bold')
-  doc.setFontSize(10)
-  doc.setTextColor(78, 133, 191)
-  doc.text('Declaration', 15, y)
-  y += 7
-  doc.setFont('helvetica', 'normal')
-  doc.setFontSize(9)
-  doc.setTextColor(50)
-  doc.text('I confirm that the information provided in this questionnaire is accurate and complete to the best of my knowledge.', 15, y)
-  y += 8
-  doc.text(`Client Name: ${data.fullName || '_________________________'}`, 15, y)
-  y += 7
-  doc.text(`Date: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`, 15, y)
-  y += 12
-
-  // Internal use
-  doc.setDrawColor(200)
-  doc.line(15, y, pw - 15, y)
-  y += 8
-  doc.setFont('helvetica', 'bold')
-  doc.setFontSize(9)
-  doc.setTextColor(120)
-  doc.text('INTERNAL USE ONLY', pw / 2, y, { align: 'center' })
-  y += 7
-  doc.setFont('helvetica', 'normal')
-  doc.setFontSize(8)
-  doc.setTextColor(100)
-  doc.text('Lead ID: ______________________', 15, y); y += 5
-  doc.text('Sales Representative: ______________________', 15, y); y += 5
-  doc.text('Discovery Call Date: ______________________', 15, y); y += 5
-  doc.text('Proposal Due Date: ______________________', 15, y); y += 5
-  doc.text('Estimated Budget: ______________________', 15, y); y += 5
-  doc.text('Lead Status: ____ New ____ Qualified ____ Proposal Sent ____ Negotiation ____ Won ____ Lost', 15, y)
-
-  addFooter()
-  const dqFile = `Discovery_Questionnaire_${(data.fullName || 'Client').replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`
-  uploadPDF(doc, 'Discovery Questionnaire', dqFile, data.fullName || 'Client')
-  trackPDFDownload('discovery-questionnaire', dqFile)
-  doc.save(dqFile)
-}
-
 export default function DiscoveryQuestionnaire() {
   const [data, setData] = useState<QData>(defaultData)
   const [declaration, setDeclaration] = useState(false)
@@ -312,7 +143,7 @@ export default function DiscoveryQuestionnaire() {
 
   const handleDownload = () => {
     if (!declaration) return
-    generateQuestionnairePDF(data)
+    generateDiscoveryQuestionnairePDF(data)
     recordAdminDiscoveryQuestionnaire({
       fullName: data.fullName,
       company: data.company,

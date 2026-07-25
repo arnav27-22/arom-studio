@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react'
-import jsPDF from 'jspdf'
 import { Plus, Download, Eye, Trash2, FileText, CheckCircle2, Clock } from 'lucide-react'
 import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, recordAdminInvoice, type AdminInvoice } from '../adminStore'
 import { StatCard } from '../components/StatCard'
-import { exportSectionReportPDF } from '../../lib/professionalPDF'
+import { generateInvoicePDF, exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function InvoicesPage() {
   const [store, setStore] = useState(getAdminStore())
@@ -83,114 +82,6 @@ export function InvoicesPage() {
     reloadStore()
   }
 
-  const generatePDFDoc = (inv: AdminInvoice) => {
-    const doc = new jsPDF('p', 'mm', 'a4')
-    const sym = inv.currency === 'INR' ? 'Rs. ' : '$'
-
-    // Header
-    doc.setFillColor(30, 30, 35)
-    doc.rect(0, 0, 210, 45, 'F')
-
-    doc.setTextColor(255, 255, 255)
-    doc.setFont('helvetica', 'bold')
-    doc.setFontSize(22)
-    doc.text('AROM STUDIO', 15, 20)
-
-    doc.setFontSize(10)
-    doc.setFont('helvetica', 'normal')
-    doc.setTextColor(78, 133, 191)
-    doc.text('PREMIUM DIGITAL AGENCY', 15, 26)
-
-    doc.setTextColor(200, 200, 210)
-    doc.setFontSize(9)
-    doc.text('aromstudio27@gmail.com | +91 8767990061 | https://aromstudio.vercel.app', 15, 34)
-
-    // Invoice Badge
-    doc.setFontSize(20)
-    doc.setFont('helvetica', 'bold')
-    doc.setTextColor(255, 255, 255)
-    doc.text('INVOICE', 160, 22)
-    doc.setFontSize(10)
-    doc.setFont('helvetica', 'normal')
-    doc.setTextColor(78, 133, 191)
-    doc.text(inv.invoiceNumber, 160, 29)
-
-    // Client Info Section
-    doc.setTextColor(40, 40, 50)
-    doc.setFontSize(10)
-    doc.setFont('helvetica', 'bold')
-    doc.text('BILLED TO:', 15, 58)
-    doc.setFont('helvetica', 'normal')
-    doc.text(inv.clientName, 15, 64)
-    if (inv.clientCompany) doc.text(inv.clientCompany, 15, 70)
-    doc.text(inv.clientEmail, 15, inv.clientCompany ? 76 : 70)
-    if (inv.clientPhone) doc.text(inv.clientPhone, 15, inv.clientCompany ? 82 : 76)
-
-    // Invoice Meta
-    doc.setFont('helvetica', 'bold')
-    doc.text('INVOICE DETAILS:', 130, 58)
-    doc.setFont('helvetica', 'normal')
-    doc.text(`Date: ${formatIST(inv.createdAt)}`, 130, 64)
-    doc.text(`Due Date: ${inv.dueDate}`, 130, 70)
-    doc.text(`Status: ${inv.status.toUpperCase()}`, 130, 76)
-
-    // Table Header
-    let y = 95
-    doc.setFillColor(240, 243, 248)
-    doc.rect(15, y, 180, 8, 'F')
-    doc.setFont('helvetica', 'bold')
-    doc.setFontSize(9)
-    doc.setTextColor(60, 60, 70)
-    doc.text('DESCRIPTION', 18, y + 5.5)
-    doc.text('QTY', 120, y + 5.5)
-    doc.text('PRICE', 145, y + 5.5)
-    doc.text('TOTAL', 175, y + 5.5)
-
-    y += 12
-    doc.setFont('helvetica', 'normal')
-    doc.setTextColor(50, 50, 60)
-
-    inv.items.forEach((item) => {
-      const lineTotal = item.quantity * item.unitPrice
-      doc.text(item.description, 18, y)
-      doc.text(item.quantity.toString(), 122, y)
-      doc.text(`${sym}${item.unitPrice.toLocaleString('en-IN')}`, 145, y)
-      doc.text(`${sym}${lineTotal.toLocaleString('en-IN')}`, 175, y)
-      y += 8
-    })
-
-    // Line Divider
-    doc.setDrawColor(220, 220, 230)
-    doc.line(15, y, 195, y)
-    y += 10
-
-    // Summary Box
-    doc.setFont('helvetica', 'normal')
-    doc.text(`Subtotal: ${sym}${inv.subtotal.toLocaleString('en-IN')}`, 135, y)
-    y += 6
-    if (inv.discountAmount > 0) {
-      doc.text(`Discount (${inv.discountRate}%): -${sym}${inv.discountAmount.toLocaleString('en-IN')}`, 135, y)
-      y += 6
-    }
-    doc.text(`GST/Tax (${inv.taxRate}%): +${sym}${inv.taxAmount.toLocaleString('en-IN')}`, 135, y)
-    y += 8
-
-    doc.setFont('helvetica', 'bold')
-    doc.setFontSize(12)
-    doc.setTextColor(78, 133, 191)
-    doc.text(`Total Due: ${sym}${inv.totalAmount.toLocaleString('en-IN')}`, 135, y)
-
-    // Footer Notes
-    y = Math.max(y + 20, 240)
-    doc.setFontSize(8)
-    doc.setFont('helvetica', 'italic')
-    doc.setTextColor(120, 120, 130)
-    doc.text(`Notes: ${inv.notes || 'Thank you for your business.'}`, 15, y)
-    doc.text('AROM STUDIO • Crafting Precision Digital Products', 15, y + 6)
-
-    return doc
-  }
-
   const handleCreateInvoice = (e: React.FormEvent) => {
     e.preventDefault()
     if (!clientName || !clientEmail) return
@@ -227,12 +118,12 @@ export function InvoicesPage() {
   }
 
   const handleDownloadInvoicePDF = (inv: AdminInvoice) => {
-    const doc = generatePDFDoc(inv)
+    const doc = generateInvoicePDF(inv)
     doc.save(`${inv.invoiceNumber}_${inv.clientName.replace(/\s+/g, '_')}.pdf`)
   }
 
   const handlePreviewInvoicePDF = (inv: AdminInvoice) => {
-    const doc = generatePDFDoc(inv)
+    const doc = generateInvoicePDF(inv)
     const url = doc.output('datauristring')
     setPreviewPdfUrl(url)
     setSelectedInvoice(inv)
