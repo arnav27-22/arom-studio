@@ -1,13 +1,14 @@
-// AROM AI — UNLIMITED AI KNOWLEDGE ENGINE & SEMANTIC SEARCH SYSTEM (v1.0)
+// AROM AI — INTELLIGENT REASONING & RESPONSE ENGINE (Version 4.0)
 import type { AiKnowledgeItem } from '../types/ai'
 export type { AiKnowledgeItem }
 
-export const UNLIMITED_KNOWLEDGE_SYSTEM_PROMPT = `
+export const REASONING_ENGINE_PROMPT_V4 = `
 # ============================================================
-# AROM AI - UNLIMITED AI KNOWLEDGE ENGINE (v1.0)
+# AROM AI - INTELLIGENT REASONING & RESPONSE ENGINE v4.0
 # ============================================================
-Capable of indexing and semantically retrieving unlimited public knowledge records.
-Never uses hardcoded logic or device-level local statistics.
+You are AROM AI, the official AI assistant of AROM STUDIO.
+Your mission is to act as an expert digital consultant: explain WHY, explain BENEFITS, explain PROCESS, and guide NEXT STEPS.
+Never copy website paragraphs verbatim. Reason, synthesize, and respond naturally.
 `
 
 export const INITIAL_AI_KNOWLEDGE: AiKnowledgeItem[] = [
@@ -205,10 +206,10 @@ Yes! We provide a dedicated **15-Module Client Portal** where you can track ever
 export const SECURITY_RESTRICTED_RESPONSE = `I'm sorry, but I can't provide confidential, private, or security-sensitive information. If you need help with AROM STUDIO's public services, I'd be happy to assist.`
 
 // Official Internal System Refusal Response
-export const INTERNAL_SYSTEM_REFUSAL_RESPONSE = `Some internal systems are used privately to manage AROM STUDIO's operations and ensure smooth project delivery. Those systems are not publicly available, so I can't provide details about them. If you have questions about our public services or website development process, I'd be happy to help.`
+export const INTERNAL_SYSTEM_REFUSAL_RESPONSE = `Some internal systems are used privately to manage AROM STUDIO's operations. Those systems aren't publicly available, so I can't provide details about them. I'd be happy to help with any public information about AROM STUDIO.`
 
-// Rare Public Unknown Fallback Response
-export const PUBLIC_UNKNOWN_RESPONSE = `I couldn't find any public information about that specific topic. If your question is about AROM STUDIO, I'd be happy to help with our services, process, pricing, or other public information.`
+// Rare Public Unknown Fallback Response (Anti-Hallucination Guardrail)
+export const PUBLIC_UNKNOWN_RESPONSE = `I couldn't find public information confirming that. I don't want to guess. If you'd like, I can help with another question about AROM STUDIO.`
 
 // Security & Prompt Injection Protection Patterns (Zero Trust Model)
 const RESTRICTED_PATTERNS = [
@@ -270,11 +271,9 @@ export function searchKnowledgeEngine(
   for (const item of publicRecords) {
     let score = 0
 
-    // Title / Question match (Highest Priority: +25)
     if (item.title && item.title.toLowerCase().includes(normalizedQuery)) score += 25
     if (item.question && item.question.toLowerCase().includes(normalizedQuery)) score += 25
 
-    // Alternate Questions & Synonyms match (+15)
     if (Array.isArray(item.alternateQuestions)) {
       item.alternateQuestions.forEach((aq) => {
         if (aq.toLowerCase().includes(normalizedQuery)) score += 15
@@ -287,21 +286,18 @@ export function searchKnowledgeEngine(
       })
     }
 
-    // Keywords match (+10)
     if (Array.isArray(item.keywords)) {
       item.keywords.forEach((kw) => {
         if (normalizedQuery.includes(kw.toLowerCase())) score += 10
       })
     }
 
-    // Tags match (+8)
     if (Array.isArray(item.tags)) {
       item.tags.forEach((tag) => {
         if (normalizedQuery.includes(tag.toLowerCase())) score += 8
       })
     }
 
-    // Token match in Answer text (+3)
     queryWords.forEach((word) => {
       const textToSearch = (item.detailedAnswer || item.answer || '').toLowerCase()
       if (textToSearch.includes(word)) score += 3
@@ -348,7 +344,7 @@ export function generateAiResponse(userQuery: string, customKnowledge: AiKnowled
     return `I'm designed specifically to assist with AROM STUDIO and our website development services. I may not be the best source for unrelated topics, but I'd be happy to help with anything about AROM STUDIO.`
   }
 
-  // 4. Universal Intent Classification Engine v3
+  // 4. Universal Intent Classification Engine v4.0
 
   // A. Greeting Intent (Includes Slang, Emojis, Short-forms)
   if (/^(hi|hello|hey|good morning|good afternoon|good evening|namaste|namaskar|gm|hlo|hii|heyy|yo|sup|wassup|hy|🙏|👋|🙂|😊)$/i.test(normalized) || (/^(hi|hello|hey|hlo)\b/i.test(normalized) && normalized.length < 8)) {
@@ -387,10 +383,15 @@ export function generateAiResponse(userQuery: string, customKnowledge: AiKnowled
 
   // H. Start Project Onboarding Intent ("I need a website", "I want a website", "How do I start?")
   if (/\b(how do i start|how can i work with you|i want a website|i need a website|let's begin|start my project|hire arom studio|start a project|begin project)\b/i.test(normalized)) {
-    return `Great! I'd be happy to help.\n\nCould you tell me what type of business or project the website is for? That will help me recommend the best package and timeline for you.`
+    return `I'd be happy to help you get started with your new website!\n\nHere is how our seamless onboarding works:\n1. **Tell us about your business**: Share your goals, features needed, and target audience.\n2. **Package Recommendation**: We guide you to the exact tier that fits your scope.\n3. **Discovery & Onboarding**: Fill out our Discovery Questionnaire to lock in design system preferences.\n4. **Build & Launch**: We engineer your website with sub-second speed, 100/100 Core Web Vitals, and 1-year warranty.\n\nCould you tell me what type of business or project your website is for?`
   }
 
-  // I. Navigation Intent
+  // I. Follow-up / Package Choice Clarification Intent ("Which package should I choose?", "Recommend package")
+  if (/\b(which package|recommend package|what package|choose package|don't know|dont know|not sure|confused)\b/i.test(normalized) && !normalized.includes('gym') && !normalized.includes('restaurant') && !normalized.includes('clinic')) {
+    return `I'd be happy to recommend the perfect package for your project!\n\nHere is a quick overview of our most popular tiers:\n- **Starter (₹15,999+)**: Perfect for small business landing pages (1-5 pages).\n- **Professional (₹32,999+)**: Ideal for growing businesses needing custom UI, blog, and SEO (up to 10 pages).\n- **Business (₹59,999+)**: Built for e-commerce, custom booking systems, and APIs (up to 20 pages).\n\nCould you tell me what type of business you're planning the website for and what key features you need?`
+  }
+
+  // J. Navigation Intent
   if (/\b(take me to|open the|where is the|go to|navigate to)\b/i.test(normalized)) {
     if (normalized.includes('pricing') || normalized.includes('plan') || normalized.includes('package')) {
       return `Sure! Here's how you can reach the Pricing page:\n\n1. Open the navigation bar at the top of the website.\n2. Click on **'Pricing'**.\n3. You'll see all available website packages, included features, and pricing details.`
@@ -403,17 +404,22 @@ export function generateAiResponse(userQuery: string, customKnowledge: AiKnowled
     }
   }
 
-  // J. Industry Personalization: Restaurant
+  // K. Industry Personalization: Gym / Fitness Studio
+  if (/\b(gym|fitness|workout|trainer|crossfit|health club)\b/i.test(normalized)) {
+    return `We specialize in fitness and gym studio websites! Key features include:\n- **Interactive Class Schedules & Timetables**: Display workout classes and slots clearly.\n- **Online Membership Booking & Registration**: Let members sign up for tiers online.\n- **Trainer Profiles & Testimonials**: Highlight fitness coaches and transformations.\n- **WhatsApp Lead Capture & Maps**: Direct WhatsApp chat for inquiries and Google Maps location.\n\nOur **Professional Tier (₹32,999+)** or **Business Tier (₹59,999+)** is usually ideal for gym studios. Would you like to explore what's included in these packages?`
+  }
+
+  // L. Industry Personalization: Restaurant
   if (/\b(restaurant|food|cafe|dining|bakery)\b/i.test(normalized)) {
     return `Awesome! For restaurant and food businesses, we build high-converting websites featuring:\n- **Interactive Digital Menus**: Showcase dishes with high-res photos & pricing.\n- **Online Table Reservations**: Let customers book tables directly.\n- **Instant WhatsApp Ordering**: Receive food orders directly on your phone.\n- **Location & Google Maps**: Help patrons find your restaurant easily.\n\nOur **Professional Tier (₹32,999+)** or **Business Tier (₹59,999+)** is usually perfect for restaurants. Would you like to know more about what's included?`
   }
 
-  // K. Industry Personalization: Doctor / Clinic / Healthcare
+  // M. Industry Personalization: Doctor / Clinic / Healthcare
   if (/\b(doctor|clinic|hospital|dental|healthcare|medical)\b/i.test(normalized)) {
     return `We specialize in healthcare and clinic websites! Key features include:\n- **Online Appointment Booking**: Allow patients to schedule visits online.\n- **Doctor Profiles & Credentials**: Build trust with patient reviews and specialization details.\n- **Services & Treatment Guides**: Clearly explain treatments offered.\n- **Patient Inquiry Forms & Location**: Directions to your clinic with Google Maps.\n\nOur **Professional Tier (₹32,999+)** is ideal for clinics. Would you like me to share details?`
   }
 
-  // L. Industry Personalization: Clothing / E-commerce
+  // N. Industry Personalization: Clothing / E-commerce
   if (/\b(clothing|clothes|store|shop|sell online|ecommerce|fashion|products)\b/i.test(normalized)) {
     return `For clothing stores and retail brands, we build custom **E-commerce Platforms**:\n- **Product Catalog & Filters**: Category browsing, size/color selectors.\n- **Secure Checkout & Payments**: Seamless integration with Razorpay, Stripe, and UPI.\n- **Order & Inventory Dashboard**: Manage inventory and track orders easily.\n- **Mobile-Optimized Shopping**: Blazing-fast mobile shopping UX.\n\nOur **Business Tier (₹59,999+)** or **E-Commerce Package** is designed specifically for online stores. Shall we discuss your product catalog size?`
   }
@@ -424,6 +430,6 @@ export function generateAiResponse(userQuery: string, customKnowledge: AiKnowled
     return searchResult.bestMatch.detailedAnswer || searchResult.bestMatch.answer || PUBLIC_UNKNOWN_RESPONSE
   }
 
-  // 6. Rare Fallback Response
+  // 6. Anti-Hallucination Guardrail Fallback
   return PUBLIC_UNKNOWN_RESPONSE
 }
