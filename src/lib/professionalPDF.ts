@@ -101,8 +101,6 @@ const MARGIN_TOP = 22
 const MARGIN_BOTTOM = 20
 const HEADER_HEIGHT = 14
 const FOOTER_HEIGHT = 14
-const SECTION_GAP = 6
-
 export interface TableRow {
   cells: string[]
   isHeader?: boolean
@@ -146,15 +144,6 @@ export function getPageLayout(doc: jsPDF): PageLayout {
   }
 }
 
-function getUsableBottom(doc: jsPDF, layout: PageLayout): number {
-  return layout.contentBottom
-}
-
-function countPages(doc: jsPDF, skipCover: boolean): number {
-  const n = doc.getNumberOfPages()
-  return skipCover ? Math.max(0, n - 1) : n
-}
-
 function fmtDateTime(): string {
   const now = new Date()
   return now.toLocaleDateString('en-IN', {
@@ -179,33 +168,8 @@ export function checkPageBreak(
   return y
 }
 
-function writeTextBlock(
-  doc: jsPDF,
-  text: string,
-  x: number,
-  y: number,
-  width: number,
-  lineHeight: number,
-  fontSize: number,
-  color: { r: number; g: number; b: number },
-  style: 'normal' | 'bold' | 'italic' = 'normal',
-  align: 'left' | 'center' | 'right' = 'left',
-  indent: number = 0
-): number {
-  doc.setFont('helvetica', style)
-  doc.setFontSize(fontSize)
-  doc.setTextColor(color.r, color.g, color.b)
-  const lines = doc.splitTextToSize(text, width)
-  for (const line of lines) {
-    doc.text(line, x + indent, y)
-    y += lineHeight
-  }
-  return y
-}
-
 export function addHeader(doc: jsPDF, documentTitle: string) {
   const pw = doc.internal.pageSize.getWidth()
-  const ph = doc.internal.pageSize.getHeight()
 
   doc.setFillColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
   doc.rect(0, 0, pw, HEADER_HEIGHT, 'F')
