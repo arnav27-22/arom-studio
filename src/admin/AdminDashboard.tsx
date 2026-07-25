@@ -78,10 +78,10 @@ export function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     // Initial cloud sync
     syncFromCloud()
 
-    // Poll global cloud sync every 5 seconds so events update in real-time
+    // Poll global cloud sync every 3 seconds for real-time cross-device synchronization
     const interval = setInterval(() => {
       syncFromCloud()
-    }, 5000)
+    }, 3000)
 
     return () => clearInterval(interval)
   }, [])

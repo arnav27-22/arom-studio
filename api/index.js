@@ -97,7 +97,7 @@ export default async function handler(req, res) {
   // Global Sync Endpoint for Cross-Device Synchronization
   if (pathname === '/api/sync') {
     if (req.method === 'GET') {
-      const [visitors, pdfs, leads, invoices, logs, clients, projects, proposals, agreements, payments, content, assets, approvals, timelines, handovers, feedbacks, notifications, recycleBin, discovery, blogs] = await Promise.all([
+      const [visitors, pdfs, leads, invoices, logs, clients, projects, proposals, agreements, payments, content, assets, approvals, timelines, handovers, feedbacks, notifications, recycleBin, discovery, blogs, aiConversations] = await Promise.all([
         db.read('real_visitors'),
         db.read('real_pdfs'),
         db.read('real_leads'),
@@ -118,6 +118,7 @@ export default async function handler(req, res) {
         db.read('real_recycle_bin'),
         db.read('real_discovery'),
         db.read('real_blogs'),
+        db.read('real_ai_conversations'),
       ])
       return j(res, {
         visitors: visitors || [],
@@ -140,6 +141,7 @@ export default async function handler(req, res) {
         discoveryQuestionnaires: discovery || [],
         recycleBin: recycleBin || [],
         blogs: blogs || [],
+        aiConversations: aiConversations || [],
       })
     }
 

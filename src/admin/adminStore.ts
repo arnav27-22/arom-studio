@@ -905,7 +905,7 @@ export function emptyRecycleBin() {
   saveAdminStore(store)
 }
 
-// Global Cloud Sync: Syncs data from cloud server so Admin on Device B sees events from Device A
+// Global Cloud Sync: Syncs centralized database so Admin on Mobile, Laptop, Desktop, Tablet see EXACT SAME data
 export async function syncFromCloud(): Promise<StoreData> {
   const local = getAdminStore()
   try {
@@ -916,10 +916,11 @@ export async function syncFromCloud(): Promise<StoreData> {
       const mergeList = <T extends { id: string }>(remoteArr?: T[], localArr?: T[]): T[] => {
         const localItems = Array.isArray(localArr) ? localArr : []
         const remoteItems = Array.isArray(remoteArr) ? remoteArr : []
-        const result: T[] = [...localItems]
-        remoteItems.forEach((r) => {
-          if (r && r.id && !result.some((m) => m.id === r.id)) {
-            result.push(r)
+        // Centralized Server Data is Primary Authority
+        const result: T[] = [...remoteItems]
+        localItems.forEach((l) => {
+          if (l && l.id && !result.some((m) => m.id === l.id)) {
+            result.push(l)
           }
         })
         return result
@@ -947,6 +948,22 @@ export async function syncFromCloud(): Promise<StoreData> {
         blogs: Array.isArray(remote.blogs) && remote.blogs.length > 0 ? remote.blogs : (local.blogs || BLOG_POSTS),
         recycleBin: mergeList(remote.recycleBin, local.recycleBin),
       }
+
+      // Sync AI Conversations from Centralized Server if present
+      if (Array.isArray(remote.aiConversations) && remote.aiConversations.length > 0) {
+        try {
+          const localAiRaw = localStorage.getItem('arom_ai_conversations_v1')
+          const localAi: any[] = localAiRaw ? JSON.parse(localAiRaw) : []
+          const mergedAi = [...remote.aiConversations]
+          localAi.forEach((l) => {
+            if (l && l.id && !mergedAi.some((r) => r.id === l.id)) {
+              mergedAi.push(l)
+            }
+          })
+          localStorage.setItem('arom_ai_conversations_v1', JSON.stringify(mergedAi))
+        } catch {}
+      }
+
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
       } catch {}
