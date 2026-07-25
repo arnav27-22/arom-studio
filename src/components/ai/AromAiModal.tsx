@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Bot, Send, X, Plus, Trash2, Edit2, History, Mic, MicOff, Maximize2, Minimize2, Sparkles, User, Check, Search } from 'lucide-react'
+import { Bot, Send, X, Plus, Trash2, Edit2, History, Maximize2, Minimize2, Sparkles, User, Check, Search } from 'lucide-react'
 import {
   getAiConversations,
   saveAiConversation,
@@ -39,7 +39,6 @@ export function AromAiModal({ isOpen, onClose }: AromAiModalProps) {
   const [isTyping, setIsTyping] = useState(false)
   const [showHistory, setShowHistory] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
-  const [isVoiceActive, setIsVoiceActive] = useState(false)
   const [searchHistory, setSearchHistory] = useState('')
   const [editingTitleId, setEditingTitleId] = useState<string | null>(null)
   const [tempTitle, setTempTitle] = useState('')
@@ -283,18 +282,6 @@ export function AromAiModal({ isOpen, onClose }: AromAiModalProps) {
             {/* Header Controls */}
             <div className="flex items-center gap-1.5">
               <button
-                onClick={() => setIsVoiceActive(!isVoiceActive)}
-                className={`p-2 rounded-xl transition-all ${
-                  isVoiceActive
-                    ? 'bg-accent text-black font-semibold shadow-lg shadow-accent/30'
-                    : 'text-white/60 hover:text-white hover:bg-white/10'
-                }`}
-                title={isVoiceActive ? 'Voice Assistant Active' : 'Enable Voice Assistant'}
-              >
-                {isVoiceActive ? <Mic className="h-4 w-4 animate-bounce" /> : <MicOff className="h-4 w-4" />}
-              </button>
-
-              <button
                 onClick={() => setShowHistory(!showHistory)}
                 className={`p-2 rounded-xl transition-all ${
                   showHistory
@@ -508,16 +495,6 @@ export function AromAiModal({ isOpen, onClose }: AromAiModalProps) {
                     placeholder="Ask AROM AI anything about AROM STUDIO..."
                     className="flex-1 bg-transparent px-3 text-xs text-white placeholder:text-white/30 focus:outline-none font-body"
                   />
-
-                  <button
-                    type="button"
-                    onClick={() => setIsVoiceActive(!isVoiceActive)}
-                    className={`p-2 rounded-xl text-xs transition-colors ${
-                      isVoiceActive ? 'text-accent bg-accent/20' : 'text-white/40 hover:text-white'
-                    }`}
-                  >
-                    {isVoiceActive ? <Mic className="h-4 w-4 text-accent animate-pulse" /> : <MicOff className="h-4 w-4" />}
-                  </button>
 
                   <button
                     type="submit"
