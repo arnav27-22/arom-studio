@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { Brain, Plus, Edit, Trash2, Save, X, BookOpen, Key, RefreshCw, Layers } from 'lucide-react'
-import { getAiKnowledge, saveAiKnowledge } from '../../lib/aiStore'
+import { getAiKnowledge, loadAiKnowledgeFromServer, saveAiKnowledge } from '../../lib/aiStore'
 import { INITIAL_AI_KNOWLEDGE } from '../../lib/aiEngine'
 import type { AiKnowledgeItem } from '../../types/ai'
 
@@ -25,7 +25,7 @@ export function AIKnowledge() {
   }
 
   useEffect(() => {
-    reload()
+    loadAiKnowledgeFromServer().then(reload)
   }, [])
 
   const handleOpenCreate = () => {

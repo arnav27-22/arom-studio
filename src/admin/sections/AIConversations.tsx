@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { Bot, MessageSquare, Users, Clock, Search, Printer, FileText, Trash2, ExternalLink, X, User } from 'lucide-react'
-import { getAiConversations, deleteAiConversation, type AiConversation } from '../../lib/aiStore'
+import { getAiConversations, loadAiConversationsFromServer, deleteAiConversation, type AiConversation } from '../../lib/aiStore'
 import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function AIConversations() {
@@ -12,12 +12,15 @@ export function AIConversations() {
   const [modalOpen, setModalOpen] = useState(false)
 
   const reload = () => {
-    const list = getAiConversations()
-    setConversations(list)
+    setConversations(getAiConversations())
   }
 
   useEffect(() => {
-    reload()
+    loadAiConversationsFromServer().then(reload)
+    const timer = setInterval(() => {
+      loadAiConversationsFromServer().then(reload)
+    }, 10000)
+    return () => clearInterval(timer)
   }, [])
 
   const handleDelete = (id: string) => {

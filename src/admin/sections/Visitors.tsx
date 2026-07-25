@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { Users, Monitor, Smartphone, Eye, ExternalLink, Activity, Calendar, Clock, Globe, Zap, Radio, UserCheck, UserPlus, Trash2, Download } from 'lucide-react'
-import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, type AdminVisitor } from '../adminStore'
+import { getAdminStore, saveAdminStore, syncFromCloud, moveToRecycleBin, formatIST, type AdminVisitor } from '../adminStore'
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts'
 import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
@@ -13,8 +13,7 @@ export function Visitors() {
   const [searchFilter, setSearchFilter] = useState('')
 
   const reload = () => {
-    const s = getAdminStore()
-    setStore(s)
+    syncFromCloud().then(s => setStore(s))
   }
 
   const handleDownloadPDF = () => {

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight, Check, Download, Save, Send } from 'lucide-react'
@@ -9,8 +9,6 @@ import { generatePDF } from '../../lib/generatePDF'
 import { cn } from '../../lib/cn'
 import emailjs from '@emailjs/browser'
 import { EMAILJS_CONFIG } from '../../lib/emailjs'
-
-const STORAGE_KEY = 'arom_questionnaire'
 
 const sections = [
   { id: 'business', label: 'Business Info' },
@@ -32,29 +30,18 @@ const prompts: Record<string, string> = {
 
 export default function Questionnaire() {
   const [currentStep, setCurrentStep] = useState(0)
-  const [content, setContent] = useState<Record<string, string>>(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY)
-      return saved ? JSON.parse(saved) : {}
-    } catch { return {} }
-  })
+  const [content, setContent] = useState<Record<string, string>>({})
   const [saved, setSaved] = useState(false)
   const [sending, setSending] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [agreedToTerms, setAgreedToTerms] = useState(false)
   const [termsError, setTermsError] = useState(false)
 
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(content))
-  }, [content])
-
   const updateContent = useCallback((id: string, value: string) => {
     setContent((prev) => ({ ...prev, [id]: value }))
-    setSaved(false)
   }, [])
 
   const handleSave = () => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(content))
     setSaved(true)
     setTimeout(() => setSaved(false), 2000)
   }

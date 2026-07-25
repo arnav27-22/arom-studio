@@ -8,30 +8,17 @@ export default function AdminApp() {
   const [authed, setAuthed] = useState<boolean | null>(null)
 
   useEffect(() => {
-    // 1. Check local session storage first
-    if (sessionStorage.getItem('arom_admin_session') === 'true') {
-      setAuthed(true)
-      return
-    }
-
-    // 2. Otherwise verify cookie via API
     fetch('/api/admin/auth', {
       credentials: 'include',
     })
       .then((r) => r.json())
       .then((d) => {
-        if (d.authenticated) {
-          sessionStorage.setItem('arom_admin_session', 'true')
-          setAuthed(true)
-        } else {
-          setAuthed(false)
-        }
+        setAuthed(d.authenticated ? true : false)
       })
       .catch(() => setAuthed(false))
   }, [])
 
   const handleLogout = () => {
-    sessionStorage.removeItem('arom_admin_session')
     fetch('/api/admin/auth', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -55,7 +42,6 @@ export default function AdminApp() {
       <div className="relative z-10">
         {!authed ? (
           <AdminLogin onLogin={() => {
-            sessionStorage.setItem('arom_admin_session', 'true')
             setAuthed(true)
           }} />
         ) : (

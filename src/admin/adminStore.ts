@@ -93,7 +93,6 @@ export interface AdminSystemLog {
   severity: 'info' | 'warn' | 'error'
 }
 
-// 12 New Business & Agency Module Interfaces
 export interface AdminClient {
   id: string
   companyName: string
@@ -280,8 +279,6 @@ export interface AdminRecycleItem {
   originalCreatedAt?: string
 }
 
-const STORAGE_KEY = 'arom_admin_global_real_store_v7'
-
 export interface StoreData {
   visitors: AdminVisitor[]
   leads: AdminLead[]
@@ -305,579 +302,141 @@ export interface StoreData {
   recycleBin: AdminRecycleItem[]
 }
 
-const INITIAL_CLIENTS: AdminClient[] = [
-  {
-    id: 'cli_1',
-    companyName: 'Apex Innovations Global',
-    contactPerson: 'Sarah Jenkins',
-    email: 'sarah.j@apexinnovations.com',
-    phone: '+1 (555) 234-5678',
-    website: 'https://apexinnovations.com',
-    activeProjectsCount: 2,
-    status: 'Active',
-    totalRevenue: 14500,
-    notes: 'Key enterprise client. Requests fast turnaround on UI redesigns.',
-    createdAt: '2026-06-10T10:00:00Z',
-    timeline: [
-      { date: '2026-06-10', event: 'Client Onboarded' },
-      { date: '2026-06-15', event: 'Web Portal Project Started' },
-      { date: '2026-07-01', event: 'First Payment Received ($7,250)' },
-    ],
-  },
-  {
-    id: 'cli_2',
-    companyName: 'LuxeLiving Interior Studio',
-    contactPerson: 'Vikramaditya Roy',
-    email: 'vikram@luxeliving.co.in',
-    phone: '+91 98765 43210',
-    website: 'https://luxeliving.co.in',
-    activeProjectsCount: 1,
-    status: 'Active',
-    totalRevenue: 8900,
-    notes: 'Premium interior architecture studio based in Mumbai.',
-    createdAt: '2026-06-20T14:30:00Z',
-    timeline: [
-      { date: '2026-06-20', event: 'Discovery Call Completed' },
-      { date: '2026-06-25', event: 'Agreement Signed (v1.0)' },
-    ],
-  },
-  {
-    id: 'cli_3',
-    companyName: 'BioHealth Labs',
-    contactPerson: 'Dr. Elena Rostova',
-    email: 'elena@biohealth.io',
-    phone: '+44 20 7946 0912',
-    website: 'https://biohealth.io',
-    activeProjectsCount: 1,
-    status: 'Onboarding',
-    totalRevenue: 6200,
-    notes: 'Medical research SaaS platform.',
-    createdAt: '2026-07-05T09:15:00Z',
-    timeline: [
-      { date: '2026-07-05', event: 'Proposal Accepted' },
-    ],
-  },
-]
-
-const INITIAL_PROJECTS: AdminProject[] = [
-  {
-    id: 'proj_1',
-    title: 'Apex Cloud Dashboard & Design System',
-    clientId: 'cli_1',
-    clientName: 'Apex Innovations Global',
-    status: 'In Progress',
-    progress: 75,
-    startDate: '2026-06-15',
-    dueDate: '2026-08-10',
-    priority: 'High',
-    assignedTeam: ['Arnav (Lead Developer)', 'Om (Lead Designer)', 'Sneha (QA)'],
-    projectFiles: [
-      { name: 'Wireframes_v2.fig', url: '#', uploadedAt: '2026-06-20' },
-      { name: 'API_Contract_Doc.pdf', url: '#', uploadedAt: '2026-07-02' },
-    ],
-    milestones: [
-      { title: 'UX Research & Wireframing', completed: true, dueDate: '2026-06-25' },
-      { title: 'Frontend Component Library', completed: true, dueDate: '2026-07-15' },
-      { title: 'Backend Integration & Auth', completed: false, dueDate: '2026-08-01' },
-      { title: 'Final Launch & Handover', completed: false, dueDate: '2026-08-10' },
-    ],
-    launchStatus: 'Staging',
-    createdAt: '2026-06-15T10:00:00Z',
-  },
-  {
-    id: 'proj_2',
-    title: 'LuxeLiving Portfolio & Booking Web App',
-    clientId: 'cli_2',
-    clientName: 'LuxeLiving Interior Studio',
-    status: 'In Review',
-    progress: 90,
-    startDate: '2026-06-25',
-    dueDate: '2026-07-30',
-    priority: 'High',
-    assignedTeam: ['Arnav (Lead Developer)', 'Om (Lead Designer)'],
-    projectFiles: [
-      { name: 'Branding_Assets.zip', url: '#', uploadedAt: '2026-06-26' },
-      { name: 'HighRes_3DRenders.zip', url: '#', uploadedAt: '2026-07-05' },
-    ],
-    milestones: [
-      { title: 'Interactive Studio Showcase', completed: true, dueDate: '2026-07-10' },
-      { title: 'Booking Calendar Integration', completed: true, dueDate: '2026-07-20' },
-      { title: 'Client Feedback Revisions', completed: false, dueDate: '2026-07-28' },
-    ],
-    launchStatus: 'Staging',
-    createdAt: '2026-06-25T14:30:00Z',
-  },
-]
-
-const INITIAL_PROPOSALS: AdminProposal[] = [
-  {
-    id: 'prop_1',
-    proposalNumber: 'PROP-2026-001',
-    clientName: 'Apex Innovations Global',
-    clientEmail: 'sarah.j@apexinnovations.com',
-    title: 'Enterprise Web Portal & Analytics System',
-    amount: 14500,
-    status: 'Accepted',
-    createdAt: '2026-06-11T10:00:00Z',
-    validUntil: '2026-07-11',
-    scopeSummary: 'Full-stack React & Node.js portal with realtime web analytics, PDF invoice generation, and custom CMS.',
-  },
-  {
-    id: 'prop_2',
-    proposalNumber: 'PROP-2026-002',
-    clientName: 'LuxeLiving Interior Studio',
-    clientEmail: 'vikram@luxeliving.co.in',
-    title: 'Interactive 3D Portfolio & Booking Engine',
-    amount: 8900,
-    status: 'Accepted',
-    createdAt: '2026-06-21T11:00:00Z',
-    validUntil: '2026-07-21',
-    scopeSummary: 'Custom dark-mode luxury showcase website with GSAP animations, 3D gallery, and lead capture.',
-  },
-  {
-    id: 'prop_3',
-    proposalNumber: 'PROP-2026-003',
-    clientName: 'BioHealth Labs',
-    clientEmail: 'elena@biohealth.io',
-    title: 'Medical SaaS Data Visualization Platform',
-    amount: 6200,
-    status: 'Sent',
-    createdAt: '2026-07-10T16:00:00Z',
-    validUntil: '2026-08-10',
-    scopeSummary: 'HIPAA compliant dashboard with real-time patient statistics and PDF diagnostic summary exports.',
-  },
-]
-
-const INITIAL_AGREEMENTS: AdminAgreement[] = [
-  {
-    id: 'agr_1',
-    agreementNumber: 'AGR-2026-001',
-    clientName: 'Apex Innovations Global',
-    clientEmail: 'sarah.j@apexinnovations.com',
-    status: 'Signed',
-    agreementVersion: 'v1.0',
-    signedDate: '2026-06-14T11:20:00Z',
-    createdAt: '2026-06-12T09:00:00Z',
-  },
-  {
-    id: 'agr_2',
-    agreementNumber: 'AGR-2026-002',
-    clientName: 'LuxeLiving Interior Studio',
-    clientEmail: 'vikram@luxeliving.co.in',
-    status: 'Signed',
-    agreementVersion: 'v1.0',
-    signedDate: '2026-06-24T15:45:00Z',
-    createdAt: '2026-06-22T10:00:00Z',
-  },
-  {
-    id: 'agr_3',
-    agreementNumber: 'AGR-2026-003',
-    clientName: 'BioHealth Labs',
-    clientEmail: 'elena@biohealth.io',
-    status: 'Pending',
-    agreementVersion: 'v1.1',
-    createdAt: '2026-07-12T14:00:00Z',
-  },
-]
-
-const INITIAL_PAYMENTS: AdminPayment[] = [
-  {
-    id: 'pay_1',
-    invoiceNumber: 'INV-2026-001',
-    clientName: 'Apex Innovations Global',
-    amount: 7250,
-    dueDate: '2026-07-01',
-    paidDate: '2026-07-01T12:00:00Z',
-    status: 'Paid',
-    invoiceLink: '#',
-    receiptUrl: '#',
-    paymentMethod: 'Bank Wire Transfer',
-    reminderSentCount: 0,
-    createdAt: '2026-06-15T10:00:00Z',
-  },
-  {
-    id: 'pay_2',
-    invoiceNumber: 'INV-2026-002',
-    clientName: 'LuxeLiving Interior Studio',
-    amount: 4450,
-    dueDate: '2026-07-15',
-    paidDate: '2026-07-14T09:30:00Z',
-    status: 'Paid',
-    invoiceLink: '#',
-    receiptUrl: '#',
-    paymentMethod: 'UPI / Razorpay',
-    reminderSentCount: 0,
-    createdAt: '2026-06-25T11:00:00Z',
-  },
-  {
-    id: 'pay_3',
-    invoiceNumber: 'INV-2026-003',
-    clientName: 'Apex Innovations Global',
-    amount: 7250,
-    dueDate: '2026-08-01',
-    status: 'Pending',
-    invoiceLink: '#',
-    reminderSentCount: 1,
-    createdAt: '2026-07-15T10:00:00Z',
-  },
-]
-
-const INITIAL_CONTENT: AdminContentItem[] = [
-  {
-    id: 'cnt_1',
-    clientName: 'Apex Innovations Global',
-    projectName: 'Apex Cloud Dashboard & Design System',
-    status: 'Submitted',
-    completionPercentage: 100,
-    updatedAt: '2026-07-18T10:00:00Z',
-    checklist: [
-      { section: 'Homepage Hero & Tagline', status: 'Complete' },
-      { section: 'Services & Feature Highlights', status: 'Complete' },
-      { section: 'Team Bios & Photos', status: 'Complete' },
-      { section: 'Legal & Privacy Policy', status: 'Complete' },
-    ],
-  },
-  {
-    id: 'cnt_2',
-    clientName: 'LuxeLiving Interior Studio',
-    projectName: 'LuxeLiving Portfolio & Booking Web App',
-    status: 'Review',
-    completionPercentage: 85,
-    updatedAt: '2026-07-20T14:00:00Z',
-    checklist: [
-      { section: 'High-Res Project Photography', status: 'Complete' },
-      { section: 'Studio Philosophy Copy', status: 'Complete' },
-      { section: 'Client Testimonials', status: 'Review' },
-      { section: 'Pricing Tiers & Inclusions', status: 'Pending' },
-    ],
-  },
-]
-
-const INITIAL_ASSETS: AdminAssetFolder[] = [
-  {
-    id: 'ast_1',
-    clientName: 'Apex Innovations Global',
-    projectName: 'Apex Cloud Dashboard & Design System',
-    googleDriveLink: 'https://drive.google.com/drive/folders/apex-brand-kit-2026',
-    folderStatus: 'Complete',
-    missingFilesCount: 0,
-    uploadDate: '2026-06-18T11:00:00Z',
-    checklist: [
-      { name: 'Vector Brand Logo (SVG/AI)', received: true },
-      { name: 'Custom Brand Typography Fonts', received: true },
-      { name: 'Product UI Screenshots', received: true },
-      { name: 'Color Palette Guide', received: true },
-    ],
-  },
-  {
-    id: 'ast_2',
-    clientName: 'LuxeLiving Interior Studio',
-    projectName: 'LuxeLiving Portfolio & Booking Web App',
-    googleDriveLink: 'https://drive.google.com/drive/folders/luxeliving-assets',
-    folderStatus: 'Needs Files',
-    missingFilesCount: 2,
-    uploadDate: '2026-06-28T09:30:00Z',
-    checklist: [
-      { name: 'Studio Vector Logo', received: true },
-      { name: '4K Architectural Renders', received: true },
-      { name: 'Press Release PDF', received: false },
-      { name: 'Video Reel (MP4)', received: false },
-    ],
-  },
-]
-
-const INITIAL_APPROVALS: AdminDesignApproval[] = [
-  {
-    id: 'app_1',
-    projectName: 'LuxeLiving Dark Mode Design System',
-    clientName: 'LuxeLiving Interior Studio',
-    status: 'Approved',
-    approvalDate: '2026-07-12T16:30:00Z',
-    previewUrl: 'https://figma.com/file/luxeliving-v3-preview',
-    version: 'v2.1 Final',
-    comments: [
-      { author: 'Vikramaditya Roy', text: 'The glassmorphic navigation looks stunning! Approved for development.', createdAt: '2026-07-12T16:30:00Z' },
-    ],
-  },
-  {
-    id: 'app_2',
-    projectName: 'Apex Analytics Dashboard Layout',
-    clientName: 'Apex Innovations Global',
-    status: 'Waiting Approval',
-    previewUrl: 'https://figma.com/file/apex-dashboard-v4',
-    version: 'v1.4',
-    comments: [
-      { author: 'Om (Lead Designer)', text: 'Updated grid layout based on your feedback on Wednesday.', createdAt: '2026-07-22T10:00:00Z' },
-    ],
-  },
-]
-
-const INITIAL_TIMELINES: AdminTimelinePhase[] = [
-  {
-    id: 'tml_1',
-    projectName: 'Apex Cloud Dashboard & Design System',
-    clientName: 'Apex Innovations Global',
-    currentPhase: 'Backend & Cloud Integration',
-    estimatedDelivery: '2026-08-10',
-    timelineProgress: 75,
-    upcomingTasks: ['PostgreSQL DB Migration', 'Vercel Deployment Pipeline', 'Final QA Audit'],
-    completedTasks: ['Figma UI System', 'React Frontend Setup', 'Real-time WebSocket Sync'],
-    delayedTasks: [],
-  },
-  {
-    id: 'tml_2',
-    projectName: 'LuxeLiving Portfolio & Booking Web App',
-    clientName: 'LuxeLiving Interior Studio',
-    currentPhase: 'Final Review & UAT',
-    estimatedDelivery: '2026-07-30',
-    timelineProgress: 90,
-    upcomingTasks: ['Client UAT Sign-off', 'Custom Domain DNS Migration'],
-    completedTasks: ['GSAP Smooth Scroll', 'Interactive Booking Calendar', 'Form Auto-responder'],
-    delayedTasks: ['High-res Texture Compression'],
-  },
-]
-
-const INITIAL_HANDOVERS: AdminHandover[] = [
-  {
-    id: 'hnd_1',
-    projectName: 'Apex Cloud Portal (Phase 1)',
-    clientName: 'Apex Innovations Global',
-    status: 'Delivered',
-    downloadZipUrl: '#',
-    githubLink: 'https://github.com/arom-studio/apex-cloud-portal',
-    adminLoginUrl: 'https://apex.com/admin',
-    adminUsername: 'admin@apexinnovations.com',
-    domain: 'apexinnovations.com',
-    hosting: 'Vercel Enterprise',
-    warrantyPeriodMonths: 12,
-    supportExpiryDate: '2027-06-30',
-    handoverDate: '2026-06-30',
-  },
-  {
-    id: 'hnd_2',
-    projectName: 'LuxeLiving Showcase',
-    clientName: 'LuxeLiving Interior Studio',
-    status: 'Ready',
-    downloadZipUrl: '#',
-    githubLink: 'https://github.com/arom-studio/luxeliving-web',
-    adminLoginUrl: 'https://luxeliving.co.in/admin',
-    adminUsername: 'admin@luxeliving.co.in',
-    domain: 'luxeliving.co.in',
-    hosting: 'AWS CloudFront + Vercel',
-    warrantyPeriodMonths: 6,
-    supportExpiryDate: '2027-01-30',
-    handoverDate: '2026-07-28',
-  },
-]
-
-const INITIAL_FEEDBACKS: AdminFeedback[] = [
-  {
-    id: 'fb_1',
-    clientName: 'Sarah Jenkins',
-    company: 'Apex Innovations Global',
-    rating: 5,
-    review: 'AROM STUDIO delivered beyond our expectations! The real-time dashboard and speed of execution are unmatched in the agency space.',
-    testimonialApproved: true,
-    portfolioPermission: true,
-    clientSuggestions: 'Would love automated weekly PDF summary reports directly over WhatsApp/Email.',
-    createdAt: '2026-07-02T10:00:00Z',
-  },
-  {
-    id: 'fb_2',
-    clientName: 'Vikramaditya Roy',
-    company: 'LuxeLiving Interior Studio',
-    rating: 5,
-    review: 'The visual aesthetics and fluid micro-interactions blew our team away. Client inquiries increased by 200% within two weeks of launch.',
-    testimonialApproved: true,
-    portfolioPermission: true,
-    clientSuggestions: 'Keep adding more dark-mode UI presets for future revisions.',
-    createdAt: '2026-07-16T14:30:00Z',
-  },
-]
-
-const INITIAL_NOTIFICATIONS: AdminNotification[] = [
-  {
-    id: 'notif_1',
-    type: 'live',
-    title: '⚡ New Live Visitor Active',
-    message: 'A visitor from Mumbai, India accessed /contact via Chrome Desktop.',
-    read: false,
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'notif_2',
-    type: 'approval',
-    title: 'Design Approval Sign-Off',
-    message: 'LuxeLiving Interior Studio approved LuxeLiving Dark Mode Design System v2.1.',
-    read: false,
-    createdAt: '2026-07-22T10:00:00Z',
-  },
-  {
-    id: 'notif_3',
-    type: 'payment',
-    title: 'Payment Received ($4,450)',
-    message: 'Invoice INV-2026-002 was paid by LuxeLiving Interior Studio.',
-    read: true,
-    createdAt: '2026-07-14T09:30:00Z',
-  },
-]
-
-const INITIAL_DISCOVERY_QUESTIONNAIRES: AdminDiscoveryQuestionnaire[] = [
-  {
-    id: 'dq_1',
-    fullName: 'Ramesh Kumar',
-    company: 'Apex Innovations Global',
-    email: 'ramesh@apexinnovations.com',
-    phone: '+91 98765 43210',
-    website: 'https://apexinnovations.com',
-    budget: '₹50,000–₹1,00,000',
-    urgency: 'High',
-    preferredLaunchDate: '2026-08-15',
-    contentProvider: 'Client',
-    status: 'Reviewed',
-    createdAt: '2026-07-20T10:30:00Z',
-  },
-  {
-    id: 'dq_2',
-    fullName: 'Priya Sharma',
-    company: 'LuxeLiving Studio',
-    email: 'priya@luxeliving.co.in',
-    phone: '+91 98220 11223',
-    website: 'https://luxeliving.co.in',
-    budget: '₹25,000–₹50,000',
-    urgency: 'Medium',
-    preferredLaunchDate: '2026-09-01',
-    contentProvider: 'Both',
-    status: 'New',
-    createdAt: '2026-07-22T14:15:00Z',
-  },
-]
-
-const CLEAN_INITIAL_DATA: StoreData = {
-  visitors: [],
-  leads: [],
-  pdfs: [],
-  invoices: [],
-  logs: [],
-  clients: INITIAL_CLIENTS,
-  projects: INITIAL_PROJECTS,
-  proposals: INITIAL_PROPOSALS,
-  agreements: INITIAL_AGREEMENTS,
-  payments: INITIAL_PAYMENTS,
-  content: INITIAL_CONTENT,
-  assets: INITIAL_ASSETS,
-  approvals: INITIAL_APPROVALS,
-  timelines: INITIAL_TIMELINES,
-  handovers: INITIAL_HANDOVERS,
-  feedbacks: INITIAL_FEEDBACKS,
-  notifications: INITIAL_NOTIFICATIONS,
-  discoveryQuestionnaires: INITIAL_DISCOVERY_QUESTIONNAIRES,
-  blogs: BLOG_POSTS,
-  recycleBin: [],
+const EMPTY_DATA: StoreData = {
+  visitors: [], leads: [], pdfs: [], invoices: [], logs: [],
+  clients: [], projects: [], proposals: [], agreements: [], payments: [],
+  content: [], assets: [], approvals: [], timelines: [], handovers: [],
+  feedbacks: [], notifications: [], discoveryQuestionnaires: [],
+  blogs: BLOG_POSTS, recycleBin: [],
 }
 
-// Load local storage data helper
-export function getAdminStore(): StoreData {
+let __cache: StoreData = { ...EMPTY_DATA }
+let __syncInProgress = false
+let __syncTriggered = false
+
+async function api(path: string, options?: RequestInit): Promise<any> {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (raw) {
-      const parsed = JSON.parse(raw)
-      return {
-        visitors: Array.isArray(parsed.visitors) ? parsed.visitors : [],
-        leads: Array.isArray(parsed.leads) ? parsed.leads : [],
-        pdfs: Array.isArray(parsed.pdfs) ? parsed.pdfs : [],
-        invoices: Array.isArray(parsed.invoices) ? parsed.invoices : [],
-        logs: Array.isArray(parsed.logs) ? parsed.logs : [],
-        clients: Array.isArray(parsed.clients) ? parsed.clients : INITIAL_CLIENTS,
-        projects: Array.isArray(parsed.projects) ? parsed.projects : INITIAL_PROJECTS,
-        proposals: Array.isArray(parsed.proposals) ? parsed.proposals : INITIAL_PROPOSALS,
-        agreements: Array.isArray(parsed.agreements) ? parsed.agreements : INITIAL_AGREEMENTS,
-        payments: Array.isArray(parsed.payments) ? parsed.payments : INITIAL_PAYMENTS,
-        content: Array.isArray(parsed.content) ? parsed.content : INITIAL_CONTENT,
-        assets: Array.isArray(parsed.assets) ? parsed.assets : INITIAL_ASSETS,
-        approvals: Array.isArray(parsed.approvals) ? parsed.approvals : INITIAL_APPROVALS,
-        timelines: Array.isArray(parsed.timelines) ? parsed.timelines : INITIAL_TIMELINES,
-        handovers: Array.isArray(parsed.handovers) ? parsed.handovers : INITIAL_HANDOVERS,
-        feedbacks: Array.isArray(parsed.feedbacks) ? parsed.feedbacks : INITIAL_FEEDBACKS,
-        notifications: Array.isArray(parsed.notifications) ? parsed.notifications : INITIAL_NOTIFICATIONS,
-        discoveryQuestionnaires: Array.isArray(parsed.discoveryQuestionnaires) ? parsed.discoveryQuestionnaires : INITIAL_DISCOVERY_QUESTIONNAIRES,
-        blogs: Array.isArray(parsed.blogs) && parsed.blogs.length > 0 ? parsed.blogs : BLOG_POSTS,
-        recycleBin: Array.isArray(parsed.recycleBin) ? parsed.recycleBin : [],
-      }
+    const res = await fetch(path, { credentials: 'include', ...options })
+    if (!res.ok) return null
+    return await res.json()
+  } catch { return null }
+}
+
+function mergeArrays<T extends { id: string }>(remote: T[] | undefined | null, local: T[]): T[] {
+  const result: T[] = Array.isArray(remote) ? [...remote] : []
+  const localItems = Array.isArray(local) ? local : []
+  localItems.forEach(l => {
+    if (l?.id && !result.some(r => r.id === l.id)) result.push(l)
+  })
+  return result
+}
+
+export async function syncFromCloud(): Promise<StoreData> {
+  if (__syncInProgress) return __cache
+  __syncInProgress = true
+  try {
+    const data = await api('/api/sync')
+    if (!data) return __cache
+
+    const updated: StoreData = {
+      visitors: mergeArrays(data.visitors, __cache.visitors).sort(
+        (a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+      ),
+      pdfs: mergeArrays(data.pdfs, __cache.pdfs).sort(
+        (a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+      ),
+      leads: mergeArrays(data.leads, __cache.leads).sort(
+        (a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+      ),
+      invoices: mergeArrays(data.invoices, __cache.invoices).sort(
+        (a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+      ),
+      logs: mergeArrays(data.logs, __cache.logs).sort(
+        (a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+      ),
+      clients: mergeArrays(data.clients, __cache.clients),
+      projects: mergeArrays(data.projects, __cache.projects),
+      proposals: mergeArrays(data.proposals, __cache.proposals),
+      agreements: mergeArrays(data.agreements, __cache.agreements),
+      payments: mergeArrays(data.payments, __cache.payments),
+      content: mergeArrays(data.content, __cache.content),
+      assets: mergeArrays(data.assets, __cache.assets),
+      approvals: mergeArrays(data.approvals, __cache.approvals),
+      timelines: mergeArrays(data.timelines, __cache.timelines),
+      handovers: mergeArrays(data.handovers, __cache.handovers),
+      feedbacks: mergeArrays(data.feedbacks, __cache.feedbacks),
+      notifications: mergeArrays(data.notifications, __cache.notifications),
+      discoveryQuestionnaires: mergeArrays(data.discoveryQuestionnaires, __cache.discoveryQuestionnaires),
+      blogs: Array.isArray(data.blogs) && data.blogs.length > 0 ? data.blogs : __cache.blogs,
+      recycleBin: mergeArrays(data.recycleBin, __cache.recycleBin),
     }
-  } catch (e) {
-    console.error('Failed to read admin store:', e)
+    __cache = updated
+    return updated
+  } finally {
+    __syncInProgress = false
   }
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(CLEAN_INITIAL_DATA))
-  } catch {}
-  return CLEAN_INITIAL_DATA
 }
 
-// Save local storage & cloud backup helper
-export function saveAdminStore(data: StoreData) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
-  } catch (e) {
-    console.error('Failed to save admin store:', e)
-    // Fallback: If localStorage quota exceeded due to large PDF base64 data, strip pdfDataUrl for older entries in local storage
-    try {
-      const strippedData = {
-        ...data,
-        pdfs: Array.isArray(data.pdfs) ? data.pdfs.map((p, idx) => idx > 5 ? { ...p, pdfDataUrl: undefined } : p) : []
-      }
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(strippedData))
-    } catch {}
+export function getAdminStore(): StoreData {
+  if (!__syncTriggered) {
+    __syncTriggered = true
+    syncFromCloud()
   }
+  return __cache
+}
 
-  // Backup store on backend database
-  fetch('/api/sync', {
+export function saveAdminStore(data: StoreData) {
+  __cache = { ...data }
+  api('/api/sync', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ action: 'save_store', data }),
   }).catch(() => {})
 }
 
-// Global System Audit Log Helper
+export function formatIST(dateString?: string): string {
+  if (!dateString) return '—'
+  try {
+    return new Date(dateString).toLocaleString('en-IN', {
+      timeZone: 'Asia/Kolkata',
+      day: '2-digit', month: 'short', year: 'numeric',
+      hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true,
+    }) + ' IST'
+  } catch { return dateString }
+}
+
 export function logAuditEvent(
   type: AdminSystemLog['type'],
   event: string,
   detail: string,
   severity: 'info' | 'warn' | 'error' = 'info'
 ) {
-  const store = getAdminStore()
   const logItem: AdminSystemLog = {
     id: 'log_' + Math.random().toString(36).slice(2, 9),
     createdAt: new Date().toISOString(),
-    type,
-    event,
-    detail,
-    severity,
+    type, event, detail, severity,
   }
-  if (!Array.isArray(store.logs)) store.logs = []
-  store.logs.unshift(logItem)
-  saveAdminStore(store)
+  __cache.logs = [logItem, ...(__cache.logs || [])]
+  api('/api/sync', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'log', data: logItem }),
+  }).catch(() => {})
 }
 
-// Move any deleted item into the Recycle Bin (Soft Delete)
 export function moveToRecycleBin(
   collection: keyof StoreData,
   itemId: string,
   title?: string,
   subtitle?: string
 ) {
-  const store = getAdminStore()
-  const list = store[collection] as any[]
+  const list = __cache[collection] as any[]
   if (!Array.isArray(list)) return
-
-  const itemIndex = list.findIndex((i) => i.id === itemId)
+  const itemIndex = list.findIndex(i => i.id === itemId)
   if (itemIndex === -1) return
-
   const deletedItem = list[itemIndex]
-  const updatedList = list.filter((i) => i.id !== itemId)
-  ;(store as any)[collection] = updatedList
-
-  const recycleRecord: AdminRecycleItem = {
+  ;(__cache as any)[collection] = list.filter(i => i.id !== itemId)
+  const record: AdminRecycleItem = {
     id: 'rec_' + Math.random().toString(36).slice(2, 9),
     originalCollection: collection,
     itemData: deletedItem,
@@ -887,487 +446,193 @@ export function moveToRecycleBin(
     deletedByName: 'Administrator',
     originalCreatedAt: deletedItem.createdAt,
   }
-
-  if (!Array.isArray(store.recycleBin)) store.recycleBin = []
-  store.recycleBin.unshift(recycleRecord)
-
-  logAuditEvent('admin', `Item Moved to Recycle Bin`, `Moved '${recycleRecord.title}' from ${String(collection)} to Recycle Bin`, 'info')
-
-  saveAdminStore(store)
+  __cache.recycleBin = [record, ...(__cache.recycleBin || [])]
+  saveAdminStore(__cache)
 }
 
-// Restore an item from the Recycle Bin back to its original collection
 export function restoreFromRecycleBin(recycleId: string) {
-  const store = getAdminStore()
-  if (!Array.isArray(store.recycleBin)) return
-
-  const record = store.recycleBin.find((r) => r.id === recycleId)
+  const record = __cache.recycleBin?.find(r => r.id === recycleId)
   if (!record) return
-
   const collection = record.originalCollection
-  const currentList = (store[collection] as any[]) || []
-
-  // Ensure item is placed back in its original collection without duplicate
-  const exists = currentList.some((i: any) => i.id === record.itemData?.id)
+  const currentList = (__cache[collection] as any[]) || []
+  const exists = currentList.some(i => i.id === record.itemData?.id)
   if (!exists && record.itemData) {
-    ;(store as any)[collection] = [record.itemData, ...currentList]
+    ;(__cache as any)[collection] = [record.itemData, ...currentList]
   }
-
-  store.recycleBin = store.recycleBin.filter((r) => r.id !== recycleId)
-
-  logAuditEvent('admin', 'Item Restored from Recycle Bin', `Restored '${record.title}' back to ${String(collection)}`, 'info')
-  saveAdminStore(store)
+  __cache.recycleBin = __cache.recycleBin.filter(r => r.id !== recycleId)
+  saveAdminStore(__cache)
 }
 
-// Bulk restore multiple items from Recycle Bin
 export function bulkRestoreFromRecycleBin(recycleIds: string[]) {
-  const store = getAdminStore()
-  if (!Array.isArray(store.recycleBin)) return
-  let restoredCount = 0
-  recycleIds.forEach((recycleId) => {
-    const record = store.recycleBin.find((r) => r.id === recycleId)
+  let restored = 0
+  recycleIds.forEach(id => {
+    const record = __cache.recycleBin?.find(r => r.id === id)
     if (!record) return
     const collection = record.originalCollection
-    const currentList = (store[collection] as any[]) || []
-    const exists = currentList.some((i: any) => i.id === record.itemData?.id)
+    const currentList = (__cache[collection] as any[]) || []
+    const exists = currentList.some(i => i.id === record.itemData?.id)
     if (!exists && record.itemData) {
-      ;(store as any)[collection] = [record.itemData, ...currentList]
+      ;(__cache as any)[collection] = [record.itemData, ...currentList]
     }
-    restoredCount++
+    restored++
   })
-  store.recycleBin = store.recycleBin.filter((r) => !recycleIds.includes(r.id))
-  logAuditEvent('admin', 'Bulk Restore from Recycle Bin', `Restored ${restoredCount} item(s) from Recycle Bin`, 'info')
-  saveAdminStore(store)
+  __cache.recycleBin = __cache.recycleBin.filter(r => !recycleIds.includes(r.id))
+  saveAdminStore(__cache)
 }
 
-// Permanently delete a single item from the Recycle Bin
 export function permanentDeleteFromRecycleBin(recycleId: string) {
-  const store = getAdminStore()
-  if (!Array.isArray(store.recycleBin)) return
-  const record = store.recycleBin.find((r) => r.id === recycleId)
-  store.recycleBin = store.recycleBin.filter((r) => r.id !== recycleId)
-  if (record) {
-    logAuditEvent('admin', 'Item Permanently Deleted', `Permanently deleted '${record.title}' (was in ${String(record.originalCollection)})`, 'warn')
-  }
-  saveAdminStore(store)
+  __cache.recycleBin = __cache.recycleBin.filter(r => r.id !== recycleId)
+  saveAdminStore(__cache)
 }
 
-// Bulk permanently delete multiple items from the Recycle Bin
 export function bulkPermanentDeleteFromRecycleBin(recycleIds: string[]) {
-  const store = getAdminStore()
-  if (!Array.isArray(store.recycleBin)) return
-  const records = store.recycleBin.filter((r) => recycleIds.includes(r.id))
-  store.recycleBin = store.recycleBin.filter((r) => !recycleIds.includes(r.id))
-  logAuditEvent('admin', 'Bulk Permanent Delete from Recycle Bin', `Permanently deleted ${records.length} item(s) from Recycle Bin`, 'warn')
-  saveAdminStore(store)
+  __cache.recycleBin = __cache.recycleBin.filter(r => !recycleIds.includes(r.id))
+  saveAdminStore(__cache)
 }
 
-// Empty the entire Recycle Bin permanently
 export function emptyRecycleBin() {
-  const store = getAdminStore()
-  const count = (store.recycleBin || []).length
-  store.recycleBin = []
-  logAuditEvent('admin', 'Recycle Bin Emptied', `All ${count} item(s) permanently deleted from Recycle Bin`, 'warn')
-  saveAdminStore(store)
+  __cache.recycleBin = []
+  saveAdminStore(__cache)
 }
 
-// Global Cloud Sync: Syncs centralized database so Admin on Mobile, Laptop, Desktop, Tablet see EXACT SAME data
-export async function syncFromCloud(): Promise<StoreData> {
-  const local = getAdminStore()
-  try {
-    const res = await fetch('/api/sync')
-    if (res.ok) {
-      const remote = await res.json()
-
-      const mergeList = <T extends { id: string }>(remoteArr?: T[], localArr?: T[]): T[] => {
-        const localItems = Array.isArray(localArr) ? localArr : []
-        const remoteItems = Array.isArray(remoteArr) ? remoteArr : []
-        // Centralized Server Data is Primary Authority
-        const result: T[] = [...remoteItems]
-        localItems.forEach((l) => {
-          if (l && l.id && !result.some((m) => m.id === l.id)) {
-            result.push(l)
-          }
-        })
-        return result
-      }
-
-      const updated: StoreData = {
-        visitors: mergeList(remote.visitors, local.visitors).sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()),
-        pdfs: mergeList(remote.pdfs, local.pdfs).sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()),
-        leads: mergeList(remote.leads, local.leads).sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()),
-        invoices: mergeList(remote.invoices, local.invoices).sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()),
-        logs: mergeList(remote.logs, local.logs).sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()),
-        clients: mergeList(remote.clients, local.clients),
-        projects: mergeList(remote.projects, local.projects),
-        proposals: mergeList(remote.proposals, local.proposals),
-        agreements: mergeList(remote.agreements, local.agreements),
-        payments: mergeList(remote.payments, local.payments),
-        content: mergeList(remote.content, local.content),
-        assets: mergeList(remote.assets, local.assets),
-        approvals: mergeList(remote.approvals, local.approvals),
-        timelines: mergeList(remote.timelines, local.timelines),
-        handovers: mergeList(remote.handovers, local.handovers),
-        feedbacks: mergeList(remote.feedbacks, local.feedbacks),
-        notifications: mergeList(remote.notifications, local.notifications),
-        discoveryQuestionnaires: mergeList(remote.discoveryQuestionnaires, local.discoveryQuestionnaires),
-        blogs: Array.isArray(remote.blogs) && remote.blogs.length > 0 ? remote.blogs : (local.blogs || BLOG_POSTS),
-        recycleBin: mergeList(remote.recycleBin, local.recycleBin),
-      }
-
-      // Sync AI Conversations from Centralized Server if present
-      if (Array.isArray(remote.aiConversations) && remote.aiConversations.length > 0) {
-        try {
-          const localAiRaw = localStorage.getItem('arom_ai_conversations_v1')
-          const localAi: any[] = localAiRaw ? JSON.parse(localAiRaw) : []
-          const mergedAi = [...remote.aiConversations]
-          localAi.forEach((l) => {
-            if (l && l.id && !mergedAi.some((r) => r.id === l.id)) {
-              mergedAi.push(l)
-            }
-          })
-          localStorage.setItem('arom_ai_conversations_v1', JSON.stringify(mergedAi))
-        } catch {}
-      }
-
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
-      } catch {}
-      return updated
-    }
-  } catch (e) {
-    console.error('Cloud sync fallback:', e)
-  }
-  return local
-}
-
-// Helper to format timestamps to Indian Standard Time (IST)
-export function formatIST(dateString?: string): string {
-  if (!dateString) return '—'
-  try {
-    const date = new Date(dateString)
-    return date.toLocaleString('en-IN', {
-      timeZone: 'Asia/Kolkata',
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: true,
-    }) + ' IST'
-  } catch {
-    return dateString
-  }
-}
-
-// Record REAL Website Visitor & sync globally
 export function recordAdminVisit(page: string, referrer: string = 'Direct', options: Partial<AdminVisitor> = {}) {
-  const store = getAdminStore()
-  const ua = navigator.userAgent
-  const mobile = /Mobi|Android|iPhone|iPad/i.test(ua)
-  const tablet = /Tablet|iPad/i.test(ua) && !/Mobi/i.test(ua)
-
-  // Detect mobile device brand
-  let brand = options.deviceBrand || ''
-  if (!brand) {
-    if (/iPhone/i.test(ua)) brand = 'Apple iPhone'
-    else if (/iPad/i.test(ua)) brand = 'Apple iPad'
-    else if (/Samsung/i.test(ua)) brand = 'Samsung Galaxy'
-    else if (/Pixel/i.test(ua)) brand = 'Google Pixel'
-    else if (/OnePlus/i.test(ua)) brand = 'OnePlus'
-    else if (/Xiaomi|Redmi|POCO/i.test(ua)) brand = 'Xiaomi/Redmi'
-    else if (/Vivo/i.test(ua)) brand = 'Vivo Mobile'
-    else if (/Oppo/i.test(ua)) brand = 'OPPO Mobile'
-    else if (mobile) brand = 'Mobile Device'
-    else brand = 'Desktop PC'
-  }
-
-  // Check returning visitor state from localStorage
-  let isReturning = false
-  try {
-    const visToken = localStorage.getItem('arom_vis_token')
-    if (visToken) isReturning = true
-    else localStorage.setItem('arom_vis_token', 'v_' + Math.random().toString(36).slice(2, 9))
-  } catch {}
-
   const now = new Date().toISOString()
-  const devType = options.deviceType || (tablet ? 'tablet' : mobile ? 'mobile' : 'desktop')
-  const devLabel = options.deviceLabel || (devType === 'desktop' ? 'Desktop (PC)' : 'Mobile')
-
-  const newVisit: AdminVisitor = {
-    id: options.id || 'v_' + Math.random().toString(36).slice(2, 9),
-    sessionId: options.sessionId || 'sess_' + Math.random().toString(36).slice(2, 9),
-    createdAt: now,
-    lastActivityAt: now,
-    page: page || '/',
-    entryPage: options.entryPage || page || '/',
-    exitPage: page || '/',
-    deviceType: devType,
-    deviceLabel: devLabel,
-    deviceBrand: brand,
-    network: options.network || '5G / Broadband',
-    browser: options.browser || (ua.includes('Chrome') ? 'Chrome' : ua.includes('Safari') ? 'Safari' : ua.includes('Firefox') ? 'Firefox' : 'Edge'),
-    os: options.os || (ua.includes('Windows') ? 'Windows' : ua.includes('Mac') ? 'macOS' : ua.includes('Android') ? 'Android' : 'iOS'),
+  const visit: AdminVisitor = {
+    id: 'v_' + Math.random().toString(36).slice(2, 9),
+    sessionId: 'sess_' + Math.random().toString(36).slice(2, 9),
+    createdAt: now, lastActivityAt: now,
+    page: page || '/', entryPage: options.entryPage || page || '/', exitPage: page || '/',
+    deviceType: options.deviceType || 'desktop',
+    deviceLabel: options.deviceLabel || 'Desktop (PC)',
+    deviceBrand: options.deviceBrand || 'Desktop PC',
+    network: options.network || 'Broadband',
+    browser: options.browser || 'Chrome',
+    os: options.os || 'Windows',
     country: options.country || 'India',
     city: options.city || 'Mumbai',
-    ip: options.ip || '103.15.22.84',
+    ip: options.ip || '',
     referrer: referrer || 'Direct',
-    timeOnPage: options.timeOnPage || Math.floor(Math.random() * 30) + 15,
-    sessionDuration: options.sessionDuration || Math.floor(Math.random() * 120) + 30,
-    scrollDepth: options.scrollDepth || Math.floor(Math.random() * 40) + 60,
+    timeOnPage: options.timeOnPage || 30,
+    sessionDuration: options.sessionDuration || 60,
+    scrollDepth: options.scrollDepth || 80,
     pageViewsCount: options.pageViewsCount || 1,
-    isReturning: options.isReturning ?? isReturning,
+    isReturning: options.isReturning ?? false,
     isBounce: options.isBounce ?? false,
     isLive: true,
   }
+  __cache.visitors = [visit, ...__cache.visitors]
+  if (__cache.visitors.length > 500) __cache.visitors.pop()
 
-  store.visitors.unshift(newVisit)
-  if (store.visitors.length > 500) store.visitors.pop()
-
-  // Add system notification for live visitor
-  store.notifications.unshift({
+  __cache.notifications = [{
     id: 'n_' + Math.random().toString(36).slice(2, 9),
     type: 'live',
-    title: '⚡ New Live Visitor Active',
-    message: `${newVisit.isReturning ? 'Returning' : 'New'} visitor from ${newVisit.city}, ${newVisit.country} viewing ${newVisit.page} via ${newVisit.browser}.`,
-    read: false,
-    createdAt: now,
-  })
+    title: 'New Live Visitor Active',
+    message: `Visitor from ${visit.city}, ${visit.country} viewing ${visit.page} via ${visit.browser}.`,
+    read: false, createdAt: now,
+  }, ...__cache.notifications]
 
-  saveAdminStore(store)
-
-  // Sync to server API
-  fetch('/api/sync', {
+  api('/api/sync', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'visit', data: newVisit }),
+    body: JSON.stringify({ action: 'visit', data: visit }),
   }).catch(() => {})
-
-  // Run automated hourly 20-visitor generator for daytime traffic growth
-  runHourlyVisitorGenerator()
 }
 
-const INDIAN_CITIES = ['Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Pune', 'Nashik', 'Chennai', 'Kolkata', 'Ahmedabad', 'Jaipur', 'Nagpur', 'Surat', 'Indore', 'Lucknow', 'Thane']
-const REFERRERS = ['Google Search', 'Instagram', 'Direct Visit', 'LinkedIn', 'Google Search', 'Direct Visit', 'Twitter/X', 'Facebook']
-const PAGES = ['/', '/services', '/pricing', '/about', '/contact', '/blog', '/faq', '/services/web-development']
-const BROWSERS = ['Chrome', 'Safari', 'Firefox', 'Chrome', 'Edge']
-const BRANDS = ['Apple iPhone', 'Samsung Galaxy', 'Desktop PC', 'Google Pixel', 'OnePlus', 'Xiaomi/Redmi', 'Vivo Mobile']
-
-export function runHourlyVisitorGenerator() {
-  try {
-    const now = Date.now()
-    const LAST_TS_KEY = 'arom_last_hourly_ts'
-    const lastTs = parseInt(localStorage.getItem(LAST_TS_KEY) || '0', 10)
-
-    const oneHourMs = 3600000
-    let hoursElapsed = 0
-    if (!lastTs) {
-      hoursElapsed = 1
-    } else {
-      hoursElapsed = Math.floor((now - lastTs) / oneHourMs)
-    }
-
-    if (hoursElapsed <= 0) return
-
-    // Cap maximum catchup batch to 48 hours
-    const batchesToRun = Math.min(hoursElapsed, 48)
-
-    const store = getAdminStore()
-    const generatedVisitors: AdminVisitor[] = []
-
-    for (let b = 0; b < batchesToRun; b++) {
-      const batchTime = new Date(now - (batchesToRun - 1 - b) * oneHourMs)
-      const currentHour = batchTime.getHours()
-
-      for (let i = 0; i < 20; i++) {
-        const isMobile = Math.random() > 0.35
-        const city = INDIAN_CITIES[Math.floor(Math.random() * INDIAN_CITIES.length)]
-        const ref = REFERRERS[Math.floor(Math.random() * REFERRERS.length)]
-        const pg = PAGES[Math.floor(Math.random() * PAGES.length)]
-        const browser = BROWSERS[Math.floor(Math.random() * BROWSERS.length)]
-        const brand = isMobile ? BRANDS[Math.floor(Math.random() * BRANDS.length)] : 'Desktop PC'
-
-        const minuteOffset = Math.floor(Math.random() * 59)
-        const visitDate = new Date(batchTime.getFullYear(), batchTime.getMonth(), batchTime.getDate(), currentHour, minuteOffset, Math.floor(Math.random() * 59))
-
-        const v: AdminVisitor = {
-          id: 'v_auto_' + Math.random().toString(36).slice(2, 9),
-          sessionId: 'sess_auto_' + Math.random().toString(36).slice(2, 9),
-          createdAt: visitDate.toISOString(),
-          lastActivityAt: visitDate.toISOString(),
-          page: pg,
-          entryPage: pg,
-          exitPage: pg,
-          deviceType: isMobile ? 'mobile' : 'desktop',
-          deviceLabel: isMobile ? 'Mobile' : 'Desktop (PC)',
-          deviceBrand: brand,
-          network: 'Jio 5G / Airtel 5G',
-          browser: browser,
-          os: isMobile ? 'Android' : 'Windows',
-          country: 'India',
-          city: city,
-          ip: `103.${Math.floor(Math.random() * 200) + 10}.${Math.floor(Math.random() * 250)}.${Math.floor(Math.random() * 250)}`,
-          referrer: ref,
-          timeOnPage: Math.floor(Math.random() * 45) + 15,
-          sessionDuration: Math.floor(Math.random() * 180) + 30,
-          scrollDepth: Math.floor(Math.random() * 50) + 50,
-          pageViewsCount: Math.floor(Math.random() * 3) + 1,
-          isReturning: Math.random() > 0.6,
-          isBounce: Math.random() > 0.8,
-          isLive: false,
-        }
-        generatedVisitors.push(v)
-      }
-    }
-
-    store.visitors = [...generatedVisitors, ...store.visitors]
-    if (store.visitors.length > 5000) store.visitors = store.visitors.slice(0, 5000)
-
-    localStorage.setItem(LAST_TS_KEY, String(now))
-    saveAdminStore(store)
-  } catch (e) {
-    console.error(e)
-  }
-}
-
-// Record REAL Lead Form Inquiry & sync globally
 export function recordAdminLead(lead: Omit<AdminLead, 'id' | 'createdAt' | 'status'>) {
-  const store = getAdminStore()
   const now = new Date().toISOString()
   const newLead: AdminLead = {
     ...lead,
     id: 'l_' + Math.random().toString(36).slice(2, 9),
-    createdAt: now,
-    status: 'New',
-    country: lead.country || 'India',
+    createdAt: now, status: 'New', country: lead.country || 'India',
   }
-  store.leads.unshift(newLead)
-  store.notifications.unshift({
+  __cache.leads = [newLead, ...__cache.leads]
+  __cache.notifications = [{
     id: 'n_' + Math.random().toString(36).slice(2, 9),
     type: 'inquiry',
-    title: '📩 New Client Inquiry Received',
+    title: 'New Client Inquiry Received',
     message: `Lead from ${newLead.name} (${newLead.email}) for ${newLead.service || 'Web Services'}.`,
-    read: false,
-    createdAt: now,
-  })
-  saveAdminStore(store)
-
-  fetch('/api/sync', {
+    read: false, createdAt: now,
+  }, ...__cache.notifications]
+  api('/api/sync', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ action: 'lead', data: newLead }),
   }).catch(() => {})
 }
 
-// Record REAL PDF Generation & sync globally with Base64 data
 export function recordAdminPDF(pdf: Omit<AdminPDF, 'id' | 'createdAt'>) {
-  const store = getAdminStore()
   const newPdf: AdminPDF = {
     ...pdf,
     id: 'p_' + Math.random().toString(36).slice(2, 9),
     createdAt: new Date().toISOString(),
   }
-  if (!Array.isArray(store.pdfs)) store.pdfs = []
-  store.pdfs.unshift(newPdf)
-  
-  if (!Array.isArray(store.notifications)) store.notifications = []
-  store.notifications.unshift({
+  __cache.pdfs = [newPdf, ...(__cache.pdfs || [])]
+  __cache.notifications = [{
     id: 'n_' + Math.random().toString(36).slice(2, 9),
     type: 'inquiry',
-    title: '📄 New PDF Document Generated',
+    title: 'New PDF Document Generated',
     message: `${newPdf.clientName || 'Client'} generated ${newPdf.pdfType || 'PDF Document'} (${newPdf.title}).`,
-    read: false,
-    createdAt: newPdf.createdAt,
-  })
-
-  saveAdminStore(store)
-
-  fetch('/api/sync', {
+    read: false, createdAt: newPdf.createdAt,
+  }, ...(__cache.notifications || [])]
+  api('/api/sync', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ action: 'pdf', data: newPdf }),
   }).catch(() => {})
 }
 
-// Record Invoice Creation & sync globally
 export function recordAdminInvoice(invoice: Omit<AdminInvoice, 'id' | 'createdAt'>) {
-  const store = getAdminStore()
   const newInv: AdminInvoice = {
     ...invoice,
     id: 'inv_' + Math.random().toString(36).slice(2, 9),
     createdAt: new Date().toISOString(),
   }
-  store.invoices.unshift(newInv)
-  saveAdminStore(store)
-
-  fetch('/api/sync', {
+  __cache.invoices = [newInv, ...__cache.invoices]
+  api('/api/sync', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ action: 'invoice', data: newInv }),
   }).catch(() => {})
 }
 
-// Record REAL Discovery Questionnaire Submission & sync globally
 export function recordAdminDiscoveryQuestionnaire(dq: Omit<AdminDiscoveryQuestionnaire, 'id' | 'createdAt' | 'status'>) {
-  const store = getAdminStore()
   const now = new Date().toISOString()
   const newDq: AdminDiscoveryQuestionnaire = {
     ...dq,
     id: 'dq_' + Math.random().toString(36).slice(2, 9),
-    createdAt: now,
-    status: 'New',
+    createdAt: now, status: 'New',
   }
-  if (!Array.isArray(store.discoveryQuestionnaires)) store.discoveryQuestionnaires = []
-  store.discoveryQuestionnaires.unshift(newDq)
-  if (!Array.isArray(store.notifications)) store.notifications = []
-  store.notifications.unshift({
+  __cache.discoveryQuestionnaires = [newDq, ...(__cache.discoveryQuestionnaires || [])]
+  __cache.notifications = [{
     id: 'n_' + Math.random().toString(36).slice(2, 9),
     type: 'inquiry',
-    title: '📋 New Discovery Questionnaire Submitted',
-    message: `Questionnaire submitted by ${newDq.fullName} (${newDq.company || 'Client'}) with budget ${newDq.budget || 'Custom'}.`,
-    read: false,
-    createdAt: now,
-  })
-  saveAdminStore(store)
-
-  fetch('/api/sync', {
+    title: 'New Discovery Questionnaire Submitted',
+    message: `Questionnaire submitted by ${newDq.fullName} (${newDq.company || 'Client'}).`,
+    read: false, createdAt: now,
+  }, ...(__cache.notifications || [])]
+  api('/api/sync', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ action: 'discovery', data: newDq }),
   }).catch(() => {})
 }
 
-// Record/Save or Update Blog Post & sync globally
 export function recordAdminBlog(blog: BlogPost) {
-  const store = getAdminStore()
-  if (!Array.isArray(store.blogs)) store.blogs = [...BLOG_POSTS]
-
-  const index = store.blogs.findIndex((b) => b.slug === blog.slug)
-  if (index !== -1) {
-    store.blogs[index] = blog
-  } else {
-    store.blogs.unshift(blog)
-  }
-
-  saveAdminStore(store)
+  const index = __cache.blogs.findIndex(b => b.slug === blog.slug)
+  if (index !== -1) __cache.blogs[index] = blog
+  else __cache.blogs = [blog, ...__cache.blogs]
+  saveAdminStore(__cache)
 }
 
-// Delete Blog Post & sync globally
 export function deleteAdminBlog(slug: string) {
-  const store = getAdminStore()
-  if (!Array.isArray(store.blogs)) return
-
-  const target = store.blogs.find((b) => b.slug === slug)
-  if (target) {
-    moveToRecycleBin('blogs', slug, target.title, `Category: ${target.category}`)
-  }
-
-  store.blogs = store.blogs.filter((b) => b.slug !== slug)
-  saveAdminStore(store)
+  const target = __cache.blogs.find(b => b.slug === slug)
+  if (target) moveToRecycleBin('blogs', slug, target.title, `Category: ${target.category}`)
+  __cache.blogs = __cache.blogs.filter(b => b.slug !== slug)
+  saveAdminStore(__cache)
 }
 
 export function getAdminBlogs(): BlogPost[] {
-  const store = getAdminStore()
-  return Array.isArray(store.blogs) && store.blogs.length > 0 ? store.blogs : BLOG_POSTS
+  return __cache.blogs
 }
+
+export function runHourlyVisitorGenerator() {}

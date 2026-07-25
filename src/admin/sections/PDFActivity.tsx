@@ -10,14 +10,14 @@ export function PDFActivity() {
   const [previewPdf, setPreviewPdf] = useState<AdminPDF | null>(null)
 
   const reload = () => {
-    setData(getAdminStore().pdfs || [])
+    syncFromCloud().then(() => setData(getAdminStore().pdfs || []))
   }
 
   useEffect(() => {
     reload()
     // Realtime 3-second Cloud Database Sync
     const timer = setInterval(() => {
-      syncFromCloud().then(() => reload())
+      reload()
     }, 3000)
     return () => clearInterval(timer)
   }, [])

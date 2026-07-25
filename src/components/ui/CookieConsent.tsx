@@ -1,23 +1,14 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 export function CookieConsent() {
-  const [showBanner, setShowBanner] = useState(false)
-
-  useEffect(() => {
-    const consent = localStorage.getItem('arom_cookie_consent')
-    if (!consent) {
-      setShowBanner(true)
-    }
-  }, [])
+  const [showBanner, setShowBanner] = useState(true)
 
   const handleAccept = () => {
-    localStorage.setItem('arom_cookie_consent', 'accepted')
     setShowBanner(false)
   }
 
   const handleReject = () => {
-    localStorage.setItem('arom_cookie_consent', 'rejected')
     setShowBanner(false)
   }
 
