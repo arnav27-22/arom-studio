@@ -275,6 +275,9 @@ export interface AdminRecycleItem {
   title: string
   subtitle?: string
   deletedAt: string
+  deletedBy?: string
+  deletedByName?: string
+  originalCreatedAt?: string
 }
 
 const STORAGE_KEY = 'arom_admin_global_real_store_v7'
@@ -881,6 +884,8 @@ export function moveToRecycleBin(
     title: title || deletedItem.name || deletedItem.title || deletedItem.companyName || deletedItem.projectName || deletedItem.clientName || 'Deleted Item',
     subtitle: subtitle || deletedItem.email || deletedItem.clientName || deletedItem.status || String(collection),
     deletedAt: new Date().toISOString(),
+    deletedByName: 'Administrator',
+    originalCreatedAt: deletedItem.createdAt,
   }
 
   if (!Array.isArray(store.recycleBin)) store.recycleBin = []
@@ -910,6 +915,28 @@ export function restoreFromRecycleBin(recycleId: string) {
 
   store.recycleBin = store.recycleBin.filter((r) => r.id !== recycleId)
 
+  logAuditEvent('admin', 'Item Restored from Recycle Bin', `Restored '${record.title}' back to ${String(collection)}`, 'info')
+  saveAdminStore(store)
+}
+
+// Bulk restore multiple items from Recycle Bin
+export function bulkRestoreFromRecycleBin(recycleIds: string[]) {
+  const store = getAdminStore()
+  if (!Array.isArray(store.recycleBin)) return
+  let restoredCount = 0
+  recycleIds.forEach((recycleId) => {
+    const record = store.recycleBin.find((r) => r.id === recycleId)
+    if (!record) return
+    const collection = record.originalCollection
+    const currentList = (store[collection] as any[]) || []
+    const exists = currentList.some((i: any) => i.id === record.itemData?.id)
+    if (!exists && record.itemData) {
+      ;(store as any)[collection] = [record.itemData, ...currentList]
+    }
+    restoredCount++
+  })
+  store.recycleBin = store.recycleBin.filter((r) => !recycleIds.includes(r.id))
+  logAuditEvent('admin', 'Bulk Restore from Recycle Bin', `Restored ${restoredCount} item(s) from Recycle Bin`, 'info')
   saveAdminStore(store)
 }
 
@@ -917,14 +944,30 @@ export function restoreFromRecycleBin(recycleId: string) {
 export function permanentDeleteFromRecycleBin(recycleId: string) {
   const store = getAdminStore()
   if (!Array.isArray(store.recycleBin)) return
+  const record = store.recycleBin.find((r) => r.id === recycleId)
   store.recycleBin = store.recycleBin.filter((r) => r.id !== recycleId)
+  if (record) {
+    logAuditEvent('admin', 'Item Permanently Deleted', `Permanently deleted '${record.title}' (was in ${String(record.originalCollection)})`, 'warn')
+  }
+  saveAdminStore(store)
+}
+
+// Bulk permanently delete multiple items from the Recycle Bin
+export function bulkPermanentDeleteFromRecycleBin(recycleIds: string[]) {
+  const store = getAdminStore()
+  if (!Array.isArray(store.recycleBin)) return
+  const records = store.recycleBin.filter((r) => recycleIds.includes(r.id))
+  store.recycleBin = store.recycleBin.filter((r) => !recycleIds.includes(r.id))
+  logAuditEvent('admin', 'Bulk Permanent Delete from Recycle Bin', `Permanently deleted ${records.length} item(s) from Recycle Bin`, 'warn')
   saveAdminStore(store)
 }
 
 // Empty the entire Recycle Bin permanently
 export function emptyRecycleBin() {
   const store = getAdminStore()
+  const count = (store.recycleBin || []).length
   store.recycleBin = []
+  logAuditEvent('admin', 'Recycle Bin Emptied', `All ${count} item(s) permanently deleted from Recycle Bin`, 'warn')
   saveAdminStore(store)
 }
 

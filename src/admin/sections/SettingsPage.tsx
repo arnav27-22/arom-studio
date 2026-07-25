@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { CheckCircle2, ShieldCheck, Database, Key, Trash2, RotateCcw, Download } from 'lucide-react'
-import { getAdminStore, restoreFromRecycleBin, permanentDeleteFromRecycleBin, emptyRecycleBin, formatIST, type AdminRecycleItem } from '../adminStore'
+import { CheckCircle2, ShieldCheck, Database, Key, Trash2, ArrowRight, Download } from 'lucide-react'
+import { getAdminStore, formatIST } from '../adminStore'
 import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 const DEFAULT_SETTINGS = {
@@ -16,10 +16,9 @@ const DEFAULT_SETTINGS = {
   adminJwtExpiry: '8 Hours',
 }
 
-export function SettingsPage() {
+export function SettingsPage({ onNavigate }: { onNavigate?: (section: string) => void }) {
   const [data, setData] = useState<any>(DEFAULT_SETTINGS)
   const [store, setStore] = useState(getAdminStore())
-  const [recycleSearch, setRecycleSearch] = useState('')
 
   const reloadStore = () => setStore(getAdminStore())
 
@@ -50,56 +49,6 @@ export function SettingsPage() {
     exportSectionReportPDF('System Security & Recycle Bin Audit', 'AROM Studio System Environment & Trash Recovery', headers, rows, 'Settings_Security_Audit_Report')
   }
 
-  const recycleBin = store.recycleBin || []
-  const filteredRecycle = recycleBin.filter(
-    (r) =>
-      r.title.toLowerCase().includes(recycleSearch.toLowerCase()) ||
-      (r.subtitle || '').toLowerCase().includes(recycleSearch.toLowerCase()) ||
-      r.originalCollection.toLowerCase().includes(recycleSearch.toLowerCase())
-  )
-
-  const handleRestore = (id: string) => {
-    restoreFromRecycleBin(id)
-    reloadStore()
-  }
-
-  const handlePermanentDelete = (id: string) => {
-    if (confirm('Permanently delete this item? This action cannot be undone.')) {
-      permanentDeleteFromRecycleBin(id)
-      reloadStore()
-    }
-  }
-
-  const handleEmptyBin = () => {
-    if (confirm('Empty entire Recycle Bin? All items inside will be permanently deleted.')) {
-      emptyRecycleBin()
-      reloadStore()
-    }
-  }
-
-  const getCollectionBadge = (col: string) => {
-    const colMap: Record<string, string> = {
-      clients: 'Clients',
-      projects: 'Projects',
-      proposals: 'Proposals',
-      agreements: 'Agreements',
-      payments: 'Payments',
-      content: 'Content',
-      assets: 'Assets',
-      approvals: 'Design Approvals',
-      timelines: 'Timelines',
-      handovers: 'Handovers',
-      feedbacks: 'Feedback',
-      notifications: 'Notifications',
-      invoices: 'Invoices',
-      leads: 'Leads',
-      pdfs: 'PDFs',
-      visitors: 'Visitors',
-      discoveryQuestionnaires: 'Discovery Questionnaires',
-    }
-    return colMap[col] || col
-  }
-
   return (
     <div className="space-y-6 max-w-4xl">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -107,7 +56,7 @@ export function SettingsPage() {
           <h2 className="text-lg font-heading font-bold text-white flex items-center gap-2">
             <ShieldCheck className="h-5 w-5 text-accent" /> System Settings &amp; Security
           </h2>
-          <p className="text-xs text-white/50">Manage environment credentials, security audit logs & trash recovery</p>
+          <p className="text-xs text-white/50">Manage environment credentials, security audit logs &amp; trash recovery</p>
         </div>
         <button
           onClick={handleDownloadSettingsPDF}
@@ -117,9 +66,9 @@ export function SettingsPage() {
         </button>
       </div>
 
-      {/* Recycle Bin & Trash Recovery */}
+      {/* Recycle Bin Quick Link */}
       <div className="glass rounded-[24px] p-6 border border-accent/30 space-y-4 shadow-2xl">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <h3 className="text-sm font-heading font-bold text-white uppercase tracking-wider flex items-center gap-2">
               <Trash2 className="h-4 w-4 text-accent" /> Recycle Bin &amp; Trash Recovery
@@ -130,77 +79,23 @@ export function SettingsPage() {
           </div>
           <div className="flex items-center gap-2 shrink-0">
             <span className="px-3 py-1 rounded-full bg-accent/10 border border-accent/30 text-accent font-mono text-xs font-bold">
-              {recycleBin.length} Recycled Items
+              {(store.recycleBin || []).length} Recycled Items
             </span>
-            {recycleBin.length > 0 && (
-              <button
-                onClick={handleEmptyBin}
-                className="px-3 py-1.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 text-xs font-medium transition-all cursor-pointer flex items-center gap-1"
-              >
-                <Trash2 className="h-3.5 w-3.5" /> Empty Bin
-              </button>
-            )}
           </div>
         </div>
-
-        {/* Search */}
-        {recycleBin.length > 0 && (
-          <input
-            type="text"
-            placeholder="Search recycled items by name, email, or category..."
-            value={recycleSearch}
-            onChange={(e) => setRecycleSearch(e.target.value)}
-            className="w-full px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-white/40 focus:outline-none focus:border-accent"
-          />
-        )}
-
-        {/* Items List */}
-        <div className="space-y-2 max-h-96 overflow-y-auto pr-1">
-          {filteredRecycle.length > 0 ? (
-            filteredRecycle.map((item: AdminRecycleItem) => (
-              <div
-                key={item.id}
-                className="p-3.5 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
-              >
-                <div className="space-y-0.5 flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 rounded bg-accent/20 border border-accent/40 text-accent text-[10px] font-mono font-bold capitalize">
-                      {getCollectionBadge(item.originalCollection)}
-                    </span>
-                    <h4 className="font-bold text-white font-heading">{item.title}</h4>
-                  </div>
-                  {item.subtitle && <p className="text-white/60 text-[11px]">{item.subtitle}</p>}
-                  <span className="text-[10px] text-white/40 font-mono block">
-                    Deleted at: {formatIST(item.deletedAt)}
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-2 shrink-0">
-                  <button
-                    onClick={() => handleRestore(item.id)}
-                    className="px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-semibold transition-all cursor-pointer flex items-center gap-1"
-                    title="Restore item back to original section"
-                  >
-                    <RotateCcw className="h-3.5 w-3.5" /> Restore Item
-                  </button>
-                  <button
-                    onClick={() => handlePermanentDelete(item.id)}
-                    className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 transition-all cursor-pointer"
-                    title="Permanently Delete"
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </button>
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="text-center py-8 text-white/40 text-xs font-body">
-              {recycleBin.length === 0
-                ? 'Recycle Bin is empty. Items deleted from any admin section will appear here for easy recovery.'
-                : 'No items matching current search.'}
+        <button
+          onClick={() => onNavigate?.('recycle_bin')}
+          className="w-full flex items-center justify-between gap-3 px-5 py-3.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-accent/30 text-left transition-all cursor-pointer group"
+        >
+          <div className="flex items-center gap-3">
+            <Trash2 className="h-5 w-5 text-accent group-hover:scale-110 transition-transform" />
+            <div>
+              <div className="text-sm font-semibold text-white font-heading">Open Recycle Bin</div>
+              <div className="text-[11px] text-white/40">{(store.recycleBin || []).length} item(s) · Search, filter, restore, or permanently delete</div>
             </div>
-          )}
-        </div>
+          </div>
+          <ArrowRight className="h-4 w-4 text-white/30 group-hover:text-accent group-hover:translate-x-0.5 transition-all" />
+        </button>
       </div>
 
       <div className="glass rounded-[24px] p-6 border border-white/10">
@@ -208,7 +103,7 @@ export function SettingsPage() {
           <ShieldCheck className="h-4 w-4" /> System Health &amp; Environment
         </h3>
         <div className="space-y-3">
-          {Object.entries(data.envChecks || {}).map(([key, _set]) => (
+          {Object.entries(data.envChecks || {}).map(([key]) => (
             <div key={key} className="flex items-center gap-3 text-xs text-white/80 py-1.5 border-b border-white/5 last:border-0">
               <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
               <span className="text-white font-mono flex-1">{key}</span>

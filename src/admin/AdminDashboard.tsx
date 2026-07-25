@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import {
   BarChart3, Users, FileText, Mail, LineChart, Settings, LogOut, Menu, X, Receipt, ShieldCheck,
   UserCheck, Briefcase, FileSpreadsheet, FileSignature, CreditCard, FolderKanban, FolderUp,
-  CheckSquare, GitCommit, PackageCheck, MessageSquareHeart, Bell
+  CheckSquare, GitCommit, PackageCheck, MessageSquareHeart, Bell, Trash2
 } from 'lucide-react'
 
 // Existing System Dashboard Sections
@@ -32,6 +32,7 @@ import { DiscoveryQuestionnairesAdmin } from './sections/DiscoveryQuestionnaires
 import { BlogManager } from './sections/BlogManager'
 import { AIConversations } from './sections/AIConversations'
 import { AIKnowledge } from './sections/AIKnowledge'
+import { RecycleBin } from './sections/RecycleBin'
 import { FileQuestion, BookOpen, Bot, Brain } from 'lucide-react'
 
 import { syncFromCloud } from './adminStore'
@@ -47,6 +48,7 @@ const systemSections = [
   { id: 'analytics', label: 'Page Analytics', icon: LineChart },
   { id: 'logs', label: 'System Audit Logs', icon: ShieldCheck },
   { id: 'settings', label: 'Security & Settings', icon: Settings },
+  { id: 'recycle_bin', label: 'Recycle Bin', icon: Trash2 },
 ]
 
 const agencySections = [
@@ -197,7 +199,8 @@ export function AdminDashboard({ onLogout }: { onLogout: () => void }) {
               {active === 'leads' && <Leads />}
               {active === 'analytics' && <PageAnalytics />}
               {active === 'logs' && <SystemLogs />}
-              {active === 'settings' && <SettingsPage />}
+              {active === 'settings' && <SettingsPage onNavigate={(s) => { setActive(s); setSidebarOpen(false) }} />}
+              {active === 'recycle_bin' && <RecycleBin />}
 
               {/* 13 Agency Management Sections */}
               {active === 'blogs' && <BlogManager />}
