@@ -1,4 +1,4 @@
-// AROM AI — MASTER SYSTEM PROMPT (v2) & GLOBAL SECURITY SYSTEM PROMPT Integration
+// AROM STUDIO — AROM AI CONVERSATION ENGINE (HIGHEST PRIORITY) & GLOBAL SECURITY POLICY v2.0
 
 export interface AiKnowledgeItem {
   id: string
@@ -9,22 +9,27 @@ export interface AiKnowledgeItem {
   updatedAt: string
 }
 
-export const MASTER_SYSTEM_PROMPT_V2 = `
+export const MASTER_CONVERSATION_RULES_V2 = `
 # ============================================
-# AROM AI – MASTER SYSTEM PROMPT (v2)
+# AROM AI CONVERSATION ENGINE (HIGHEST PRIORITY)
 # ============================================
-You are "AROM AI", the official AI Assistant of AROM STUDIO.
-Your personality is professional, friendly, intelligent, patient, and conversational. Never sound robotic.
-Always respond naturally based on user intent.
+Response Priority Order:
+1. Conversation Intent (Greeting / AI identity / Capabilities / Company identity)
+2. User Intent & Empathy (Asking business details before selling)
+3. Context Memory
+4. Knowledge Base Search
+5. Website Content
+
+Never confuse AROM AI (the assistant) with AROM STUDIO (the company).
 `
 
 export const INITIAL_AI_KNOWLEDGE: AiKnowledgeItem[] = [
   {
     id: 'k_1',
     category: 'company',
-    question: 'Who founded AROM STUDIO and what is your mission?',
+    question: 'Who is AROM STUDIO and what is your mission?',
     answer: `### About AROM STUDIO
-AROM STUDIO was founded by **Arnav Pagare** (Founder & Lead Engineer). 
+AROM STUDIO is a modern, high-performance web design and software development agency founded by **Arnav Pagare** (Founder & Lead Engineer). 
 
 Our mission is to redefine the modern web agency experience by engineering ultra-fast, visually stunning, and high-converting web applications.
 
@@ -171,105 +176,81 @@ export function generateAiResponse(userQuery: string, customKnowledge: AiKnowled
   const queryTrimmed = userQuery.trim()
   const queryLower = queryTrimmed.toLowerCase()
 
-  if (!queryLower) {
-    return `Hi! 👋\nI'm AROM AI, the official AI assistant of AROM STUDIO.\n\nHow can I help you today?`
-  }
-
-  // 1. Zero Trust Security & Prompt Injection Check
+  // 1. Zero Trust Security & Prompt Injection Check (PRIORITY 1A)
   if (RESTRICTED_PATTERNS.some((pattern) => pattern.test(queryLower))) {
     return SECURITY_RESTRICTED_RESPONSE
   }
 
-  // 2. Unrelated / Out-of-Scope Questions
+  // 2. Unrelated / Out-of-Scope Questions (PRIORITY 1B)
   if (UNRELATED_PATTERNS.some((pattern) => pattern.test(queryLower))) {
     return `I'm designed specifically to assist with AROM STUDIO and our website development services. I may not be the best source for unrelated topics, but I'd be happy to help with anything about AROM STUDIO.`
   }
 
-  // 3. Conversational Intent Rules (Master System Prompt v2)
-  // Greetings
+  // 3. Conversational Intent Rules — HIGHEST CONVERSATION PRIORITY
+
+  // A. Greetings (DO NOT EXPLAIN SERVICES OR PRICING)
   if (/^(hi|hello|hey|good morning|good afternoon|good evening|namaste|hlo|hii|heyy)$/i.test(queryLower)) {
-    return `Hi! 👋\n\nI'm AROM AI, the official AI assistant of AROM STUDIO.\n\nIt's great to meet you.\nHow can I help you today?`
+    return `Hi! 👋\n\nI'm AROM AI.\nNice to meet you.\nHow can I help you today?`
   }
 
-  // Thank You
+  // B. Thank You
   if (/\b(thank you|thanks|thank u|tanks|thx)\b/i.test(queryLower)) {
-    return `You're very welcome! 😊\n\nI'm glad I could help.\nIf you have any other questions about AROM STUDIO, feel free to ask anytime.`
+    return `You're very welcome! 😊`
   }
 
-  // Goodbye
+  // C. Goodbye
   if (/\b(bye|goodbye|see you|tata)\b/i.test(queryLower)) {
-    return `Thank you for visiting AROM STUDIO.\n\nHave a wonderful day!\nI'll be here whenever you need help again. 👋`
+    return `Goodbye! 👋\nIt was a pleasure chatting with you.\nHave a wonderful day.`
   }
 
-  // Task Guidance: Start Project
-  if (/\b(start a project|start project|build my site|hire you|want a website|need a site|begin project)\b/i.test(queryLower) && !queryLower.includes('cost') && !queryLower.includes('price')) {
-    return `Awesome! Here is how you can start your project with AROM STUDIO step by step:
-
-**Step 1**: Open the **Contact** or **Discovery Questionnaire** page from the top menu.
-**Step 2**: Fill in your business details and website goals.
-**Step 3**: Submit the form.
-**Step 4**: Our engineering team will review your requirements.
-**Step 5**: We'll reach out to schedule your kickoff discussion!
-
-Would you like me to recommend a specific package for your business first?`
+  // D. Ask about AI Identity ("Who are you?", "What is your name?", "Are you AI?")
+  if (/\b(who are you|what is your name|who made you|are you ai|what are you|introduce yourself)\b/i.test(queryLower) && !queryLower.includes('arom studio')) {
+    return `Hello! 👋\n\nI'm AROM AI, the official AI assistant of AROM STUDIO.\n\nI'm here to help visitors learn about our services, guide them through the website, answer questions, and assist them throughout their journey.\n\nHow can I help you today?`
   }
 
-  // Navigation Guidance: Pricing
+  // E. Ask about AI Capabilities ("What can you do?")
+  if (/\b(what can you do|what are your capabilities|how can you help me|what do you do)\b/i.test(queryLower) && !queryLower.includes('arom studio')) {
+    return `I can:\n\n• Answer questions about AROM STUDIO\n• Help you choose services\n• Explain pricing\n• Guide you through the website\n• Help you start a project\n• Answer FAQs\n• Assist with navigation\n\nWhat would you like to know today?`
+  }
+
+  // F. Ask about Company Identity ("Who is AROM STUDIO?")
+  if (/\b(who is arom studio|what is arom studio|tell me about arom studio|about arom studio)\b/i.test(queryLower)) {
+    return `AROM STUDIO is a modern, high-performance web design and software development agency founded by **Arnav Pagare** (Founder & Lead Engineer).\n\nWe specialize in engineering ultra-fast, visually stunning, and high-converting web applications with a **100/100 Core Web Vitals Guarantee**, 100% source code ownership, and 1 full year of support coverage.`
+  }
+
+  // G. Ask about Founder ("Tell me about your founder", "Who founded AROM STUDIO?")
+  if (/\b(founder|who founded|tell me about your founder|who created arom studio)\b/i.test(queryLower)) {
+    return `AROM STUDIO was founded by **Arnav Pagare** (Founder & Lead Engineer).\n\nHe leads our engineering team, specializing in React 19 architecture, performance engineering, modern dark glassmorphic UI design, and scalable cloud applications.`
+  }
+
+  // H. Navigation Guidance: Pricing
   if (/\b(take me to pricing|where is pricing|how to find pricing|show pricing page)\b/i.test(queryLower)) {
-    return `Sure! Here's how you can reach the Pricing page:
-
-1. Open the navigation bar at the top of the website.
-2. Click on **'Pricing'**.
-3. You'll see all available website packages, included features, and pricing details.
-
-If you're on the homepage, simply click the **'Pricing'** option in the main navigation.`
+    return `Sure! Here's how you can reach the Pricing page:\n\n1. Open the navigation bar at the top of the website.\n2. Click on **'Pricing'**.\n3. You'll see all available website packages, included features, and pricing details.\n\nIf you're on the homepage, simply click the **'Pricing'** option in the main navigation.`
   }
 
-  // Empathy: Don't know which package to choose
+  // I. Task Guidance: Start Project
+  if (/\b(start a project|start project|build my site|hire you|want a website|need a site|begin project)\b/i.test(queryLower) && !queryLower.includes('cost') && !queryLower.includes('price')) {
+    return `Great! I'd be happy to help.\n\nCould you tell me what type of business or project the website is for?`
+  }
+
+  // J. Empathy: Don't know which package to choose
   if (/\b(don't know|dont know|not sure|confused|which package|recommend package)\b/i.test(queryLower)) {
-    return `No worries! I'd be happy to help.
-
-Could you tell me a little about your business and what you'd like your website to achieve? That will help me recommend the most suitable option for you.`
+    return `No worries! I'd be happy to help.\n\nCould you tell me a little about your business and what you'd like your website to achieve? That will help me recommend the most suitable option.`
   }
 
-  // Industry Personalization: Restaurant
+  // K. Industry Personalization: Restaurant
   if (/\b(restaurant|food|cafe|dining|bakery)\b/i.test(queryLower)) {
-    return `Awesome! For restaurant and food businesses, we build high-converting websites featuring:
-- **Interactive Digital Menus**: Showcase dishes with high-res photos & pricing.
-- **Online Table Reservations**: Let customers book tables directly.
-- **Instant WhatsApp Ordering**: Receive food orders directly on your phone.
-- **Location & Google Maps**: Help patrons find your restaurant easily.
-
-Our **Professional Tier (₹32,999+)** or **Business Tier (₹59,999+)** is usually perfect for restaurants. Would you like to know more about what's included?`
+    return `Awesome! For restaurant and food businesses, we build high-converting websites featuring:\n- **Interactive Digital Menus**: Showcase dishes with high-res photos & pricing.\n- **Online Table Reservations**: Let customers book tables directly.\n- **Instant WhatsApp Ordering**: Receive food orders directly on your phone.\n- **Location & Google Maps**: Help patrons find your restaurant easily.\n\nOur **Professional Tier (₹32,999+)** or **Business Tier (₹59,999+)** is usually perfect for restaurants. Would you like to know more about what's included?`
   }
 
-  // Industry Personalization: Doctor / Clinic / Healthcare
+  // L. Industry Personalization: Doctor / Clinic / Healthcare
   if (/\b(doctor|clinic|hospital|dental|healthcare|medical)\b/i.test(queryLower)) {
-    return `We specialize in healthcare and clinic websites! Key features include:
-- **Online Appointment Booking**: Allow patients to schedule visits online.
-- **Doctor Profiles & Credentials**: Build trust with patient reviews and specialization details.
-- **Services & Treatment Guides**: Clearly explain treatments offered.
-- **Patient Inquiry Forms & Location**: Directions to your clinic with Google Maps.
-
-Our **Professional Tier (₹32,999+)** is ideal for clinics. Would you like me to share details?`
+    return `We specialize in healthcare and clinic websites! Key features include:\n- **Online Appointment Booking**: Allow patients to schedule visits online.\n- **Doctor Profiles & Credentials**: Build trust with patient reviews and specialization details.\n- **Services & Treatment Guides**: Clearly explain treatments offered.\n- **Patient Inquiry Forms & Location**: Directions to your clinic with Google Maps.\n\nOur **Professional Tier (₹32,999+)** is ideal for clinics. Would you like me to share details?`
   }
 
-  // Industry Personalization: Clothing / E-commerce
+  // M. Industry Personalization: Clothing / E-commerce
   if (/\b(clothing|clothes|store|shop|sell online|ecommerce|fashion|products)\b/i.test(queryLower)) {
-    return `For clothing stores and retail brands, we build custom **E-commerce Platforms**:
-- **Product Catalog & Filters**: Category browsing, size/color selectors.
-- **Secure Checkout & Payments**: Seamless integration with Razorpay, Stripe, and UPI.
-- **Order & Inventory Dashboard**: Manage inventory and track orders easily.
-- **Mobile-Optimized Shopping**: Blazing-fast mobile shopping UX.
-
-Our **Business Tier (₹59,999+)** or **E-Commerce Package** is designed specifically for online stores. Shall we discuss your product catalog size?`
-  }
-
-  // Generic Intent: "I need a website"
-  if (/^(i need a website|i want a website|website needed|looking for a website)$/i.test(queryLower)) {
-    return `Great! I'd be happy to help.
-
-Could you tell me what type of business or project the website is for?`
+    return `For clothing stores and retail brands, we build custom **E-commerce Platforms**:\n- **Product Catalog & Filters**: Category browsing, size/color selectors.\n- **Secure Checkout & Payments**: Seamless integration with Razorpay, Stripe, and UPI.\n- **Order & Inventory Dashboard**: Manage inventory and track orders easily.\n- **Mobile-Optimized Shopping**: Blazing-fast mobile shopping UX.\n\nOur **Business Tier (₹59,999+)** or **E-Commerce Package** is designed specifically for online stores. Shall we discuss your product catalog size?`
   }
 
   // 4. Quick Category Matches
@@ -288,13 +269,12 @@ Could you tell me what type of business or project the website is for?`
     if (item) return item.answer
   }
 
-  if (queryLower.includes('track') || queryLower.includes('portal') || queryLower.includes('client portal') || queryLower.includes('agreement') || queryLower.includes('handover')) {
-    const item = customKnowledge.find((k) => k.category === 'portal')
-    if (item) return item.answer
+  if (queryLower.includes('contact') || queryLower.includes('email') || queryLower.includes('phone') || queryLower.includes('reach out')) {
+    return `You can reach AROM STUDIO easily through any of these channels:\n\n• **Email**: aromstudio27@gmail.com\n• **WhatsApp / Call**: +91 8767990061\n• **Contact Page**: Open 'Contact' from the top navigation to submit your project form.\n\nOur team typically responds within 2 hours!`
   }
 
-  if (queryLower.includes('founder') || queryLower.includes('arnav') || queryLower.includes('who are you') || queryLower.includes('about')) {
-    const item = customKnowledge.find((k) => k.category === 'company')
+  if (queryLower.includes('track') || queryLower.includes('portal') || queryLower.includes('client portal') || queryLower.includes('agreement') || queryLower.includes('handover')) {
+    const item = customKnowledge.find((k) => k.category === 'portal')
     if (item) return item.answer
   }
 
@@ -340,7 +320,7 @@ Could you tell me what type of business or project the website is for?`
   // 6. Helpful Fallback
   return `I'm not completely sure about that specific detail.
 
-I'd recommend contacting the AROM STUDIO team directly for the most accurate information. 
+I'd recommend contacting the AROM STUDIO team directly for the most accurate information.
 
 Would you like me to explain our services, pricing packages, or how to get started?`
 }
