@@ -276,11 +276,18 @@ export default async function handler(req, res) {
         if (Array.isArray(item.leads)) await db.write('real_leads', item.leads)
         if (Array.isArray(item.blogs)) await db.write('real_blogs', item.blogs)
         if (Array.isArray(item.recycleBin)) await db.write('real_recycle_bin', item.recycleBin)
+        if (Array.isArray(item.logs)) await db.write('system_logs', item.logs)
       } else if (action === 'save_entity' && body.entity && body.data) {
         await db.write(`real_${body.entity}`, body.data)
       }
       return j(res, { success: true })
     }
+  }
+
+  // Logs Endpoint
+  if (pathname === '/api/admin/logs') {
+    const logs = await db.read('system_logs')
+    return j(res, { total: logs.length, logs: logs.reverse() })
   }
 
   // Auth

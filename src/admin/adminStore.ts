@@ -87,7 +87,7 @@ export interface AdminInvoice {
 export interface AdminSystemLog {
   id: string
   createdAt: string
-  type: 'visit' | 'lead' | 'pdf' | 'invoice' | 'auth' | 'system'
+  type: 'visit' | 'lead' | 'pdf' | 'invoice' | 'auth' | 'system' | 'admin' | 'security' | 'ai' | 'project'
   event: string
   detail: string
   severity: 'info' | 'warn' | 'error'
@@ -835,6 +835,27 @@ export function saveAdminStore(data: StoreData) {
   }).catch(() => {})
 }
 
+// Global System Audit Log Helper
+export function logAuditEvent(
+  type: AdminSystemLog['type'],
+  event: string,
+  detail: string,
+  severity: 'info' | 'warn' | 'error' = 'info'
+) {
+  const store = getAdminStore()
+  const logItem: AdminSystemLog = {
+    id: 'log_' + Math.random().toString(36).slice(2, 9),
+    createdAt: new Date().toISOString(),
+    type,
+    event,
+    detail,
+    severity,
+  }
+  if (!Array.isArray(store.logs)) store.logs = []
+  store.logs.unshift(logItem)
+  saveAdminStore(store)
+}
+
 // Move any deleted item into the Recycle Bin (Soft Delete)
 export function moveToRecycleBin(
   collection: keyof StoreData,
@@ -864,6 +885,8 @@ export function moveToRecycleBin(
 
   if (!Array.isArray(store.recycleBin)) store.recycleBin = []
   store.recycleBin.unshift(recycleRecord)
+
+  logAuditEvent('admin', `Item Moved to Recycle Bin`, `Moved '${recycleRecord.title}' from ${String(collection)} to Recycle Bin`, 'info')
 
   saveAdminStore(store)
 }
