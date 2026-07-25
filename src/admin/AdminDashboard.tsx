@@ -30,12 +30,16 @@ import { FeedbackManager } from './sections/FeedbackManager'
 import { NotificationsCenter } from './sections/NotificationsCenter'
 import { DiscoveryQuestionnairesAdmin } from './sections/DiscoveryQuestionnairesAdmin'
 import { BlogManager } from './sections/BlogManager'
-import { FileQuestion, BookOpen } from 'lucide-react'
+import { AIConversations } from './sections/AIConversations'
+import { AIKnowledge } from './sections/AIKnowledge'
+import { FileQuestion, BookOpen, Bot, Brain } from 'lucide-react'
 
 import { syncFromCloud } from './adminStore'
 
 const systemSections = [
   { id: 'overview', label: 'Overview', icon: BarChart3 },
+  { id: 'ai_conversations', label: 'AI Conversations', icon: Bot },
+  { id: 'ai_knowledge', label: 'AI Knowledge Base', icon: Brain },
   { id: 'visitors', label: 'Visitors Log', icon: Users },
   { id: 'pdfs', label: 'PDF Documents Archive', icon: FileText },
   { id: 'invoices', label: 'Invoice Generator', icon: Receipt },
@@ -185,6 +189,8 @@ export function AdminDashboard({ onLogout }: { onLogout: () => void }) {
             <>
               {/* System Dashboard Sections */}
               {active === 'overview' && <Overview />}
+              {active === 'ai_conversations' && <AIConversations />}
+              {active === 'ai_knowledge' && <AIKnowledge />}
               {active === 'visitors' && <Visitors />}
               {active === 'pdfs' && <PDFActivity />}
               {active === 'invoices' && <InvoicesPage />}

@@ -4,6 +4,7 @@ import { Analytics } from '@vercel/analytics/react'
 import { Navbar } from './components/layout/Navbar'
 import { Footer } from './components/layout/Footer'
 import { WhatsAppButton } from './components/ui/WhatsAppButton'
+import { AromAiWidget } from './components/ai/AromAiWidget'
 import { SiteBackground } from './components/ui/SiteBackground'
 import { Particles } from './components/ui/ParticleBackground'
 import { CookieConsent } from './components/ui/CookieConsent'
@@ -119,6 +120,7 @@ export default function App() {
               </div>
               <Footer />
               <WhatsAppButton />
+              <AromAiWidget />
             </div>
           } />
         </Routes>

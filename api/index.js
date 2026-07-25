@@ -173,6 +173,12 @@ export default async function handler(req, res) {
         if (!discovery.some(d => d.id === item.id)) {
           await db.append('real_discovery', item)
         }
+      } else if (action === 'ai_conversation') {
+        const convs = await db.read('real_ai_conversations')
+        const idx = convs.findIndex(c => c.id === item.id)
+        if (idx !== -1) convs[idx] = item
+        else convs.unshift(item)
+        await db.write('real_ai_conversations', convs)
       } else if (action === 'save_store' && item) {
         if (Array.isArray(item.clients)) await db.write('real_clients', item.clients)
         if (Array.isArray(item.projects)) await db.write('real_projects', item.projects)
