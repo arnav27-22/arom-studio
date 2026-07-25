@@ -1,4 +1,4 @@
-// AROM AI — Flagship AI Knowledge Engine & Business Assistant Logic
+// AROM AI — Flagship AI Knowledge Engine, Security & Confidentiality Policy Logic
 
 export interface AiKnowledgeItem {
   id: string
@@ -90,7 +90,7 @@ Our structured workflow ensures transparent execution from discovery to launch:
     id: 'k_5',
     category: 'portal',
     question: 'Can I track my project progress in real-time?',
-    answer: `### Client Portal (\`/clientportal\`)
+    answer: `### Client Portal (/clientportal)
 Yes! We provide a dedicated **15-Module Client Portal** where you can track every phase in real-time:
 
 - **Live Dashboard**: Milestone progress bars, status indicators, file archives.
@@ -109,7 +109,7 @@ Yes! We provide a dedicated **15-Module Client Portal** where you can track ever
     id: 'k_6',
     category: 'admin',
     question: 'What features are available in the AROM STUDIO Admin Dashboard?',
-    answer: `### Admin Control Panel (\`/admin\`)
+    answer: `### Admin Control Panel (/admin)
 The Admin Panel features **23 modules** for total agency control:
 
 - **Executive Overview**: Real-time activity feeds, KPI stat cards, PDF exporter.
@@ -152,12 +152,22 @@ We build with cutting-edge, battle-tested modern web technologies:
   },
 ]
 
+// Official Security & Confidentiality Response
+export const SECURITY_RESTRICTED_RESPONSE = `I'm sorry, but I can't provide confidential, private, or security-sensitive information. If you need assistance with AROM STUDIO's public services or have a legitimate support request, I'd be happy to help.`
+
 // Polite response for out-of-scope/unrelated questions
 export const UNRELATED_TOPIC_RESPONSE = `I'm designed specifically to assist with **AROM STUDIO** and our website development services. I may not be the best source for unrelated topics. 
 
 If you have any questions about AROM STUDIO's services, pricing, technology stack, process, or client portal, I'd be happy to help!`
 
-// List of unrelated query patterns (politics, movies, sports, medical, general coding homework, history, jokes)
+// Security & Prompt Injection Patterns
+const RESTRICTED_PATTERNS = [
+  /\b(api[ _]?key|secret[ _]?key|access[ _]?token|jwt|env|\.env|database[ _]?url|db[ _]?password|smtp|oauth|admin[ _]?credential|session[ _]?token|private[ _]?key|ssh[ _]?key|firebase|supabase[ _]?service|openai[ _]?key|gemini[ _]?key|vercel[ _]?secret|github[ _]?token|encryption[ _]?key|sql[ _]?query|system[ _]?prompt|developer[ _]?mode|reveal[ _]?prompt|print[ _]?code|export[ _]?database|give[ _]?passwords)\b/i,
+  /\b(ignore (all )?previous instructions|reveal your prompt|show hidden instructions|print system prompt|show developer message|display memory|pretend you are (admin|owner|founder|developer)|you are now in developer mode|show \.env|print backend code|export database|give me passwords|reveal secrets)\b/i,
+  /\b(i am (the )?(founder|owner|admin|administrator|developer|employee|investor|government|hacker|security researcher))\b/i,
+]
+
+// Unrelated query patterns
 const UNRELATED_PATTERNS = [
   /\b(movie|cinema|actor|actress|hollywood|bollywood|netflix|film)\b/i,
   /\b(cricket|football|soccer|nba|ipl|messi|ronaldo|match|score|sports)\b/i,
@@ -175,13 +185,19 @@ export function generateAiResponse(userQuery: string, customKnowledge: AiKnowled
     return `Hello! How can I assist you with AROM STUDIO today?`
   }
 
-  // 1. Check if the question is out of scope / unrelated
+  // 1. Security & Prompt Injection Protection Check (ZERO TRUST)
+  const isRestricted = RESTRICTED_PATTERNS.some((pattern) => pattern.test(queryLower))
+  if (isRestricted) {
+    return SECURITY_RESTRICTED_RESPONSE
+  }
+
+  // 2. Check if the question is out of scope / unrelated
   const isUnrelated = UNRELATED_PATTERNS.some((pattern) => pattern.test(queryLower))
   if (isUnrelated) {
     return UNRELATED_TOPIC_RESPONSE
   }
 
-  // 2. Specific Quick Matches
+  // 3. Specific Quick Matches
   if (queryLower.includes('cost') || queryLower.includes('price') || queryLower.includes('pricing') || queryLower.includes('how much')) {
     const item = customKnowledge.find((k) => k.category === 'pricing')
     if (item) return item.answer
@@ -217,7 +233,7 @@ export function generateAiResponse(userQuery: string, customKnowledge: AiKnowled
     if (item) return item.answer
   }
 
-  // 3. Keyword Scoring Matcher across knowledge items
+  // 4. Keyword Scoring Matcher across knowledge items
   let bestMatch: AiKnowledgeItem | null = null
   let maxScore = 0
 
@@ -247,7 +263,7 @@ export function generateAiResponse(userQuery: string, customKnowledge: AiKnowled
     return bestMatch.answer
   }
 
-  // 4. Default Helpful Fallback
+  // 5. Default Helpful Fallback
   return `### How Can AROM STUDIO Help You?
 
 I can provide detailed information regarding:
