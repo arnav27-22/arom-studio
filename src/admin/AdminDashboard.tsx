@@ -33,9 +33,11 @@ import { BlogManager } from './sections/BlogManager'
 import { AIConversations } from './sections/AIConversations'
 import { AIKnowledge } from './sections/AIKnowledge'
 import { RecycleBin } from './sections/RecycleBin'
-import { FileQuestion, BookOpen, Bot, Brain } from 'lucide-react'
+import { LinkClicks } from './sections/LinkClicks'
+import { FileQuestion, BookOpen, Bot, Brain, MousePointer2 } from 'lucide-react'
 
 import { syncFromCloud } from './adminStore'
+import { adminWS } from './wsClient'
 
 const systemSections = [
   { id: 'overview', label: 'Overview', icon: BarChart3 },
@@ -47,6 +49,7 @@ const systemSections = [
   { id: 'leads', label: 'Contact Form Leads', icon: Mail },
   { id: 'analytics', label: 'Page Analytics', icon: LineChart },
   { id: 'logs', label: 'System Audit Logs', icon: ShieldCheck },
+  { id: 'link_clicks', label: 'Link Clicks', icon: MousePointer2 },
   { id: 'settings', label: 'Security & Settings', icon: Settings },
   { id: 'recycle_bin', label: 'Recycle Bin', icon: Trash2 },
 ]
@@ -77,15 +80,16 @@ export function AdminDashboard({ onLogout }: { onLogout: () => void }) {
 
   useEffect(() => {
     setMounted(true)
-    // Initial cloud sync
     syncFromCloud()
 
-    // Poll global cloud sync every 3 seconds for real-time cross-device synchronization
-    const interval = setInterval(() => {
-      syncFromCloud()
-    }, 3000)
+    const refresh = () => syncFromCloud()
+    adminWS.on('dashboard:updated', refresh)
+    adminWS.on('*', refresh)
 
-    return () => clearInterval(interval)
+    return () => {
+      adminWS.off('dashboard:updated', refresh)
+      adminWS.off('*', refresh)
+    }
   }, [])
 
   const currentSection = allSections.find((s) => s.id === active)
@@ -199,6 +203,7 @@ export function AdminDashboard({ onLogout }: { onLogout: () => void }) {
               {active === 'leads' && <Leads />}
               {active === 'analytics' && <PageAnalytics />}
               {active === 'logs' && <SystemLogs />}
+              {active === 'link_clicks' && <LinkClicks />}
               {active === 'settings' && <SettingsPage onNavigate={(s) => { setActive(s); setSidebarOpen(false) }} />}
               {active === 'recycle_bin' && <RecycleBin />}
 

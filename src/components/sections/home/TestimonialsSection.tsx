@@ -50,6 +50,11 @@ export function TestimonialsSection() {
               <div>
                 <p className="text-sm font-body font-medium text-white">{t.client}</p>
                 <p className="text-xs text-white/75 font-body">{t.company}</p>
+                {t.companyUrl && !t.companyUrl.includes('example.com') && !t.companyUrl.includes('aromstudio.vercel.app') ? (
+                  <a href={t.companyUrl} target="_blank" rel="noopener noreferrer" className="text-[11px] text-accent hover:underline mt-1 inline-block">{t.companyUrl.replace(/^https?:\/\//, '')}</a>
+                ) : t.companyUrl ? (
+                  <span className="text-[11px] text-white/40 mt-1 inline-block">Website available</span>
+                ) : null}
               </div>
             </GlassCard>
           ))}

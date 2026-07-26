@@ -6,7 +6,7 @@ export function LinkClicks() {
   const [data, setData] = useState<any>(null)
 
   useEffect(() => {
-    fetch('/api/admin/clicks', { credentials: 'include' })
+    fetch('/api/admin/link-clicks', { credentials: 'include' })
       .then((r) => r.json())
       .then(setData)
       .catch(() => {})

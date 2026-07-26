@@ -1,0 +1,46 @@
+name: Production Deploy
+
+on:
+  workflow_run:
+    workflows: ['CI/CD']
+    branches: [main, master]
+    types: [completed]
+
+env:
+  NODE_VERSION: '22'
+
+jobs:
+  deploy:
+    name: Production Deploy
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Run migrations
+        run: npx prisma migrate deploy --schema=server/prisma/schema.prisma
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Health check
+        run: |
+          for i in {1..12}; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" ${{ secrets.DEPLOY_URL }}/api/health || echo "000")
+            if [ "$STATUS" = "200" ]; then
+              echo "Health check passed"
+              exit 0
+            fi
+            echo "Waiting for deployment... (attempt $i/12)"
+            sleep 10
+          done
+          echo "Health check failed"
+          exit 1
+
+      - name: Rollback on failure
+        if: failure()
+        run: echo "Rollback required - restore previous deployment"

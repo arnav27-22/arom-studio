@@ -1,5 +1,6 @@
 import type { BlogPost } from '../data/blog'
 import { BLOG_POSTS } from '../data/blog'
+import { adminWS } from './wsClient'
 
 export interface AdminVisitor {
   id: string
@@ -313,6 +314,29 @@ const EMPTY_DATA: StoreData = {
 let __cache: StoreData = { ...EMPTY_DATA }
 let __syncInProgress = false
 let __syncTriggered = false
+let __wsHandlersInitialized = false
+
+const COLLECTION_ENDPOINTS: Record<string, string> = {
+  visitors: '/api/admin/visitors',
+  leads: '/api/admin/leads',
+  pdfs: '/api/admin/pdfs',
+  invoices: '/api/admin/invoices',
+  logs: '/api/admin/logs',
+  clients: '/api/admin/clients',
+  projects: '/api/admin/projects',
+  proposals: '/api/admin/proposals',
+  agreements: '/api/admin/agreements',
+  payments: '/api/admin/payments',
+  content: '/api/admin/content',
+  assets: '/api/admin/assets',
+  approvals: '/api/admin/approvals',
+  timelines: '/api/admin/timelines',
+  handovers: '/api/admin/handovers',
+  feedbacks: '/api/admin/feedbacks',
+  notifications: '/api/admin/notifications',
+  discoveryQuestionnaires: '/api/admin/discovery',
+  recycleBin: '/api/admin/recycle',
+}
 
 async function api(path: string, options?: RequestInit): Promise<any> {
   try {
@@ -320,6 +344,13 @@ async function api(path: string, options?: RequestInit): Promise<any> {
     if (!res.ok) return null
     return await res.json()
   } catch { return null }
+}
+
+function toArray(resp: any): any[] {
+  if (Array.isArray(resp)) return resp
+  if (resp && Array.isArray(resp.data)) return resp.data
+  if (resp && Array.isArray(resp.items)) return resp.items
+  return []
 }
 
 function mergeArrays<T extends { id: string }>(remote: T[] | undefined | null, local: T[]): T[] {
@@ -331,46 +362,193 @@ function mergeArrays<T extends { id: string }>(remote: T[] | undefined | null, l
   return result
 }
 
+function sortByCreatedAt<T extends { createdAt?: string }>(arr: T[]): T[] {
+  return arr.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
+}
+
+function initWebSocketHandlers() {
+  if (__wsHandlersInitialized) return
+  __wsHandlersInitialized = true
+
+  adminWS.on('visitor:created', (data) => {
+    if (data?.id && !__cache.visitors.some(v => v.id === data.id)) {
+      __cache.visitors = [data, ...__cache.visitors]
+    }
+  })
+  adminWS.on('visitor:updated', (data) => {
+    if (data?.id) {
+      __cache.visitors = __cache.visitors.map(v => v.id === data.id ? data : v)
+    }
+  })
+  adminWS.on('visitor:deleted', (data) => {
+    if (data?.id) {
+      __cache.visitors = __cache.visitors.filter(v => v.id !== data.id)
+    }
+  })
+
+  adminWS.on('pdf:created', (data) => {
+    if (data?.id && !__cache.pdfs.some(p => p.id === data.id)) {
+      __cache.pdfs = [data, ...__cache.pdfs]
+    }
+  })
+  adminWS.on('pdf:deleted', (data) => {
+    if (data?.id) {
+      __cache.pdfs = __cache.pdfs.filter(p => p.id !== data.id)
+    }
+  })
+
+  adminWS.on('lead:created', (data) => {
+    if (data?.id && !__cache.leads.some(l => l.id === data.id)) {
+      __cache.leads = [data, ...__cache.leads]
+    }
+  })
+  adminWS.on('lead:updated', (data) => {
+    if (data?.id) {
+      __cache.leads = __cache.leads.map(l => l.id === data.id ? data : l)
+    }
+  })
+
+  adminWS.on('invoice:created', (data) => {
+    if (data?.id && !__cache.invoices.some(i => i.id === data.id)) {
+      __cache.invoices = [data, ...__cache.invoices]
+    }
+  })
+  adminWS.on('invoice:deleted', (data) => {
+    if (data?.id) {
+      __cache.invoices = __cache.invoices.filter(i => i.id !== data.id)
+    }
+  })
+
+  adminWS.on('project:created', (data) => {
+    if (data?.id && !__cache.projects.some(p => p.id === data.id)) {
+      __cache.projects = [data, ...__cache.projects]
+    }
+  })
+  adminWS.on('project:updated', (data) => {
+    if (data?.id) {
+      __cache.projects = __cache.projects.map(p => p.id === data.id ? data : p)
+    }
+  })
+  adminWS.on('project:deleted', (data) => {
+    if (data?.id) {
+      __cache.projects = __cache.projects.filter(p => p.id !== data.id)
+    }
+  })
+
+  adminWS.on('client:created', (data) => {
+    if (data?.id && !__cache.clients.some(c => c.id === data.id)) {
+      __cache.clients = [data, ...__cache.clients]
+    }
+  })
+  adminWS.on('client:updated', (data) => {
+    if (data?.id) {
+      __cache.clients = __cache.clients.map(c => c.id === data.id ? data : c)
+    }
+  })
+  adminWS.on('client:deleted', (data) => {
+    if (data?.id) {
+      __cache.clients = __cache.clients.filter(c => c.id !== data.id)
+    }
+  })
+
+  adminWS.on('notification:updated', (data) => {
+    if (data?.id) {
+      __cache.notifications = __cache.notifications.map(n => n.id === data.id ? { ...n, ...data } : n)
+    }
+  })
+  adminWS.on('notification:allread', () => {
+    __cache.notifications = __cache.notifications.map(n => ({ ...n, read: true }))
+  })
+  adminWS.on('notification:deleted', (data) => {
+    if (data?.id) {
+      __cache.notifications = __cache.notifications.filter(n => n.id !== data.id)
+    }
+  })
+
+  adminWS.on('discovery:created', (data) => {
+    if (data?.id && !__cache.discoveryQuestionnaires.some(d => d.id === data.id)) {
+      __cache.discoveryQuestionnaires = [data, ...__cache.discoveryQuestionnaires]
+    }
+  })
+  adminWS.on('discovery:deleted', (data) => {
+    if (data?.id) {
+      __cache.discoveryQuestionnaires = __cache.discoveryQuestionnaires.filter(d => d.id !== data.id)
+    }
+  })
+
+  adminWS.on('recycle:restored', (data) => {
+    if (data?.recycleId) {
+      __cache.recycleBin = __cache.recycleBin.filter(r => r.id !== data.recycleId)
+    }
+    if (data?.itemData && data?.originalCollection) {
+      const col = data.originalCollection as keyof StoreData
+      const list = __cache[col] as any[] | undefined
+      if (list && !list.some((i: any) => i.id === data.itemData.id)) {
+        ;(__cache as any)[col] = [data.itemData, ...list]
+      }
+    }
+  })
+  adminWS.on('recycle:deleted', (data) => {
+    if (data?.itemData && data?.originalCollection) {
+      const col = data.originalCollection as keyof StoreData
+      ;(__cache as any)[col] = ((__cache[col] as any[]) || []).filter((i: any) => i.id !== data.itemData.id)
+    }
+    if (data?.recycleItem) {
+      __cache.recycleBin = [data.recycleItem, ...__cache.recycleBin.filter(r => r.id !== data.recycleItem.id)]
+    }
+  })
+  adminWS.on('recycle:emptied', () => {
+    __cache.recycleBin = []
+  })
+}
+
+const SYNC_COLLECTIONS: { key: keyof StoreData; url: string }[] = [
+  { key: 'visitors', url: '/api/admin/visitors' },
+  { key: 'leads', url: '/api/admin/leads' },
+  { key: 'pdfs', url: '/api/admin/pdfs' },
+  { key: 'invoices', url: '/api/admin/invoices' },
+  { key: 'logs', url: '/api/admin/logs' },
+  { key: 'clients', url: '/api/admin/clients' },
+  { key: 'projects', url: '/api/admin/projects' },
+  { key: 'proposals', url: '/api/admin/proposals' },
+  { key: 'agreements', url: '/api/admin/agreements' },
+  { key: 'payments', url: '/api/admin/payments' },
+  { key: 'content', url: '/api/admin/content' },
+  { key: 'assets', url: '/api/admin/assets' },
+  { key: 'approvals', url: '/api/admin/approvals' },
+  { key: 'timelines', url: '/api/admin/timelines' },
+  { key: 'handovers', url: '/api/admin/handovers' },
+  { key: 'feedbacks', url: '/api/admin/feedbacks' },
+  { key: 'notifications', url: '/api/admin/notifications' },
+  { key: 'discoveryQuestionnaires', url: '/api/admin/discovery' },
+  { key: 'recycleBin', url: '/api/admin/recycle' },
+]
+
 export async function syncFromCloud(): Promise<StoreData> {
   if (__syncInProgress) return __cache
   __syncInProgress = true
   try {
-    const data = await api('/api/sync')
-    if (!data) return __cache
+    const results = await Promise.all(
+      SYNC_COLLECTIONS.map(({ key, url }) =>
+        api(url).then(resp => ({ key, data: toArray(resp) }))
+      )
+    )
 
-    const updated: StoreData = {
-      visitors: mergeArrays(data.visitors, __cache.visitors).sort(
-        (a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
-      ),
-      pdfs: mergeArrays(data.pdfs, __cache.pdfs).sort(
-        (a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
-      ),
-      leads: mergeArrays(data.leads, __cache.leads).sort(
-        (a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
-      ),
-      invoices: mergeArrays(data.invoices, __cache.invoices).sort(
-        (a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
-      ),
-      logs: mergeArrays(data.logs, __cache.logs).sort(
-        (a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
-      ),
-      clients: mergeArrays(data.clients, __cache.clients),
-      projects: mergeArrays(data.projects, __cache.projects),
-      proposals: mergeArrays(data.proposals, __cache.proposals),
-      agreements: mergeArrays(data.agreements, __cache.agreements),
-      payments: mergeArrays(data.payments, __cache.payments),
-      content: mergeArrays(data.content, __cache.content),
-      assets: mergeArrays(data.assets, __cache.assets),
-      approvals: mergeArrays(data.approvals, __cache.approvals),
-      timelines: mergeArrays(data.timelines, __cache.timelines),
-      handovers: mergeArrays(data.handovers, __cache.handovers),
-      feedbacks: mergeArrays(data.feedbacks, __cache.feedbacks),
-      notifications: mergeArrays(data.notifications, __cache.notifications),
-      discoveryQuestionnaires: mergeArrays(data.discoveryQuestionnaires, __cache.discoveryQuestionnaires),
-      blogs: Array.isArray(data.blogs) && data.blogs.length > 0 ? data.blogs : __cache.blogs,
-      recycleBin: mergeArrays(data.recycleBin, __cache.recycleBin),
+    const updated: StoreData = { ...__cache }
+
+    for (const { key, data } of results) {
+      if (!Array.isArray(data) || data.length === 0) continue
+      const existing = __cache[key] as any[]
+      const merged = key === 'blogs'
+        ? (data.length > 0 ? data : __cache.blogs)
+        : mergeArrays(data as any, existing)
+      ;(updated as any)[key] = key === 'visitors' || key === 'pdfs' || key === 'leads' || key === 'invoices' || key === 'logs'
+        ? sortByCreatedAt(merged)
+        : merged
     }
+
     __cache = updated
+    initWebSocketHandlers()
     return updated
   } finally {
     __syncInProgress = false
@@ -387,15 +565,10 @@ export function getAdminStore(): StoreData {
 
 export function saveAdminStore(data: StoreData) {
   __cache = { ...data }
-  api('/api/sync', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'save_store', data }),
-  }).catch(() => {})
 }
 
 export function formatIST(dateString?: string): string {
-  if (!dateString) return '—'
+  if (!dateString) return '\u2014'
   try {
     return new Date(dateString).toLocaleString('en-IN', {
       timeZone: 'Asia/Kolkata',
@@ -417,10 +590,10 @@ export function logAuditEvent(
     type, event, detail, severity,
   }
   __cache.logs = [logItem, ...(__cache.logs || [])]
-  api('/api/sync', {
+  api('/api/admin/logs', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'log', data: logItem }),
+    body: JSON.stringify(logItem),
   }).catch(() => {})
 }
 
@@ -447,7 +620,10 @@ export function moveToRecycleBin(
     originalCreatedAt: deletedItem.createdAt,
   }
   __cache.recycleBin = [record, ...(__cache.recycleBin || [])]
-  saveAdminStore(__cache)
+  const endpoint = COLLECTION_ENDPOINTS[collection]
+  if (endpoint) {
+    api(`${endpoint}/${itemId}`, { method: 'DELETE' }).catch(() => {})
+  }
 }
 
 export function restoreFromRecycleBin(recycleId: string) {
@@ -460,7 +636,11 @@ export function restoreFromRecycleBin(recycleId: string) {
     ;(__cache as any)[collection] = [record.itemData, ...currentList]
   }
   __cache.recycleBin = __cache.recycleBin.filter(r => r.id !== recycleId)
-  saveAdminStore(__cache)
+  api('/api/admin/recycle/restore', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ recycleId, originalCollection: collection, itemData: record.itemData }),
+  }).catch(() => {})
 }
 
 export function bulkRestoreFromRecycleBin(recycleIds: string[]) {
@@ -477,22 +657,34 @@ export function bulkRestoreFromRecycleBin(recycleIds: string[]) {
     restored++
   })
   __cache.recycleBin = __cache.recycleBin.filter(r => !recycleIds.includes(r.id))
-  saveAdminStore(__cache)
+  api('/api/admin/recycle/restore', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ recycleIds, bulk: true }),
+  }).catch(() => {})
 }
 
 export function permanentDeleteFromRecycleBin(recycleId: string) {
   __cache.recycleBin = __cache.recycleBin.filter(r => r.id !== recycleId)
-  saveAdminStore(__cache)
+  api('/api/admin/recycle/permanent-delete', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ recycleId }),
+  }).catch(() => {})
 }
 
 export function bulkPermanentDeleteFromRecycleBin(recycleIds: string[]) {
   __cache.recycleBin = __cache.recycleBin.filter(r => !recycleIds.includes(r.id))
-  saveAdminStore(__cache)
+  api('/api/admin/recycle/permanent-delete', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ recycleIds, bulk: true }),
+  }).catch(() => {})
 }
 
 export function emptyRecycleBin() {
   __cache.recycleBin = []
-  saveAdminStore(__cache)
+  api('/api/admin/recycle/empty', { method: 'POST' }).catch(() => {})
 }
 
 export function recordAdminVisit(page: string, referrer: string = 'Direct', options: Partial<AdminVisitor> = {}) {
@@ -531,10 +723,10 @@ export function recordAdminVisit(page: string, referrer: string = 'Direct', opti
     read: false, createdAt: now,
   }, ...__cache.notifications]
 
-  api('/api/sync', {
+  api('/api/admin/visitors', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'visit', data: visit }),
+    body: JSON.stringify(visit),
   }).catch(() => {})
 }
 
@@ -553,10 +745,10 @@ export function recordAdminLead(lead: Omit<AdminLead, 'id' | 'createdAt' | 'stat
     message: `Lead from ${newLead.name} (${newLead.email}) for ${newLead.service || 'Web Services'}.`,
     read: false, createdAt: now,
   }, ...__cache.notifications]
-  api('/api/sync', {
+  api('/api/admin/leads', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'lead', data: newLead }),
+    body: JSON.stringify(newLead),
   }).catch(() => {})
 }
 
@@ -574,10 +766,10 @@ export function recordAdminPDF(pdf: Omit<AdminPDF, 'id' | 'createdAt'>) {
     message: `${newPdf.clientName || 'Client'} generated ${newPdf.pdfType || 'PDF Document'} (${newPdf.title}).`,
     read: false, createdAt: newPdf.createdAt,
   }, ...(__cache.notifications || [])]
-  api('/api/sync', {
+  api('/api/admin/pdfs/save', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'pdf', data: newPdf }),
+    body: JSON.stringify(newPdf),
   }).catch(() => {})
 }
 
@@ -588,10 +780,10 @@ export function recordAdminInvoice(invoice: Omit<AdminInvoice, 'id' | 'createdAt
     createdAt: new Date().toISOString(),
   }
   __cache.invoices = [newInv, ...__cache.invoices]
-  api('/api/sync', {
+  api('/api/admin/invoices', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'invoice', data: newInv }),
+    body: JSON.stringify(newInv),
   }).catch(() => {})
 }
 
@@ -610,10 +802,10 @@ export function recordAdminDiscoveryQuestionnaire(dq: Omit<AdminDiscoveryQuestio
     message: `Questionnaire submitted by ${newDq.fullName} (${newDq.company || 'Client'}).`,
     read: false, createdAt: now,
   }, ...(__cache.notifications || [])]
-  api('/api/sync', {
+  api('/api/admin/discovery', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'discovery', data: newDq }),
+    body: JSON.stringify(newDq),
   }).catch(() => {})
 }
 

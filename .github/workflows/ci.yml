@@ -1,0 +1,86 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master]
+
+env:
+  NODE_VERSION: '22'
+  DATABASE_URL: postgresql://postgres:postgres@localhost:5432/arom_studio_test
+  ADMIN_JWT_SECRET: ci-test-jwt-secret
+  ADMIN_PASSWORD: ci-test-password
+
+jobs:
+  validate:
+    name: Validate
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: arom_studio_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check (app)
+        run: npx tsc --noEmit -p tsconfig.app.json
+
+      - name: Type check (server)
+        run: npx tsc --noEmit -p server/tsconfig.json
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Prisma validate
+        run: npx prisma validate --schema=server/prisma/schema.prisma
+
+      - name: Prisma generate
+        run: npx prisma generate --schema=server/prisma/schema.prisma
+
+      - name: Run database migrations
+        run: npx prisma migrate deploy --schema=server/prisma/schema.prisma
+
+      - name: Run tests
+        run: npm run test -- --ci
+
+      - name: Build
+        run: npm run build
+
+  deploy:
+    name: Deploy
+    needs: [validate]
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to production
+        run: echo "Deploy step - configure for your provider"

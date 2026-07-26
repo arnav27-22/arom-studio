@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Plus, Download, Eye, Trash2, FileText, CheckCircle2, Clock } from 'lucide-react'
-import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, recordAdminInvoice, type AdminInvoice } from '../adminStore'
+import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, recordAdminInvoice, type AdminInvoice, type InvoiceItem } from '../adminStore'
 import { StatCard } from '../components/StatCard'
 import { generateInvoicePDF, exportSectionReportPDF } from '../../lib/professionalPDF'
 
@@ -36,9 +36,7 @@ export function InvoicesPage() {
   const [includeGST, setIncludeGST] = useState(false)
   const [discountRate, setDiscountRate] = useState(0)
   const [notes, setNotes] = useState('Payment due within 7 days. Thank you for choosing AROM STUDIO.')
-  const [items, setItems] = useState([
-    { id: '1', description: 'Custom Business Website Development (Phase 1)', quantity: 1, unitPrice: 32999 },
-  ])
+  const [items, setItems] = useState<InvoiceItem[]>([])
 
   const reloadStore = () => setStore(getAdminStore())
 
@@ -59,7 +57,7 @@ export function InvoicesPage() {
   const handleAddItem = () => {
     setItems([
       ...items,
-      { id: Math.random().toString(), description: 'New Line Item', quantity: 1, unitPrice: 5000 },
+      { id: crypto.randomUUID?.() ?? Date.now().toString(36), description: 'Service item', quantity: 1, unitPrice: 0 },
     ])
   }
 
@@ -391,12 +389,18 @@ export function InvoicesPage() {
               </div>
 
               {/* Summary Calculation */}
+              {items.length === 0 ? (
+                <div className="p-3 bg-white/5 rounded-xl border border-white/10 text-center text-xs text-white/40">
+                  Add line items above to see the invoice summary.
+                </div>
+              ) : (
               <div className="p-3 bg-white/5 rounded-xl border border-white/10 space-y-1 font-mono text-right text-xs">
                 <div>Subtotal: {currencySymbol}{subtotal.toLocaleString('en-IN')}</div>
                 {discountAmount > 0 && <div className="text-amber-400">Discount ({discountRate}%): -{currencySymbol}{discountAmount.toLocaleString('en-IN')}</div>}
                 <div>Tax ({taxRate}%): +{currencySymbol}{taxAmount.toLocaleString('en-IN')}</div>
                 <div className="text-sm text-accent font-bold pt-1 border-t border-white/10">Total: {currencySymbol}{totalAmount.toLocaleString('en-IN')}</div>
               </div>
+              )}
 
               <div>
                 <label className="text-white/50 block mb-1">Payment Notes / Terms</label>

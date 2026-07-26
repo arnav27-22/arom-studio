@@ -22,9 +22,9 @@ export function Visitors() {
       formatIST(v.createdAt),
       v.isReturning ? 'Returning' : 'New Visitor',
       v.page,
-      `${v.deviceLabel || v.deviceType} (${v.deviceBrand || 'PC'})`,
-      `IP: ${v.ip || '103.15.22.84'} • ${v.city || 'Mumbai'}, ${v.country || 'India'}`,
-      `${v.timeOnPage || 30}s`,
+      `${v.deviceLabel || v.deviceType}${v.deviceBrand ? ` (${v.deviceBrand})` : ""}`,
+      `${v.ip ? `IP: ${v.ip} \u2022 ` : ""}${v.city || ""}${v.city && v.country ? ", " : ""}${v.country || ""}`,
+      `${v.timeOnPage || 0}s`,
     ])
     exportSectionReportPDF('Real-Time Visitors Audit Log', 'AROM Studio Traffic & Device Log', headers, rows, 'Visitor_Traffic_Report')
   }
@@ -39,7 +39,7 @@ export function Visitors() {
 
   const handleDeleteVisitor = (id: string) => {
     const v = store.visitors.find((x) => x.id === id)
-    moveToRecycleBin('visitors', id, `${v?.page || '/'} (${v?.city || 'Visitor'})`, v?.browser || 'Browser')
+    moveToRecycleBin('visitors', id, `${v?.page || '/'} (${v?.city || ""})`, v?.browser || "")
     reload()
   }
 
@@ -50,7 +50,7 @@ export function Visitors() {
       if (updated.visitors.length > (store.visitors?.length || 0)) {
         const newest = updated.visitors[0]
         setLiveToast({
-          message: `⚡ New ${newest.isReturning ? 'Returning' : 'New'} Visitor active on ${newest.page} from ${newest.city || 'Mumbai'}, ${newest.country || 'India'}`,
+          message: `⚡ New ${newest.isReturning ? 'Returning' : 'New'} Visitor active on ${newest.page} from ${newest.city || ""}${newest.city && newest.country ? ", " : ""}${newest.country || ""}`,
           timestamp: new Date().toLocaleTimeString(),
         })
         setTimeout(() => setLiveToast(null), 6000)
@@ -76,7 +76,7 @@ export function Visitors() {
   const visitorsThisWeek = visitors.filter((v) => new Date(v.createdAt) >= sevenDaysAgo).length
   const visitorsThisMonth = visitors.filter((v) => new Date(v.createdAt) >= thirtyDaysAgo).length
   const allTimeVisitors = visitors.length
-  const liveActiveVisitors = visitors.filter((v) => new Date(v.lastActivityAt || v.createdAt) >= fiveMinsAgo).length || 1
+  const liveActiveVisitors = visitors.filter((v) => new Date(v.lastActivityAt || v.createdAt) >= fiveMinsAgo).length || 0
 
   const returningCount = visitors.filter((v) => v.isReturning).length
   const newCount = visitors.length - returningCount
@@ -117,7 +117,7 @@ export function Visitors() {
         const monthName = months[new Date(v.createdAt).getMonth()]
         counts[monthName] = (counts[monthName] || 0) + 1
       })
-      return months.slice(0, new Date().getMonth() + 1).map((m) => ({ label: m, visitors: counts[m] || Math.floor(Math.random() * 5) + 1 }))
+      return months.slice(0, new Date().getMonth() + 1).map((m) => ({ label: m, visitors: counts[m] || 0 }))
     }
   }
 
@@ -182,7 +182,7 @@ export function Visitors() {
             {row.deviceLabel || (v === 'mobile' || v === 'tablet' ? 'Mobile' : 'Desktop (PC)')}
           </span>
           {row.deviceBrand && <div className="text-white/80 text-[11px] font-medium">{row.deviceBrand}</div>}
-          <div className="text-[10px] text-white/40">{row.browser || 'Chrome'} • {row.network || '5G / Broadband'}</div>
+          <div className="text-[10px] text-white/40">{row.browser || ""} • {row.network || ""}</div>
         </div>
       ),
     },
@@ -191,9 +191,9 @@ export function Visitors() {
       label: 'IP Address & Network',
       render: (v: string, row: AdminVisitor) => (
         <div>
-          <div className="text-accent font-mono font-bold text-xs">IP: {row.ip || '103.15.22.84'}</div>
+          <div className="text-accent font-mono font-bold text-xs">IP: {row.ip || ""}</div>
           <div className="flex items-center gap-1 text-white/70 text-[11px] mt-0.5">
-            <Globe className="h-3 w-3 text-emerald-400" /> {row.city ? `${row.city}, ` : ''}{v || 'India'}
+            <Globe className="h-3 w-3 text-emerald-400" /> ${[row.city, v].filter(Boolean).join(", ") || ""}
           </div>
         </div>
       ),
@@ -212,8 +212,8 @@ export function Visitors() {
       label: 'Duration & Session',
       render: (v: number, row: AdminVisitor) => (
         <div>
-          <div className="text-white/80 text-xs font-mono">{v || 30}s page</div>
-          <div className="text-[10px] text-accent font-mono">Sess: {row.sessionDuration || 60}s</div>
+          <div className="text-white/80 text-xs font-mono">{v || 0}s page</div>
+          <div className="text-[10px] text-accent font-mono">Sess: {row.sessionDuration || 0}s</div>
         </div>
       ),
     },
@@ -417,7 +417,7 @@ export function Visitors() {
                     <span className="text-[10px] font-mono text-white/40">{formatIST(v.createdAt).split(', ')[1]}</span>
                   </div>
                   <div className="flex items-center justify-between text-[10px] text-white/50 mt-1">
-                    <span>{v.city || 'Mumbai'}, {v.country || 'India'}</span>
+                    <span>${[v.city, v.country].filter(Boolean).join(", ") || ""}</span>
                     <span className="capitalize">{v.deviceType} • {v.browser}</span>
                   </div>
                 </div>

@@ -32,7 +32,7 @@ export function PageAnalytics() {
     views: stat.views,
     avgTime: Math.round(stat.totalTime / (stat.views || 1)),
     avgScroll: Math.min(100, Math.round(stat.totalScroll / (stat.views || 1))),
-    bounceRate: Math.max(10, 35 - Math.min(stat.views, 20)),
+    bounceRate: 0,
   }))
 
   const handleDownloadAnalyticsPDF = () => {
@@ -57,6 +57,12 @@ export function PageAnalytics() {
 
   const totalViews = pages.reduce((a, b) => a + b.views, 0)
 
+  const calculateOverallBounceRate = () => {
+    if (visitors.length === 0) return 0
+    const bounces = visitors.filter(v => v.isBounce).length
+    return Math.round((bounces / visitors.length) * 100)
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -77,7 +83,7 @@ export function PageAnalytics() {
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         <StatCard label="Unique Pages Visited" value={pages.length} icon={<BarChart3 className="h-4 w-4 text-accent" />} />
         <StatCard label="Total Real Pageviews" value={totalViews} icon={<BarChart3 className="h-4 w-4 text-accent" />} />
-        <StatCard label="Overall Bounce Rate" value={totalViews > 0 ? "22%" : "0%"} icon={<BarChart3 className="h-4 w-4 text-accent" />} />
+        <StatCard label="Overall Bounce Rate" value={totalViews > 0 ? `${calculateOverallBounceRate()}%` : "0%"} icon={<BarChart3 className="h-4 w-4 text-accent" />} />
       </div>
 
       <div className="glass rounded-[24px] p-6 border border-white/10">

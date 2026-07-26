@@ -13,10 +13,7 @@ export function DiscoveryQuestionnairesAdmin() {
 
   useEffect(() => {
     setStore(getAdminStore())
-    const timer = setInterval(() => {
-      syncFromCloud().then((updated) => setStore(updated))
-    }, 3000)
-    return () => clearInterval(timer)
+    syncFromCloud().then((updated) => setStore(updated))
   }, [])
 
   const items = store.discoveryQuestionnaires || []
