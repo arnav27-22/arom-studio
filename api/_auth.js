@@ -3,11 +3,11 @@ import crypto from 'crypto'
 import { db } from './_db.js'
 
 function getSecret() {
-  return process.env.ADMIN_JWT_SECRET
+  return process.env.ADMIN_JWT_SECRET || 'change-this-secret-min-32-chars-xxxxxxxxxxxx'
 }
 
 function getPassword() {
-  return process.env.ADMIN_PASSWORD
+  return process.env.ADMIN_PASSWORD || 'change-this-password'
 }
 
 const FAIL_ATTEMPTS = new Map()

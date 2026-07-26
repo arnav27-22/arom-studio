@@ -21,7 +21,11 @@ function localRead(name) {
 }
 
 function localWrite(name, data) {
-  fs.writeFileSync(localPath(name), JSON.stringify(data))
+  try {
+    fs.writeFileSync(localPath(name), JSON.stringify(data))
+  } catch {
+    /* write error in serverless environment */
+  }
 }
 
 // In-memory cache to share data across requests within the same instance
