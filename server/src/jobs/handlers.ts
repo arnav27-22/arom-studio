@@ -162,7 +162,7 @@ async function handleDatabaseBackup(): Promise<void> {
 
   try {
     execSync(
-      `pg_dump "${CONFIG.DATABASE_URL}" --no-owner --no-acl -f "${filepath}"`,
+      `pg_dump "${CONFIG.DATABASE_URL.replace(/"/g, '\\"')}" --no-owner --no-acl -f "${filepath.replace(/"/g, '\\"')}"`,
       { timeout: 120000 }
     )
     const stats = fs.statSync(filepath)

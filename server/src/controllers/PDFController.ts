@@ -51,8 +51,8 @@ export class PDFController {
         clientEmail: body.clientEmail || '',
         fileSizeKb: body.fileSizeKb || 180,
         deviceType: body.deviceType || 'desktop',
-        browser: body.browser || 'Chrome',
-        os: body.os || 'Windows',
+        browser: body.browser || '',
+        os: body.os || '',
         pdfDataUrl: body.pdfDataUrl || '',
       },
     })

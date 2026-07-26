@@ -35,7 +35,7 @@ class AdminWebSocketClient {
           if (wildcardHandlers) {
             wildcardHandlers.forEach(fn => fn(msg))
           }
-        } catch { }
+        } catch { /* ws error - handled by auto-reconnect */ }
       }
 
       this.ws.onclose = () => {

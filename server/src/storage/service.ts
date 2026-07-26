@@ -33,12 +33,33 @@ const ALLOWED_MIME_TYPES = [
 
 const MAX_FILE_SIZE = 50 * 1024 * 1024
 
-function validateFile(mimeType: string, size: number): void {
+const MAGIC_BYTES: Record<string, number[][]> = {
+  'image/jpeg': [[0xFF, 0xD8, 0xFF]],
+  'image/png': [[0x89, 0x50, 0x4E, 0x47]],
+  'image/gif': [[0x47, 0x49, 0x46, 0x38]],
+  'image/webp': [[0x52, 0x49, 0x46, 0x46]],
+  'image/svg+xml': [[0x3C, 0x73, 0x76, 0x67], [0x3C, 0x3F, 0x78, 0x6D]],
+  'application/pdf': [[0x25, 0x50, 0x44, 0x46]],
+  'application/zip': [[0x50, 0x4B, 0x03, 0x04]],
+}
+
+function matchesMagicBytes(buffer: Buffer, mimeType: string): boolean {
+  const patterns = MAGIC_BYTES[mimeType]
+  if (!patterns) return true
+  return patterns.some((bytes) =>
+    bytes.every((b, i) => buffer[i] === b)
+  )
+}
+
+function validateFile(mimeType: string, buffer: Buffer): void {
   if (!ALLOWED_MIME_TYPES.includes(mimeType)) {
     throw new Error(`File type ${mimeType} is not allowed`)
   }
-  if (size > MAX_FILE_SIZE) {
-    throw new Error(`File size ${size} exceeds maximum of ${MAX_FILE_SIZE} bytes`)
+  if (buffer.length > MAX_FILE_SIZE) {
+    throw new Error(`File size ${buffer.length} exceeds maximum of ${MAX_FILE_SIZE} bytes`)
+  }
+  if (!matchesMagicBytes(buffer, mimeType)) {
+    throw new Error(`File content does not match claimed type ${mimeType}`)
   }
 }
 
@@ -49,11 +70,12 @@ export async function uploadFile(
   module?: string,
   resourceId?: string
 ): Promise<UploadResult> {
-  validateFile(mimeType, buffer.length)
+  validateFile(mimeType, buffer)
 
   const provider = CONFIG.STORAGE_PROVIDER as StorageProvider
-  const ext = path.extname(originalName)
-  const key = `${module || 'general'}/${randomUUID()}${ext}`
+  const safeModule = (module || 'general').replace(/[^a-zA-Z0-9_-]/g, '')
+  const ext = path.extname(originalName).replace(/[^a-zA-Z0-9.]/g, '')
+  const key = `${safeModule}/${randomUUID()}${ext}`
 
   let result: UploadResult
 

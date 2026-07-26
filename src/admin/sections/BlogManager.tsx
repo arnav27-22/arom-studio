@@ -3,6 +3,7 @@ import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { BookOpen, Plus, Edit, Trash2, ExternalLink, X, Save } from 'lucide-react'
 import { getAdminBlogs, recordAdminBlog, deleteAdminBlog, syncFromCloud } from '../adminStore'
+import DOMPurify from 'dompurify'
 import type { BlogPost } from '../../data/blog'
 
 export function BlogManager() {
@@ -387,7 +388,7 @@ export function BlogManager() {
                   </div>
                   <div
                     className="prose prose-invert max-w-none text-white/80 font-body text-sm leading-relaxed space-y-4"
-                    dangerouslySetInnerHTML={{ __html: content || '<p>No content written yet.</p>' }}
+                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content || '<p>No content written yet.</p>') }}
                   />
                 </div>
               )}

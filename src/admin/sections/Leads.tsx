@@ -66,7 +66,7 @@ export function Leads() {
       service,
       message,
       status: 'New',
-      country: 'India',
+      country: '',
     }
     s.leads.unshift(newLead)
     saveAdminStore(s)

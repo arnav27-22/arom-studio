@@ -3,6 +3,7 @@ import { Section, Container } from '../components/ui/Section'
 import { SEO } from '../components/ui/SEO'
 import { GlassCard } from '../components/ui/GlassCard'
 import { getAdminBlogs } from '../admin/adminStore'
+import DOMPurify from 'dompurify'
 import { Clock, Calendar, ArrowLeft, User } from 'lucide-react'
 
 export default function BlogPost() {
@@ -91,7 +92,7 @@ export default function BlogPost() {
             <GlassCard hover={false} className="p-8 md:p-12">
               <div
                 className="prose prose-invert max-w-none text-white/80 font-body text-base leading-relaxed space-y-6"
-                dangerouslySetInnerHTML={{ __html: post.content }}
+                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content) }}
               />
             </GlassCard>
           </div>

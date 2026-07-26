@@ -60,7 +60,7 @@ export class LeadController {
         service: body.service || '',
         budget: body.budget || '',
         message: body.message || '',
-        country: body.country || 'India',
+        country: body.country || '',
       },
     })
     wsManager.broadcastToAll('lead:created', lead)

@@ -37,7 +37,7 @@ export async function createBackup(): Promise<BackupResult> {
 
   try {
     execSync(
-      `pg_dump "${CONFIG.DATABASE_URL}" --no-owner --no-acl | gzip > "${filepath}"`,
+      `pg_dump "${CONFIG.DATABASE_URL.replace(/"/g, '\\"')}" --no-owner --no-acl | gzip > "${filepath.replace(/"/g, '\\"')}"`,
       { timeout: 180000, stdio: 'pipe' }
     )
 
@@ -98,11 +98,12 @@ export async function restoreBackup(filepath: string): Promise<void> {
   }
 
   try {
-    const cmd = filepath.endsWith('.gz')
-      ? `gunzip -c "${filepath}" | psql "${CONFIG.DATABASE_URL}"`
-      : `psql "${CONFIG.DATABASE_URL}" < "${filepath}"`
-
-    execSync(cmd, { timeout: 300000, stdio: 'pipe' })
+  const safePath = filepath.replace(/"/g, '\\"')
+  const safeDbUrl = CONFIG.DATABASE_URL.replace(/"/g, '\\"')
+  const cmd = filepath.endsWith('.gz')
+    ? `gunzip -c "${safePath}" | psql "${safeDbUrl}"`
+    : `psql "${safeDbUrl}" < "${safePath}"`
+  execSync(cmd, { timeout: 300000, stdio: 'pipe' })
 
     logger.info('Backup restored', { filepath })
   } catch (err) {

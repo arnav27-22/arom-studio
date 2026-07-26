@@ -62,7 +62,7 @@ export class AIController {
             title: data.title,
             visitorId: data.visitorId,
             device: data.device || 'Desktop',
-            browser: data.browser || 'Chrome',
+            browser: data.browser || '',
             status: data.status || 'ACTIVE',
             lastActiveAt: new Date(data.lastActiveAt || Date.now()),
             messages: {
@@ -85,7 +85,7 @@ export class AIController {
             visitorId: data.visitorId || 'visitor_unknown',
             title: data.title || 'New Chat',
             device: data.device || 'Desktop',
-            browser: data.browser || 'Chrome',
+            browser: data.browser || '',
             status: data.status || 'ACTIVE',
             lastActiveAt: new Date(data.lastActiveAt || Date.now()),
             messages: {

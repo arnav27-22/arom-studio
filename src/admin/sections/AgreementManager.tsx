@@ -70,7 +70,7 @@ export function AgreementManager() {
       id: 'agr_' + Math.random().toString(36).slice(2, 9),
       agreementNumber: num,
       clientName: form.clientName,
-      clientEmail: form.clientEmail || 'client@example.com',
+      clientEmail: form.clientEmail || '',
       status: form.status,
       agreementVersion: form.version,
       createdAt: new Date().toISOString(),
