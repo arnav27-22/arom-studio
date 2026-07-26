@@ -72,26 +72,44 @@ export function saveAiConversation(conversation: AiConversation) {
   if (index !== -1) __conversations[index] = conversation
   else __conversations.unshift(conversation)
 
-  api('/api/admin/ai/conversations', {
+  fetch('/api/track/ai-conversation', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ action: 'save', data: conversation }),
-  }).catch(() => {})
+  }).catch(() => {
+    api('/api/admin/ai/conversations', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'save', data: conversation }),
+    }).catch(() => {})
+  })
 }
 
 export function deleteAiConversation(id: string) {
   __conversations = __conversations.filter(c => c.id !== id)
 
-  api('/api/admin/ai/conversations', {
-    method: 'DELETE',
+  fetch('/api/track/ai-conversation', {
+    method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id }),
+    body: JSON.stringify({ action: 'delete', id }),
+  }).catch(() => {})
+
+  api('/api/admin/ai/conversations', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'delete', id }),
   }).catch(() => {})
 }
 
 export function renameAiConversation(id: string, newTitle: string) {
   const target = __conversations.find(c => c.id === id)
   if (target) target.title = newTitle
+
+  fetch('/api/track/ai-conversation', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'rename', id, title: newTitle }),
+  }).catch(() => {})
 
   api('/api/admin/ai/conversations', {
     method: 'POST',

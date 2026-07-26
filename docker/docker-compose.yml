@@ -5,8 +5,8 @@ x-app-vars: &app-vars
   PORT: 3001
   DATABASE_URL: postgresql://arom_user:arom_pass@postgres:5432/arom_studio
   REDIS_URL: redis://redis:6379
-  ADMIN_PASSWORD: ${ADMIN_PASSWORD:-ARNAVOM272213}
-  ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET:-dev-jwt-secret-change-in-production}
+  ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+  ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET}
   CORS_ORIGIN: http://localhost:5173,http://localhost:3001
   BACKUP_ENABLED: 'false'
   LOG_LEVEL: info

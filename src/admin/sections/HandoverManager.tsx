@@ -37,9 +37,9 @@ export function HandoverManager() {
     clientName: '',
     domain: '',
     hosting: 'Vercel Enterprise',
-    githubLink: 'https://github.com/arom-studio/',
-    adminLoginUrl: 'https://clientdomain.com/admin',
-    adminUsername: 'admin@clientdomain.com',
+    githubLink: '',
+    adminLoginUrl: '',
+    adminUsername: '',
     warrantyPeriodMonths: 12,
   })
 

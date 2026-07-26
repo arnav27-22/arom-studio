@@ -76,7 +76,8 @@ router.delete('/leads/:id', auditLog('DELETE_LEAD', 'leads'), (req, res) => lead
 
 // AI
 router.get('/ai/conversations', (req, res) => aiController.getConversations(req, res))
-router.post('/ai/conversations/save', auditLog('SAVE_AI_CONVERSATION', 'ai'), validate(aiConversationSaveSchema), (req, res) => aiController.saveConversation(req, res))
+router.post('/ai/conversations', auditLog('SAVE_AI_CONVERSATION', 'ai'), (req, res) => aiController.saveConversation(req, res))
+router.delete('/ai/conversations', auditLog('DELETE_AI_CONVERSATION', 'ai'), (req, res) => aiController.saveConversation(req, res))
 router.get('/ai/knowledge', (req, res) => aiController.getKnowledge(req, res))
 router.post('/ai/knowledge/save', auditLog('SAVE_AI_KNOWLEDGE', 'ai'), validate(aiKnowledgeSaveSchema), (req, res) => aiController.saveKnowledge(req, res))
 

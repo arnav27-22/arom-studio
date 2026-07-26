@@ -1,4 +1,4 @@
-import { recordAdminVisit, recordAdminPDF } from '../admin/adminStore'
+import { recordAdminPDF } from '../admin/adminStore'
 
 let __sessionId = ''
 let __entryPage = ''
@@ -66,21 +66,6 @@ export function trackPageView(page: string, referrer: string) {
   const sessionDuration = Math.max(1, Math.round((Date.now() - __sessionStart) / 1000))
   const devInfo = getDeviceInfo()
 
-  try {
-    recordAdminVisit(page, referrer, {
-      sessionId: sessId,
-      entryPage: __entryPage,
-      pageViewsCount: __pageViewsCount,
-      sessionDuration,
-      deviceType: devInfo.deviceType as 'desktop' | 'mobile' | 'tablet',
-      browser: devInfo.browser,
-      os: devInfo.os,
-      isBounce: __pageViewsCount === 1 && sessionDuration < 10,
-    })
-  } catch (e) {
-    console.error(e)
-  }
-
   fetch('/api/track/pageview', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -138,7 +123,7 @@ export function trackPDFDownload(pdfType: string, storageKey: string, fileSizeKb
     console.error(e)
   }
 
-  fetch('/api/pdfs/save', {
+  fetch('/api/track/save-pdf', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({

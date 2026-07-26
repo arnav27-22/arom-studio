@@ -15,6 +15,18 @@ for (const v of requiredVars) {
   }
 }
 
+if (process.env.ADMIN_PASSWORD === 'change-this-password') {
+  throw new Error('ADMIN_PASSWORD must be changed from the default value in .env')
+}
+
+if (process.env.ADMIN_JWT_SECRET === 'change-this-secret-min-32-chars-xxxxxxxxxxxx') {
+  throw new Error('ADMIN_JWT_SECRET must be changed from the default value in .env')
+}
+
+if (process.env.NODE_ENV === 'production' && (process.env.ADMIN_JWT_SECRET || '').length < 32) {
+  throw new Error('ADMIN_JWT_SECRET must be at least 32 characters in production')
+}
+
 const productionRequired = ['SMTP_HOST', 'CORS_ORIGIN']
 if (process.env.NODE_ENV === 'production') {
   for (const v of productionRequired) {

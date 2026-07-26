@@ -12,8 +12,6 @@ export function AdminLogin({ onLogin }: { onLogin: () => void }) {
     setLoading(true)
     setError('')
 
-    const MASTER_PASSWORD = 'ARNAVOM272213'
-
     try {
       const res = await fetch('/api/admin/auth', {
         method: 'POST',
@@ -25,17 +23,13 @@ export function AdminLogin({ onLogin }: { onLogin: () => void }) {
         onLogin()
         return
       }
+
+      const data = await res.json().catch(() => ({}))
+      setError(data.error || 'Incorrect password. Please try again.')
     } catch {
-      // Backend serverless endpoint fallback check
+      setError('Connection error. Please try again.')
     }
 
-    // Direct password match fallback
-    if (password === MASTER_PASSWORD) {
-      onLogin()
-    } else {
-      setError('Incorrect master password. Please try again.')
-    }
-    
     setLoading(false)
   }
 

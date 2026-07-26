@@ -123,7 +123,7 @@ export function SettingsPage({ onNavigate }: { onNavigate?: (section: string) =>
         <div className="space-y-3 text-xs text-white/80 font-body">
           <div className="flex items-center justify-between py-2 border-b border-white/5">
             <span className="text-white/60">Master Password</span>
-            <span className="text-accent font-mono bg-accent/10 border border-accent/20 px-2.5 py-1 rounded-lg">ARNAVOM272213</span>
+            <span className="text-emerald-400 font-medium bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-1 rounded-lg text-[10px]">Configured (Encrypted)</span>
           </div>
           <div className="flex items-center justify-between py-2 border-b border-white/5">
             <span className="text-white/60">Session Timeout</span>
