@@ -311,7 +311,7 @@ const EMPTY_DATA: StoreData = {
   blogs: BLOG_POSTS, recycleBin: [],
 }
 
-let __cache: StoreData = { ...EMPTY_DATA }
+let __cache: StoreData = loadPersistedStore() || { ...EMPTY_DATA }
 let __syncInProgress = false
 let __syncTriggered = false
 let __wsHandlersInitialized = false
@@ -565,6 +565,15 @@ export function getAdminStore(): StoreData {
 
 export function saveAdminStore(data: StoreData) {
   __cache = { ...data }
+  try { localStorage.setItem('arom_admin_store', JSON.stringify(__cache)) } catch { /* storage full or unavailable */ }
+}
+
+function loadPersistedStore(): StoreData | null {
+  try {
+    const raw = localStorage.getItem('arom_admin_store')
+    if (raw) return JSON.parse(raw) as StoreData
+  } catch { /* corrupted or unavailable */ }
+  return null
 }
 
 export function formatIST(dateString?: string): string {
@@ -827,4 +836,98 @@ export function getAdminBlogs(): BlogPost[] {
   return __cache.blogs
 }
 
-export function runHourlyVisitorGenerator() {}
+const VISITOR_PAGES = ['/', '/services', '/about', '/blog', '/contact', '/portfolio', '/pricing', '/faq', '/terms', '/privacy', '/blog/web-development-trends', '/blog/seo-guide', '/services/web-development', '/services/ui-ux-design', '/services/digital-marketing', '/services/seo-optimization', '/services/cloud-solutions', '/services/ecommerce', '/services/mobile-apps', '/services/branding']
+const VISITOR_COUNTRIES = ['India', 'United States', 'United Kingdom', 'Canada', 'Australia', 'Germany', 'France', 'Brazil', 'Japan', 'Singapore', 'UAE', 'Netherlands', 'South Korea', 'Sweden', 'New Zealand']
+const VISITOR_CITIES: Record<string, string[]> = { 'India': ['Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai', 'Pune', 'Kolkata', 'Ahmedabad', 'Jaipur', 'Lucknow'], 'United States': ['New York', 'San Francisco', 'Los Angeles', 'Chicago', 'Austin', 'Seattle', 'Boston', 'Miami', 'Denver', 'Portland'], 'United Kingdom': ['London', 'Manchester', 'Birmingham', 'Edinburgh', 'Glasgow', 'Liverpool', 'Bristol', 'Oxford', 'Cambridge', 'Leeds'], 'Canada': ['Toronto', 'Vancouver', 'Montreal', 'Calgary', 'Ottawa', 'Edmonton', 'Winnipeg', 'Quebec City', 'Hamilton', 'Halifax'], 'Australia': ['Sydney', 'Melbourne', 'Brisbane', 'Perth', 'Adelaide', 'Gold Coast', 'Canberra', 'Newcastle', 'Hobart', 'Darwin'], 'Germany': ['Berlin', 'Munich', 'Hamburg', 'Frankfurt', 'Cologne', 'Stuttgart', 'Dusseldorf', 'Leipzig', 'Dresden', 'Bremen'], 'France': ['Paris', 'Lyon', 'Marseille', 'Toulouse', 'Bordeaux', 'Lille', 'Nice', 'Nantes', 'Strasbourg', 'Montpellier'], 'Brazil': ['Sao Paulo', 'Rio de Janeiro', 'Brasilia', 'Salvador', 'Fortaleza', 'Belo Horizonte', 'Manaus', 'Curitiba', 'Recife', 'Porto Alegre'], 'Japan': ['Tokyo', 'Osaka', 'Kyoto', 'Yokohama', 'Nagoya', 'Sapporo', 'Kobe', 'Fukuoka', 'Kawasaki', 'Sendai'], 'Singapore': ['Central Region', 'West Region', 'East Region', 'North Region', 'North-East Region'] }
+const VISITOR_BROWSERS = ['Chrome', 'Chrome', 'Chrome', 'Firefox', 'Safari', 'Edge', 'Safari', 'Chrome', 'Brave', 'Opera']
+const VISITOR_OS = ['Windows', 'Windows', 'macOS', 'macOS', 'iOS', 'Android', 'Android', 'Windows', 'Linux', 'iOS']
+const VISITOR_DEVICES: { type: 'desktop' | 'mobile' | 'tablet'; label: string; brand: string }[] = [
+  { type: 'desktop', label: 'Desktop (PC)', brand: 'Dell' },
+  { type: 'desktop', label: 'Desktop (PC)', brand: 'HP' },
+  { type: 'desktop', label: 'Desktop (PC)', brand: 'Lenovo' },
+  { type: 'desktop', label: 'iMac', brand: 'Apple' },
+  { type: 'desktop', label: 'MacBook Pro', brand: 'Apple' },
+  { type: 'desktop', label: 'Desktop (PC)', brand: 'ASUS' },
+  { type: 'mobile', label: 'iPhone', brand: 'Apple' },
+  { type: 'mobile', label: 'Samsung Galaxy', brand: 'Samsung' },
+  { type: 'mobile', label: 'OnePlus', brand: 'OnePlus' },
+  { type: 'mobile', label: 'Google Pixel', brand: 'Google' },
+  { type: 'tablet', label: 'iPad', brand: 'Apple' },
+  { type: 'mobile', label: 'Xiaomi', brand: 'Xiaomi' },
+  { type: 'mobile', label: 'Realme', brand: 'Realme' },
+  { type: 'tablet', label: 'Samsung Tab', brand: 'Samsung' },
+  { type: 'mobile', label: 'Vivo', brand: 'Vivo' },
+]
+const VISITOR_NETWORKS = ['5G / Broadband', 'Broadband', 'LTE', '5G', 'WiFi', 'Broadband', '5G / Broadband', 'LTE', 'Fiber', 'Broadband']
+const VISITOR_IPS = ['103.15.22', '45.67.89', '192.168.1', '10.0.0', '203.0.113', '198.51.100', '72.14.192', '74.125.200', '216.58.194', '151.101.1']
+const VISITOR_REFERRERS = ['google.com', 'google.com', 'google.com', 'linkedin.com', 'twitter.com', 'instagram.com', 'facebook.com', 'github.com', 'dribbble.com', 'behance.net', 'clutch.co', 'upwork.com', '', '', 'bing.com', 'yahoo.com']
+
+function generateVisitor(): AdminVisitor {
+  const country = VISITOR_COUNTRIES[Math.floor(Math.random() * VISITOR_COUNTRIES.length)]
+  const cities = VISITOR_CITIES[country] || ['Unknown']
+  const city = cities[Math.floor(Math.random() * cities.length)]
+  const device = VISITOR_DEVICES[Math.floor(Math.random() * VISITOR_DEVICES.length)]
+  const isReturning = Math.random() < 0.35
+  const timeOnPage = Math.floor(Math.random() * 240) + 5
+  const isBounce = timeOnPage < 15
+  const now = new Date()
+  const ipPrefix = VISITOR_IPS[Math.floor(Math.random() * VISITOR_IPS.length)]
+  return {
+    id: 'v_' + Math.random().toString(36).slice(2, 9),
+    sessionId: 'sess_' + Math.random().toString(36).slice(2, 9),
+    createdAt: now.toISOString(),
+    lastActivityAt: now.toISOString(),
+    page: VISITOR_PAGES[Math.floor(Math.random() * VISITOR_PAGES.length)],
+    entryPage: '/',
+    deviceType: device.type,
+    deviceLabel: device.label,
+    deviceBrand: device.brand,
+    network: VISITOR_NETWORKS[Math.floor(Math.random() * VISITOR_NETWORKS.length)],
+    browser: VISITOR_BROWSERS[Math.floor(Math.random() * VISITOR_BROWSERS.length)],
+    os: VISITOR_OS[Math.floor(Math.random() * VISITOR_OS.length)],
+    country,
+    city,
+    ip: `${ipPrefix}.${Math.floor(Math.random() * 254 + 1)}`,
+    referrer: VISITOR_REFERRERS[Math.floor(Math.random() * VISITOR_REFERRERS.length)],
+    timeOnPage,
+    sessionDuration: timeOnPage + Math.floor(Math.random() * 120),
+    scrollDepth: Math.floor(Math.random() * 100),
+    pageViewsCount: Math.floor(Math.random() * 4) + 1,
+    isReturning,
+    isBounce,
+    isLive: false,
+  }
+}
+
+let visitorGeneratorInterval: ReturnType<typeof setInterval> | null = null
+
+export function startHourlyVisitorGenerator(): void {
+  if (visitorGeneratorInterval) return
+
+  const tick = () => {
+    const hour = new Date().getHours()
+    if (hour >= 1 && hour < 6) return
+
+    const generated: AdminVisitor[] = []
+    for (let i = 0; i < 20; i++) {
+      const v = generateVisitor()
+      v.createdAt = new Date(Date.now() - Math.floor(Math.random() * 3600000)).toISOString()
+      generated.push(v)
+    }
+    __cache.visitors = [...generated, ...__cache.visitors]
+    if (__cache.visitors.length > 2000) {
+      __cache.visitors = __cache.visitors.slice(0, 2000)
+    }
+    saveAdminStore(__cache)
+  }
+
+  tick()
+  visitorGeneratorInterval = setInterval(tick, 3600000)
+}
+
+export function stopHourlyVisitorGenerator(): void {
+  if (visitorGeneratorInterval) {
+    clearInterval(visitorGeneratorInterval)
+    visitorGeneratorInterval = null
+  }
+}

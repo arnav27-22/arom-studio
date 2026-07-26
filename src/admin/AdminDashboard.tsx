@@ -36,7 +36,7 @@ import { RecycleBin } from './sections/RecycleBin'
 import { LinkClicks } from './sections/LinkClicks'
 import { FileQuestion, BookOpen, Bot, Brain, MousePointer2 } from 'lucide-react'
 
-import { syncFromCloud } from './adminStore'
+import { syncFromCloud, startHourlyVisitorGenerator, stopHourlyVisitorGenerator } from './adminStore'
 import { adminWS } from './wsClient'
 
 const systemSections = [
@@ -81,6 +81,7 @@ export function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   useEffect(() => {
     setMounted(true)
     syncFromCloud()
+    startHourlyVisitorGenerator()
 
     const refresh = () => syncFromCloud()
     adminWS.on('dashboard:updated', refresh)
@@ -89,6 +90,7 @@ export function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     return () => {
       adminWS.off('dashboard:updated', refresh)
       adminWS.off('*', refresh)
+      stopHourlyVisitorGenerator()
     }
   }, [])
 
