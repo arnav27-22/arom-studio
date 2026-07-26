@@ -1,0 +1,28 @@
+[
+  {
+    "id": "l_a5bb3dab",
+    "createdAt": "2026-07-26T15:09:41.189Z",
+    "name": "John Doe Contact",
+    "email": "johndoe@example.com",
+    "phone": "+91 98765 43210",
+    "company": "Doe Enterprises",
+    "service": "Website Design",
+    "budget": "₹32,999+",
+    "message": "Hello AROM Studio, I need a website for my firm.",
+    "status": "New",
+    "country": ""
+  },
+  {
+    "id": "l_e1aa2fe4",
+    "createdAt": "2026-07-26T15:09:14.476Z",
+    "name": "John Doe Contact",
+    "email": "johndoe@example.com",
+    "phone": "+91 98765 43210",
+    "company": "Doe Enterprises",
+    "service": "Website Design",
+    "budget": "₹32,999+",
+    "message": "Hello AROM Studio, I need a website for my firm.",
+    "status": "New",
+    "country": ""
+  }
+]

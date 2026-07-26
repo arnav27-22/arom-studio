@@ -1,0 +1,36 @@
+[
+  {
+    "id": "dq_7686d5e4",
+    "createdAt": "2026-07-26T15:09:41.210Z",
+    "fullName": "Jane Smith Discovery",
+    "company": "Smith Corp",
+    "email": "janesmith@example.com",
+    "phone": "+91 87654 32109",
+    "website": "https://smithcorp.com",
+    "budget": "₹50,000–₹1,00,000",
+    "urgency": "High",
+    "preferredLaunchDate": "2026-08-15",
+    "contentProvider": "Both",
+    "status": "New",
+    "fullData": {
+      "goals": "Build brand presence and generate leads"
+    }
+  },
+  {
+    "id": "dq_4e64b57e",
+    "createdAt": "2026-07-26T15:09:14.497Z",
+    "fullName": "Jane Smith Discovery",
+    "company": "Smith Corp",
+    "email": "janesmith@example.com",
+    "phone": "+91 87654 32109",
+    "website": "https://smithcorp.com",
+    "budget": "₹50,000–₹1,00,000",
+    "urgency": "High",
+    "preferredLaunchDate": "2026-08-15",
+    "contentProvider": "Both",
+    "status": "New",
+    "fullData": {
+      "goals": "Build brand presence and generate leads"
+    }
+  }
+]

@@ -1,0 +1,30 @@
+[
+  {
+    "id": "v_080ef7e4",
+    "sessionId": "sess_test_visitor_888",
+    "createdAt": "2026-07-26T15:09:14.505Z",
+    "page": "/pricing",
+    "deviceType": "desktop",
+    "deviceLabel": "Desktop (PC)",
+    "deviceBrand": "Desktop PC",
+    "browser": "Chrome",
+    "referrer": "https://google.com",
+    "timeOnPage": 30,
+    "scrollDepth": 80,
+    "pageViewsCount": 1
+  },
+  {
+    "id": "v_cb992d8e",
+    "sessionId": "sess_test_visitor_888",
+    "createdAt": "2026-07-26T15:09:41.233Z",
+    "page": "/pricing",
+    "deviceType": "desktop",
+    "deviceLabel": "Desktop (PC)",
+    "deviceBrand": "Desktop PC",
+    "browser": "Chrome",
+    "referrer": "https://google.com",
+    "timeOnPage": 30,
+    "scrollDepth": 80,
+    "pageViewsCount": 1
+  }
+]

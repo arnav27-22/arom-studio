@@ -1,0 +1,25 @@
+[
+  {
+    "id": "conv_test_ai_999",
+    "visitorId": "vis_test_123",
+    "title": "Testing Pricing Inquiry",
+    "messages": [
+      {
+        "id": "msg_1",
+        "sender": "user",
+        "text": "How much does a custom website cost?",
+        "timestamp": "2026-07-26T15:09:41.164Z"
+      },
+      {
+        "id": "msg_2",
+        "sender": "ai",
+        "text": "Our custom website design packages start at ₹15,999.",
+        "timestamp": "2026-07-26T15:09:41.165Z"
+      }
+    ],
+    "device": "Desktop",
+    "browser": "Chrome",
+    "status": "Active",
+    "lastActiveAt": "2026-07-26T15:09:41.165Z"
+  }
+]

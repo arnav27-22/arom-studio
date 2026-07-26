@@ -6,7 +6,7 @@ import jwt from 'jsonwebtoken'
 
 const PORT = 3001
 const DATA_DIR = path.resolve(process.cwd(), 'data')
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'change-this-password'
 const JWT_SECRET = process.env.JWT_SECRET || 'change-this-secret-in-production'
 
 function ensureDir() { if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true }) }
@@ -254,6 +254,17 @@ async function handler(req, res) {
     const knowledge = dbRead('real_ai_knowledge') || []
     if (req.method === 'POST') { const b = await getJSON(req); dbWrite('real_ai_knowledge', b.items || []); return j(res, { success: true }) }
     return j(res, { items: knowledge })
+  }
+
+  // Discovery Questionnaires
+  if (pathname === '/api/admin/discovery') {
+    const items = dbRead('real_discovery') || []
+    if (req.method === 'DELETE') {
+      const b = await getJSON(req)
+      dbWrite('real_discovery', items.filter(i => i.id !== b.id))
+      return j(res, { success: true })
+    }
+    return j(res, { total: items.length, questionnaires: items.reverse() })
   }
 
   // Overview (legacy)
