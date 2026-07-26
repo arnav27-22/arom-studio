@@ -44,12 +44,17 @@ function adminGuard(req, res) {
 }
 
 function getJSON(req) {
+  if (req.body && typeof req.body === 'object') return Promise.resolve(req.body)
+  if (typeof req.body === 'string') {
+    try { return Promise.resolve(JSON.parse(req.body)) } catch {}
+  }
   return new Promise((resolve) => {
     let body = ''
     req.on('data', (c) => body += c)
     req.on('end', () => {
       try { resolve(JSON.parse(body)) } catch { resolve({}) }
     })
+    setTimeout(() => resolve({}), 500)
   })
 }
 
