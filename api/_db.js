@@ -32,15 +32,16 @@ function localWrite(name, data) {
 const cache = {}
 
 function cachedRead(name) {
-  if (cache[name]) return cache[name]
+  if (Array.isArray(cache[name])) return cache[name]
   const data = localRead(name)
-  cache[name] = data
-  return data
+  const safeData = Array.isArray(data) ? data : []
+  cache[name] = safeData
+  return safeData
 }
 
 function cachedWrite(name, data) {
-  cache[name] = data
-  localWrite(name, data)
+  cache[name] = Array.isArray(data) ? data : []
+  localWrite(name, cache[name])
 }
 
 // Blob-based persistent storage (shared across all instances)
@@ -56,7 +57,8 @@ async function blobRead(name) {
     const { blobs } = await list({ prefix: `${BLOB_PREFIX}${name}.json` })
     if (!blobs.length) return []
     const res = await get(blobs[0].url)
-    return JSON.parse(await res.text())
+    const json = JSON.parse(await res.text())
+    return Array.isArray(json) ? json : []
   } catch { return [] }
 }
 
@@ -85,13 +87,15 @@ async function write(name, data) {
 async function append(name, item) {
   if (useBlob) {
     const existing = await blobRead(name)
-    existing.push(item)
-    await blobWrite(name, existing)
+    const safeList = Array.isArray(existing) ? existing : []
+    safeList.push(item)
+    await blobWrite(name, safeList)
     return
   }
   const all = cachedRead(name)
-  all.push(item)
-  cachedWrite(name, all)
+  const safeList = Array.isArray(all) ? all : []
+  safeList.push(item)
+  cachedWrite(name, safeList)
 }
 
 export const db = { read, write, append }
