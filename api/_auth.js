@@ -1,4 +1,5 @@
-import jwt from 'jsonwebtoken'
+import jwtPkg from 'jsonwebtoken'
+const jwt = jwtPkg.default || jwtPkg
 import crypto from 'crypto'
 import { db } from './_db.js'
 

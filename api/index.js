@@ -89,10 +89,11 @@ function parseMultipart(buf, boundary) {
 }
 
 export default async function handler(req, res) {
-  if (req.method === 'OPTIONS') return send(res, 200, {})
+  try {
+    if (req.method === 'OPTIONS') return send(res, 200, {})
 
-  const url = new URL(req.url, 'http://localhost')
-  const pathname = url.pathname
+    const url = new URL(req.url, 'http://localhost')
+    const pathname = url.pathname
   const ip = req.headers['x-forwarded-for'] || req.socket?.remoteAddress || '127.0.0.1'
 
   if (pathname === '/api/ping') return j(res, { ok: true, timestamp: new Date().toISOString() })
@@ -504,9 +505,12 @@ export default async function handler(req, res) {
     return j(res, { success: true, id: item.id })
   }
 
-  if (pathname.startsWith('/api/track/')) {
-    return j(res, { ok: true })
-  }
+    if (pathname.startsWith('/api/track/')) {
+      return j(res, { ok: true })
+    }
 
-  return send(res, 404, { error: 'Not found' })
+    return send(res, 404, { error: 'Not found' })
+  } catch (err) {
+    return send(res, 500, { error: err.message || 'Internal server error', stack: err.stack })
+  }
 }
