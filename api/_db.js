@@ -57,22 +57,27 @@ async function blobRead(name) {
   try {
     const { list, get } = await getBlob()
     const { blobs } = await list({ prefix: `${BLOB_PREFIX}${name}.json` })
-    if (!blobs.length) return []
+    if (!blobs.length) return cachedRead(name)
     const res = await get(blobs[0].url)
     const json = JSON.parse(await res.text())
-    return Array.isArray(json) ? json : []
-  } catch { return [] }
+    return Array.isArray(json) ? json : cachedRead(name)
+  } catch {
+    return cachedRead(name)
+  }
 }
 
 async function blobWrite(name, data) {
-  const { put, list, del } = await getBlob()
-  const json = JSON.stringify(data)
-  // Delete old blob first to avoid accumulation
   try {
-    const { blobs } = await list({ prefix: `${BLOB_PREFIX}${name}.json` })
-    for (const b of blobs) await del(b.url)
-  } catch {}
-  await put(`${BLOB_PREFIX}${name}.json`, json, { access: 'public', addRandomSuffix: false })
+    const { put, list, del } = await getBlob()
+    const json = JSON.stringify(data)
+    try {
+      const { blobs } = await list({ prefix: `${BLOB_PREFIX}${name}.json` })
+      for (const b of blobs) await del(b.url)
+    } catch {}
+    await put(`${BLOB_PREFIX}${name}.json`, json, { access: 'public', addRandomSuffix: false })
+  } catch {
+    cachedWrite(name, data)
+  }
 }
 
 // Exported functions — use Blob when available, otherwise local /tmp
