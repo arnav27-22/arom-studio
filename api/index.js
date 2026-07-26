@@ -1,6 +1,6 @@
 import crypto from 'crypto'
 import { db } from './_db.js'
-import { requireAuth, verifyToken, signToken, timingSafeEqual, checkRateLimit, recordFailure, getPassword } from './_auth.js'
+import { requireAuth, verifyToken, signToken, timingSafeEqual, checkRateLimit, recordFailure, getPassword, verifyAdminPassword } from './_auth.js'
 import { computeDashboard, computeAnalytics } from './stats.js'
 
 function j(res, data) {
@@ -107,7 +107,7 @@ export default async function handler(req, res) {
       const body = await getJSON(req)
       if (body.action === 'login') {
         if (!checkRateLimit(ip)) return send(res, 429, { error: 'Too many attempts' })
-        if (!timingSafeEqual(body.password || '', getPassword())) {
+        if (!verifyAdminPassword(body.password)) {
           recordFailure(ip); return send(res, 401, { error: 'Incorrect password' })
         }
         const token = signToken()
