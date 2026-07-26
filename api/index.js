@@ -369,6 +369,18 @@ export default async function handler(req, res) {
     }
   }
 
+  // ====== DISCOVERY QUESTIONNAIRES ======
+  if (pathname === '/api/admin/discovery') {
+    const items = (await db.read('real_discovery')) || []
+    if (req.method === 'DELETE') {
+      const body = await getJSON(req)
+      const filtered = items.filter(i => i.id !== body.id)
+      await db.write('real_discovery', filtered)
+      return j(res, { success: true })
+    }
+    return j(res, { total: items.length, questionnaires: items.reverse() })
+  }
+
   // ====== TRACKING ======
   if (pathname === '/api/track/pageview' && req.method === 'POST') {
     const body = await getJSON(req)
@@ -407,11 +419,7 @@ export default async function handler(req, res) {
     return j(res, { ok: true })
   }
 
-  if (pathname.startsWith('/api/track/')) {
-    return j(res, { ok: true })
-  }
-
-  if (pathname === '/api/pdfs/save' && req.method === 'POST') {
+  if ((pathname === '/api/track/save-pdf' || pathname === '/api/track/save' || pathname === '/api/pdfs/save') && req.method === 'POST') {
     const body = await getJSON(req)
     await db.append('real_pdfs', {
       id: body.id || ('p_' + Math.random().toString(36).slice(2, 9)),
@@ -426,6 +434,77 @@ export default async function handler(req, res) {
       os: body.os || 'Windows',
       pdfDataUrl: body.pdfDataUrl || '',
     })
+    return j(res, { ok: true })
+  }
+
+  if (pathname === '/api/track/ai-conversation' && req.method === 'POST') {
+    const body = await getJSON(req)
+    const convs = (await db.read('real_ai_conversations')) || []
+    if (body.action === 'delete') {
+      await db.write('real_ai_conversations', convs.filter(c => c.id !== body.id))
+      return j(res, { success: true })
+    }
+    if (body.action === 'rename') {
+      const t = convs.find(c => c.id === body.id)
+      if (t) t.title = body.title
+      await db.write('real_ai_conversations', convs)
+      return j(res, { success: true })
+    }
+    if (body.action === 'save' && body.data) {
+      const idx = convs.findIndex(c => c.id === body.data?.id)
+      if (idx !== -1) convs[idx] = body.data
+      else convs.unshift(body.data)
+      await db.write('real_ai_conversations', convs)
+      return j(res, { success: true })
+    }
+    return j(res, { ok: true })
+  }
+
+  if ((pathname === '/api/track/lead' || pathname === '/api/track/leads') && req.method === 'POST') {
+    const body = await getJSON(req)
+    const leads = (await db.read('real_leads')) || []
+    const lead = {
+      id: body.id || ('l_' + Math.random().toString(36).slice(2, 9)),
+      createdAt: new Date().toISOString(),
+      name: body.name || '',
+      email: body.email || '',
+      phone: body.phone || '',
+      company: body.company || '',
+      service: body.service || '',
+      budget: body.budget || '',
+      message: body.message || '',
+      status: 'New',
+      country: body.country || '',
+    }
+    leads.unshift(lead)
+    await db.write('real_leads', leads)
+    return j(res, { success: true, id: lead.id })
+  }
+
+  if (pathname === '/api/track/discovery' && req.method === 'POST') {
+    const body = await getJSON(req)
+    const discovery = (await db.read('real_discovery')) || []
+    const item = {
+      id: body.id || ('dq_' + Math.random().toString(36).slice(2, 9)),
+      createdAt: new Date().toISOString(),
+      fullName: body.fullName || '',
+      company: body.company || '',
+      email: body.email || '',
+      phone: body.phone || '',
+      website: body.website || '',
+      budget: body.budget || '',
+      urgency: body.urgency || '',
+      preferredLaunchDate: body.preferredLaunchDate || '',
+      contentProvider: body.contentProvider || '',
+      status: 'New',
+      fullData: body.fullData,
+    }
+    discovery.unshift(item)
+    await db.write('real_discovery', item ? discovery : [])
+    return j(res, { success: true, id: item.id })
+  }
+
+  if (pathname.startsWith('/api/track/')) {
     return j(res, { ok: true })
   }
 
