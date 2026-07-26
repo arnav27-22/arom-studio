@@ -390,6 +390,37 @@ async function handler(req, res) {
     return j(res, { ok: true })
   }
 
+  if ((pathname === '/api/track/lead' || pathname === '/api/track/leads') && req.method === 'POST') {
+    const body = await getJSON(req)
+    const leads = dbRead('real_leads') || []
+    const lead = {
+      id: body.id || 'l_' + randomUUID().slice(0, 8),
+      createdAt: new Date().toISOString(),
+      name: body.name || '', email: body.email || '', phone: body.phone || '',
+      company: body.company || '', service: body.service || '', budget: body.budget || '',
+      message: body.message || '', status: 'New', country: body.country || '',
+    }
+    leads.unshift(lead)
+    dbWrite('real_leads', leads)
+    return j(res, { success: true, id: lead.id })
+  }
+
+  if (pathname === '/api/track/discovery' && req.method === 'POST') {
+    const body = await getJSON(req)
+    const discovery = dbRead('real_discovery') || []
+    const item = {
+      id: body.id || 'dq_' + randomUUID().slice(0, 8),
+      createdAt: new Date().toISOString(),
+      fullName: body.fullName || '', company: body.company || '', email: body.email || '',
+      phone: body.phone || '', website: body.website || '', budget: body.budget || '',
+      urgency: body.urgency || '', preferredLaunchDate: body.preferredLaunchDate || '',
+      contentProvider: body.contentProvider || '', status: 'New', fullData: body.fullData,
+    }
+    discovery.unshift(item)
+    dbWrite('real_discovery', discovery)
+    return j(res, { success: true, id: item.id })
+  }
+
   if (pathname.startsWith('/api/track/')) return j(res, { ok: true })
 
   send(res, 404, { error: 'Not found' })

@@ -3,6 +3,8 @@ import { visitorController } from './VisitorController'
 import { pdfController } from './PDFController'
 import { linkClickController } from './LinkClickController'
 import { aiController } from './AIController'
+import { leadController } from './LeadController'
+import { discoveryController } from './DiscoveryController'
 
 export class TrackingController {
   async trackPageView(req: Request, res: Response) {
@@ -23,6 +25,14 @@ export class TrackingController {
 
   async saveAIConversation(req: Request, res: Response) {
     return aiController.saveConversation(req, res)
+  }
+
+  async createLead(req: Request, res: Response) {
+    return leadController.create(req, res)
+  }
+
+  async createDiscovery(req: Request, res: Response) {
+    return discoveryController.create(req, res)
   }
 }
 

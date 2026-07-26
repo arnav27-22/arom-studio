@@ -746,11 +746,18 @@ export function recordAdminLead(lead: Omit<AdminLead, 'id' | 'createdAt' | 'stat
     message: `Lead from ${newLead.name} (${newLead.email}) for ${newLead.service || 'Web Services'}.`,
     read: false, createdAt: now,
   }, ...__cache.notifications]
-  api('/api/admin/leads', {
+
+  fetch('/api/track/lead', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(newLead),
-  }).catch(() => {})
+  }).catch(() => {
+    api('/api/admin/leads', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newLead),
+    }).catch(() => {})
+  })
 }
 
 export function recordAdminPDF(pdf: Omit<AdminPDF, 'id' | 'createdAt'>) {
@@ -767,11 +774,18 @@ export function recordAdminPDF(pdf: Omit<AdminPDF, 'id' | 'createdAt'>) {
     message: `${newPdf.clientName || 'Client'} generated ${newPdf.pdfType || 'PDF Document'} (${newPdf.title}).`,
     read: false, createdAt: newPdf.createdAt,
   }, ...(__cache.notifications || [])]
-  api('/api/admin/pdfs/save', {
+
+  fetch('/api/track/save-pdf', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(newPdf),
-  }).catch(() => {})
+  }).catch(() => {
+    api('/api/admin/pdfs/save', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newPdf),
+    }).catch(() => {})
+  })
 }
 
 export function recordAdminInvoice(invoice: Omit<AdminInvoice, 'id' | 'createdAt'>) {
@@ -803,11 +817,18 @@ export function recordAdminDiscoveryQuestionnaire(dq: Omit<AdminDiscoveryQuestio
     message: `Questionnaire submitted by ${newDq.fullName} (${newDq.company || 'Client'}).`,
     read: false, createdAt: now,
   }, ...(__cache.notifications || [])]
-  api('/api/admin/discovery', {
+
+  fetch('/api/track/discovery', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(newDq),
-  }).catch(() => {})
+  }).catch(() => {
+    api('/api/admin/discovery', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newDq),
+    }).catch(() => {})
+  })
 }
 
 export function recordAdminBlog(blog: BlogPost) {
