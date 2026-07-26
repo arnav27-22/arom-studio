@@ -7,7 +7,9 @@ const BLOB_PREFIX = 'arom-data/'
 const useBlob = !!(process.env.VERCEL && process.env.BLOB_READ_WRITE_TOKEN)
 
 function ensureDir(dir) {
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
+  try {
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
+  } catch {}
 }
 
 function localPath(name) {

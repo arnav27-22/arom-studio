@@ -2,11 +2,11 @@ import jwt from 'jsonwebtoken'
 import crypto from 'crypto'
 import { db } from './_db.js'
 
-function getSecret() {
+export function getSecret() {
   return process.env.ADMIN_JWT_SECRET || 'change-this-secret-min-32-chars-xxxxxxxxxxxx'
 }
 
-function getPassword() {
+export function getPassword() {
   return process.env.ADMIN_PASSWORD || 'change-this-password'
 }
 
