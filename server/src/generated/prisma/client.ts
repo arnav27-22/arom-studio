@@ -192,6 +192,11 @@ export type Setting = Prisma.SettingModel
  */
 export type Blog = Prisma.BlogModel
 /**
+ * Model DataStore
+ * 
+ */
+export type DataStore = Prisma.DataStoreModel
+/**
  * Model StatSnapshot
  * 
  */

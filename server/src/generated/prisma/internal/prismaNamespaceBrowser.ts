@@ -81,6 +81,7 @@ export const ModelName = {
   Handover: 'Handover',
   Setting: 'Setting',
   Blog: 'Blog',
+  DataStore: 'DataStore',
   StatSnapshot: 'StatSnapshot'
 } as const
 
@@ -705,6 +706,17 @@ export const BlogScalarFieldEnum = {
 } as const
 
 export type BlogScalarFieldEnum = (typeof BlogScalarFieldEnum)[keyof typeof BlogScalarFieldEnum]
+
+
+export const DataStoreScalarFieldEnum = {
+  id: 'id',
+  collection: 'collection',
+  data: 'data',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DataStoreScalarFieldEnum = (typeof DataStoreScalarFieldEnum)[keyof typeof DataStoreScalarFieldEnum]
 
 
 export const StatSnapshotScalarFieldEnum = {

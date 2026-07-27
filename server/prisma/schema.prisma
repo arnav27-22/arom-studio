@@ -733,6 +733,17 @@ model Blog {
   @@index([published])
 }
 
+model DataStore {
+  id         String   @id
+  collection String
+  data       Json
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([collection])
+  @@index([collection, createdAt])
+}
+
 model StatSnapshot {
   id        String   @id @default(cuid())
   type      String

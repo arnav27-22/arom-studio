@@ -1,111 +1,82 @@
-import fs from 'fs'
-import path from 'path'
+import pkg from 'pg'
+import crypto from 'crypto'
+const { Pool } = pkg
 
-const LOCAL_DIR = path.resolve(process.cwd(), 'data')
-const BLOB_PREFIX = 'arom-data/'
-const useBlob = !!(process.env.VERCEL && process.env.BLOB_READ_WRITE_TOKEN)
+const DATABASE_URL = process.env.DATABASE_URL
+let pool
+let initialized = false
 
-function localPath(name) {
-  if (process.env.VERCEL) {
-    return path.join('/tmp', `arom_${name}.json`)
-  }
+async function init() {
+  if (initialized) return
+  initialized = true
+  if (!DATABASE_URL) return
   try {
-    if (!fs.existsSync(LOCAL_DIR)) fs.mkdirSync(LOCAL_DIR, { recursive: true })
-  } catch {}
-  return path.join(LOCAL_DIR, `${name}.json`)
+    pool = new Pool({ connectionString: DATABASE_URL, max: 3, idleTimeoutMillis: 10000, connectionTimeoutMillis: 5000 })
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS "DataStore" (
+        id TEXT PRIMARY KEY,
+        collection TEXT NOT NULL,
+        data JSONB NOT NULL,
+        "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+        "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+      );
+      CREATE INDEX IF NOT EXISTS idx_datastore_collection ON "DataStore"(collection);
+      CREATE INDEX IF NOT EXISTS idx_datastore_collection_created ON "DataStore"(collection, "createdAt" DESC);
+    `)
+  } catch { pool = null }
 }
 
-function localRead(name) {
-  try {
-    const p = localPath(name)
-    if (fs.existsSync(p)) {
-      const parsed = JSON.parse(fs.readFileSync(p, 'utf-8'))
-      return Array.isArray(parsed) ? parsed : []
-    }
-  } catch {}
-  return []
-}
-
-function localWrite(name, data) {
-  try {
-    const p = localPath(name)
-    fs.writeFileSync(p, JSON.stringify(data))
-  } catch {}
-}
-
-// Memory cache for active lambda execution context
-const cache = {}
-
-function cachedRead(name) {
-  if (Array.isArray(cache[name])) return cache[name]
-  const data = localRead(name)
-  const safe = Array.isArray(data) ? data : []
-  cache[name] = safe
-  return safe
-}
-
-function cachedWrite(name, data) {
-  const safe = Array.isArray(data) ? data : []
-  cache[name] = safe
-  localWrite(name, safe)
-}
-
-let blobModule = null
-async function getBlob() {
-  if (!blobModule) blobModule = await import('@vercel/blob')
-  return blobModule
-}
-
-async function blobRead(name) {
-  if (!useBlob) return cachedRead(name)
-  try {
-    const { list, get } = await getBlob()
-    const { blobs } = await list({ prefix: `${BLOB_PREFIX}${name}.json` })
-    if (!blobs.length) return cachedRead(name)
-    const res = await get(blobs[0].url)
-    const json = JSON.parse(await res.text())
-    if (Array.isArray(json)) {
-      cache[name] = json
-      return json
-    }
-    return cachedRead(name)
-  } catch {
-    return cachedRead(name)
-  }
-}
-
-async function blobWrite(name, data) {
-  const safe = Array.isArray(data) ? data : []
-  cachedWrite(name, safe)
-
-  if (useBlob) {
-    try {
-      const { put, list, del } = await getBlob()
-      const json = JSON.stringify(safe)
-      try {
-        const { blobs } = await list({ prefix: `${BLOB_PREFIX}${name}.json` })
-        for (const b of blobs) await del(b.url)
-      } catch {}
-      await put(`${BLOB_PREFIX}${name}.json`, json, { access: 'public', addRandomSuffix: false })
-    } catch {
-      // Vercel Blob store suspended or failed - cached write handles persistence
-    }
-  }
+function isAvailable() {
+  return !!pool
 }
 
 export async function read(name) {
-  return blobRead(name)
+  await init()
+  if (!isAvailable()) return []
+  try {
+    const { rows } = await pool.query(
+      'SELECT data FROM "DataStore" WHERE collection = $1 ORDER BY "createdAt" DESC',
+      [name]
+    )
+    return rows.map(r => r.data)
+  } catch { return [] }
 }
 
 export async function write(name, data) {
-  await blobWrite(name, data)
+  await init()
+  if (!isAvailable()) return
+  if (!Array.isArray(data)) return
+  const client = await pool.connect().catch(() => null)
+  if (!client) return
+  try {
+    await client.query('BEGIN')
+    await client.query('DELETE FROM "DataStore" WHERE collection = $1', [name])
+    for (let i = 0; i < data.length; i++) {
+      const item = data[i]
+      const id = item.id || `${name}_${Date.now()}_${i}`
+      await client.query(
+        'INSERT INTO "DataStore" (id, collection, data) VALUES ($1, $2, $3) ON CONFLICT (id) DO UPDATE SET data = $3',
+        [id, name, JSON.stringify(item)]
+      )
+    }
+    await client.query('COMMIT')
+  } catch {
+    await client.query('ROLLBACK').catch(() => {})
+  } finally {
+    client.release()
+  }
 }
 
 export async function append(name, item) {
-  const existing = await read(name)
-  const safeList = Array.isArray(existing) ? existing : []
-  safeList.unshift(item)
-  await write(name, safeList)
+  await init()
+  if (!isAvailable()) return
+  try {
+    const id = item.id || `${name}_${Date.now()}_${crypto.randomUUID()}`
+    await pool.query(
+      'INSERT INTO "DataStore" (id, collection, data) VALUES ($1, $2, $3) ON CONFLICT (id) DO UPDATE SET data = $3',
+      [id, name, JSON.stringify(item)]
+    )
+  } catch {}
 }
 
 export const db = { read, write, append }

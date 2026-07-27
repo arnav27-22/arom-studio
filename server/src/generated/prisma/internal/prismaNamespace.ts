@@ -427,6 +427,7 @@ export const ModelName = {
   Handover: 'Handover',
   Setting: 'Setting',
   Blog: 'Blog',
+  DataStore: 'DataStore',
   StatSnapshot: 'StatSnapshot'
 } as const
 
@@ -443,7 +444,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "admin" | "adminSession" | "visitor" | "visitorSession" | "generatedPDF" | "lead" | "aIConversation" | "aIMessage" | "aIKnowledge" | "contact" | "discoveryForm" | "invoice" | "notification" | "auditLog" | "recycleBin" | "linkClick" | "file" | "asset" | "projectTimeline" | "feedback" | "designApproval" | "payment" | "proposal" | "agreement" | "client" | "project" | "contentCollection" | "handover" | "setting" | "blog" | "statSnapshot"
+    modelProps: "admin" | "adminSession" | "visitor" | "visitorSession" | "generatedPDF" | "lead" | "aIConversation" | "aIMessage" | "aIKnowledge" | "contact" | "discoveryForm" | "invoice" | "notification" | "auditLog" | "recycleBin" | "linkClick" | "file" | "asset" | "projectTimeline" | "feedback" | "designApproval" | "payment" | "proposal" | "agreement" | "client" | "project" | "contentCollection" | "handover" | "setting" | "blog" | "dataStore" | "statSnapshot"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2667,6 +2668,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    DataStore: {
+      payload: Prisma.$DataStorePayload<ExtArgs>
+      fields: Prisma.DataStoreFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DataStoreFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DataStorePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DataStoreFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DataStorePayload>
+        }
+        findFirst: {
+          args: Prisma.DataStoreFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DataStorePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DataStoreFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DataStorePayload>
+        }
+        findMany: {
+          args: Prisma.DataStoreFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DataStorePayload>[]
+        }
+        create: {
+          args: Prisma.DataStoreCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DataStorePayload>
+        }
+        createMany: {
+          args: Prisma.DataStoreCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DataStoreCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DataStorePayload>[]
+        }
+        delete: {
+          args: Prisma.DataStoreDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DataStorePayload>
+        }
+        update: {
+          args: Prisma.DataStoreUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DataStorePayload>
+        }
+        deleteMany: {
+          args: Prisma.DataStoreDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DataStoreUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DataStoreUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DataStorePayload>[]
+        }
+        upsert: {
+          args: Prisma.DataStoreUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DataStorePayload>
+        }
+        aggregate: {
+          args: Prisma.DataStoreAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDataStore>
+        }
+        groupBy: {
+          args: Prisma.DataStoreGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DataStoreGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DataStoreCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DataStoreCountAggregateOutputType> | number
+        }
+      }
+    }
     StatSnapshot: {
       payload: Prisma.$StatSnapshotPayload<ExtArgs>
       fields: Prisma.StatSnapshotFieldRefs
@@ -3387,6 +3462,17 @@ export const BlogScalarFieldEnum = {
 export type BlogScalarFieldEnum = (typeof BlogScalarFieldEnum)[keyof typeof BlogScalarFieldEnum]
 
 
+export const DataStoreScalarFieldEnum = {
+  id: 'id',
+  collection: 'collection',
+  data: 'data',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DataStoreScalarFieldEnum = (typeof DataStoreScalarFieldEnum)[keyof typeof DataStoreScalarFieldEnum]
+
+
 export const StatSnapshotScalarFieldEnum = {
   id: 'id',
   type: 'type',
@@ -3877,6 +3963,7 @@ export type GlobalOmitConfig = {
   handover?: Prisma.HandoverOmit
   setting?: Prisma.SettingOmit
   blog?: Prisma.BlogOmit
+  dataStore?: Prisma.DataStoreOmit
   statSnapshot?: Prisma.StatSnapshotOmit
 }
 
