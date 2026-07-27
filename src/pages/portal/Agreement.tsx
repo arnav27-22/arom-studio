@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import { Download, Mail, CheckCircle2 } from 'lucide-react'
 import { GlassCard } from '../../components/ui/GlassCard'
 import Button from '../../components/ui/Button'
-import { generateAgreementPDF } from '../../lib/professionalPDF'
+import { buildAgreementPDF, type AgreementData } from '../../lib/agreementPDF'
 import { getAdminStore, saveAdminStore } from '../../admin/adminStore'
 import { uploadPDF } from '../../lib/tracker'
 
@@ -95,7 +95,7 @@ export default function Agreement() {
   const handleGeneratePDF = () => {
     if (!canGenerate) return
     const agreementId = crypto.randomUUID()
-    const doc = generateAgreementPDF({
+    const agreementData: AgreementData = {
       clientName,
       clientAddress,
       clientEmail,
@@ -108,7 +108,9 @@ export default function Agreement() {
       finalPercentage: finalPct,
       supportPeriod,
       agreementId,
-    })
+      referenceNumber: 'AGR-' + String(Date.now()).slice(-6),
+    }
+    const doc = buildAgreementPDF(agreementData)
 
     const agreementFile = `Website_Agreement_${(clientName || 'Client').replace(/\s+/g, '_')}_${todayStr()}.pdf`
     uploadPDF(doc, 'Website Agreement', agreementFile, clientName, agreementId)
