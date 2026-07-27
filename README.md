@@ -2,7 +2,7 @@
 
 Welcome to **AROM STUDIO**, a modern **Web Design & Development Agency** founded by **Arnav Pagare**.
 
-🌐 **Official Website:** https://aromstudio.vercel.app
+🌐 **Official Website:** https://arom-studio.vercel.app
 
 At AROM STUDIO, we build premium digital experiences that help startups, businesses, creators, freelancers, and brands establish a powerful online presence.
 
