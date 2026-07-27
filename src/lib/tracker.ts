@@ -1,5 +1,3 @@
-import { recordAdminPDF } from '../admin/adminStore'
-
 let __sessionId = ''
 let __entryPage = ''
 let __pageViewsCount = 0
@@ -10,7 +8,7 @@ let currentPage = ''
 
 function getSessionId(): string {
   if (!__sessionId) {
-    __sessionId = 'sess_' + Math.random().toString(36).slice(2, 9)
+    __sessionId = crypto.randomUUID()
     __sessionStart = Date.now()
     __pageViewsCount = 0
   }
@@ -107,21 +105,6 @@ export function trackClick(type: string, label: string) {
 
 export function trackPDFDownload(pdfType: string, storageKey: string, fileSizeKb: number = 0, pdfDataUrl?: string, clientName: string = 'Client') {
   const info = getDeviceInfo()
-
-  try {
-    recordAdminPDF({
-      pdfType,
-      title: storageKey,
-      clientName,
-      fileSizeKb: fileSizeKb || 180,
-      deviceType: info.deviceType,
-      browser: info.browser,
-      os: info.os,
-      pdfDataUrl,
-    })
-  } catch (e) {
-    console.error(e)
-  }
 
   fetch('/api/track/save-pdf', {
     method: 'POST',

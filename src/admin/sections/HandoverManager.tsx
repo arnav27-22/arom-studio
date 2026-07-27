@@ -67,7 +67,7 @@ export function HandoverManager() {
     if (!form.projectName) return
 
     const newHnd: AdminHandover = {
-      id: 'hnd_' + Math.random().toString(36).slice(2, 9),
+      id: crypto.randomUUID(),
       projectName: form.projectName,
       clientName: form.clientName || 'Apex Innovations',
       status: 'Ready',

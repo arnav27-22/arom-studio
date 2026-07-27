@@ -75,7 +75,7 @@ export function PaymentsManager() {
     if (!form.clientName) return
 
     const newPay: AdminPayment = {
-      id: 'pay_' + Math.random().toString(36).slice(2, 9),
+      id: crypto.randomUUID(),
       invoiceNumber: form.invoiceNumber,
       clientName: form.clientName,
       amount: Number(form.amount) || 0,

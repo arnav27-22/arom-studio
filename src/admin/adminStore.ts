@@ -1,5 +1,4 @@
 import type { BlogPost } from '../data/blog'
-import { BLOG_POSTS } from '../data/blog'
 import { adminWS } from './wsClient'
 
 export interface AdminVisitor {
@@ -308,10 +307,10 @@ const EMPTY_DATA: StoreData = {
   clients: [], projects: [], proposals: [], agreements: [], payments: [],
   content: [], assets: [], approvals: [], timelines: [], handovers: [],
   feedbacks: [], notifications: [], discoveryQuestionnaires: [],
-  blogs: BLOG_POSTS, recycleBin: [],
+  blogs: [], recycleBin: [],
 }
 
-let __cache: StoreData = loadPersistedStore() || { ...EMPTY_DATA }
+let __cache: StoreData = { ...EMPTY_DATA }
 let __syncInProgress = false
 let __syncTriggered = false
 let __wsHandlersInitialized = false
@@ -335,6 +334,7 @@ const COLLECTION_ENDPOINTS: Record<string, string> = {
   feedbacks: '/api/admin/feedbacks',
   notifications: '/api/admin/notifications',
   discoveryQuestionnaires: '/api/admin/discovery',
+  blogs: '/api/admin/blogs',
   recycleBin: '/api/admin/recycle',
 }
 
@@ -357,9 +357,271 @@ function toArray(resp: any): any[] {
   return []
 }
 
-
 function sortByCreatedAt<T extends { createdAt?: string }>(arr: T[]): T[] {
   return arr.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
+}
+
+const SYNC_COLLECTIONS: { key: keyof StoreData; url: string }[] = [
+  { key: 'visitors', url: '/api/admin/visitors' },
+  { key: 'leads', url: '/api/admin/leads' },
+  { key: 'pdfs', url: '/api/admin/pdfs' },
+  { key: 'invoices', url: '/api/admin/invoices' },
+  { key: 'logs', url: '/api/admin/logs' },
+  { key: 'clients', url: '/api/admin/clients' },
+  { key: 'projects', url: '/api/admin/projects' },
+  { key: 'proposals', url: '/api/admin/proposals' },
+  { key: 'agreements', url: '/api/admin/agreements' },
+  { key: 'payments', url: '/api/admin/payments' },
+  { key: 'content', url: '/api/admin/content' },
+  { key: 'assets', url: '/api/admin/assets' },
+  { key: 'approvals', url: '/api/admin/approvals' },
+  { key: 'timelines', url: '/api/admin/timelines' },
+  { key: 'handovers', url: '/api/admin/handovers' },
+  { key: 'feedbacks', url: '/api/admin/feedbacks' },
+  { key: 'notifications', url: '/api/admin/notifications' },
+  { key: 'discoveryQuestionnaires', url: '/api/admin/discovery' },
+  { key: 'blogs', url: '/api/admin/blogs' },
+  { key: 'recycleBin', url: '/api/admin/recycle' },
+]
+
+export async function syncFromCloud(): Promise<StoreData> {
+  if (__syncInProgress) return __cache
+  __syncInProgress = true
+  try {
+    const results = await Promise.all(
+      SYNC_COLLECTIONS.map(({ key, url }) =>
+        api(url).then(resp => ({ key, data: toArray(resp) }))
+      )
+    )
+
+    const updated: StoreData = { ...__cache }
+
+    for (const { key, data } of results) {
+      if (!Array.isArray(data) || data.length === 0) continue
+      ;(updated as any)[key] = key === 'visitors' || key === 'pdfs' || key === 'leads' || key === 'invoices' || key === 'logs'
+        ? sortByCreatedAt(data)
+        : data
+    }
+
+    __cache = updated
+    initWebSocketHandlers()
+    return updated
+  } finally {
+    __syncInProgress = false
+  }
+}
+
+export function getAdminStore(): StoreData {
+  if (!__syncTriggered) {
+    __syncTriggered = true
+    syncFromCloud()
+  }
+  return __cache
+}
+
+export function saveAdminStore(data: StoreData): void {
+  __cache = { ...data }
+}
+
+export function formatIST(dateString?: string): string {
+  if (!dateString) return '\u2014'
+  try {
+    return new Date(dateString).toLocaleString('en-IN', {
+      timeZone: 'Asia/Kolkata',
+      day: '2-digit', month: 'short', year: 'numeric',
+      hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true,
+    }) + ' IST'
+  } catch { return dateString }
+}
+
+export async function logAuditEvent(
+  type: AdminSystemLog['type'],
+  event: string,
+  detail: string,
+  severity: 'info' | 'warn' | 'error' = 'info'
+): Promise<AdminSystemLog | null> {
+  const created = await api('/api/admin/logs', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ type, event, detail, severity }),
+  })
+  if (created?.id) {
+    __cache.logs = [created, ...(__cache.logs || [])]
+  }
+  return created
+}
+
+export async function recordAdminPDF(pdf: Omit<AdminPDF, 'id' | 'createdAt'>): Promise<AdminPDF | null> {
+  const created = await api('/api/admin/pdfs/save', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(pdf),
+  })
+  if (created?.id) {
+    __cache.pdfs = [created, ...(__cache.pdfs || [])]
+  }
+  return created
+}
+
+export async function recordAdminLead(lead: Omit<AdminLead, 'id' | 'createdAt' | 'status'>): Promise<AdminLead | null> {
+  const created = await api('/api/admin/leads', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(lead),
+  })
+  if (created?.id) {
+    __cache.leads = [created, ...__cache.leads]
+  }
+  return created
+}
+
+export async function recordAdminDiscoveryQuestionnaire(dq: Omit<AdminDiscoveryQuestionnaire, 'id' | 'createdAt' | 'status'>): Promise<AdminDiscoveryQuestionnaire | null> {
+  const created = await api('/api/admin/discovery', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(dq),
+  })
+  if (created?.id) {
+    __cache.discoveryQuestionnaires = [created, ...(__cache.discoveryQuestionnaires || [])]
+  }
+  return created
+}
+
+export async function moveToRecycleBin(
+  collection: keyof StoreData,
+  itemId: string,
+  _title?: string,
+  _subtitle?: string
+): Promise<AdminRecycleItem | null> {
+  const endpoint = COLLECTION_ENDPOINTS[collection]
+  if (!endpoint) return null
+  const response = await api(`${endpoint}/${itemId}`, { method: 'DELETE' })
+  if (response?.recycleItem) {
+    __cache.recycleBin = [response.recycleItem, ...(__cache.recycleBin || [])]
+  }
+  return response?.recycleItem || null
+}
+
+export async function restoreFromRecycleBin(recycleId: string): Promise<boolean> {
+  const result = await api('/api/admin/recycle/restore', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ recycleId }),
+  })
+  if (result?.success) {
+    __cache.recycleBin = __cache.recycleBin.filter(r => r.id !== recycleId)
+    if (result?.itemData && result?.originalCollection) {
+      const col = result.originalCollection as keyof StoreData
+      const list = __cache[col] as any[]
+      if (Array.isArray(list) && !list.some(i => i.id === result.itemData.id)) {
+        ;(__cache as any)[col] = [result.itemData, ...list]
+      }
+    }
+  }
+  return result?.success === true
+}
+
+export async function bulkRestoreFromRecycleBin(recycleIds: string[]): Promise<boolean> {
+  const result = await api('/api/admin/recycle/restore', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ recycleIds, bulk: true }),
+  })
+  if (result?.success) {
+    __cache.recycleBin = __cache.recycleBin.filter(r => !recycleIds.includes(r.id))
+    if (result?.restoredItems) {
+      for (const item of result.restoredItems) {
+        if (item?.itemData && item?.originalCollection) {
+          const col = item.originalCollection as keyof StoreData
+          const list = __cache[col] as any[]
+          if (Array.isArray(list) && !list.some(i => i.id === item.itemData.id)) {
+            ;(__cache as any)[col] = [item.itemData, ...list]
+          }
+        }
+      }
+    }
+  }
+  return result?.success === true
+}
+
+export async function permanentDeleteFromRecycleBin(recycleId: string): Promise<boolean> {
+  const result = await api('/api/admin/recycle/permanent-delete', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ recycleId }),
+  })
+  if (result?.success) {
+    __cache.recycleBin = __cache.recycleBin.filter(r => r.id !== recycleId)
+  }
+  return result?.success === true
+}
+
+export async function bulkPermanentDeleteFromRecycleBin(recycleIds: string[]): Promise<boolean> {
+  const result = await api('/api/admin/recycle/permanent-delete', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ recycleIds, bulk: true }),
+  })
+  if (result?.success) {
+    __cache.recycleBin = __cache.recycleBin.filter(r => !recycleIds.includes(r.id))
+  }
+  return result?.success === true
+}
+
+export async function emptyRecycleBin(): Promise<boolean> {
+  const result = await api('/api/admin/recycle/empty', { method: 'POST' })
+  if (result?.success) {
+    __cache.recycleBin = []
+  }
+  return result?.success === true
+}
+
+export async function recordAdminInvoice(invoice: Omit<AdminInvoice, 'id' | 'createdAt'>): Promise<AdminInvoice | null> {
+  const created = await api('/api/admin/invoices', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(invoice),
+  })
+  if (created?.id) {
+    __cache.invoices = [created, ...__cache.invoices]
+  }
+  return created
+}
+
+export async function recordAdminBlog(blog: BlogPost): Promise<BlogPost | null> {
+  const existing = __cache.blogs.find(b => b.slug === blog.slug)
+  if (existing) {
+    const updated = await api(`/api/admin/blogs/${blog.slug}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(blog),
+    })
+    if (updated?.slug) {
+      __cache.blogs = __cache.blogs.map(b => b.slug === updated.slug ? updated : b)
+    }
+    return updated
+  }
+  const created = await api('/api/admin/blogs', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(blog),
+  })
+  if (created?.slug) {
+    __cache.blogs = [created, ...__cache.blogs]
+  }
+  return created
+}
+
+export async function deleteAdminBlog(slug: string): Promise<boolean> {
+  const result = await api(`/api/admin/blogs/${slug}`, { method: 'DELETE' })
+  if (result?.success) {
+    __cache.blogs = __cache.blogs.filter(b => b.slug !== slug)
+  }
+  return result?.success === true
+}
+
+export function getAdminBlogs(): BlogPost[] {
+  return __cache.blogs
 }
 
 function initWebSocketHandlers() {
@@ -496,355 +758,4 @@ function initWebSocketHandlers() {
   adminWS.on('recycle:emptied', () => {
     __cache.recycleBin = []
   })
-}
-
-const SYNC_COLLECTIONS: { key: keyof StoreData; url: string }[] = [
-  { key: 'visitors', url: '/api/admin/visitors' },
-  { key: 'leads', url: '/api/admin/leads' },
-  { key: 'pdfs', url: '/api/admin/pdfs' },
-  { key: 'invoices', url: '/api/admin/invoices' },
-  { key: 'logs', url: '/api/admin/logs' },
-  { key: 'clients', url: '/api/admin/clients' },
-  { key: 'projects', url: '/api/admin/projects' },
-  { key: 'proposals', url: '/api/admin/proposals' },
-  { key: 'agreements', url: '/api/admin/agreements' },
-  { key: 'payments', url: '/api/admin/payments' },
-  { key: 'content', url: '/api/admin/content' },
-  { key: 'assets', url: '/api/admin/assets' },
-  { key: 'approvals', url: '/api/admin/approvals' },
-  { key: 'timelines', url: '/api/admin/timelines' },
-  { key: 'handovers', url: '/api/admin/handovers' },
-  { key: 'feedbacks', url: '/api/admin/feedbacks' },
-  { key: 'notifications', url: '/api/admin/notifications' },
-  { key: 'discoveryQuestionnaires', url: '/api/admin/discovery' },
-  { key: 'recycleBin', url: '/api/admin/recycle' },
-]
-
-export async function syncFromCloud(): Promise<StoreData> {
-  if (__syncInProgress) return __cache
-  __syncInProgress = true
-  try {
-    const results = await Promise.all(
-      SYNC_COLLECTIONS.map(({ key, url }) =>
-        api(url).then(resp => ({ key, data: toArray(resp) }))
-      )
-    )
-
-    const updated: StoreData = { ...__cache }
-
-    for (const { key, data } of results) {
-      if (!Array.isArray(data) || data.length === 0) continue
-      ;(updated as any)[key] = key === 'visitors' || key === 'pdfs' || key === 'leads' || key === 'invoices' || key === 'logs'
-        ? sortByCreatedAt(data)
-        : data
-    }
-
-    __cache = updated
-    initWebSocketHandlers()
-    return updated
-  } finally {
-    __syncInProgress = false
-  }
-}
-
-export function getAdminStore(): StoreData {
-  if (!__syncTriggered) {
-    __syncTriggered = true
-    syncFromCloud()
-  }
-  return __cache
-}
-
-export function saveAdminStore(data: StoreData) {
-  __cache = { ...data }
-  try { localStorage.setItem('arom_admin_store', JSON.stringify(__cache)) } catch { /* storage full or unavailable */ }
-}
-
-function loadPersistedStore(): StoreData | null {
-  try {
-    const raw = localStorage.getItem('arom_admin_store')
-    if (raw) return JSON.parse(raw) as StoreData
-  } catch { /* corrupted or unavailable */ }
-  return null
-}
-
-export function formatIST(dateString?: string): string {
-  if (!dateString) return '\u2014'
-  try {
-    return new Date(dateString).toLocaleString('en-IN', {
-      timeZone: 'Asia/Kolkata',
-      day: '2-digit', month: 'short', year: 'numeric',
-      hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true,
-    }) + ' IST'
-  } catch { return dateString }
-}
-
-export function logAuditEvent(
-  type: AdminSystemLog['type'],
-  event: string,
-  detail: string,
-  severity: 'info' | 'warn' | 'error' = 'info'
-) {
-  const logItem: AdminSystemLog = {
-    id: 'log_' + Math.random().toString(36).slice(2, 9),
-    createdAt: new Date().toISOString(),
-    type, event, detail, severity,
-  }
-  __cache.logs = [logItem, ...(__cache.logs || [])]
-  api('/api/admin/logs', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(logItem),
-  }).catch(() => {})
-}
-
-export function moveToRecycleBin(
-  collection: keyof StoreData,
-  itemId: string,
-  title?: string,
-  subtitle?: string
-) {
-  const list = __cache[collection] as any[]
-  if (!Array.isArray(list)) return
-  const itemIndex = list.findIndex(i => i.id === itemId)
-  if (itemIndex === -1) return
-  const deletedItem = list[itemIndex]
-  ;(__cache as any)[collection] = list.filter(i => i.id !== itemId)
-  const record: AdminRecycleItem = {
-    id: 'rec_' + Math.random().toString(36).slice(2, 9),
-    originalCollection: collection,
-    itemData: deletedItem,
-    title: title || deletedItem.name || deletedItem.title || deletedItem.companyName || deletedItem.projectName || deletedItem.clientName || 'Deleted Item',
-    subtitle: subtitle || deletedItem.email || deletedItem.clientName || deletedItem.status || String(collection),
-    deletedAt: new Date().toISOString(),
-    deletedByName: 'Administrator',
-    originalCreatedAt: deletedItem.createdAt,
-  }
-  __cache.recycleBin = [record, ...(__cache.recycleBin || [])]
-  const endpoint = COLLECTION_ENDPOINTS[collection]
-  if (endpoint) {
-    api(`${endpoint}/${itemId}`, { method: 'DELETE' }).catch(() => {})
-  }
-}
-
-export function restoreFromRecycleBin(recycleId: string) {
-  const record = __cache.recycleBin?.find(r => r.id === recycleId)
-  if (!record) return
-  const collection = record.originalCollection
-  const currentList = (__cache[collection] as any[]) || []
-  const exists = currentList.some(i => i.id === record.itemData?.id)
-  if (!exists && record.itemData) {
-    ;(__cache as any)[collection] = [record.itemData, ...currentList]
-  }
-  __cache.recycleBin = __cache.recycleBin.filter(r => r.id !== recycleId)
-  api('/api/admin/recycle/restore', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ recycleId, originalCollection: collection, itemData: record.itemData }),
-  }).catch(() => {})
-}
-
-export function bulkRestoreFromRecycleBin(recycleIds: string[]) {
-  let restored = 0
-  recycleIds.forEach(id => {
-    const record = __cache.recycleBin?.find(r => r.id === id)
-    if (!record) return
-    const collection = record.originalCollection
-    const currentList = (__cache[collection] as any[]) || []
-    const exists = currentList.some(i => i.id === record.itemData?.id)
-    if (!exists && record.itemData) {
-      ;(__cache as any)[collection] = [record.itemData, ...currentList]
-    }
-    restored++
-  })
-  __cache.recycleBin = __cache.recycleBin.filter(r => !recycleIds.includes(r.id))
-  api('/api/admin/recycle/restore', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ recycleIds, bulk: true }),
-  }).catch(() => {})
-}
-
-export function permanentDeleteFromRecycleBin(recycleId: string) {
-  __cache.recycleBin = __cache.recycleBin.filter(r => r.id !== recycleId)
-  api('/api/admin/recycle/permanent-delete', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ recycleId }),
-  }).catch(() => {})
-}
-
-export function bulkPermanentDeleteFromRecycleBin(recycleIds: string[]) {
-  __cache.recycleBin = __cache.recycleBin.filter(r => !recycleIds.includes(r.id))
-  api('/api/admin/recycle/permanent-delete', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ recycleIds, bulk: true }),
-  }).catch(() => {})
-}
-
-export function emptyRecycleBin() {
-  __cache.recycleBin = []
-  api('/api/admin/recycle/empty', { method: 'POST' }).catch(() => {})
-}
-
-export function recordAdminVisit(page: string, referrer: string = 'Direct', options: Partial<AdminVisitor> = {}) {
-  const now = new Date().toISOString()
-  const visit: AdminVisitor = {
-    id: 'v_' + Math.random().toString(36).slice(2, 9),
-    sessionId: 'sess_' + Math.random().toString(36).slice(2, 9),
-    createdAt: now, lastActivityAt: now,
-    page: page || '/', entryPage: options.entryPage || page || '/', exitPage: page || '/',
-    deviceType: options.deviceType || 'desktop',
-    deviceLabel: options.deviceLabel || '',
-    deviceBrand: options.deviceBrand || '',
-    network: options.network || '',
-    browser: options.browser || '',
-    os: options.os || '',
-    country: options.country || '',
-    city: options.city || '',
-    ip: options.ip || '',
-    referrer: referrer || '',
-    timeOnPage: options.timeOnPage || 0,
-    sessionDuration: options.sessionDuration || 0,
-    scrollDepth: options.scrollDepth || 80,
-    pageViewsCount: options.pageViewsCount || 1,
-    isReturning: options.isReturning ?? false,
-    isBounce: options.isBounce ?? false,
-    isLive: true,
-  }
-  __cache.visitors = [visit, ...__cache.visitors]
-  if (__cache.visitors.length > 500) __cache.visitors.pop()
-
-  __cache.notifications = [{
-    id: 'n_' + Math.random().toString(36).slice(2, 9),
-    type: 'live',
-    title: 'New Live Visitor Active',
-    message: `Visitor from ${visit.city}, ${visit.country} viewing ${visit.page} via ${visit.browser}.`,
-    read: false, createdAt: now,
-  }, ...__cache.notifications]
-
-  api('/api/admin/visitors/track-page-view', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(visit),
-  }).catch(() => {})
-}
-
-export function recordAdminLead(lead: Omit<AdminLead, 'id' | 'createdAt' | 'status'>) {
-  const now = new Date().toISOString()
-  const newLead: AdminLead = {
-    ...lead,
-    id: 'l_' + Math.random().toString(36).slice(2, 9),
-    createdAt: now, status: 'New', country: lead.country || '',
-  }
-  __cache.leads = [newLead, ...__cache.leads]
-  __cache.notifications = [{
-    id: 'n_' + Math.random().toString(36).slice(2, 9),
-    type: 'inquiry',
-    title: 'New Client Inquiry Received',
-    message: `Lead from ${newLead.name} (${newLead.email}) for ${newLead.service || 'Web Services'}.`,
-    read: false, createdAt: now,
-  }, ...__cache.notifications]
-
-  fetch('/api/track/lead', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(newLead),
-  }).catch(() => {
-    api('/api/admin/leads', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newLead),
-    }).catch(() => {})
-  })
-}
-
-export function recordAdminPDF(pdf: Omit<AdminPDF, 'id' | 'createdAt'>) {
-  const newPdf: AdminPDF = {
-    ...pdf,
-    id: 'p_' + Math.random().toString(36).slice(2, 9),
-    createdAt: new Date().toISOString(),
-  }
-  __cache.pdfs = [newPdf, ...(__cache.pdfs || [])]
-  __cache.notifications = [{
-    id: 'n_' + Math.random().toString(36).slice(2, 9),
-    type: 'inquiry',
-    title: 'New PDF Document Generated',
-    message: `${newPdf.clientName || 'Client'} generated ${newPdf.pdfType || 'PDF Document'} (${newPdf.title}).`,
-    read: false, createdAt: newPdf.createdAt,
-  }, ...(__cache.notifications || [])]
-
-  fetch('/api/track/save-pdf', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(newPdf),
-  }).catch(() => {
-    api('/api/admin/pdfs/save', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newPdf),
-    }).catch(() => {})
-  })
-}
-
-export function recordAdminInvoice(invoice: Omit<AdminInvoice, 'id' | 'createdAt'>) {
-  const newInv: AdminInvoice = {
-    ...invoice,
-    id: 'inv_' + Math.random().toString(36).slice(2, 9),
-    createdAt: new Date().toISOString(),
-  }
-  __cache.invoices = [newInv, ...__cache.invoices]
-  api('/api/admin/invoices', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(newInv),
-  }).catch(() => {})
-}
-
-export function recordAdminDiscoveryQuestionnaire(dq: Omit<AdminDiscoveryQuestionnaire, 'id' | 'createdAt' | 'status'>) {
-  const now = new Date().toISOString()
-  const newDq: AdminDiscoveryQuestionnaire = {
-    ...dq,
-    id: 'dq_' + Math.random().toString(36).slice(2, 9),
-    createdAt: now, status: 'New',
-  }
-  __cache.discoveryQuestionnaires = [newDq, ...(__cache.discoveryQuestionnaires || [])]
-  __cache.notifications = [{
-    id: 'n_' + Math.random().toString(36).slice(2, 9),
-    type: 'inquiry',
-    title: 'New Discovery Questionnaire Submitted',
-    message: `Questionnaire submitted by ${newDq.fullName} (${newDq.company || 'Client'}).`,
-    read: false, createdAt: now,
-  }, ...(__cache.notifications || [])]
-
-  fetch('/api/track/discovery', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(newDq),
-  }).catch(() => {
-    api('/api/admin/discovery', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newDq),
-    }).catch(() => {})
-  })
-}
-
-export function recordAdminBlog(blog: BlogPost) {
-  const index = __cache.blogs.findIndex(b => b.slug === blog.slug)
-  if (index !== -1) __cache.blogs[index] = blog
-  else __cache.blogs = [blog, ...__cache.blogs]
-  saveAdminStore(__cache)
-}
-
-export function deleteAdminBlog(slug: string) {
-  const target = __cache.blogs.find(b => b.slug === slug)
-  if (target) moveToRecycleBin('blogs', slug, target.title, `Category: ${target.category}`)
-  __cache.blogs = __cache.blogs.filter(b => b.slug !== slug)
-  saveAdminStore(__cache)
-}
-
-export function getAdminBlogs(): BlogPost[] {
-  return __cache.blogs
 }

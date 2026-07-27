@@ -27,7 +27,10 @@ export function Overview() {
   const weekVisits = visitors.filter((v) => now - new Date(v.createdAt).getTime() < 7 * 86400000).length
   const monthVisits = visitors.filter((v) => now - new Date(v.createdAt).getTime() < 30 * 86400000).length
   const allTimeVisits = visitors.length
-  const activeSessions = visitors.length > 0 ? Math.min(visitors.length, 5) : 0
+  const activeSessions = visitors.filter(v => {
+    const lastActive = v.lastActivityAt || v.createdAt
+    return lastActive && now - new Date(lastActive).getTime() < 300000
+  }).length
   const totalRevenue = clients.reduce((acc, c) => acc + (c.totalRevenue || 0), 0)
 
   // Top Page calculation

@@ -67,7 +67,7 @@ export function AgreementManager() {
 
     const num = `AGR-2026-${(agreements.length + 1).toString().padStart(3, '0')}`
     const newAgr: AdminAgreement = {
-      id: 'agr_' + Math.random().toString(36).slice(2, 9),
+      id: crypto.randomUUID(),
       agreementNumber: num,
       clientName: form.clientName,
       clientEmail: form.clientEmail || '',

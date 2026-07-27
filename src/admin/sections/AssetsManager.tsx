@@ -63,7 +63,7 @@ export function AssetsManager() {
     if (!form.clientName) return
 
     const newFolder: AdminAssetFolder = {
-      id: 'ast_' + Math.random().toString(36).slice(2, 9),
+      id: crypto.randomUUID(),
       clientName: form.clientName,
       projectName: form.projectName || 'Web Development Project',
       googleDriveLink: form.googleDriveLink,

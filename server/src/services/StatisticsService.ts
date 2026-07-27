@@ -26,8 +26,8 @@ interface DashboardStats {
 }
 
 export class StatisticsService {
-  async getDashboard(): Promise<DashboardStats> {
-    const cacheKey = 'stats:dashboard'
+  async getDashboard(dateFrom?: string, dateTo?: string): Promise<DashboardStats> {
+    const cacheKey = `stats:dashboard:${dateFrom || 'all'}:${dateTo || 'all'}`
     const cached = await redisClient.get<DashboardStats>(cacheKey)
     if (cached) return cached
 
@@ -37,7 +37,16 @@ export class StatisticsService {
     const monthAgo = new Date(now.getTime() - 30 * 86400000)
     const fiveMinAgo = new Date(now.getTime() - 5 * 60000)
 
-    const whereActive = { deletedAt: null }
+    const dateFilter = dateFrom || dateTo
+      ? {
+          ...(dateFrom && { gte: new Date(dateFrom) }),
+          ...(dateTo && { lte: new Date(dateTo) }),
+        }
+      : undefined
+
+    const whereActive = dateFilter
+      ? { deletedAt: null, createdAt: dateFilter }
+      : { deletedAt: null }
 
     const [
       totalVisitors,
@@ -338,4 +347,3 @@ export class StatisticsService {
 }
 
 export const statisticsService = new StatisticsService()
-

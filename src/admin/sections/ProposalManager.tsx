@@ -45,7 +45,7 @@ export function ProposalManager() {
     e.preventDefault()
     if (!form.title || !form.clientName) return
     const newProp: AdminProposal = {
-      id: 'prop_' + Math.random().toString(36).slice(2, 9),
+      id: crypto.randomUUID(),
       proposalNumber: `PROP-2026-${String(store.proposals.length + 1).padStart(3, '0')}`,
       title: form.title,
       clientName: form.clientName,
@@ -66,7 +66,7 @@ export function ProposalManager() {
   const handleDuplicateProposal = (row: AdminProposal) => {
     const dup: AdminProposal = {
       ...row,
-      id: 'prop_' + Math.random().toString(36).slice(2, 9),
+      id: crypto.randomUUID(),
       proposalNumber: `PROP-2026-${String(store.proposals.length + 1).padStart(3, '0')}`,
       title: `${row.title} (Copy)`,
       status: 'Draft',

@@ -71,7 +71,7 @@ export function ProjectManagement() {
     if (!form.title) return
 
     const newProj: AdminProject = {
-      id: 'proj_' + Math.random().toString(36).slice(2, 9),
+      id: crypto.randomUUID(),
       title: form.title,
       clientId: 'cli_1',
       clientName: form.clientName || clients[0]?.companyName || 'Apex Innovations',

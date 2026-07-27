@@ -63,7 +63,7 @@ export function ClientManagement() {
     if (!form.companyName || !form.email) return
 
     const newClient: AdminClient = {
-      id: 'cli_' + Math.random().toString(36).slice(2, 9),
+      id: crypto.randomUUID(),
       companyName: form.companyName,
       contactPerson: form.contactPerson || 'Primary Contact',
       email: form.email,

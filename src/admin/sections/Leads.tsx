@@ -58,7 +58,7 @@ export function Leads() {
     if (!name || !email) return
     const s = getAdminStore()
     const newLead: AdminLead = {
-      id: 'l_' + Math.random().toString(36).slice(2, 9),
+      id: crypto.randomUUID(),
       createdAt: new Date().toISOString(),
       name,
       email,

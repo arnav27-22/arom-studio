@@ -67,7 +67,7 @@ export function AIKnowledge() {
       .filter(Boolean)
 
     const newItem: AiKnowledgeItem = {
-      id: editingItem ? editingItem.id : 'k_' + Math.random().toString(36).slice(2, 9),
+      id: editingItem ? editingItem.id : crypto.randomUUID(),
       category,
       title: title.trim() || question.trim(),
       question: question.trim(),

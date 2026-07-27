@@ -22,10 +22,14 @@ function validatePassword(password: string): void {
 }
 
 export class AuthController {
-  async check(req: Request, res: Response) {
-    const token = req.cookies?.admin_token
-    const authenticated = await authService.checkAuth(token)
-    res.json({ authenticated })
+  async check(req: Request, res: Response, next: NextFunction) {
+    try {
+      const token = req.cookies?.admin_token
+      const authenticated = await authService.checkAuth(token)
+      res.json({ authenticated })
+    } catch (err) {
+      next(err)
+    }
   }
 
   async login(req: Request, res: Response, next: NextFunction) {
@@ -44,9 +48,31 @@ export class AuthController {
     }
   }
 
-  async logout(_req: Request, res: Response) {
-    res.setHeader('Set-Cookie', 'admin_token=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0')
-    res.json({ success: true })
+  async logout(_req: Request, res: Response, next: NextFunction) {
+    try {
+      res.setHeader('Set-Cookie', 'admin_token=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0')
+      res.json({ success: true })
+    } catch (err) {
+      next(err)
+    }
+  }
+
+  async wsToken(req: Request, res: Response, next: NextFunction) {
+    try {
+      const token = req.cookies?.admin_token
+      if (!token) {
+        res.status(401).json({ error: 'No authentication token' })
+        return
+      }
+      const valid = await authService.checkAuth(token)
+      if (!valid) {
+        res.status(401).json({ error: 'Invalid or expired token' })
+        return
+      }
+      res.json({ token })
+    } catch (err) {
+      next(err)
+    }
   }
 }
 

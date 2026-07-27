@@ -105,7 +105,7 @@ export function DesignApproval() {
     if (!form.projectName) return
 
     const newApp: AdminDesignApproval = {
-      id: 'app_' + Math.random().toString(36).slice(2, 9),
+      id: crypto.randomUUID(),
       projectName: form.projectName,
       clientName: form.clientName || 'Apex Innovations',
       status: 'Waiting Approval',

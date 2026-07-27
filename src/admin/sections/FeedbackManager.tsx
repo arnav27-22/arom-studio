@@ -77,7 +77,7 @@ export function FeedbackManager() {
     if (!form.clientName || !form.review) return
 
     const newFb: AdminFeedback = {
-      id: 'fb_' + Math.random().toString(36).slice(2, 9),
+      id: crypto.randomUUID(),
       clientName: form.clientName,
       company: form.company || 'Client Partner',
       rating: Number(form.rating) || 5,
