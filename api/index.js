@@ -214,7 +214,6 @@ export default async function handler(req, res) {
           message: body.message || '',
           status: body.status || 'New',
           country: body.country || '',
-          page: body.page || '',
         }
         await insertRow('leads', row)
         return j(res, row)
@@ -462,7 +461,6 @@ export default async function handler(req, res) {
           preferred_launch_date: body.preferredLaunchDate || '',
           content_provider: body.contentProvider || '',
           status: body.status || 'New',
-          pdf_data_url: body.pdfDataUrl || '',
           full_data: body.fullData ? JSON.stringify(body.fullData) : '{}',
         }
         await insertRow('discovery_forms', row)
