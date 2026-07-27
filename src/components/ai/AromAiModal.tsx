@@ -74,7 +74,7 @@ export function AromAiModal({ isOpen, onClose }: AromAiModalProps) {
     const now = new Date().toISOString()
 
     const newConv: AiConversation = {
-      id: 'conv_' + Math.random().toString(36).slice(2, 9),
+      id: crypto.randomUUID(),
       visitorId,
       title: 'New AROM AI Chat',
       messages: [],
@@ -131,7 +131,7 @@ export function AromAiModal({ isOpen, onClose }: AromAiModalProps) {
 
     const now = new Date().toISOString()
     const userMsg: AiMessage = {
-      id: 'm_' + Math.random().toString(36).slice(2, 9),
+      id: crypto.randomUUID(),
       sender: 'user',
       text,
       timestamp: now,
@@ -147,7 +147,7 @@ export function AromAiModal({ isOpen, onClose }: AromAiModalProps) {
     if (!conv) {
       const { device, browser } = detectDeviceAndBrowser()
       conv = {
-        id: currentConvId || 'conv_' + Math.random().toString(36).slice(2, 9),
+        id: currentConvId || crypto.randomUUID(),
         visitorId: getVisitorId(),
         title: text.slice(0, 30) + '...',
         messages: updatedMessages,
@@ -174,7 +174,7 @@ export function AromAiModal({ isOpen, onClose }: AromAiModalProps) {
       const aiReplyText = generateAiResponse(text, knowledge)
 
       const aiMsg: AiMessage = {
-        id: 'm_' + Math.random().toString(36).slice(2, 9),
+        id: crypto.randomUUID(),
         sender: 'ai',
         text: aiReplyText,
         timestamp: new Date().toISOString(),

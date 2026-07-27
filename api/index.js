@@ -403,8 +403,8 @@ export default async function handler(req, res) {
     else if (isMobile) brand = 'Mobile Device'
 
     await db.append('real_visitors', {
-      id: body.id || ('v_' + Math.random().toString(36).slice(2, 9)),
-      sessionId: body.sessionId || ('sess_' + Math.random().toString(36).slice(2, 9)),
+      id: body.id || crypto.randomUUID(),
+      sessionId: body.sessionId || crypto.randomUUID(),
       createdAt: new Date().toISOString(),
       lastActivityAt: new Date().toISOString(),
       page: body.page || '/',
@@ -418,8 +418,8 @@ export default async function handler(req, res) {
       city: req.headers['x-vercel-ip-city'] || '',
       ip: req.headers['x-forwarded-for']?.split(',')[0]?.trim() || '',
       referrer: body.referrer || 'Direct',
-      timeOnPage: 30,
-      scrollDepth: 80,
+      timeOnPage: body.timeOnPage || body.sessionDuration || 0,
+      scrollDepth: body.scrollDepth || 0,
       pageViewsCount: body.pageViewsCount || 1,
     })
     return j(res, { ok: true })
@@ -428,7 +428,7 @@ export default async function handler(req, res) {
   if ((pathname === '/api/track/save-pdf' || pathname === '/api/track/save' || pathname === '/api/pdfs/save') && req.method === 'POST') {
     const body = await getJSON(req)
     await db.append('real_pdfs', {
-      id: body.id || ('p_' + Math.random().toString(36).slice(2, 9)),
+      id: body.id || crypto.randomUUID(),
       createdAt: new Date().toISOString(),
       pdfType: body.pdfType || 'Document',
       title: body.title || body.storageKey || 'PDF Document',
@@ -470,7 +470,7 @@ export default async function handler(req, res) {
     const body = await getJSON(req)
     const leads = (await db.read('real_leads')) || []
     const lead = {
-      id: body.id || ('l_' + Math.random().toString(36).slice(2, 9)),
+      id: body.id || crypto.randomUUID(),
       createdAt: new Date().toISOString(),
       name: body.name || '',
       email: body.email || '',
@@ -491,7 +491,7 @@ export default async function handler(req, res) {
     const body = await getJSON(req)
     const discovery = (await db.read('real_discovery')) || []
     const item = {
-      id: body.id || ('dq_' + Math.random().toString(36).slice(2, 9)),
+      id: body.id || crypto.randomUUID(),
       createdAt: new Date().toISOString(),
       fullName: body.fullName || '',
       company: body.company || '',

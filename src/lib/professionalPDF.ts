@@ -798,7 +798,7 @@ function applyContentPageHeaders(doc: jsPDF, title: string) {
 }
 
 function generateReference(prefix: string): string {
-  return `${prefix}-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 9999)).padStart(4, '0')}`
+  return `${prefix}-${new Date().getFullYear()}-${String(Date.now()).slice(-4)}`
 }
 
 function today(): string {

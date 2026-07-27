@@ -111,8 +111,8 @@ export default function Agreement() {
         store.agreements[existingIdx].signedDate = todayStr()
       } else {
         store.agreements.unshift({
-          id: 'ag_' + Math.random().toString(36).slice(2, 9),
-          agreementNumber: 'AGR-' + Math.floor(Math.random() * 9000 + 1000),
+          id: crypto.randomUUID(),
+          agreementNumber: 'AGR-' + String(Date.now()).slice(-6),
           clientName: clientName,
           clientEmail: clientEmail,
           status: 'Signed',

@@ -361,51 +361,43 @@ function sortByCreatedAt<T extends { createdAt?: string }>(arr: T[]): T[] {
   return arr.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
 }
 
-const SYNC_COLLECTIONS: { key: keyof StoreData; url: string }[] = [
-  { key: 'visitors', url: '/api/admin/visitors' },
-  { key: 'leads', url: '/api/admin/leads' },
-  { key: 'pdfs', url: '/api/admin/pdfs' },
-  { key: 'invoices', url: '/api/admin/invoices' },
-  { key: 'logs', url: '/api/admin/logs' },
-  { key: 'clients', url: '/api/admin/clients' },
-  { key: 'projects', url: '/api/admin/projects' },
-  { key: 'proposals', url: '/api/admin/proposals' },
-  { key: 'agreements', url: '/api/admin/agreements' },
-  { key: 'payments', url: '/api/admin/payments' },
-  { key: 'content', url: '/api/admin/content' },
-  { key: 'assets', url: '/api/admin/assets' },
-  { key: 'approvals', url: '/api/admin/approvals' },
-  { key: 'timelines', url: '/api/admin/timelines' },
-  { key: 'handovers', url: '/api/admin/handovers' },
-  { key: 'feedbacks', url: '/api/admin/feedbacks' },
-  { key: 'notifications', url: '/api/admin/notifications' },
-  { key: 'discoveryQuestionnaires', url: '/api/admin/discovery' },
-  { key: 'blogs', url: '/api/admin/blogs' },
-  { key: 'recycleBin', url: '/api/admin/recycle' },
-]
+const SYNC_COLLECTIONS: { key: keyof StoreData; url: string }[] = Object.keys(EMPTY_DATA).map(k => ({
+  key: k as keyof StoreData,
+  url: COLLECTION_ENDPOINTS[k] || `/api/admin/${k}`,
+}))
 
 export async function syncFromCloud(): Promise<StoreData> {
   if (__syncInProgress) return __cache
   __syncInProgress = true
   try {
-    const results = await Promise.all(
-      SYNC_COLLECTIONS.map(({ key, url }) =>
-        api(url).then(resp => ({ key, data: toArray(resp) }))
+    const resp = await api('/api/sync')
+    if (resp && typeof resp === 'object') {
+      const updated: StoreData = { ...EMPTY_DATA }
+      for (const key of Object.keys(EMPTY_DATA)) {
+        const val = (resp as any)[key]
+        if (Array.isArray(val)) {
+          (updated as any)[key] = key === 'visitors' || key === 'pdfs' || key === 'leads' || key === 'invoices' || key === 'logs'
+            ? sortByCreatedAt(val)
+            : val
+        }
+      }
+      __cache = updated
+    } else {
+      const results = await Promise.all(
+        SYNC_COLLECTIONS.map(({ key, url }) =>
+          api(url).then(resp => ({ key, data: toArray(resp) }))
+        )
       )
-    )
-
-    const updated: StoreData = { ...__cache }
-
-    for (const { key, data } of results) {
-      if (!Array.isArray(data) || data.length === 0) continue
-      ;(updated as any)[key] = key === 'visitors' || key === 'pdfs' || key === 'leads' || key === 'invoices' || key === 'logs'
-        ? sortByCreatedAt(data)
-        : data
+      for (const { key, data } of results) {
+        if (Array.isArray(data)) {
+          (__cache as any)[key] = key === 'visitors' || key === 'pdfs' || key === 'leads' || key === 'invoices' || key === 'logs'
+            ? sortByCreatedAt(data)
+            : data
+        }
+      }
     }
-
-    __cache = updated
     initWebSocketHandlers()
-    return updated
+    return __cache
   } finally {
     __syncInProgress = false
   }

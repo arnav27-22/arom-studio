@@ -34,7 +34,7 @@ async function api(path: string, options?: RequestInit): Promise<any> {
 
 export function getVisitorId(): string {
   if (!__visitorId) {
-    __visitorId = 'vis_ai_' + Math.random().toString(36).slice(2, 9)
+    __visitorId = 'vis_ai_' + crypto.randomUUID().slice(0, 8)
   }
   return __visitorId
 }

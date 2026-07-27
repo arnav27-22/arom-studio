@@ -64,7 +64,7 @@ async function blobRead(name) {
     if (!blobs.length) return cachedRead(name)
     const res = await get(blobs[0].url)
     const json = JSON.parse(await res.text())
-    if (Array.isArray(json) && json.length > 0) {
+    if (Array.isArray(json)) {
       cache[name] = json
       return json
     }

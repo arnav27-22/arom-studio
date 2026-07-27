@@ -1,3 +1,4 @@
+import crypto from 'crypto'
 import { logger } from '../utils/logger'
 import { redisClient } from '../cache/redis'
 
@@ -71,7 +72,7 @@ export async function enqueueJob(job: Job): Promise<void> {
 
 export async function enqueue(type: string, data: unknown, maxRetries = 3): Promise<void> {
   const job: Job = {
-    id: `${type}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+    id: `${type}_${crypto.randomUUID().slice(0, 8)}`,
     type,
     data,
     retries: 0,
