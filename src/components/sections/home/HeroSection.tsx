@@ -45,9 +45,10 @@ function BlurText({ text, delay = 0 }: { text: string; delay?: number }) {
 
   useEffect(() => {
     const observer = new IntersectionObserver(
-      ([entry]) => {
+      ([entry], obs) => {
         if (entry.isIntersecting) {
           setTriggered(true)
+          obs.disconnect()
         }
       },
       { threshold: 0.1 },

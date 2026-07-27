@@ -373,7 +373,7 @@ export default async function handler(req, res) {
           visitors, pdfs, leads, invoices, logs, clients, projects,
           proposals, agreements, payments, content, assets, approvals,
           timelines, handovers, feedbacks, notifications, recycleBin,
-          discovery, blogs, aiConversations,
+          discovery, aiConversations,
         ] = await Promise.all([
           readAll('visitors'), readAll('generated_pdfs'), readAll('leads'),
           readAll('invoices'), readAll('audit_logs'), readAll('clients'),
@@ -381,7 +381,7 @@ export default async function handler(req, res) {
           readAll('payments'), readAll('content_collection'), readAll('asset_folders'),
           readAll('design_approvals'), readAll('project_timelines'), readAll('handovers'),
           readAll('feedbacks'), readAll('notifications'), readAll('recycle_bin'),
-          readAll('discovery_forms'), readAll('blog_posts'), readAll('ai_conversations'),
+          readAll('discovery_forms'), readAll('ai_conversations'),
         ])
         return j(res, {
           visitors, pdfs, leads, invoices, logs,
@@ -398,7 +398,7 @@ export default async function handler(req, res) {
           feedbacks: feedbacks.length ? feedbacks : undefined,
           notifications: notifications.length ? notifications : undefined,
           discoveryQuestionnaires: discovery,
-          recycleBin, blogs, aiConversations,
+          recycleBin, aiConversations,
         })
       }
       if (req.method === 'POST') {
@@ -428,7 +428,7 @@ export default async function handler(req, res) {
             assets: 'asset_folders', approvals: 'design_approvals', timelines: 'project_timelines',
             handovers: 'handovers', feedbacks: 'feedbacks', notifications: 'notifications',
             discoveryQuestionnaires: 'discovery_forms', visitors: 'visitors', pdfs: 'generated_pdfs',
-            invoices: 'invoices', leads: 'leads', blogs: 'blog_posts', recycleBin: 'recycle_bin',
+            invoices: 'invoices', leads: 'leads', recycleBin: 'recycle_bin',
             logs: 'audit_logs',
           }
           for (const [key, tableName] of Object.entries(map)) {
@@ -567,57 +567,6 @@ export default async function handler(req, res) {
       }
       const rows = await readAll('invoices')
       return j(res, { total: rows.length, invoices: rows })
-    }
-
-    // Blogs
-    if (pathname === '/api/admin/blogs') {
-      if (req.method === 'POST') {
-        const body = await getJSON(req)
-        const post = {
-          id: body.id || crypto.randomUUID(),
-          created_at: body.createdAt || new Date().toISOString(),
-          slug: body.slug || '',
-          title: body.title || '',
-          excerpt: body.excerpt || '',
-          content: body.content || '',
-          author: body.author || 'AROM Studio',
-          cover_image: body.coverImage || '',
-          tags: body.tags || [],
-          published: body.published || false,
-          published_at: body.published ? new Date().toISOString() : null,
-        }
-        await insertRow('blog_posts', post)
-        return j(res, post)
-      }
-      const rows = await readAll('blog_posts')
-      return j(res, rows)
-    }
-
-    if (pathname.startsWith('/api/admin/blogs/')) {
-      const slug = pathname.split('/').pop()
-      if (req.method === 'PUT') {
-        const body = await getJSON(req)
-        const post = {
-          title: body.title,
-          excerpt: body.excerpt,
-          content: body.content,
-          author: body.author,
-          cover_image: body.coverImage,
-          tags: body.tags,
-          published: body.published,
-          published_at: body.published ? new Date().toISOString() : null,
-          updated_at: new Date().toISOString(),
-        }
-        await updateWhere('blog_posts', post, 'slug', slug)
-        const updated = await getById('blog_posts', slug)
-        return j(res, updated || { success: true })
-      }
-      if (req.method === 'DELETE') {
-        await deleteWhere('blog_posts', 'slug', slug)
-        return j(res, { success: true })
-      }
-      const post = await getById('blog_posts', slug)
-      return j(res, post || null)
     }
 
     // Generic collection endpoints

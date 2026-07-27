@@ -1,4 +1,3 @@
-import type { BlogPost } from '../data/blog'
 import { adminWS } from './wsClient'
 
 import { useState, useEffect } from 'react'
@@ -309,7 +308,6 @@ export interface StoreData {
   feedbacks: AdminFeedback[]
   notifications: AdminNotification[]
   discoveryQuestionnaires: AdminDiscoveryQuestionnaire[]
-  blogs: BlogPost[]
   recycleBin: AdminRecycleItem[]
 }
 
@@ -318,7 +316,7 @@ const EMPTY_DATA: StoreData = {
   clients: [], projects: [], proposals: [], agreements: [], payments: [],
   content: [], assets: [], approvals: [], timelines: [], handovers: [],
   feedbacks: [], notifications: [], discoveryQuestionnaires: [],
-  blogs: [], recycleBin: [],
+  recycleBin: [],
 }
 
 let __cache: StoreData = { ...EMPTY_DATA }
@@ -357,7 +355,6 @@ const COLLECTION_ENDPOINTS: Record<string, string> = {
   feedbacks: '/api/admin/feedbacks',
   notifications: '/api/admin/notifications',
   discoveryQuestionnaires: '/api/admin/discovery',
-  blogs: '/api/admin/blogs',
   recycleBin: '/api/admin/recycle',
 }
 
@@ -638,42 +635,6 @@ export async function recordAdminInvoice(invoice: Omit<AdminInvoice, 'id' | 'cre
     __cache.invoices = [created, ...__cache.invoices]
   }
   return created
-}
-
-export async function recordAdminBlog(blog: BlogPost): Promise<BlogPost | null> {
-  const existing = __cache.blogs.find(b => b.slug === blog.slug)
-  if (existing) {
-    const updated = await api(`/api/admin/blogs/${blog.slug}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(blog),
-    })
-    if (updated?.slug) {
-      __cache.blogs = __cache.blogs.map(b => b.slug === updated.slug ? updated : b)
-    }
-    return updated
-  }
-  const created = await api('/api/admin/blogs', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(blog),
-  })
-  if (created?.slug) {
-    __cache.blogs = [created, ...__cache.blogs]
-  }
-  return created
-}
-
-export async function deleteAdminBlog(slug: string): Promise<boolean> {
-  const result = await api(`/api/admin/blogs/${slug}`, { method: 'DELETE' })
-  if (result?.success) {
-    __cache.blogs = __cache.blogs.filter(b => b.slug !== slug)
-  }
-  return result?.success === true
-}
-
-export function getAdminBlogs(): BlogPost[] {
-  return __cache.blogs
 }
 
 function initWebSocketHandlers() {

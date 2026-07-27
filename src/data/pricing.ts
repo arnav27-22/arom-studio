@@ -25,7 +25,7 @@ export const plans: Plan[] = [
       'Custom UI/UX Design',
       'Premium Typography & Branding',
       'SEO Optimization (On-Page)',
-      'Blog/News Section Setup',
+      'News/Updates Section',
       'Contact & Inquiry Forms',
       'WhatsApp Integration',
       'Performance Optimization',

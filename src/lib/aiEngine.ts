@@ -57,7 +57,7 @@ We offer 5 clear pricing packages tailored to your business scale:
 1. **Starter Website — ₹15,999+**
    - 1 to 5 Pages, Responsive Design, Basic SEO, Contact Form, Analytics, 1 Year Support.
 2. **Professional Website (Most Popular) — ₹32,999+**
-   - Up to 10 Pages, Custom UI/UX, On-Page SEO, Blog Setup, WhatsApp Integration, Free Domain (1 Year T&C), 1 Year Support.
+   - Up to 10 Pages, Custom UI/UX, On-Page SEO, WhatsApp Integration, Free Domain (1 Year T&C), 1 Year Support.
 3. **Business Website — ₹59,999+**
    - Up to 20 Pages, Custom Premium Design System, Advanced SEO, CMS Integration, E-commerce/Booking System, API Integrations, 1 Year Support.
 4. **Premium Website — ₹1,00,999+**
@@ -220,7 +220,7 @@ const RESTRICTED_PATTERNS = [
 
 // Forbidden Internal System Inquiries
 const INTERNAL_SYSTEM_PATTERNS = [
-  /\b(admin|admin[ _]?panel|admin[ _]?dashboard|\/admin|executive[ _]?overview|crm|lead[ _]?management|visitor[ _]?analytics|traffic[ _]?generator|pdf[ _]?archive|invoice[ _]?generator|blog[ _]?manager|cms|ai[ _]?conversations|ai[ _]?knowledge|chat[ _]?transcripts|recycle[ _]?bin|internal[ _]?tools|backend[ _]?architecture|audit[ _]?logs|hidden[ _]?features|internal[ _]?system|internal[ _]?database|user[ _]?database)\b/i,
+  /\b(admin|admin[ _]?panel|admin[ _]?dashboard|\/admin|executive[ _]?overview|crm|lead[ _]?management|visitor[ _]?analytics|traffic[ _]?generator|pdf[ _]?archive|invoice[ _]?generator|cms|ai[ _]?conversations|ai[ _]?knowledge|chat[ _]?transcripts|recycle[ _]?bin|internal[ _]?tools|backend[ _]?architecture|audit[ _]?logs|hidden[ _]?features|internal[ _]?system|internal[ _]?database|user[ _]?database)\b/i,
 ]
 
 // Unrelated query patterns
@@ -388,7 +388,7 @@ export function generateAiResponse(userQuery: string, customKnowledge: AiKnowled
 
   // I. Follow-up / Package Choice Clarification Intent ("Which package should I choose?", "Recommend package")
   if (/\b(which package|recommend package|what package|choose package|don't know|dont know|not sure|confused)\b/i.test(normalized) && !normalized.includes('gym') && !normalized.includes('restaurant') && !normalized.includes('clinic')) {
-    return `I'd be happy to recommend the perfect package for your project!\n\nHere is a quick overview of our most popular tiers:\n- **Starter (₹15,999+)**: Perfect for small business landing pages (1-5 pages).\n- **Professional (₹32,999+)**: Ideal for growing businesses needing custom UI, blog, and SEO (up to 10 pages).\n- **Business (₹59,999+)**: Built for e-commerce, custom booking systems, and APIs (up to 20 pages).\n\nCould you tell me what type of business you're planning the website for and what key features you need?`
+    return `I'd be happy to recommend the perfect package for your project!\n\nHere is a quick overview of our most popular tiers:\n- **Starter (₹15,999+)**: Perfect for small business landing pages (1-5 pages).\n- **Professional (₹32,999+)**: Ideal for growing businesses needing custom UI and SEO (up to 10 pages).\n- **Business (₹59,999+)**: Built for e-commerce, custom booking systems, and APIs (up to 20 pages).\n\nCould you tell me what type of business you're planning the website for and what key features you need?`
   }
 
   // J. Navigation Intent

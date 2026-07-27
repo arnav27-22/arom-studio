@@ -29,12 +29,11 @@ import { HandoverManager } from './sections/HandoverManager'
 import { FeedbackManager } from './sections/FeedbackManager'
 import { NotificationsCenter } from './sections/NotificationsCenter'
 import { DiscoveryQuestionnairesAdmin } from './sections/DiscoveryQuestionnairesAdmin'
-import { BlogManager } from './sections/BlogManager'
 import { AIConversations } from './sections/AIConversations'
 import { AIKnowledge } from './sections/AIKnowledge'
 import { RecycleBin } from './sections/RecycleBin'
 import { LinkClicks } from './sections/LinkClicks'
-import { FileQuestion, BookOpen, Bot, Brain, MousePointer2 } from 'lucide-react'
+import { FileQuestion, Bot, Brain, MousePointer2 } from 'lucide-react'
 
 import { syncFromCloud, initSSE, destroySSE } from './adminStore'
 import { adminWS } from './wsClient'
@@ -55,7 +54,6 @@ const systemSections = [
 ]
 
 const agencySections = [
-  { id: 'blogs', label: 'Blog Manager', icon: BookOpen },
   { id: 'clients', label: 'Clients', icon: UserCheck },
   { id: 'projects', label: 'Projects', icon: Briefcase },
   { id: 'proposals', label: 'Proposal Manager', icon: FileSpreadsheet },
@@ -210,7 +208,6 @@ export function AdminDashboard({ onLogout }: { onLogout: () => void }) {
               {active === 'recycle_bin' && <RecycleBin />}
 
               {/* 13 Agency Management Sections */}
-              {active === 'blogs' && <BlogManager />}
               {active === 'clients' && <ClientManagement />}
               {active === 'projects' && <ProjectManagement />}
               {active === 'proposals' && <ProposalManager />}

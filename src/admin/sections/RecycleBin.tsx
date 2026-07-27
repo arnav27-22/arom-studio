@@ -72,7 +72,6 @@ const COLLECTION_LABELS: Record<string, string> = {
   pdfs: 'PDFs',
   visitors: 'Visitors',
   discoveryQuestionnaires: 'Discovery Questionnaires',
-  blogs: 'Blog Posts',
   logs: 'System Logs',
 }
 
@@ -84,7 +83,6 @@ const COLLECTION_COLORS: Record<string, string> = {
   payments: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
   leads: 'text-pink-400 bg-pink-500/10 border-pink-500/20',
   pdfs: 'text-orange-400 bg-orange-500/10 border-orange-500/20',
-  blogs: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20',
 }
 
 function getCollectionStyle(col: string) {
