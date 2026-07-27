@@ -1,6 +1,17 @@
 import type { BlogPost } from '../data/blog'
 import { adminWS } from './wsClient'
 
+import { useState, useEffect } from 'react'
+
+export function useAdminStore(): StoreData {
+  const [store, setStore] = useState(getAdminStore())
+  useEffect(() => {
+    const unsub = subscribe(() => setStore({ ...getAdminStore() }))
+    return unsub
+  }, [])
+  return store
+}
+
 export interface AdminVisitor {
   id: string
   sessionId?: string
@@ -316,6 +327,16 @@ let __syncTriggered = false
 let __wsHandlersInitialized = false
 let __sse: EventSource | null = null
 let __ssePollTimer: ReturnType<typeof setInterval> | null = null
+let __subscribers: (() => void)[] = []
+
+export function subscribe(fn: () => void): () => void {
+  __subscribers.push(fn)
+  return () => { __subscribers = __subscribers.filter(s => s !== fn) }
+}
+
+function notifySubscribers() {
+  __subscribers.forEach(fn => fn())
+}
 
 const COLLECTION_ENDPOINTS: Record<string, string> = {
   visitors: '/api/admin/visitors',
@@ -400,6 +421,7 @@ export async function syncFromCloud(): Promise<StoreData> {
     }
     initWebSocketHandlers()
     initSSE()
+    notifySubscribers()
     return __cache
   } finally {
     __syncInProgress = false
@@ -409,7 +431,7 @@ export async function syncFromCloud(): Promise<StoreData> {
 export function getAdminStore(): StoreData {
   if (!__syncTriggered) {
     __syncTriggered = true
-    syncFromCloud()
+    syncFromCloud().then(notifySubscribers)
   }
   return __cache
 }

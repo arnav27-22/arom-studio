@@ -1,18 +1,19 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { StatCard } from '../components/StatCard'
 import { Users, FileText, Mail, Eye, Activity, Download } from 'lucide-react'
-import { getAdminStore, syncFromCloud, formatIST } from '../adminStore'
+import { getAdminStore, subscribe, syncFromCloud, formatIST } from '../adminStore'
 import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function Overview() {
   const [store, setStore] = useState(getAdminStore())
 
   useEffect(() => {
+    const unsub = subscribe(() => setStore(getAdminStore()))
     syncFromCloud().then(setStore)
     const timer = setInterval(() => {
       syncFromCloud().then(setStore)
     }, 10000)
-    return () => clearInterval(timer)
+    return () => { unsub(); clearInterval(timer) }
   }, [])
 
   const visitors = store.visitors || []

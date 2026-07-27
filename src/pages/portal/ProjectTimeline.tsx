@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { CheckCircle2, Clock, Circle, ChevronDown, Edit3, Plus, Trash2 } from 'lucide-react'
+import { CheckCircle2, Clock, Circle, ChevronDown, Edit3, Plus, Trash2, Route } from 'lucide-react'
 import { cn } from '../../lib/cn'
 
 interface Phase {
@@ -11,16 +11,7 @@ interface Phase {
   details: string
 }
 
-const defaultPhases: Phase[] = [
-  { name: 'Discovery', status: 'completed', duration: 'Week 1', desc: 'Understanding goals, audience, and requirements.', details: 'We discuss your business goals, target audience, brand identity, competitor landscape, and project requirements.' },
-  { name: 'Planning', status: 'active', duration: 'Week 2', desc: 'Sitemap, wireframes, and project roadmap.', details: 'We create a detailed sitemap, wireframes for key layouts, and a comprehensive project roadmap.' },
-  { name: 'UI Design', status: 'upcoming', duration: 'Weeks 3-4', desc: 'Visual design, prototyping in Figma.', details: 'High-fidelity mockups covering all pages and device sizes for your review.' },
-  { name: 'Development', status: 'upcoming', duration: 'Weeks 5-7', desc: 'Building with modern tech stack.', details: 'Development using Next.js, TypeScript, and Tailwind CSS with responsive design.' },
-  { name: 'Testing', status: 'upcoming', duration: 'Week 8', desc: 'QA, performance, accessibility.', details: 'Cross-browser testing, performance benchmarking, and accessibility compliance.' },
-  { name: 'Revision', status: 'upcoming', duration: 'Week 9', desc: 'Client feedback and refinements.', details: 'Up to 3 rounds of revisions based on your feedback.' },
-  { name: 'Deployment', status: 'upcoming', duration: 'Week 10', desc: 'Launch, CDN, SSL, analytics.', details: 'Production deployment with CDN, SSL, and analytics setup.' },
-  { name: 'Completed', status: 'upcoming', duration: '', desc: 'Handover and support begins.', details: 'Project files, source code, documentation handed over. 1 year support starts.' },
-]
+const defaultPhases: Phase[] = []
 
 const statuses = ['completed', 'active', 'upcoming'] as const
 
@@ -67,7 +58,12 @@ export default function ProjectTimeline() {
       <div className="relative">
         <div className="absolute left-[19px] top-0 bottom-0 w-px bg-white/10" />
         <div className="space-y-6">
-          {phases.map((phase, i) => {
+          {phases.length === 0 ? (
+            <div className="pl-12 glass rounded-[20px] p-12 flex flex-col items-center justify-center gap-3">
+              <Route className="h-10 w-10 text-white/20" />
+              <p className="text-white/30 font-body text-sm">No timeline set yet. Click "Add Phase" to build your project roadmap.</p>
+            </div>
+          ) : phases.map((phase, i) => {
             const Icon = phase.status === 'completed' ? CheckCircle2 : phase.status === 'active' ? Clock : Circle
             return (
               <motion.div

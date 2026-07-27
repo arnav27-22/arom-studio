@@ -1,12 +1,8 @@
 import { motion } from 'framer-motion'
-import { FileText, Download, Calendar, DollarSign } from 'lucide-react'
+import { FileText, Download, Calendar, DollarSign, Inbox } from 'lucide-react'
 import { cn } from '../../lib/cn'
 
-const invoices = [
-  { id: 'INV-001', issueDate: '2026-07-21', dueDate: '2026-07-28', amount: '$380', status: 'pending', description: 'Professional Website — Initial Deposit' },
-  { id: 'INV-002', issueDate: '2026-08-15', dueDate: '2026-08-22', amount: '$190', status: 'upcoming', description: 'Professional Website — Progress Payment' },
-  { id: 'INV-003', issueDate: '2026-09-01', dueDate: '2026-09-08', amount: '$190', status: 'upcoming', description: 'Professional Website — Final Payment' },
-]
+const invoices: { id: string; issueDate: string; dueDate: string; amount: string; status: string; description: string }[] = []
 
 const statusStyles: Record<string, string> = {
   paid: 'bg-green-500/20 text-green-400 border-green-500/30',
@@ -43,7 +39,12 @@ export default function Invoices() {
       </div>
 
       <div className="space-y-3">
-        {invoices.map((inv, i) => (
+        {invoices.length === 0 ? (
+          <div className="glass rounded-[20px] p-12 flex flex-col items-center justify-center gap-3">
+            <Inbox className="h-10 w-10 text-white/20" />
+            <p className="text-white/30 font-body text-sm">No invoices yet</p>
+          </div>
+        ) : invoices.map((inv, i) => (
           <motion.div
             key={inv.id}
             initial={{ opacity: 0, y: 15 }}

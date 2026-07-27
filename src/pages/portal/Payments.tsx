@@ -3,17 +3,14 @@ import { CreditCard, DollarSign, Clock, CheckCircle2, ArrowUpRight } from 'lucid
 import { cn } from '../../lib/cn'
 
 const summary = {
-  total: '$380',
-  paid: '$0',
-  remaining: '$380',
-  nextPayment: '$190',
-  nextDue: 'Upon Design Approval',
+  total: '₹0',
+  paid: '₹0',
+  remaining: '₹0',
+  nextPayment: '—',
+  nextDue: '—',
 }
 
-const history = [
-  { id: 1, label: 'Initial Deposit (50%)', amount: '$190', status: 'pending', date: 'Upon signing', method: 'Stripe' },
-  { id: 2, label: 'Final Payment (50%)', amount: '$190', status: 'upcoming', date: 'Upon completion', method: 'Stripe' },
-]
+const history: { id: number; label: string; amount: string; status: string; date: string; method: string }[] = []
 
 const paymentMethods = [
   { name: 'Stripe', desc: 'Credit/Debit Card', icon: CreditCard, color: 'from-blue-500/20 to-indigo-500/20' },
@@ -106,7 +103,13 @@ export default function Payments() {
               </tr>
             </thead>
             <tbody>
-              {history.map((item) => (
+              {history.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className="py-8 px-4 text-center text-white/30 font-body text-sm">
+                    No payment history yet
+                  </td>
+                </tr>
+              ) : history.map((item) => (
                 <tr key={item.id} className="border-b border-white/5 hover:bg-white/[0.02]">
                   <td className="py-3 px-4 text-white/80">{item.label}</td>
                   <td className="py-3 px-4 text-white/80">{item.amount}</td>

@@ -1,23 +1,20 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { CheckCircle2, XCircle, MessageSquare, Download, Eye } from 'lucide-react'
+import { CheckCircle2, XCircle, MessageSquare, Download, Eye, Plus, ImageIcon } from 'lucide-react'
 import Button from '../../components/ui/Button'
 import { cn } from '../../lib/cn'
 import { generateDesignApprovalPDF } from '../../lib/professionalPDF'
 
-const designs = [
-  { id: 1, page: 'Homepage', status: 'pending', preview: 'https://placehold.co/800x450/0a0a0a/4e85bf?text=Homepage+Design', notes: '' },
-  { id: 2, page: 'About Page', status: 'pending', preview: 'https://placehold.co/800x450/0a0a0a/4e85bf?text=About+Design', notes: '' },
-  { id: 3, page: 'Services', status: 'pending', preview: 'https://placehold.co/800x450/0a0a0a/4e85bf?text=Services+Design', notes: '' },
-  { id: 4, page: 'Contact', status: 'pending', preview: 'https://placehold.co/800x450/0a0a0a/4e85bf?text=Contact+Design', notes: '' },
-  { id: 5, page: 'Mobile Design', status: 'pending', preview: 'https://placehold.co/400x800/0a0a0a/4e85bf?text=Mobile+Design', notes: '' },
-]
-
 export default function DesignApproval() {
-  const [items, setItems] = useState(designs)
+  const [items, setItems] = useState<{ id: number; page: string; status: string; preview: string; notes: string }[]>([])
   const [commentModal, setCommentModal] = useState<number | null>(null)
   const [comment, setComment] = useState('')
   const [history, setHistory] = useState<{ id: number; action: string; time: string; page: string }[]>([])
+
+  const requestDesign = () => {
+    const id = items.length + 1
+    setItems((prev) => [...prev, { id, page: `New Design #${id}`, status: 'pending', preview: '', notes: '' }])
+  }
 
   const handleAction = (id: number, action: 'approved' | 'changes', note?: string) => {
     setItems((prev) => prev.map((d) => d.id === id ? { ...d, status: action, notes: note || d.notes } : d))
@@ -28,7 +25,7 @@ export default function DesignApproval() {
   }
 
   const approved = items.filter((d) => d.status === 'approved').length
-  const progress = (approved / items.length) * 100
+  const progress = items.length > 0 ? (approved / items.length) * 100 : 0
 
   const handleDownloadPDF = () => {
     generateDesignApprovalPDF(items.map((d) => ({
@@ -45,9 +42,14 @@ export default function DesignApproval() {
           <h1 className="font-heading text-3xl md:text-4xl text-white tracking-[-1px]">Design Approval</h1>
           <p className="text-sm text-white/50 font-body font-light mt-1">Review and approve project designs.</p>
         </div>
-        <Button variant="secondary" size="sm" onClick={handleDownloadPDF}>
-          <Download className="h-4 w-4" /> Approval PDF
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="secondary" size="sm" onClick={requestDesign}>
+            <Plus className="h-4 w-4" /> Request Design
+          </Button>
+          <Button variant="secondary" size="sm" onClick={handleDownloadPDF}>
+            <Download className="h-4 w-4" /> Approval PDF
+          </Button>
+        </div>
       </div>
 
       <div className="glass rounded-[24px] p-5 mb-8">
@@ -61,7 +63,12 @@ export default function DesignApproval() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10">
-        {items.map((design, i) => (
+        {items.length === 0 ? (
+          <div className="col-span-full glass rounded-[24px] p-12 flex flex-col items-center justify-center gap-3">
+            <ImageIcon className="h-10 w-10 text-white/20" />
+            <p className="text-white/30 font-body text-sm">No designs yet. Click "Request Design" to start.</p>
+          </div>
+        ) : items.map((design, i) => (
           <motion.div
             key={design.id}
             initial={{ opacity: 0, y: 20 }}
@@ -70,7 +77,13 @@ export default function DesignApproval() {
             className="glass rounded-[24px] overflow-hidden"
           >
             <div className="relative group">
-              <img src={design.preview} alt={design.page} className="w-full h-48 object-cover" />
+              {design.preview ? (
+                <img src={design.preview} alt={design.page} className="w-full h-48 object-cover" />
+              ) : (
+                <div className="w-full h-48 bg-white/5 flex items-center justify-center">
+                  <ImageIcon className="h-12 w-12 text-white/10" />
+                </div>
+              )}
               <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
                 <button className="glass rounded-full p-3 hover:bg-white/20 transition-colors">
                   <Eye className="h-5 w-5" />

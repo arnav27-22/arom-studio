@@ -1,4 +1,4 @@
-import { db } from './_db.js'
+import { readAll } from './_db.js'
 
 export async function computeDashboard() {
   try {
@@ -9,11 +9,11 @@ export async function computeDashboard() {
     const fiveMinAgo = new Date(now - 5 * 60000)
 
     const [visitors, pdfs, leads, logs, conversations] = await Promise.all([
-      db.read('real_visitors'),
-      db.read('real_pdfs'),
-      db.read('real_leads'),
-      db.read('system_logs'),
-      db.read('real_ai_conversations'),
+      readAll('visitors'),
+      readAll('generated_pdfs'),
+      readAll('leads'),
+      readAll('audit_logs'),
+      readAll('ai_conversations'),
     ])
 
     const vArr = Array.isArray(visitors) ? visitors : []
@@ -141,7 +141,7 @@ export async function computeDashboard() {
 
 export async function computeAnalytics() {
   try {
-    const rows = await db.read('real_visitors')
+    const rows = await readAll('visitors')
     const visitors = Array.isArray(rows) ? rows : []
     const visits = visitors
 

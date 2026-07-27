@@ -1,16 +1,11 @@
-import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { BarChart3, Download } from 'lucide-react'
-import { getAdminStore } from '../adminStore'
+import { useAdminStore } from '../adminStore'
 import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function PageAnalytics() {
-  const [store, setStore] = useState(getAdminStore())
-
-  useEffect(() => {
-    setStore(getAdminStore())
-  }, [])
+  const store = useAdminStore()
 
   const visitors = store.visitors || []
 
@@ -27,13 +22,17 @@ export function PageAnalytics() {
     pageStatsMap[route].totalScroll += v.scrollDepth || 75
   })
 
-  const pages = Object.entries(pageStatsMap).map(([page, stat]) => ({
-    page,
-    views: stat.views,
-    avgTime: Math.round(stat.totalTime / (stat.views || 1)),
-    avgScroll: Math.min(100, Math.round(stat.totalScroll / (stat.views || 1))),
-    bounceRate: 0,
-  }))
+  const pages = Object.entries(pageStatsMap).map(([page, stat]) => {
+    const pageVisitors = visitors.filter(v => v.page === page)
+    const pageBounces = pageVisitors.filter(v => v.isBounce).length
+    return {
+      page,
+      views: stat.views,
+      avgTime: Math.round(stat.totalTime / (stat.views || 1)),
+      avgScroll: Math.min(100, Math.round(stat.totalScroll / (stat.views || 1))),
+      bounceRate: pageVisitors.length > 0 ? Math.round((pageBounces / pageVisitors.length) * 100) : 0,
+    }
+  })
 
   const handleDownloadAnalyticsPDF = () => {
     const headers = ['Page Route', 'Real Page Views', 'Avg Duration', 'Avg Scroll Depth', 'Bounce Rate']

@@ -1,19 +1,20 @@
 import { useState, useEffect } from 'react'
-import { CheckCircle2, ShieldCheck, Database, Key, Trash2, ArrowRight, Download } from 'lucide-react'
+import { CheckCircle2, ShieldCheck, Database, Key, Trash2, ArrowRight, Download, AlertTriangle, HelpCircle } from 'lucide-react'
 import { getAdminStore, formatIST } from '../adminStore'
 import { exportSectionReportPDF } from '../../lib/professionalPDF'
+import { cn } from '../../lib/cn'
 
 const DEFAULT_SETTINGS = {
   envChecks: {
-    ADMIN_PASSWORD: true,
-    EMAILJS_SERVICE_ID: true,
-    EMAILJS_TEMPLATE_ID: true,
-    EMAILJS_PUBLIC_KEY: true,
-    VITE_GA_ID: true,
+    ADMIN_PASSWORD: undefined as boolean | undefined,
+    EMAILJS_SERVICE_ID: undefined as boolean | undefined,
+    EMAILJS_TEMPLATE_ID: undefined as boolean | undefined,
+    EMAILJS_PUBLIC_KEY: undefined as boolean | undefined,
+    VITE_GA_ID: undefined as boolean | undefined,
   },
-  allSet: true,
-  adminSessionTimeout: '8 Hours',
-  adminJwtExpiry: '8 Hours',
+  allSet: false,
+  adminSessionTimeout: '—',
+  adminJwtExpiry: '—',
 }
 
 export function SettingsPage({ onNavigate }: { onNavigate?: (section: string) => void }) {
@@ -103,17 +104,40 @@ export function SettingsPage({ onNavigate }: { onNavigate?: (section: string) =>
           <ShieldCheck className="h-4 w-4" /> System Health &amp; Environment
         </h3>
         <div className="space-y-3">
-          {Object.entries(data.envChecks || {}).map(([key]) => (
-            <div key={key} className="flex items-center gap-3 text-xs text-white/80 py-1.5 border-b border-white/5 last:border-0">
-              <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
-              <span className="text-white font-mono flex-1">{key}</span>
-              <span className="text-emerald-400 font-medium px-2 py-0.5 rounded bg-emerald-400/10 border border-emerald-400/20 text-[10px]">Active</span>
-            </div>
-          ))}
+          {Object.entries(data.envChecks || {}).map(([key, val]) => {
+            const isSet = val === true
+            const isUnknown = val === undefined || val === null
+            return (
+              <div key={key} className="flex items-center gap-3 text-xs text-white/80 py-1.5 border-b border-white/5 last:border-0">
+                {isSet ? (
+                  <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
+                ) : isUnknown ? (
+                  <HelpCircle className="h-4 w-4 text-white/30 shrink-0" />
+                ) : (
+                  <AlertTriangle className="h-4 w-4 text-amber-400 shrink-0" />
+                )}
+                <span className="text-white font-mono flex-1">{key}</span>
+                <span className={cn(
+                  'font-medium px-2 py-0.5 rounded border text-[10px]',
+                  isSet ? 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20' :
+                  isUnknown ? 'text-white/40 bg-white/5 border-white/10' :
+                  'text-amber-400 bg-amber-400/10 border-amber-400/20',
+                )}>
+                  {isSet ? 'Active' : isUnknown ? 'Unknown' : 'Not Set'}
+                </span>
+              </div>
+            )
+          })}
         </div>
-        <p className="text-xs text-emerald-400 font-body mt-4 flex items-center gap-1.5">
-          <CheckCircle2 className="h-3.5 w-3.5" /> All production environment security parameters are active.
-        </p>
+        {data.allSet ? (
+          <p className="text-xs text-emerald-400 font-body mt-4 flex items-center gap-1.5">
+            <CheckCircle2 className="h-3.5 w-3.5" /> All production environment security parameters are active.
+          </p>
+        ) : (
+          <p className="text-xs text-amber-400/70 font-body mt-4 flex items-center gap-1.5">
+            <AlertTriangle className="h-3.5 w-3.5" /> Some environment variables are not configured.
+          </p>
+        )}
       </div>
 
       <div className="glass rounded-[24px] p-6 border border-white/10">

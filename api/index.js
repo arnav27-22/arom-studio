@@ -1,6 +1,6 @@
 import crypto from 'crypto'
-import { db } from './_db.js'
-import { requireAuth, verifyToken, signToken, timingSafeEqual, checkRateLimit, recordFailure, getPassword, verifyAdminPassword } from './_auth.js'
+import { init, query, readAll, readWhere, insertRow, deleteWhere, deleteAll, countWhere, updateWhere, getById } from './_db.js'
+import { requireAuth, verifyToken, signToken, checkRateLimit, recordFailure, verifyAdminPassword, logAdminEvent } from './_auth.js'
 import { computeDashboard, computeAnalytics } from './stats.js'
 
 const sseClients = new Map()
@@ -43,15 +43,6 @@ function parseCookies(req) {
   return cookies
 }
 
-function adminGuard(req, res) {
-  const cookies = parseCookies(req)
-  if (!cookies.admin_token || !verifyToken(cookies.admin_token)) {
-    send(res, 401, { error: 'Unauthorized' })
-    return false
-  }
-  return true
-}
-
 function getJSON(req) {
   if (req.body && typeof req.body === 'object') return Promise.resolve(req.body)
   if (typeof req.body === 'string') {
@@ -67,547 +58,713 @@ function getJSON(req) {
   })
 }
 
-function parseMultipart(buf, boundary) {
-  const parts = []
-  const delimiter = Buffer.from(`--${boundary}`)
-  const sectionEndPattern = Buffer.from(`--${boundary}--`)
-  let pos = 0
-  while (pos < buf.length) {
-    const start = buf.indexOf(delimiter, pos)
-    if (start === -1) break
-    const sectionStart = start + delimiter.length
-    if (buf.slice(sectionStart, sectionStart + 2).toString() === '--') break
-    let sectionEnd = buf.indexOf(delimiter, sectionStart)
-    if (sectionEnd === -1) sectionEnd = buf.length
-    const section = buf.slice(sectionStart, sectionEnd).toString('latin1')
-    const headerEnd = section.indexOf('\r\n\r\n')
-    if (headerEnd === -1) { pos = sectionEnd; continue }
-    const headers = section.slice(0, headerEnd)
-    const nameMatch = headers.match(/name="([^"]+)"/)
-    const filenameMatch = headers.match(/filename="([^"]+)"/)
-    const dataStart = sectionStart + headerEnd + 4
-    const dataEnd = sectionEnd - 2
-    const part = { name: nameMatch ? nameMatch[1] : '', value: '' }
-    if (filenameMatch) {
-      part.filename = filenameMatch[1]
-      const ct = headers.match(/Content-Type:\s*(\S+)/i)
-      part.contentType = ct ? ct[1] : 'application/octet-stream'
-      part.data = buf.slice(dataStart, dataEnd)
-    } else {
-      part.value = buf.slice(dataStart, dataEnd).toString('utf-8').replace(/\r$/, '')
-    }
-    parts.push(part)
-    pos = sectionEnd
-  }
-  return parts
-}
-
 export default async function handler(req, res) {
   try {
     if (req.method === 'OPTIONS') return send(res, 200, {})
 
     const url = new URL(req.url, 'http://localhost')
     const pathname = url.pathname
-  const ip = req.headers['x-forwarded-for'] || req.socket?.remoteAddress || '127.0.0.1'
+    const ip = req.headers['x-forwarded-for'] || req.socket?.remoteAddress || '127.0.0.1'
 
-  if (pathname === '/api/ping') return j(res, { ok: true, timestamp: new Date().toISOString() })
+    if (pathname === '/api/ping') return j(res, { ok: true, timestamp: new Date().toISOString() })
 
-  // Auth
-  if (pathname === '/api/admin/auth') {
-    if (req.method === 'GET') {
-      const cookies = parseCookies(req)
-      return j(res, { authenticated: !!(cookies.admin_token && verifyToken(cookies.admin_token)) })
-    }
-    if (req.method === 'POST') {
-      const body = await getJSON(req)
-      if (body.action === 'login') {
-        if (!checkRateLimit(ip)) return send(res, 429, { error: 'Too many attempts' })
-        if (!verifyAdminPassword(body.password)) {
-          recordFailure(ip); return send(res, 401, { error: 'Incorrect password' })
+    // Auth
+    if (pathname === '/api/admin/auth') {
+      if (req.method === 'GET') {
+        const cookies = parseCookies(req)
+        return j(res, { authenticated: !!(cookies.admin_token && verifyToken(cookies.admin_token)) })
+      }
+      if (req.method === 'POST') {
+        const body = await getJSON(req)
+        if (body.action === 'login') {
+          if (!checkRateLimit(ip)) return send(res, 429, { error: 'Too many attempts' })
+          if (!verifyAdminPassword(body.password)) {
+            recordFailure(ip); return send(res, 401, { error: 'Incorrect password' })
+          }
+          const token = signToken()
+          res.setHeader('Set-Cookie', `admin_token=${token}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=28800`)
+          return j(res, { success: true })
         }
-        const token = signToken()
-        res.setHeader('Set-Cookie', `admin_token=${token}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=28800`)
-        return j(res, { success: true })
+        if (body.action === 'logout') {
+          res.setHeader('Set-Cookie', 'admin_token=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0')
+          return j(res, { success: true })
+        }
       }
-      if (body.action === 'logout') {
-        res.setHeader('Set-Cookie', 'admin_token=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0')
-        return j(res, { success: true })
+      return send(res, 400, { error: 'Invalid' })
+    }
+
+    // Require auth for all /api/admin/ routes
+    if (pathname.startsWith('/api/admin/')) {
+      const cookies = parseCookies(req)
+      if (!cookies.admin_token || !verifyToken(cookies.admin_token)) {
+        return send(res, 401, { error: 'Unauthorized' })
       }
     }
-    return send(res, 400, { error: 'Invalid' })
-  }
 
-  // Require auth for all /api/admin/ routes (except auth itself)
-  if (pathname.startsWith('/api/admin/')) {
-    const cookies = parseCookies(req)
-    if (!cookies.admin_token || !verifyToken(cookies.admin_token)) {
-      return send(res, 401, { error: 'Unauthorized' })
+    // SSE
+    if (pathname === '/api/admin/events' && req.method === 'GET') {
+      res.writeHead(200, {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': 'true',
+      })
+      res.write('event: connected\ndata: {}\n\n')
+      const clientId = crypto.randomUUID()
+      sseClients.set(clientId, res)
+      req.on('close', () => { sseClients.delete(clientId) })
+      return
     }
-  }
 
-  // ====== ADMIN SSE (Server-Sent Events) ======
-  if (pathname === '/api/admin/events' && req.method === 'GET') {
-    res.writeHead(200, {
-      'Content-Type': 'text/event-stream',
-      'Cache-Control': 'no-cache',
-      'Connection': 'keep-alive',
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Credentials': 'true',
-    })
-    res.write('event: connected\ndata: {}\n\n')
-    const clientId = crypto.randomUUID()
-    sseClients.set(clientId, res)
-    req.on('close', () => { sseClients.delete(clientId) })
-    return
-  }
+    // Dashboard
+    if (pathname === '/api/admin/dashboard' || pathname === '/api/admin/statistics') {
+      const stats = await computeDashboard()
+      return j(res, stats)
+    }
 
-  // ====== ADMIN DASHBOARD ======
-  if (pathname === '/api/admin/dashboard') {
-    const stats = await computeDashboard()
-    return j(res, stats)
-  }
+    // Analytics
+    if (pathname === '/api/admin/analytics') {
+      const analytics = await computeAnalytics()
+      return j(res, analytics)
+    }
 
-  // ====== ADMIN STATISTICS ======
-  if (pathname === '/api/admin/statistics') {
-    const stats = await computeDashboard()
-    return j(res, stats)
-  }
+    // Visitors
+    if (pathname === '/api/admin/visitors') {
+      if (req.method === 'DELETE') {
+        await deleteAll('visitors')
+        return j(res, { success: true })
+      }
+      const rows = await readAll('visitors')
+      return j(res, { total: rows.length, visitors: rows })
+    }
 
-  // ====== ADMIN ANALYTICS ======
-  if (pathname === '/api/admin/analytics') {
-    const analytics = await computeAnalytics()
-    return j(res, analytics)
-  }
+    // PDFs
+    if (pathname === '/api/admin/pdfs') {
+      const rows = await readAll('generated_pdfs')
+      return j(res, { total: rows.length, pdfs: rows })
+    }
 
-  // ====== ADMIN VISITORS ======
-  if (pathname === '/api/admin/visitors') {
-    if (req.method === 'DELETE') {
-      await db.write('real_visitors', [])
+    if (pathname.startsWith('/api/admin/pdfs/') && req.method === 'DELETE') {
+      const pdfId = pathname.split('/').pop()
+      await deleteWhere('generated_pdfs', 'id', pdfId)
       return j(res, { success: true })
     }
-    const visits = (await db.read('real_visitors')) || []
-    return j(res, { total: visits.length, visitors: visits.reverse() })
-  }
 
-  // ====== ADMIN PDFS ======
-  if (pathname === '/api/admin/pdfs') {
-    const pdfs = (await db.read('real_pdfs')) || []
-    return j(res, { total: pdfs.length, pdfs: pdfs.reverse() })
-  }
-
-  if (pathname.startsWith('/api/admin/pdfs/') && req.method === 'DELETE') {
-    const pdfId = pathname.split('/').pop()
-    let pdfs = (await db.read('real_pdfs')) || []
-    pdfs = pdfs.filter(p => p.id !== pdfId)
-    await db.write('real_pdfs', pdfs)
-    return j(res, { success: true })
-  }
-
-  if (pathname.match(/^\/api\/admin\/pdfs\/[^\/]+\/download$/) && req.method === 'GET') {
-    const pdfId = pathname.split('/')[4]
-    const pdfs = (await db.read('real_pdfs')) || []
-    const pdf = pdfs.find(p => p.id === pdfId)
-    if (!pdf) return send(res, 404, { error: 'PDF not found' })
-    if (pdf.pdfDataUrl) {
-      const base64 = pdf.pdfDataUrl.replace(/^data:application\/pdf;base64,/, '')
-      const buffer = Buffer.from(base64, 'base64')
-      res.writeHead(200, {
-        'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="${pdf.fileName || (pdf.title || pdf.pdfType).replace(/\s+/g, '_') + '.pdf'}"`,
-        'Content-Length': buffer.length,
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Credentials': 'true',
-      })
-      res.end(buffer)
-      return
+    if (pathname.match(/^\/api\/admin\/pdfs\/[^\/]+\/download$/) && req.method === 'GET') {
+      const pdfId = pathname.split('/')[4]
+      const pdf = await getById('generated_pdfs', pdfId)
+      if (!pdf) return send(res, 404, { error: 'PDF not found' })
+      if (pdf.pdf_data_url) {
+        const base64 = pdf.pdf_data_url.replace(/^data:application\/pdf;base64,/, '')
+        const buffer = Buffer.from(base64, 'base64')
+        res.writeHead(200, {
+          'Content-Type': 'application/pdf',
+          'Content-Disposition': `attachment; filename="${(pdf.file_name || pdf.title || pdf.pdf_type).replace(/\s+/g, '_') + '.pdf'}"`,
+          'Content-Length': buffer.length,
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Credentials': 'true',
+        })
+        res.end(buffer)
+        return
+      }
+      return send(res, 404, { error: 'PDF data not available' })
     }
-    return send(res, 404, { error: 'PDF data not available' })
-  }
 
-  if (pathname.match(/^\/api\/admin\/pdfs\/[^\/]+\/preview$/) && req.method === 'GET') {
-    const pdfId = pathname.split('/')[4]
-    const pdfs = (await db.read('real_pdfs')) || []
-    const pdf = pdfs.find(p => p.id === pdfId)
-    if (!pdf) return send(res, 404, { error: 'PDF not found' })
-    if (pdf.pdfDataUrl) {
-      const base64 = pdf.pdfDataUrl.replace(/^data:application\/pdf;base64,/, '')
-      const buffer = Buffer.from(base64, 'base64')
-      res.writeHead(200, {
-        'Content-Type': 'application/pdf',
-        'Content-Disposition': `inline; filename="${pdf.fileName || 'document.pdf'}"`,
-        'Content-Length': buffer.length,
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Credentials': 'true',
-      })
-      res.end(buffer)
-      return
+    if (pathname.match(/^\/api\/admin\/pdfs\/[^\/]+\/preview$/) && req.method === 'GET') {
+      const pdfId = pathname.split('/')[4]
+      const pdf = await getById('generated_pdfs', pdfId)
+      if (!pdf) return send(res, 404, { error: 'PDF not found' })
+      if (pdf.pdf_data_url) {
+        const base64 = pdf.pdf_data_url.replace(/^data:application\/pdf;base64,/, '')
+        const buffer = Buffer.from(base64, 'base64')
+        res.writeHead(200, {
+          'Content-Type': 'application/pdf',
+          'Content-Disposition': `inline; filename="${pdf.file_name || 'document.pdf'}"`,
+          'Content-Length': buffer.length,
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Credentials': 'true',
+        })
+        res.end(buffer)
+        return
+      }
+      return send(res, 404, { error: 'PDF data not available' })
     }
-    return send(res, 404, { error: 'PDF data not available' })
-  }
 
-  if (pathname.startsWith('/api/admin/pdfs/') && req.method === 'GET') {
-    const pdfId = pathname.split('/').pop()
-    const pdfs = (await db.read('real_pdfs')) || []
-    const pdf = pdfs.find(p => p.id === pdfId)
-    if (!pdf) return send(res, 404, { error: 'PDF not found' })
-    return j(res, pdf)
-  }
+    if (pathname.startsWith('/api/admin/pdfs/') && req.method === 'GET') {
+      const pdfId = pathname.split('/').pop()
+      const pdf = await getById('generated_pdfs', pdfId)
+      if (!pdf) return send(res, 404, { error: 'PDF not found' })
+      return j(res, pdf)
+    }
 
-  // ====== ADMIN LEADS ======
-  if (pathname === '/api/admin/leads') {
-    const leads = (await db.read('real_leads')) || []
-    if (req.method === 'PUT') {
+    // Leads
+    if (pathname === '/api/admin/leads') {
+      const rows = await readAll('leads')
+      if (req.method === 'PUT') {
+        const body = await getJSON(req)
+        await updateWhere('leads', { status: body.status }, 'id', body.id)
+        return j(res, { success: true })
+      }
+      return j(res, { total: rows.length, leads: rows })
+    }
+
+    // AI Conversations
+    if (pathname === '/api/admin/ai/conversations') {
+      if (req.method === 'POST') {
+        const body = await getJSON(req)
+        if (body.action === 'delete') {
+          await deleteWhere('ai_conversations', 'id', body.id)
+          return j(res, { success: true })
+        }
+        if (body.action === 'rename') {
+          await updateWhere('ai_conversations', { title: body.title }, 'id', body.id)
+          return j(res, { success: true })
+        }
+        if (body.action === 'save' && body.data) {
+          await insertRow('ai_conversations', { ...body.data, updated_at: new Date().toISOString() })
+          return j(res, { success: true })
+        }
+      }
+      if (req.method === 'DELETE') {
+        const body = await getJSON(req)
+        await deleteWhere('ai_conversations', 'id', body.id)
+        return j(res, { success: true })
+      }
+      const convs = await readAll('ai_conversations')
+      return j(res, { total: convs.length, conversations: convs })
+    }
+
+    // AI Knowledge
+    if (pathname === '/api/admin/ai/knowledge') {
+      if (req.method === 'POST') {
+        const body = await getJSON(req)
+        await deleteAll('ai_knowledge')
+        if (Array.isArray(body.items)) {
+          for (const item of body.items) {
+            await insertRow('ai_knowledge', item)
+          }
+        }
+        return j(res, { success: true })
+      }
+      const items = await readAll('ai_knowledge')
+      return j(res, { items })
+    }
+
+    // Overview (legacy)
+    if (pathname === '/api/admin/overview') {
+      const stats = await computeDashboard()
+      return j(res, {
+        todayVisits: stats.visitors.today,
+        weekVisits: stats.visitors.thisWeek,
+        monthVisits: stats.visitors.thisMonth,
+        allTimeVisits: stats.visitors.total,
+        activeSessions: stats.visitors.activeSessions,
+        totalPDFs: stats.pdfs.total,
+        todayPDFs: stats.pdfs.today,
+        totalLeads: stats.leads.total,
+        topPage: stats.visitors.topPage,
+        recentEvents: stats.activity.recent,
+      })
+    }
+
+    // Logs
+    if (pathname === '/api/admin/logs') {
+      const rows = await readAll('audit_logs')
+      return j(res, { total: rows.length, logs: rows })
+    }
+
+    // Settings
+    if (pathname === '/api/admin/settings') {
+      return j(res, {
+        envChecks: {
+          ADMIN_PASSWORD: !!process.env.ADMIN_PASSWORD,
+          ADMIN_JWT_SECRET: !!process.env.ADMIN_JWT_SECRET,
+          DATABASE_URL: !!process.env.DATABASE_URL,
+        },
+        allSet: !!(process.env.ADMIN_PASSWORD && process.env.ADMIN_JWT_SECRET && process.env.DATABASE_URL),
+        adminSessionTimeout: '8h',
+      })
+    }
+
+    // Activity
+    if (pathname === '/api/admin/activity') {
+      const stats = await computeDashboard()
+      return j(res, { events: stats.activity.recent })
+    }
+
+    // Recycle Bin
+    if (pathname === '/api/admin/recycle') {
+      if (req.method === 'POST') {
+        const body = await getJSON(req)
+        if (body.action === 'restore') {
+          const record = await getById('recycle_bin', body.id)
+          if (record) {
+            const collection = record.original_collection
+            const tableMap = {
+              visitors: 'visitors', pdfs: 'generated_pdfs', leads: 'leads',
+              clients: 'clients', projects: 'projects', proposals: 'proposals',
+              agreements: 'agreements', payments: 'payments', blogs: 'blog_posts',
+            }
+            const tableName = tableMap[collection] || collection
+            const itemData = record.item_data
+            if (itemData && itemData.id) {
+              const existing = await getById(tableName, itemData.id)
+              if (!existing) {
+                await insertRow(tableName, itemData)
+              }
+            }
+            await deleteWhere('recycle_bin', 'id', body.id)
+          }
+          return j(res, { success: true })
+        }
+        if (body.action === 'permanent_delete') {
+          const ids = Array.isArray(body.ids) ? body.ids : [body.id]
+          for (const id of ids) {
+            await deleteWhere('recycle_bin', 'id', id)
+          }
+          return j(res, { success: true })
+        }
+        if (body.action === 'empty') {
+          await deleteAll('recycle_bin')
+          return j(res, { success: true })
+        }
+      }
+      const items = await readAll('recycle_bin')
+      return j(res, { total: items.length, items })
+    }
+
+    // Sync endpoint
+    if (pathname === '/api/sync') {
+      if (req.method === 'GET') {
+        const [
+          visitors, pdfs, leads, invoices, logs, clients, projects,
+          proposals, agreements, payments, content, assets, approvals,
+          timelines, handovers, feedbacks, notifications, recycleBin,
+          discovery, blogs, aiConversations,
+        ] = await Promise.all([
+          readAll('visitors'), readAll('generated_pdfs'), readAll('leads'),
+          readAll('invoices'), readAll('audit_logs'), readAll('clients'),
+          readAll('projects'), readAll('proposals'), readAll('agreements'),
+          readAll('payments'), readAll('content_collection'), readAll('asset_folders'),
+          readAll('design_approvals'), readAll('project_timelines'), readAll('handovers'),
+          readAll('feedbacks'), readAll('notifications'), readAll('recycle_bin'),
+          readAll('discovery_forms'), readAll('blog_posts'), readAll('ai_conversations'),
+        ])
+        return j(res, {
+          visitors, pdfs, leads, invoices, logs,
+          clients: clients.length ? clients : undefined,
+          projects: projects.length ? projects : undefined,
+          proposals: proposals.length ? proposals : undefined,
+          agreements: agreements.length ? agreements : undefined,
+          payments: payments.length ? payments : undefined,
+          content: content.length ? content : undefined,
+          assets: assets.length ? assets : undefined,
+          approvals: approvals.length ? approvals : undefined,
+          timelines: timelines.length ? timelines : undefined,
+          handovers: handovers.length ? handovers : undefined,
+          feedbacks: feedbacks.length ? feedbacks : undefined,
+          notifications: notifications.length ? notifications : undefined,
+          discoveryQuestionnaires: discovery,
+          recycleBin, blogs, aiConversations,
+        })
+      }
+      if (req.method === 'POST') {
+        const body = await getJSON(req)
+        const action = body.action || body.type
+        const item = body.data || body
+        const collections = {
+          visit: 'visitors',
+          pdf: 'generated_pdfs',
+          lead: 'leads',
+          invoice: 'invoices',
+          discovery: 'discovery_forms',
+          ai_conversation: 'ai_conversations',
+        }
+        if (collections[action]) {
+          const table = collections[action]
+          const existing = item.id ? await getById(table, item.id) : null
+          if (!existing) {
+            await insertRow(table, item)
+          } else {
+            await updateWhere(table, item, 'id', item.id)
+          }
+        } else if (action === 'save_store' && item) {
+          const map = {
+            clients: 'clients', projects: 'projects', proposals: 'proposals',
+            agreements: 'agreements', payments: 'payments', content: 'content_collection',
+            assets: 'asset_folders', approvals: 'design_approvals', timelines: 'project_timelines',
+            handovers: 'handovers', feedbacks: 'feedbacks', notifications: 'notifications',
+            discoveryQuestionnaires: 'discovery_forms', visitors: 'visitors', pdfs: 'generated_pdfs',
+            invoices: 'invoices', leads: 'leads', blogs: 'blog_posts', recycleBin: 'recycle_bin',
+            logs: 'audit_logs',
+          }
+          for (const [key, tableName] of Object.entries(map)) {
+            if (Array.isArray(item[key])) {
+              await deleteAll(tableName)
+              for (const row of item[key]) {
+                if (row && row.id) await insertRow(tableName, row)
+              }
+            }
+          }
+        }
+        return j(res, { success: true })
+      }
+    }
+
+    // Discovery questionnaires
+    if (pathname === '/api/admin/discovery') {
+      if (req.method === 'DELETE') {
+        const body = await getJSON(req)
+        await deleteWhere('discovery_forms', 'id', body.id)
+        return j(res, { success: true })
+      }
+      const items = await readAll('discovery_forms')
+      return j(res, { total: items.length, questionnaires: items })
+    }
+
+    // Recycle bin restore
+    if (pathname === '/api/admin/recycle/restore' && req.method === 'POST') {
       const body = await getJSON(req)
-      const idx = leads.findIndex(l => l.id === body.id)
-      if (idx !== -1) { leads[idx].status = body.status || leads[idx].status; await db.write('real_leads', leads); return j(res, { success: true }) }
-      return send(res, 404, { error: 'Not found' })
+      if (body.bulk && Array.isArray(body.recycleIds)) {
+        const results = []
+        for (const id of body.recycleIds) {
+          const record = await getById('recycle_bin', id)
+          if (record && record.item_data && record.original_collection) {
+            await insertRow(record.original_collection, record.item_data)
+            await deleteWhere('recycle_bin', 'id', id)
+            results.push({ recycleId: id, itemData: record.item_data, originalCollection: record.original_collection })
+          }
+        }
+        return j(res, { success: true, restoredItems: results })
+      }
+      const record = await getById('recycle_bin', body.recycleId)
+      if (record && record.item_data && record.original_collection) {
+        await insertRow(record.original_collection, record.item_data)
+        await deleteWhere('recycle_bin', 'id', body.recycleId)
+        return j(res, { success: true, itemData: record.item_data, originalCollection: record.original_collection })
+      }
+      return j(res, { success: false })
     }
-    return j(res, { total: leads.length, leads: leads.reverse() })
-  }
 
-  // ====== ADMIN AI CONVERSATIONS ======
-  if (pathname === '/api/admin/ai/conversations') {
-    const convs = (await db.read('real_ai_conversations')) || []
-    if (req.method === 'POST') {
+    if (pathname === '/api/admin/recycle/permanent-delete' && req.method === 'POST') {
+      const body = await getJSON(req)
+      const ids = body.bulk && Array.isArray(body.ids) ? body.ids : [body.recycleId]
+      for (const id of ids) {
+        await deleteWhere('recycle_bin', 'id', id)
+      }
+      return j(res, { success: true })
+    }
+
+    if (pathname === '/api/admin/recycle/empty' && req.method === 'POST') {
+      await deleteAll('recycle_bin')
+      return j(res, { success: true })
+    }
+
+    // Logs POST (create audit log)
+    if (pathname === '/api/admin/logs' && req.method === 'POST') {
+      const body = await getJSON(req)
+      const entry = {
+        id: crypto.randomUUID(),
+        created_at: new Date().toISOString(),
+        type: body.type || 'system',
+        event: body.event || '',
+        detail: body.detail || '',
+        severity: body.severity || 'info',
+        ip_hash: crypto.createHash('sha256').update(ip).digest('hex').slice(0, 16),
+      }
+      await insertRow('audit_logs', entry)
+      return j(res, entry)
+    }
+
+    // PDF save (admin)
+    if (pathname === '/api/admin/pdfs/save' && req.method === 'POST') {
+      const body = await getJSON(req)
+      const entry = {
+        id: body.id || crypto.randomUUID(),
+        created_at: body.createdAt || new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        pdf_type: body.pdfType || 'Document',
+        title: body.title || 'PDF Document',
+        client_name: body.clientName || 'Client',
+        client_email: body.clientEmail || '',
+        company: body.company || '',
+        phone: body.phone || '',
+        file_size_kb: body.fileSizeKb || 0,
+        device_type: body.deviceType || 'desktop',
+        browser: body.browser || 'Chrome',
+        os: body.os || 'Windows',
+        pdf_data_url: body.pdfDataUrl || '',
+        status: body.status || 'Final',
+        file_name: body.fileName || '',
+      }
+      await insertRow('generated_pdfs', entry)
+      return j(res, entry)
+    }
+
+    // Invoices
+    if (pathname === '/api/admin/invoices') {
+      if (req.method === 'POST') {
+        const body = await getJSON(req)
+        const invoice = {
+          id: body.id || crypto.randomUUID(),
+          created_at: new Date().toISOString(),
+          invoice_number: body.invoiceNumber || '',
+          client_name: body.clientName || '',
+          client_email: body.clientEmail || '',
+          client_phone: body.clientPhone || '',
+          client_company: body.clientCompany || '',
+          currency: body.currency || 'INR',
+          items: JSON.stringify(body.items || []),
+          tax_rate: body.taxRate || 0,
+          discount_rate: body.discountRate || 0,
+          subtotal: body.subtotal || 0,
+          tax_amount: body.taxAmount || 0,
+          discount_amount: body.discountAmount || 0,
+          total_amount: body.totalAmount || 0,
+          status: body.status || 'Pending',
+          notes: body.notes || '',
+        }
+        await insertRow('invoices', invoice)
+        return j(res, { ...invoice, id: invoice.id })
+      }
+      const rows = await readAll('invoices')
+      return j(res, { total: rows.length, invoices: rows })
+    }
+
+    // Blogs
+    if (pathname === '/api/admin/blogs') {
+      if (req.method === 'POST') {
+        const body = await getJSON(req)
+        const post = {
+          id: body.id || crypto.randomUUID(),
+          created_at: body.createdAt || new Date().toISOString(),
+          slug: body.slug || '',
+          title: body.title || '',
+          excerpt: body.excerpt || '',
+          content: body.content || '',
+          author: body.author || 'AROM Studio',
+          cover_image: body.coverImage || '',
+          tags: body.tags || [],
+          published: body.published || false,
+          published_at: body.published ? new Date().toISOString() : null,
+        }
+        await insertRow('blog_posts', post)
+        return j(res, post)
+      }
+      const rows = await readAll('blog_posts')
+      return j(res, rows)
+    }
+
+    if (pathname.startsWith('/api/admin/blogs/')) {
+      const slug = pathname.split('/').pop()
+      if (req.method === 'PUT') {
+        const body = await getJSON(req)
+        const post = {
+          title: body.title,
+          excerpt: body.excerpt,
+          content: body.content,
+          author: body.author,
+          cover_image: body.coverImage,
+          tags: body.tags,
+          published: body.published,
+          published_at: body.published ? new Date().toISOString() : null,
+          updated_at: new Date().toISOString(),
+        }
+        await updateWhere('blog_posts', post, 'slug', slug)
+        const updated = await getById('blog_posts', slug)
+        return j(res, updated || { success: true })
+      }
+      if (req.method === 'DELETE') {
+        await deleteWhere('blog_posts', 'slug', slug)
+        return j(res, { success: true })
+      }
+      const post = await getById('blog_posts', slug)
+      return j(res, post || null)
+    }
+
+    // Generic collection endpoints
+    const collectionRoutes = {
+      clients: 'clients', projects: 'projects', proposals: 'proposals',
+      agreements: 'agreements', payments: 'payments', content: 'content_collection',
+      assets: 'asset_folders', approvals: 'design_approvals', timelines: 'project_timelines',
+      handovers: 'handovers', feedbacks: 'feedbacks', notifications: 'notifications',
+    }
+
+    for (const [route, table] of Object.entries(collectionRoutes)) {
+      if (pathname === `/api/admin/${route}`) {
+        if (req.method === 'POST') {
+          const body = await getJSON(req)
+          const row = { id: body.id || crypto.randomUUID(), ...body, created_at: new Date().toISOString() }
+          await insertRow(table, row)
+          return j(res, row)
+        }
+        const rows = await readAll(table)
+        return j(res, rows)
+      }
+
+      if (pathname.startsWith(`/api/admin/${route}/`) && req.method === 'DELETE') {
+        const itemId = pathname.split('/').pop()
+        const item = await getById(table, itemId)
+        if (item) {
+          await insertRow('recycle_bin', {
+            id: crypto.randomUUID(),
+            created_at: new Date().toISOString(),
+            original_collection: route,
+            item_data: item,
+            title: item.title || item.name || item.client_name || itemId,
+            subtitle: item.client_name || item.company || '',
+          })
+        }
+        await deleteWhere(table, 'id', itemId)
+        return j(res, { success: true, recycleItem: item ? { id: crypto.randomUUID(), originalCollection: route, itemData: item, title: item.title || item.name || item.client_name || itemId } : null })
+      }
+    }
+
+    // Tracking
+    if (pathname === '/api/track/pageview' && req.method === 'POST') {
+      const body = await getJSON(req)
+      const ua = req.headers['user-agent'] || ''
+      const isMobile = /Mobi|Android|iPhone|iPad/i.test(ua)
+      const isTablet = /Tablet|iPad/i.test(ua) && !/Mobi/i.test(ua)
+      let brand = 'Desktop PC'
+      if (/iPhone/i.test(ua)) brand = 'Apple iPhone'
+      else if (/iPad/i.test(ua)) brand = 'Apple iPad'
+      else if (/Samsung/i.test(ua)) brand = 'Samsung Galaxy'
+      else if (/Pixel/i.test(ua)) brand = 'Google Pixel'
+      else if (/OnePlus/i.test(ua)) brand = 'OnePlus'
+      else if (/Xiaomi|Redmi|POCO/i.test(ua)) brand = 'Xiaomi/Redmi'
+      else if (isMobile) brand = 'Mobile Device'
+
+      await insertRow('visitors', {
+        id: body.id || crypto.randomUUID(),
+        session_id: body.sessionId || crypto.randomUUID(),
+        created_at: new Date().toISOString(),
+        last_activity_at: new Date().toISOString(),
+        page: body.page || '/',
+        entry_page: body.entryPage || body.page || '/',
+        device_type: isTablet ? 'tablet' : isMobile ? 'mobile' : 'desktop',
+        device_label: isMobile ? 'Mobile' : 'Desktop (PC)',
+        device_brand: brand,
+        browser: body.deviceInfo?.browser || (ua.includes('Chrome') ? 'Chrome' : ua.includes('Safari') ? 'Safari' : 'Browser'),
+        country: req.headers['x-vercel-ip-country'] || '',
+        city: req.headers['x-vercel-ip-city'] || '',
+        ip: req.headers['x-forwarded-for']?.split(',')[0]?.trim() || '',
+        referrer: body.referrer || 'Direct',
+        time_on_page: body.timeOnPage || body.sessionDuration || 0,
+        scroll_depth: body.scrollDepth || 0,
+        page_views_count: body.pageViewsCount || 1,
+      })
+      broadcast('visitor', { action: 'pageview', data: body })
+      return j(res, { ok: true })
+    }
+
+    // PDF tracking
+    if ((pathname === '/api/track/save-pdf' || pathname === '/api/track/save' || pathname === '/api/pdfs/save') && req.method === 'POST') {
+      const body = await getJSON(req)
+      const pdfId = body.id || crypto.randomUUID()
+      await insertRow('generated_pdfs', {
+        id: pdfId,
+        created_at: body.createdAt || new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        pdf_type: body.pdfType || 'Document',
+        title: body.title || body.storageKey || 'PDF Document',
+        client_name: body.clientName || 'Client',
+        client_email: body.clientEmail || '',
+        company: body.company || '',
+        phone: body.phone || '',
+        file_size_kb: body.fileSizeKb || 180,
+        page_count: body.pageCount || 0,
+        device_type: body.deviceType || 'desktop',
+        browser: body.browser || 'Chrome',
+        os: body.os || 'Windows',
+        pdf_data_url: body.pdfDataUrl || '',
+        storage_url: body.storageUrl || '',
+        storage_provider: body.storageProvider || 'inline',
+        sha256_hash: body.sha256Hash || '',
+        reference_number: body.referenceNumber || `PDF-${pdfId.slice(0, 8).toUpperCase()}`,
+        agreement_id: body.agreementId || '',
+        version: body.version || '1.0.0',
+        status: body.status || 'Final',
+        download_count: body.downloadCount || 0,
+        file_name: body.fileName || `${(body.title || body.pdfType || 'Document').replace(/\s+/g, '_')}.pdf`,
+        visitor_id: body.visitorId || '',
+        session_id: body.sessionId || '',
+      })
+      broadcast('pdf', { action: 'created', data: { id: pdfId } })
+      return j(res, { ok: true, id: pdfId, sha256Hash: body.sha256Hash || '', referenceNumber: `PDF-${pdfId.slice(0, 8).toUpperCase()}` })
+    }
+
+    // AI conversation tracking
+    if (pathname === '/api/track/ai-conversation' && req.method === 'POST') {
       const body = await getJSON(req)
       if (body.action === 'delete') {
-        const filtered = convs.filter(c => c.id !== body.id)
-        await db.write('real_ai_conversations', filtered)
+        await deleteWhere('ai_conversations', 'id', body.id)
+        broadcast('ai_conversation', { action: 'delete', data: body })
         return j(res, { success: true })
       }
       if (body.action === 'rename') {
-        const target = convs.find(c => c.id === body.id)
-        if (target) { target.title = body.title; await db.write('real_ai_conversations', convs) }
+        await updateWhere('ai_conversations', { title: body.title }, 'id', body.id)
+        broadcast('ai_conversation', { action: 'rename', data: body })
         return j(res, { success: true })
       }
-      if (body.action === 'save') {
-        const idx = convs.findIndex(c => c.id === body.data?.id)
-        if (idx !== -1) convs[idx] = body.data
-        else convs.unshift(body.data)
-        await db.write('real_ai_conversations', convs)
-        return j(res, { success: true })
-      }
-    }
-    if (req.method === 'DELETE') {
-      const body = await getJSON(req)
-      const filtered = convs.filter(c => c.id !== body.id)
-      await db.write('real_ai_conversations', filtered)
-      return j(res, { success: true })
-    }
-    return j(res, { total: convs.length, conversations: convs.reverse() })
-  }
-
-  // ====== ADMIN AI KNOWLEDGE ======
-  if (pathname === '/api/admin/ai/knowledge') {
-    const knowledge = (await db.read('real_ai_knowledge')) || []
-    if (req.method === 'POST') {
-      const body = await getJSON(req)
-      await db.write('real_ai_knowledge', body.items || [])
-      return j(res, { success: true })
-    }
-    return j(res, { items: knowledge })
-  }
-
-  // ====== ADMIN OVERVIEW (legacy) ======
-  if (pathname === '/api/admin/overview') {
-    const stats = await computeDashboard()
-    return j(res, {
-      todayVisits: stats.visitors.today,
-      weekVisits: stats.visitors.thisWeek,
-      monthVisits: stats.visitors.thisMonth,
-      allTimeVisits: stats.visitors.total,
-      activeSessions: stats.visitors.activeSessions,
-      totalPDFs: stats.pdfs.total,
-      todayPDFs: stats.pdfs.today,
-      totalLeads: stats.leads.total,
-      topPage: stats.visitors.topPage,
-      recentEvents: stats.activity.recent,
-    })
-  }
-
-  // ====== ADMIN LOGS ======
-  if (pathname === '/api/admin/logs') {
-    const logs = (await db.read('system_logs')) || []
-    return j(res, { total: logs.length, logs: logs.reverse() })
-  }
-
-  // ====== ADMIN SETTINGS ======
-  if (pathname === '/api/admin/settings') {
-    return j(res, {
-      envChecks: { ADMIN_PASSWORD: true, ADMIN_JWT_SECRET: true },
-      allSet: true,
-      adminSessionTimeout: '8h',
-    })
-  }
-
-  // ====== ADMIN ACTIVITY ======
-  if (pathname === '/api/admin/activity') {
-    const stats = await computeDashboard()
-    return j(res, { events: stats.activity.recent })
-  }
-
-  // ====== ADMIN RECYCLE BIN ======
-  if (pathname === '/api/admin/recycle') {
-    const bin = (await db.read('real_recycle_bin')) || []
-    if (req.method === 'POST') {
-      const body = await getJSON(req)
-      if (body.action === 'restore') {
-        const record = bin.find(r => r.id === body.id)
-        if (record) {
-          const collection = record.originalCollection
-          const collMap = {
-            visitors: 'real_visitors', pdfs: 'real_pdfs', leads: 'real_leads',
-            clients: 'real_clients', projects: 'real_projects', proposals: 'real_proposals',
-            agreements: 'real_agreements', payments: 'real_payments', blogs: 'real_blogs',
-          }
-          const dbName = collMap[collection] || `real_${collection}`
-          const coll = (await db.read(dbName)) || []
-          const exists = coll.some(i => i.id === record.itemData?.id)
-          if (!exists && record.itemData) {
-            coll.unshift(record.itemData)
-            await db.write(dbName, coll)
-          }
-          const updated = bin.filter(r => r.id !== body.id)
-          await db.write('real_recycle_bin', updated)
+      if (body.action === 'save' && body.data) {
+        const conv = {
+          ...body.data,
+          updated_at: new Date().toISOString(),
+          message_count: Array.isArray(body.data.messages) ? body.data.messages.length : 0,
+          messages: body.data.messages ? JSON.stringify(body.data.messages) : '[]',
         }
+        await insertRow('ai_conversations', conv)
+        broadcast('ai_conversation', { action: 'saved', data: body })
         return j(res, { success: true })
       }
-      if (body.action === 'permanent_delete') {
-        const ids = Array.isArray(body.ids) ? body.ids : [body.id]
-        const updated = bin.filter(r => !ids.includes(r.id))
-        await db.write('real_recycle_bin', updated)
-        return j(res, { success: true })
-      }
-      if (body.action === 'empty') {
-        await db.write('real_recycle_bin', [])
-        return j(res, { success: true })
-      }
+      return j(res, { ok: true })
     }
-    return j(res, { total: bin.length, items: bin.reverse() })
-  }
 
-  // ====== SYNC ENDPOINT (legacy, for backward compatibility) ======
-  if (pathname === '/api/sync') {
-    if (req.method === 'GET') {
-      const visitors = (await db.read('real_visitors')) || []
-      const [pdfs, leads, invoices, logs, clients, projects, proposals, agreements, payments, content, assets, approvals, timelines, handovers, feedbacks, notifications, recycleBin, discovery, blogs, aiConversations] = await Promise.all([
-        db.read('real_pdfs'), db.read('real_leads'), db.read('real_invoices'), db.read('system_logs'),
-        db.read('real_clients'), db.read('real_projects'), db.read('real_proposals'), db.read('real_agreements'),
-        db.read('real_payments'), db.read('real_content'), db.read('real_assets'), db.read('real_approvals'),
-        db.read('real_timelines'), db.read('real_handovers'), db.read('real_feedbacks'), db.read('real_notifications'),
-        db.read('real_recycle_bin'), db.read('real_discovery'), db.read('real_blogs'), db.read('real_ai_conversations'),
-      ])
-      return j(res, {
-        visitors: visitors || [], pdfs: pdfs || [], leads: leads || [], invoices: invoices || [],
-        logs: logs || [], clients: clients.length ? clients : undefined,
-        projects: projects.length ? projects : undefined, proposals: proposals.length ? proposals : undefined,
-        agreements: agreements.length ? agreements : undefined, payments: payments.length ? payments : undefined,
-        content: content.length ? content : undefined, assets: assets.length ? assets : undefined,
-        approvals: approvals.length ? approvals : undefined, timelines: timelines.length ? timelines : undefined,
-        handovers: handovers.length ? handovers : undefined, feedbacks: feedbacks.length ? feedbacks : undefined,
-        notifications: notifications.length ? notifications : undefined,
-        discoveryQuestionnaires: discovery || [], recycleBin: recycleBin || [], blogs: blogs || [],
-        aiConversations: aiConversations || [],
-      })
-    }
-    if (req.method === 'POST') {
+    // Lead tracking
+    if ((pathname === '/api/track/lead' || pathname === '/api/track/leads') && req.method === 'POST') {
       const body = await getJSON(req)
-      const action = body.action || body.type
-      const item = body.data || body
-      const collections = {
-        visit: { name: 'real_visitors', idField: 'id' },
-        pdf: { name: 'real_pdfs', idField: 'id' },
-        lead: { name: 'real_leads', idField: 'id' },
-        invoice: { name: 'real_invoices', idField: 'id' },
-        discovery: { name: 'real_discovery', idField: 'id' },
-        ai_conversation: { name: 'real_ai_conversations', idField: 'id' },
+      const lead = {
+        id: body.id || crypto.randomUUID(),
+        created_at: new Date().toISOString(),
+        name: body.name || '',
+        email: body.email || '',
+        phone: body.phone || '',
+        company: body.company || '',
+        service: body.service || '',
+        budget: body.budget || '',
+        message: body.message || '',
+        status: 'New',
+        country: body.country || '',
       }
-      if (collections[action]) {
-        const { name, idField } = collections[action]
-        const coll = await db.read(name)
-        const exists = coll.some(e => e[idField] === item[idField])
-        if (!exists) await db.append(name, item)
-        else {
-          const idx = coll.findIndex(e => e[idField] === item[idField])
-          if (idx !== -1) coll[idx] = item
-          await db.write(name, coll)
-        }
-      } else if (action === 'save_store' && item) {
-        const map = {
-          clients: 'real_clients', projects: 'real_projects', proposals: 'real_proposals',
-          agreements: 'real_agreements', payments: 'real_payments', content: 'real_content',
-          assets: 'real_assets', approvals: 'real_approvals', timelines: 'real_timelines',
-          handovers: 'real_handovers', feedbacks: 'real_feedbacks', notifications: 'real_notifications',
-          discoveryQuestionnaires: 'real_discovery', visitors: 'real_visitors', pdfs: 'real_pdfs',
-          invoices: 'real_invoices', leads: 'real_leads', blogs: 'real_blogs', recycleBin: 'real_recycle_bin',
-          logs: 'system_logs',
-        }
-        for (const [key, dbName] of Object.entries(map)) {
-          if (Array.isArray(item[key])) await db.write(dbName, item[key])
-        }
-      }
-      return j(res, { success: true })
+      await insertRow('leads', lead)
+      broadcast('lead', { action: 'created', data: lead })
+      return j(res, { success: true, id: lead.id })
     }
-  }
 
-  // ====== DISCOVERY QUESTIONNAIRES ======
-  if (pathname === '/api/admin/discovery') {
-    const items = (await db.read('real_discovery')) || []
-    if (req.method === 'DELETE') {
+    // Discovery tracking
+    if (pathname === '/api/track/discovery' && req.method === 'POST') {
       const body = await getJSON(req)
-      const filtered = items.filter(i => i.id !== body.id)
-      await db.write('real_discovery', filtered)
-      return j(res, { success: true })
+      const item = {
+        id: body.id || crypto.randomUUID(),
+        created_at: new Date().toISOString(),
+        full_name: body.fullName || '',
+        company: body.company || '',
+        email: body.email || '',
+        phone: body.phone || '',
+        website: body.website || '',
+        budget: body.budget || '',
+        urgency: body.urgency || '',
+        preferred_launch_date: body.preferredLaunchDate || '',
+        content_provider: body.contentProvider || '',
+        status: 'New',
+        full_data: body.fullData ? JSON.stringify(body.fullData) : '{}',
+      }
+      await insertRow('discovery_forms', item)
+      broadcast('discovery', { action: 'created', data: item })
+      return j(res, { success: true, id: item.id })
     }
-    return j(res, { total: items.length, questionnaires: items.reverse() })
-  }
-
-  // ====== TRACKING ======
-  if (pathname === '/api/track/pageview' && req.method === 'POST') {
-    const body = await getJSON(req)
-    const ua = req.headers['user-agent'] || ''
-    const isMobile = /Mobi|Android|iPhone|iPad/i.test(ua)
-    const isTablet = /Tablet|iPad/i.test(ua) && !/Mobi/i.test(ua)
-    let brand = 'Desktop PC'
-    if (/iPhone/i.test(ua)) brand = 'Apple iPhone'
-    else if (/iPad/i.test(ua)) brand = 'Apple iPad'
-    else if (/Samsung/i.test(ua)) brand = 'Samsung Galaxy'
-    else if (/Pixel/i.test(ua)) brand = 'Google Pixel'
-    else if (/OnePlus/i.test(ua)) brand = 'OnePlus'
-    else if (/Xiaomi|Redmi|POCO/i.test(ua)) brand = 'Xiaomi/Redmi'
-    else if (isMobile) brand = 'Mobile Device'
-
-    await db.append('real_visitors', {
-      id: body.id || crypto.randomUUID(),
-      sessionId: body.sessionId || crypto.randomUUID(),
-      createdAt: new Date().toISOString(),
-      lastActivityAt: new Date().toISOString(),
-      page: body.page || '/',
-      entryPage: body.entryPage || body.page || '/',
-      deviceType: isTablet ? 'tablet' : isMobile ? 'mobile' : 'desktop',
-      deviceLabel: isMobile ? 'Mobile' : 'Desktop (PC)',
-      deviceBrand: brand,
-      network: 'Broadband / 5G',
-      browser: body.deviceInfo?.browser || (ua.includes('Chrome') ? 'Chrome' : ua.includes('Safari') ? 'Safari' : 'Browser'),
-      country: req.headers['x-vercel-ip-country'] || '',
-      city: req.headers['x-vercel-ip-city'] || '',
-      ip: req.headers['x-forwarded-for']?.split(',')[0]?.trim() || '',
-      referrer: body.referrer || 'Direct',
-      timeOnPage: body.timeOnPage || body.sessionDuration || 0,
-      scrollDepth: body.scrollDepth || 0,
-      pageViewsCount: body.pageViewsCount || 1,
-    })
-    broadcast('visitor', { action: 'pageview', data: body })
-    return j(res, { ok: true })
-  }
-
-  if ((pathname === '/api/track/save-pdf' || pathname === '/api/track/save' || pathname === '/api/pdfs/save') && req.method === 'POST') {
-    const body = await getJSON(req)
-    const pdfId = body.id || crypto.randomUUID()
-    const pdfRecord = {
-      id: pdfId,
-      createdAt: body.createdAt || new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      pdfType: body.pdfType || 'Document',
-      title: body.title || body.storageKey || 'PDF Document',
-      clientName: body.clientName || 'Client',
-      clientEmail: body.clientEmail || '',
-      company: body.company || '',
-      phone: body.phone || '',
-      fileSizeKb: body.fileSizeKb || 180,
-      pageCount: body.pageCount || 0,
-      deviceType: body.deviceType || 'desktop',
-      browser: body.browser || 'Chrome',
-      os: body.os || 'Windows',
-      pdfDataUrl: body.pdfDataUrl || '',
-      storageUrl: body.storageUrl || '',
-      storageProvider: body.storageProvider || 'inline',
-      sha256Hash: body.sha256Hash || '',
-      referenceNumber: body.referenceNumber || `PDF-${pdfId.slice(0, 8).toUpperCase()}`,
-      agreementId: body.agreementId || '',
-      version: body.version || '1.0.0',
-      status: body.status || 'Final',
-      downloadCount: body.downloadCount || 0,
-      fileName: body.fileName || `${(body.title || body.pdfType || 'Document').replace(/\s+/g, '_')}.pdf`,
-      visitorId: body.visitorId || '',
-      sessionId: body.sessionId || '',
-    }
-    await db.append('real_pdfs', pdfRecord)
-    broadcast('pdf', { action: 'created', data: pdfRecord })
-    return j(res, { ok: true, id: pdfId, sha256Hash: body.sha256Hash || '', referenceNumber: pdfRecord.referenceNumber })
-  }
-
-  if (pathname === '/api/track/ai-conversation' && req.method === 'POST') {
-    const body = await getJSON(req)
-    const convs = (await db.read('real_ai_conversations')) || []
-    if (body.action === 'delete') {
-      await db.write('real_ai_conversations', convs.filter(c => c.id !== body.id))
-      broadcast('ai_conversation', { action: 'delete', data: body })
-      return j(res, { success: true })
-    }
-    if (body.action === 'rename') {
-      const t = convs.find(c => c.id === body.id)
-      if (t) t.title = body.title
-      await db.write('real_ai_conversations', convs)
-      broadcast('ai_conversation', { action: 'rename', data: body })
-      return j(res, { success: true })
-    }
-    if (body.action === 'save' && body.data) {
-      const idx = convs.findIndex(c => c.id === body.data?.id)
-      if (idx !== -1) convs[idx] = body.data
-      else convs.unshift(body.data)
-      await db.write('real_ai_conversations', convs)
-      broadcast('ai_conversation', { action: 'saved', data: body })
-      return j(res, { success: true })
-    }
-    return j(res, { ok: true })
-  }
-
-  if ((pathname === '/api/track/lead' || pathname === '/api/track/leads') && req.method === 'POST') {
-    const body = await getJSON(req)
-    const leads = (await db.read('real_leads')) || []
-    const lead = {
-      id: body.id || crypto.randomUUID(),
-      createdAt: new Date().toISOString(),
-      name: body.name || '',
-      email: body.email || '',
-      phone: body.phone || '',
-      company: body.company || '',
-      service: body.service || '',
-      budget: body.budget || '',
-      message: body.message || '',
-      status: 'New',
-      country: body.country || '',
-    }
-    leads.unshift(lead)
-    await db.write('real_leads', leads)
-    broadcast('lead', { action: 'created', data: lead })
-    return j(res, { success: true, id: lead.id })
-  }
-
-  if (pathname === '/api/track/discovery' && req.method === 'POST') {
-    const body = await getJSON(req)
-    const discovery = (await db.read('real_discovery')) || []
-    const item = {
-      id: body.id || crypto.randomUUID(),
-      createdAt: new Date().toISOString(),
-      fullName: body.fullName || '',
-      company: body.company || '',
-      email: body.email || '',
-      phone: body.phone || '',
-      website: body.website || '',
-      budget: body.budget || '',
-      urgency: body.urgency || '',
-      preferredLaunchDate: body.preferredLaunchDate || '',
-      contentProvider: body.contentProvider || '',
-      status: 'New',
-      fullData: body.fullData,
-    }
-    discovery.unshift(item)
-    await db.write('real_discovery', item ? discovery : [])
-    broadcast('discovery', { action: 'created', data: item })
-    return j(res, { success: true, id: item.id })
-  }
 
     if (pathname.startsWith('/api/track/')) {
       return j(res, { ok: true })
@@ -615,6 +772,7 @@ export default async function handler(req, res) {
 
     return send(res, 404, { error: 'Not found' })
   } catch (err) {
+    console.error('Handler error:', err)
     return send(res, 500, { error: 'Internal server error' })
   }
 }
