@@ -13,11 +13,13 @@ function requireDB() {
       'Example: postgresql://user:password@ep-example-123456.us-east-2.aws.neon.tech/dbname?sslmode=require'
     )
   }
+  const isNeon = url.includes('neon.tech')
   pool = new Pool({
     connectionString: url,
     max: 4,
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 10000,
+    ssl: isNeon ? { rejectUnauthorized: true } : undefined,
   })
   pool.on('error', (err) => {
     console.error('Unexpected pool error:', err.message)

@@ -1,5 +1,4 @@
-import jwtPkg from 'jsonwebtoken'
-const jwt = jwtPkg.default || jwtPkg
+import jwt from 'jsonwebtoken'
 import crypto from 'crypto'
 import { insertRow } from './_db.js'
 
