@@ -136,7 +136,26 @@ export function AgreementManager() {
       render: (_: string, row: AdminAgreement) => (
         <div className="flex items-center gap-2">
           <button
-            onClick={() => alert(`Downloading Agreement ${row.agreementNumber} PDF...`)}
+            onClick={async () => {
+              try {
+                const resp = await fetch('/api/admin/pdfs', { credentials: 'include' })
+                if (resp.ok) {
+                  const data = await resp.json()
+                  const pdfs = data.pdfs || []
+                  const match = pdfs.find((p: any) => p.agreementId === row.id || p.referenceNumber?.includes(row.agreementNumber))
+                  if (match) {
+                    const a = document.createElement('a')
+                    a.href = `/api/admin/pdfs/${match.id}/download`
+                    a.download = match.fileName || `${row.agreementNumber}.pdf`
+                    document.body.appendChild(a)
+                    a.click()
+                    document.body.removeChild(a)
+                  } else {
+                    alert('No signed PDF found for this agreement. The client must generate it from the portal first.')
+                  }
+                }
+              } catch { alert('Could not fetch PDF') }
+            }}
             className="p-1.5 rounded-lg bg-white/5 hover:bg-emerald-500/20 hover:text-emerald-400 text-white/60 transition-colors cursor-pointer"
             title="Download Signed Agreement"
           >

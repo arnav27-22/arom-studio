@@ -103,7 +103,7 @@ export function trackClick(type: string, label: string) {
   }).catch(() => {})
 }
 
-export function trackPDFDownload(pdfType: string, storageKey: string, fileSizeKb: number = 0, pdfDataUrl?: string, clientName: string = 'Client') {
+export function trackPDFDownload(pdfType: string, storageKey: string, fileSizeKb: number = 0, pdfDataUrl?: string, clientName: string = 'Client', agreementId?: string) {
   const info = getDeviceInfo()
 
   fetch('/api/track/save-pdf', {
@@ -119,12 +119,13 @@ export function trackPDFDownload(pdfType: string, storageKey: string, fileSizeKb
       deviceType: info.deviceType,
       browser: info.browser,
       os: info.os,
+      agreementId: agreementId || '',
     }),
     keepalive: true,
   }).catch(() => {})
 }
 
-export function uploadPDF(docOrUrl: any, pdfType: string, storageKey: string, clientName: string = 'Client') {
+export function uploadPDF(docOrUrl: any, pdfType: string, storageKey: string, clientName: string = 'Client', agreementId?: string) {
   try {
     let dataUrl = ''
     if (typeof docOrUrl === 'string') {
@@ -133,7 +134,7 @@ export function uploadPDF(docOrUrl: any, pdfType: string, storageKey: string, cl
       dataUrl = docOrUrl.output('datauristring')
     }
     const fileSizeKb = dataUrl ? Math.round(dataUrl.length / 1333) : 180
-    trackPDFDownload(pdfType, storageKey, fileSizeKb, dataUrl, clientName)
+    trackPDFDownload(pdfType, storageKey, fileSizeKb, dataUrl, clientName, agreementId)
   } catch (e) {
     console.error('Failed in uploadPDF:', e)
   }

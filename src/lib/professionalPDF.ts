@@ -896,10 +896,12 @@ export function generateAgreementPDF(data: {
   advancePercentage: string
   finalPercentage: string
   supportPeriod: string
+  agreementId?: string
 }) {
   const doc = createDoc()
   const layout = getPageLayout(doc)
 
+  const referenceNumber = generateReference('AGR')
   addCoverPage(doc, {
     title: 'Website Development Agreement',
     subtitle: 'Professional Web Development Services',
@@ -907,7 +909,7 @@ export function generateAgreementPDF(data: {
     clientEmail: data.clientEmail,
     clientPhone: data.clientPhone,
     date: data.effectiveDate ? fmtDate(data.effectiveDate) : today(),
-    reference: generateReference('AGR'),
+    reference: referenceNumber,
   })
 
   let y = layout.contentTop
@@ -1236,8 +1238,6 @@ export function generateAgreementPDF(data: {
   applyContentPageHeaders(doc, 'Website Development Agreement')
 
   const agreementFile = `Website_Development_Agreement_${data.clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`
-  uploadPDF(doc, 'Website Agreement Contract', agreementFile, data.clientName)
-  trackPDFDownload('agreement', agreementFile)
   doc.save(agreementFile)
 }
 

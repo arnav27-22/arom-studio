@@ -602,6 +602,28 @@ export default async function handler(req, res) {
       return j(res, { id: item.id, title: item.title, content: item.content, updated_at: item.updated_at })
     }
 
+    // Agreements (specific handler for correct field mapping)
+    if (pathname === '/api/admin/agreements') {
+      if (req.method === 'POST') {
+        const body = await getJSON(req)
+        const row = {
+          id: body.id || crypto.randomUUID(),
+          created_at: new Date().toISOString(),
+          agreement_number: body.agreementNumber || '',
+          client_name: body.clientName || '',
+          client_email: body.clientEmail || '',
+          status: body.status || 'Pending',
+          agreement_version: body.agreementVersion || '',
+          signed_date: body.signedDate || null,
+          download_url: body.downloadUrl || '',
+        }
+        await insertRow('agreements', row)
+        return j(res, { ...body, id: row.id })
+      }
+      const rows = await readAll('agreements')
+      return j(res, rows)
+    }
+
     // Generic collection endpoints
     const collectionRoutes = {
       clients: 'clients', projects: 'projects', proposals: 'proposals',

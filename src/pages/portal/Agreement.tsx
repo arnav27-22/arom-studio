@@ -16,30 +16,39 @@ function WhatsAppIcon({ className }: { className?: string }) {
   )
 }
 
-const sectionCheckboxes = [
-  { id: 'parties', label: 'I have read and agree to the Parties section' },
-  { id: 'overview', label: 'I have read and agree to Section 1: Project Overview' },
-  { id: 'scope', label: 'I have read and agree to Section 2: Scope of Work' },
-  { id: 'timeline', label: 'I have read and agree to Section 3: Project Timeline' },
-  { id: 'payment', label: 'I have read and agree to Section 4: Payment Terms' },
-  { id: 'responsibilities', label: 'I have read and agree to Section 5: Client Responsibilities' },
-  { id: 'communication', label: 'I have read and agree to Section 6: Project Communication' },
-  { id: 'revisions', label: 'I have read and agree to Section 7: Revisions' },
-  { id: 'changes', label: 'I have read and agree to Section 8: Change Requests' },
-  { id: 'domain', label: 'I have read and agree to Section 9: Domain & Hosting' },
-  { id: 'ownership', label: 'I have read and agree to Section 10: Content Ownership' },
-  { id: 'ip', label: 'I have read and agree to Section 11: Intellectual Property' },
-  { id: 'confidentiality', label: 'I have read and agree to Section 12: Confidentiality' },
-  { id: 'cancellation', label: 'I have read and agree to Section 13: Cancellation' },
-  { id: 'launch', label: 'I have read and agree to Section 14: Website Launch' },
-  { id: 'support', label: 'I have read and agree to Section 15: Support' },
-  { id: 'liability', label: 'I have read and agree to Section 16: Limitation of Liability' },
-  { id: 'portfolio', label: 'I have read and agree to Section 17: Portfolio Rights' },
-  { id: 'force', label: 'I have read and agree to Section 18: Force Majeure' },
-  { id: 'law', label: 'I have read and agree to Section 19: Governing Law' },
-  { id: 'acceptance', label: 'I have read and agree to Section 20: Digital Acceptance' },
-  { id: 'entireAgreement', label: 'I have read and agree to Section 21: Entire Agreement' },
-  { id: 'browserSupport', label: 'I have read and agree to Section 22: Browser Support' },
+const allSections = [
+  { num: 1, title: 'Parties', id: 'sec1_parties', content: 'This Website Development Agreement ("Agreement") is entered into between AROM Studio ("Agency") and the Client identified in the project proposal ("Client"). Both parties agree to the terms and conditions set forth herein.' },
+  { num: 2, title: 'Definitions', id: 'sec2_definitions', content: '"Agreement" means this Website Development Agreement including all schedules and the Project Proposal. "Client" means the individual or entity engaging AROM Studio. "Agency" means AROM Studio. "Deliverables" means the specific work products to be delivered. "Project" means the website design and development project described in the Proposal. "Services" means all work to be performed by the Agency.' },
+  { num: 3, title: 'Project Overview', id: 'sec3_overview', content: 'The Client has engaged AROM Studio to design, develop, and deliver a website as described in the Project Proposal. The Agency agrees to apply its professional expertise to fulfill the objectives of the Project.' },
+  { num: 4, title: 'Scope of Work', id: 'sec4_scope', content: 'The Agency agrees to provide the Services as defined in the Project Proposal, which may include website design, development, responsive design, landing pages, e-commerce, custom features, CMS integration, SEO optimization, and deployment.' },
+  { num: 5, title: 'Deliverables', id: 'sec5_deliverables', content: 'Upon completion of the Services and subject to full payment, the Agency shall deliver the Deliverables specified in the Proposal, which may include designed web pages, source code, graphic assets, and documentation.' },
+  { num: 6, title: 'Timeline', id: 'sec6_timeline', content: 'The estimated duration for completion is defined in the Proposal. The Agency shall make reasonable efforts to adhere to the timeline. Delays caused by the Client or third-party services may extend the schedule.' },
+  { num: 7, title: 'Client Responsibilities', id: 'sec7_client_resp', content: 'The Client agrees to provide all necessary Content including text, images, logos, brand colors, and timely feedback. The Client warrants that all Content provided is legally owned or licensed.' },
+  { num: 8, title: 'Agency Responsibilities', id: 'sec8_agency_resp', content: 'The Agency agrees to perform all Services with reasonable skill and care, communicate regularly regarding progress, meet agreed deadlines, and maintain high standards of quality in all Deliverables.' },
+  { num: 9, title: 'Payment Terms', id: 'sec9_payment', content: 'The Client agrees to pay the total Project fee as set forth in the Proposal. An advance payment is due before work commences. The remaining balance is due prior to final delivery or deployment.' },
+  { num: 10, title: 'Additional Work', id: 'sec10_additional', content: 'Any work requested outside the Scope of Work shall be considered Additional Work and shall require a separate written agreement and additional compensation.' },
+  { num: 11, title: 'Revisions', id: 'sec11_revisions', content: 'The Client is entitled to revision rounds as specified in the Proposal. Requests introducing new features or functionality beyond the original scope shall be treated as Additional Work.' },
+  { num: 12, title: 'Communication', id: 'sec12_communication', content: 'The Parties agree to maintain open communication using email, WhatsApp, Google Meet, Zoom, or phone calls. The Client should provide feedback within five business days.' },
+  { num: 13, title: 'Domain and Hosting', id: 'sec13_domain', content: 'Unless included in the Proposal, domain registration and hosting are the Client\'s responsibility. The Agency shall not be liable for downtime or data loss from the Client\'s hosting provider.' },
+  { num: 14, title: 'Third-Party Services', id: 'sec14_thirdparty', content: 'The Agency may use third-party tools and services. Costs associated with third-party services shall be communicated in advance. The Agency is not liable for failures of third-party services.' },
+  { num: 15, title: 'Intellectual Property', id: 'sec15_ip', content: 'Upon full payment, the Agency assigns to the Client all rights to the final Deliverables. The Agency retains ownership of its pre-existing tools, reusable code libraries, and frameworks.' },
+  { num: 16, title: 'Confidentiality', id: 'sec16_confidentiality', content: 'Both Parties agree to maintain confidentiality of all Confidential Information disclosed during the Project and to use such information solely for performing obligations under this Agreement.' },
+  { num: 17, title: 'Cancellation', id: 'sec17_cancellation', content: 'Either Party may cancel the Agreement by providing written notice. The Client shall pay for all work completed up to the date of cancellation. Advance payments shall be applied to work completed.' },
+  { num: 18, title: 'Website Launch', id: 'sec18_launch', content: 'The Website shall be deployed after final written approval by the Client, receipt of all outstanding payments, and provision of necessary access credentials.' },
+  { num: 19, title: 'Warranty', id: 'sec19_warranty', content: 'The Agency warrants that Deliverables will conform to specifications and be free from material defects for the Warranty Period specified in the Proposal. The warranty does not cover modifications by the Client or third parties.' },
+  { num: 20, title: 'Maintenance', id: 'sec20_maintenance', content: 'After the Warranty Period, ongoing maintenance may be provided under a separate Maintenance Agreement. Without a Maintenance Agreement, the Agency has no obligation to provide support after the Warranty Period.' },
+  { num: 21, title: 'Limitation of Liability', id: 'sec21_liability', content: 'The Agency shall not be liable for indirect, incidental, or consequential damages. The Agency\'s total liability shall not exceed the total amount paid by the Client under this Agreement.' },
+  { num: 22, title: 'Portfolio Rights', id: 'sec22_portfolio', content: 'Unless the Client requests confidentiality in writing, the Agency may showcase the completed Website in its portfolio and on social media for promotional purposes.' },
+  { num: 23, title: 'Force Majeure', id: 'sec23_force', content: 'Neither Party shall be liable for delays caused by events beyond reasonable control, including acts of God, natural disasters, war, pandemics, internet outages, or government actions.' },
+  { num: 24, title: 'Governing Law', id: 'sec24_law', content: 'This Agreement shall be governed by the laws of India. Any disputes shall first be attempted through mutual negotiation before pursuing legal remedies.' },
+  { num: 25, title: 'Dispute Resolution', id: 'sec25_dispute', content: 'Any dispute shall be resolved through informal negotiation, then mediation by a mutually agreed neutral mediator, and if still unresolved, through binding arbitration or court proceedings.' },
+  { num: 26, title: 'Privacy', id: 'sec26_privacy', content: 'The Agency collects and processes personal information solely for performing the Services. The Agency implements reasonable measures to protect personal information from unauthorized access.' },
+  { num: 27, title: 'Browser Support', id: 'sec27_browser', content: 'The Agency warrants the Website shall function on the latest two major versions of Chrome, Firefox, Safari, and Edge. The Website may not function on older or unsupported browsers.' },
+  { num: 28, title: 'SEO Disclaimer', id: 'sec28_seo', content: 'The Agency makes no guarantees regarding specific search engine ranking positions. SEO is an ongoing process and maintaining rankings may require continued effort beyond the scope of this Agreement.' },
+  { num: 29, title: 'Security Disclaimer', id: 'sec29_security', content: 'The Agency implements industry-standard security practices. No website can be guaranteed completely secure. The Agency is not liable for breaches from vulnerabilities not known at the time of development.' },
+  { num: 30, title: 'Electronic Signatures', id: 'sec30_electronic', content: 'Acceptance of this Agreement through the Client Portal, including by clicking to accept after reviewing, shall constitute a legally binding electronic signature with the same force as a handwritten signature.' },
+  { num: 31, title: 'Entire Agreement', id: 'sec31_entire', content: 'This Agreement together with the Project Proposal constitutes the entire agreement between the Parties and supersedes all prior discussions and understandings.' },
+  { num: 32, title: 'Contact Information', id: 'sec32_contact', content: 'All communications should be directed to AROM Studio at aromstudio27@gmail.com or through the contact form on the Agency\'s website.' },
 ]
 
 const availableServices = [
@@ -80,11 +89,12 @@ export default function Agreement() {
     setCheckedSections((prev) => ({ ...prev, [id]: !prev[id] }))
   }
 
-  const allChecked = sectionCheckboxes.every((s) => checkedSections[s.id])
+  const allChecked = allSections.every((s) => checkedSections[s.id])
   const canGenerate = clientName.trim() && allChecked && declaration
 
   const handleGeneratePDF = () => {
     if (!canGenerate) return
+    const agreementId = crypto.randomUUID()
     const doc = generateAgreementPDF({
       clientName,
       clientAddress,
@@ -97,10 +107,11 @@ export default function Agreement() {
       advancePercentage: advancePct,
       finalPercentage: finalPct,
       supportPeriod,
+      agreementId,
     })
 
     const agreementFile = `Website_Agreement_${(clientName || 'Client').replace(/\s+/g, '_')}_${todayStr()}.pdf`
-    uploadPDF(doc, 'Website Agreement', agreementFile, clientName)
+    uploadPDF(doc, 'Website Agreement', agreementFile, clientName, agreementId)
 
     try {
       const store = getAdminStore()
@@ -111,7 +122,7 @@ export default function Agreement() {
         store.agreements[existingIdx].signedDate = todayStr()
       } else {
         store.agreements.unshift({
-          id: crypto.randomUUID(),
+          id: agreementId,
           agreementNumber: 'AGR-' + String(Date.now()).slice(-6),
           clientName: clientName,
           clientEmail: clientEmail,
@@ -123,6 +134,19 @@ export default function Agreement() {
         })
       }
       saveAdminStore(store)
+      fetch('/api/admin/agreements', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: agreementId,
+          clientName,
+          clientEmail,
+          status: 'Signed',
+          agreementVersion: 'v1.0',
+          signedDate: todayStr(),
+        }),
+      }).catch(() => {})
     } catch (e) {
       console.error(e)
     }
@@ -136,7 +160,7 @@ export default function Agreement() {
     <div className="max-w-4xl mx-auto">
       <div className="mb-8">
         <h1 className="font-heading text-3xl md:text-4xl text-white tracking-[-1px]">Website Development Agreement</h1>
-        <p className="text-sm text-white/50 font-body font-light mt-1">Review, acknowledge each section, and download the signed agreement.</p>
+        <p className="text-sm text-white/50 font-body font-light mt-1">Review all 32 sections, acknowledge each, and download the signed agreement.</p>
       </div>
 
       <div className="space-y-6">
@@ -150,7 +174,7 @@ export default function Agreement() {
             </div>
             <div>
               <label className="text-xs text-white/50 font-body mb-1 block">Effective Date</label>
-              <div className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white/80 font-body">{new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+              <div className="w-full bg-white/5 border border-white/10 rounded-[14px] px-4 py-2.5 text-sm text-white/80 font-body">{effDateStr}</div>
             </div>
             <div>
               <label className="text-xs text-white/50 font-body mb-1 block">Email</label>
@@ -215,130 +239,17 @@ export default function Agreement() {
 
         {/* Full Agreement Text with Checkboxes */}
         <GlassCard hover={false} className="p-6 md:p-8">
-          <h3 className="font-heading text-xl text-white mb-6 border-b border-white/10 pb-3">Agreement Terms</h3>
-          <p className="text-xs text-white/40 font-body mb-6">Please read each section carefully and check the box to confirm your acceptance. All sections are required.</p>
+          <h3 className="font-heading text-xl text-white mb-6 border-b border-white/10 pb-3">Agreement Terms — All 32 Sections</h3>
+          <p className="text-xs text-white/40 font-body mb-6">Please read each section carefully and check the box to confirm your acceptance. All 32 sections are required.</p>
 
           <div className="text-sm leading-relaxed text-white/80 font-body space-y-8">
-            {/* Parties */}
-            <div className="glass rounded-[16px] p-5 border-l-2 border-accent">
-              <h4 className="font-heading text-base text-white mb-3">Parties</h4>
-              <p className="mb-2">This Website Development Agreement ("Agreement") is entered into between:</p>
-              <p className="mb-1"><strong>Agency:</strong> AROM Studio</p>
-              <p className="mb-1"><strong>Client:</strong> {clientName || <span className="text-white/30 italic">[Client Name]</span>}</p>
-              {clientAddress && <p className="mb-1">Address: {clientAddress}</p>}
-              {clientEmail && <p className="mb-1">Contact: {clientEmail}</p>}
-              {clientPhone && <p className="mb-3 pl-9">{clientPhone}</p>}
-              <p className="mb-3">This Agreement becomes effective from <strong>{effDateStr}</strong>.</p>
-              <label className="flex items-start gap-3 cursor-pointer mt-3 pt-3 border-t border-white/10">
-                <input type="checkbox" checked={!!checkedSections['parties']} onChange={() => toggleSection('parties')} className="mt-0.5 accent-accent" />
-                <span className="text-xs text-white/60 font-body">I confirm that the party information above is accurate and I have read the Parties section.</span>
-              </label>
-            </div>
-
-            {/* Section 1 */}
-            <div className="glass rounded-[16px] p-5 border-l-2 border-accent">
-              <h4 className="font-heading text-base text-white mb-3">1. Project Overview</h4>
-              <p className="mb-2">The Client has requested AROM Studio to design and/or develop a website.</p>
-              <p className="mb-3">The specific project requirements, deliverables, pricing, and timeline will be defined in the approved Project Proposal.</p>
-              {projectDescription && <p className="mb-3 text-white/60">Project Description: {projectDescription}</p>}
-              <label className="flex items-start gap-3 cursor-pointer mt-3 pt-3 border-t border-white/10">
-                <input type="checkbox" checked={!!checkedSections['overview']} onChange={() => toggleSection('overview')} className="mt-0.5 accent-accent" />
-                <span className="text-xs text-white/60 font-body">I have read and agree to Section 1: Project Overview</span>
-              </label>
-            </div>
-
-            {/* Section 2 */}
-            <div className="glass rounded-[16px] p-5 border-l-2 border-accent">
-              <h4 className="font-heading text-base text-white mb-3">2. Scope of Work</h4>
-              <p className="mb-2">AROM Studio agrees to provide the services specified in the approved Project Proposal.</p>
-              <p className="mb-2">Services may include:</p>
-              <ul className="list-disc pl-5 mb-2 space-y-1 text-white/70">
-                {(selectedServices.length > 0 ? selectedServices : availableServices).map((s) => <li key={s}>{s}</li>)}
-              </ul>
-              <p className="mb-3">Any work outside the agreed scope shall be considered additional work and may require a separate quotation.</p>
-              <label className="flex items-start gap-3 cursor-pointer mt-3 pt-3 border-t border-white/10">
-                <input type="checkbox" checked={!!checkedSections['scope']} onChange={() => toggleSection('scope')} className="mt-0.5 accent-accent" />
-                <span className="text-xs text-white/60 font-body">I have read and agree to Section 2: Scope of Work</span>
-              </label>
-            </div>
-
-            {/* Section 3 */}
-            <div className="glass rounded-[16px] p-5 border-l-2 border-accent">
-              <h4 className="font-heading text-base text-white mb-3">3. Project Timeline</h4>
-              <p className="mb-2">The estimated project duration will be defined in the Project Proposal. Current estimate: <strong>{timeline}</strong>.</p>
-              <p className="mb-1">The timeline may change if:</p>
-              <ul className="list-disc pl-5 mb-2 space-y-1 text-white/70">
-                <li>Client delays providing content or assets.</li>
-                <li>Additional features are requested.</li>
-                <li>Project requirements change.</li>
-                <li>Third-party services cause delays.</li>
-              </ul>
-              <p className="mb-3">AROM Studio will communicate any timeline changes as early as possible.</p>
-              <label className="flex items-start gap-3 cursor-pointer mt-3 pt-3 border-t border-white/10">
-                <input type="checkbox" checked={!!checkedSections['timeline']} onChange={() => toggleSection('timeline')} className="mt-0.5 accent-accent" />
-                <span className="text-xs text-white/60 font-body">I have read and agree to Section 3: Project Timeline</span>
-              </label>
-            </div>
-
-            {/* Section 4 */}
-            <div className="glass rounded-[16px] p-5 border-l-2 border-accent">
-              <h4 className="font-heading text-base text-white mb-3">4. Payment Terms</h4>
-              <p className="mb-2">Payment schedule:</p>
-              <p className="mb-1"><strong>{advancePct || '27'}%</strong> Advance before project commencement.</p>
-              <p className="mb-2"><strong>{finalPct || '50'}%</strong> Final Payment before final website delivery or deployment.</p>
-              <p className="mb-2">Additional work requested after project approval will be charged separately.</p>
-              <p className="mb-1">Payments are due within the agreed payment period.</p>
-              <p className="mb-3">If payment is delayed by more than 7 days, AROM Studio may pause work until payment is received.</p>
-              <label className="flex items-start gap-3 cursor-pointer mt-3 pt-3 border-t border-white/10">
-                <input type="checkbox" checked={!!checkedSections['payment']} onChange={() => toggleSection('payment')} className="mt-0.5 accent-accent" />
-                <span className="text-xs text-white/60 font-body">I have read and agree to Section 4: Payment Terms</span>
-              </label>
-            </div>
-
-            {/* Section 5 */}
-            <div className="glass rounded-[16px] p-5 border-l-2 border-accent">
-              <h4 className="font-heading text-base text-white mb-3">5. Client Responsibilities</h4>
-              <p className="mb-2">The Client agrees to provide:</p>
-              <ul className="list-disc pl-5 mb-2 space-y-1 text-white/70">
-                <li>Logo, Brand Colors, Images, Videos</li>
-                <li>Website Content, Contact Information</li>
-                <li>Social Media Links</li>
-                <li>Domain Details (if applicable)</li>
-                <li>Hosting Details (if applicable)</li>
-              </ul>
-              <p className="mb-3">The Client is responsible for ensuring that all supplied content is accurate and legally owned or licensed.</p>
-              <label className="flex items-start gap-3 cursor-pointer mt-3 pt-3 border-t border-white/10">
-                <input type="checkbox" checked={!!checkedSections['responsibilities']} onChange={() => toggleSection('responsibilities')} className="mt-0.5 accent-accent" />
-                <span className="text-xs text-white/60 font-body">I have read and agree to Section 5: Client Responsibilities</span>
-              </label>
-            </div>
-
-            {/* Sections 6-20 in compact format */}
-            {[
-              { id: 'communication', title: '6. Project Communication', content: 'The Client should provide timely feedback and approvals to avoid unnecessary delays. Preferred communication methods include: Email, WhatsApp, Google Meet, Zoom, Phone Call. If the Client does not respond within 10 business days, the project may be placed on hold until communication resumes.' },
-              { id: 'revisions', title: '7. Revisions', content: 'Revision limits are defined per project tier: Basic (2 revision rounds), Standard (3 revision rounds), Premium (Unlimited until design approval). Requests outside the original scope or beyond the revision limit may require additional charges. Major redesigns after approval are treated as new work.' },
-              { id: 'changes', title: '8. Change Requests', content: 'If the Client requests additional pages, new features, major design changes, third-party integrations, or functional changes, AROM Studio will provide a revised quotation before starting the additional work.' },
-              { id: 'domain', title: '9. Domain & Hosting', content: 'Unless specifically included in the proposal, domain registration and hosting purchase are the Client\'s responsibility. If AROM Studio assists with these services, any third-party costs will be billed separately.' },
-              { id: 'ownership', title: '10. Content Ownership', content: 'The Client retains ownership of: Logos, Images, Videos, Written Content, Brand Assets. The Client confirms they have permission to use all provided materials.' },
-              { id: 'ip', title: '11. Intellectual Property', content: 'After full payment has been received, the Client owns the completed website and receives all agreed project files. AROM Studio retains ownership of its internal tools, reusable code libraries, templates, frameworks, and development methodologies unless otherwise agreed.' },
-              { id: 'confidentiality', title: '12. Confidentiality', content: 'Both parties agree to keep confidential information private. Business information, passwords, source files, and sensitive project information shall not be shared with third parties without permission, unless required by law.' },
-              { id: 'cancellation', title: '13. Cancellation', content: 'Either party may cancel the project. If cancelled: Work completed up to the cancellation date must be paid for. Advance payments cover work already performed and are generally non-refundable. Completed deliverables up to the cancellation date may be provided after outstanding payments are settled.' },
-              { id: 'launch', title: '14. Website Launch', content: 'The website will be deployed after: Final approval, Final payment received, Required domain and hosting access provided (if applicable).' },
-              { id: 'support', title: '15. Support', content: `After website delivery, the included support period is ${supportPeriod || '30'} days. The warranty covers defects in delivered work. Support includes: Bug Fixes, Minor Technical Assistance. Support does not include: Client modifications, Third-party plugin updates, New Features, Major Design Changes, Additional Pages, Third-party software issues.` },
-              { id: 'liability', title: '16. Limitation of Liability', content: 'AROM Studio shall not be responsible for: Third-party hosting failures, Domain provider issues, Payment gateway outages, Search engine ranking changes, Client-added errors after handover, Cyberattacks or data loss caused by third-party systems beyond AROM Studio\'s control.' },
-              { id: 'portfolio', title: '17. Portfolio Rights', content: 'Unless the Client specifically requests confidentiality in writing, AROM Studio may showcase the completed project in its portfolio, website, and social media for promotional purposes. If confidentiality is requested and agreed upon, AROM Studio will not publicly display the project.' },
-              { id: 'force', title: '18. Force Majeure', content: 'Neither party shall be liable for delays caused by events beyond reasonable control, including natural disasters, government actions, internet outages, pandemics, or other unforeseen circumstances.' },
-              { id: 'law', title: '19. Governing Law', content: 'This Agreement shall be governed by the applicable laws of India. Any disputes shall first be attempted to be resolved through mutual discussion before pursuing legal remedies.' },
-              { id: 'acceptance', title: '20. Digital Acceptance', content: 'By clicking "I Agree" in the AROM Studio Client Portal or by making the agreed advance payment after accepting the proposal, the Client acknowledges that they have read, understood, and accepted the terms of this Agreement. This constitutes a legally binding digital acceptance. No handwritten signature is required.' },
-              { id: 'entireAgreement', title: '21. Entire Agreement', content: 'This Agreement, together with the approved Project Proposal, constitutes the entire agreement between the parties and supersedes any prior discussions, negotiations, or communications, whether written or oral.' },
-              { id: 'browserSupport', title: '22. Browser Support', content: 'AROM Studio officially supports the latest two versions of: Google Chrome, Mozilla Firefox, Apple Safari, and Microsoft Edge. The website may not function as intended on older or unsupported browsers.' },
-            ].map((sec) => (
+            {allSections.map((sec) => (
               <div key={sec.id} className="glass rounded-[16px] p-5 border-l-2 border-accent">
-                <h4 className="font-heading text-base text-white mb-3">{sec.title}</h4>
+                <h4 className="font-heading text-base text-white mb-3">Section {sec.num}: {sec.title}</h4>
                 <p className="mb-3 text-white/70">{sec.content}</p>
                 <label className="flex items-start gap-3 cursor-pointer mt-3 pt-3 border-t border-white/10">
                   <input type="checkbox" checked={!!checkedSections[sec.id]} onChange={() => toggleSection(sec.id)} className="mt-0.5 accent-accent" />
-                  <span className="text-xs text-white/60 font-body">I have read and agree to {sec.title}</span>
+                  <span className="text-xs text-white/60 font-body">I have read and agree to Section {sec.num}: {sec.title}</span>
                 </label>
               </div>
             ))}
@@ -352,11 +263,11 @@ export default function Agreement() {
             I, <strong>{clientName || '[Client Name]'}</strong>, confirm that:
           </p>
           <ul className="list-disc pl-5 space-y-2 text-sm text-white/60 font-body mb-6">
-            <li>I have read and understood all sections of this Agreement including the Entire Agreement clause, Browser Support, and Digital Acceptance.</li>
+            <li>I have read and understood all 32 sections of this Agreement.</li>
             <li>All information I have provided is accurate and complete.</li>
             <li>I agree to the payment terms including the {advancePct || '50'}% advance payment.</li>
             <li>I agree to provide all required content and assets within agreed timelines.</li>
-            <li>I acknowledge that this Agreement is legally binding and accept the Digital Acceptance clause.</li>
+            <li>I acknowledge that this Agreement is legally binding and accept the Electronic Signatures clause (Section 30).</li>
           </ul>
           <label className="flex items-start gap-3 cursor-pointer">
             <input type="checkbox" checked={declaration} onChange={(e) => setDeclaration(e.target.checked)} className="mt-0.5 accent-accent" />
@@ -368,20 +279,20 @@ export default function Agreement() {
         <GlassCard hover={false} className="p-6">
           <div className="flex items-center justify-between mb-4">
             <span className="text-sm text-white/70 font-body">Section Acceptance Progress</span>
-            <span className="text-sm text-accent font-heading">{Object.keys(checkedSections).length}/{sectionCheckboxes.length}</span>
+            <span className="text-sm text-accent font-heading">{Object.keys(checkedSections).length}/{allSections.length}</span>
           </div>
           <div className="h-2 bg-white/10 rounded-full overflow-hidden mb-6">
-            <motion.div className="h-full bg-gradient-to-r from-accent to-blue-400 rounded-full" initial={{ width: 0 }} animate={{ width: `${(Object.keys(checkedSections).length / sectionCheckboxes.length) * 100}%` }} />
+            <motion.div className="h-full bg-gradient-to-r from-accent to-blue-400 rounded-full" initial={{ width: 0 }} animate={{ width: `${(Object.keys(checkedSections).length / allSections.length) * 100}%` }} />
           </div>
 
           <Button variant="secondary" size="lg" onClick={handleGeneratePDF} disabled={!canGenerate} className="w-full">
-            <Download className="h-4 w-4" /> {canGenerate ? 'Download Signed Agreement as PDF' : 'Complete all sections & declaration to download'}
+            <Download className="h-4 w-4" /> {canGenerate ? 'Download Signed Agreement as PDF' : 'Complete all 32 sections & declaration to download'}
           </Button>
 
           {!canGenerate && (
             <p className="text-xs text-red-400 font-body text-center mt-2">
               {!clientName.trim() && '• Enter client name. '}
-              {!allChecked && '• Accept all 22 sections. '}
+              {!allChecked && '• Accept all 32 sections. '}
               {!declaration && '• Check the declaration.'}
             </p>
           )}
