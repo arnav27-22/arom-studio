@@ -200,12 +200,31 @@ export default async function handler(req, res) {
 
     // Leads
     if (pathname === '/api/admin/leads') {
-      const rows = await readAll('leads')
+      if (req.method === 'POST') {
+        const body = await getJSON(req)
+        const row = {
+          id: crypto.randomUUID(),
+          created_at: new Date().toISOString(),
+          name: body.name || '',
+          email: body.email || '',
+          phone: body.phone || '',
+          company: body.company || '',
+          service: body.service || '',
+          budget: body.budget || '',
+          message: body.message || '',
+          status: body.status || 'New',
+          country: body.country || '',
+          page: body.page || '',
+        }
+        await insertRow('leads', row)
+        return j(res, row)
+      }
       if (req.method === 'PUT') {
         const body = await getJSON(req)
         await updateWhere('leads', { status: body.status }, 'id', body.id)
         return j(res, { success: true })
       }
+      const rows = await readAll('leads')
       return j(res, { total: rows.length, leads: rows })
     }
 
@@ -270,6 +289,20 @@ export default async function handler(req, res) {
 
     // Logs
     if (pathname === '/api/admin/logs') {
+      if (req.method === 'POST') {
+        const body = await getJSON(req)
+        const entry = {
+          id: crypto.randomUUID(),
+          created_at: new Date().toISOString(),
+          type: body.type || 'system',
+          event: body.event || '',
+          detail: body.detail || '',
+          severity: body.severity || 'info',
+          ip_hash: crypto.createHash('sha256').update(ip).digest('hex').slice(0, 16),
+        }
+        await insertRow('audit_logs', entry)
+        return j(res, entry)
+      }
       const rows = await readAll('audit_logs')
       return j(res, { total: rows.length, logs: rows })
     }
@@ -414,6 +447,27 @@ export default async function handler(req, res) {
 
     // Discovery questionnaires
     if (pathname === '/api/admin/discovery') {
+      if (req.method === 'POST') {
+        const body = await getJSON(req)
+        const row = {
+          id: body.id || crypto.randomUUID(),
+          created_at: new Date().toISOString(),
+          full_name: body.fullName || '',
+          company: body.company || '',
+          email: body.email || '',
+          phone: body.phone || '',
+          website: body.website || '',
+          budget: body.budget || '',
+          urgency: body.urgency || '',
+          preferred_launch_date: body.preferredLaunchDate || '',
+          content_provider: body.contentProvider || '',
+          status: body.status || 'New',
+          pdf_data_url: body.pdfDataUrl || '',
+          full_data: body.fullData ? JSON.stringify(body.fullData) : '{}',
+        }
+        await insertRow('discovery_forms', row)
+        return j(res, { ...row, id: row.id })
+      }
       if (req.method === 'DELETE') {
         const body = await getJSON(req)
         await deleteWhere('discovery_forms', 'id', body.id)
@@ -462,21 +516,6 @@ export default async function handler(req, res) {
     }
 
     // Logs POST (create audit log)
-    if (pathname === '/api/admin/logs' && req.method === 'POST') {
-      const body = await getJSON(req)
-      const entry = {
-        id: crypto.randomUUID(),
-        created_at: new Date().toISOString(),
-        type: body.type || 'system',
-        event: body.event || '',
-        detail: body.detail || '',
-        severity: body.severity || 'info',
-        ip_hash: crypto.createHash('sha256').update(ip).digest('hex').slice(0, 16),
-      }
-      await insertRow('audit_logs', entry)
-      return j(res, entry)
-    }
-
     // PDF save (admin)
     if (pathname === '/api/admin/pdfs/save' && req.method === 'POST') {
       const body = await getJSON(req)
