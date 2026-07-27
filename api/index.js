@@ -66,7 +66,16 @@ export default async function handler(req, res) {
     const pathname = url.pathname
     const ip = req.headers['x-forwarded-for'] || req.socket?.remoteAddress || '127.0.0.1'
 
-    if (pathname === '/api/ping') return j(res, { ok: true, timestamp: new Date().toISOString() })
+    if (pathname === '/api/ping') return j(res, { ok: true, timestamp: new Date().toISOString(), env: { node: process.version, hasDB: !!process.env.DATABASE_URL, hasPwd: !!process.env.ADMIN_PASSWORD, hasJWT: !!process.env.ADMIN_JWT_SECRET } })
+
+    if (pathname === '/api/debug/auth-test') {
+      try {
+        const body = await getJSON(req)
+        const pw = process.env.ADMIN_PASSWORD || '(not set)'
+        const jwt = process.env.ADMIN_JWT_SECRET || '(not set)'
+        return j(res, { ok: true, body, pwLen: pw.length, jwtLen: jwt.length })
+      } catch (e) { return send(res, 500, { error: e.message }) }
+    }
 
     // Auth
     if (pathname === '/api/admin/auth') {
