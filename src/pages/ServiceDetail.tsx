@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { Check, ArrowUpRight, ArrowLeft, ChevronDown } from 'lucide-react'
 import { Section, Container, SectionHeader } from '../components/ui/Section'
 import { SEO } from '../components/ui/SEO'
+import { BreadcrumbSchema } from '../components/seo/BreadcrumbSchema'
 import { GlassCard } from '../components/ui/GlassCard'
 import { CTABanner } from '../components/sections/shared/CTABanner'
 import { services } from '../data/services'
@@ -37,6 +38,11 @@ export default function ServiceDetail() {
           offers: { '@type': 'Offer', availability: 'https://schema.org/InStock' },
         } : undefined}
       />
+      <BreadcrumbSchema items={[
+        { name: 'Home', url: '/' },
+        { name: 'Services', url: '/services' },
+        { name: service.title, url: `/services/${slug}` },
+      ]} />
       <Section>
         <Container>
           <Link to="/services" className="inline-flex items-center gap-1.5 text-sm text-white/50 hover:text-white font-body mb-8 transition-colors">

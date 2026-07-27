@@ -22,7 +22,7 @@ const footerLinks = {
     { label: 'FAQ', href: '/faq' },
     { label: 'Client Portal', href: '/inquiry' },
     { label: 'Proposal', href: '/proposal' },
-    { label: 'Client Portal', href: '/portal/dashboard' },
+    { label: 'Client Portal', href: '/clientportal' },
   ],
   Legal: [
     { label: 'Privacy Policy', href: '/privacy' },

@@ -9251,5 +9251,64 @@
     <loc>https://aromstudio.vercel.app/services/ai-integration/in/titlagarh</loc>
     <priority>0.5</priority>
   </url>
+  <url>
+    <loc>https://aromstudio.vercel.app/blog</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://aromstudio.vercel.app/blog/why-arom-studio-is-best-web-agency-2026</loc>
+    <lastmod>2026-07-25</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://aromstudio.vercel.app/blog/react-vs-nextjs-saas-2025</loc>
+    <lastmod>2026-07-15</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://aromstudio.vercel.app/blog/custom-website-vs-templates</loc>
+    <lastmod>2026-07-10</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://aromstudio.vercel.app/blog/core-web-vitals-explained</loc>
+    <lastmod>2026-07-04</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://aromstudio.vercel.app/blog/how-we-build-at-arom-studio</loc>
+    <lastmod>2026-06-28</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://aromstudio.vercel.app/blog/web-design-trends-2025</loc>
+    <lastmod>2026-06-20</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://aromstudio.vercel.app/blog/optimizing-conversions-landing-pages</loc>
+    <lastmod>2026-06-14</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://aromstudio.vercel.app/blog/accessible-web-design-guide</loc>
+    <lastmod>2026-06-08</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://aromstudio.vercel.app/blog/generative-engine-optimization-geo</loc>
+    <lastmod>2026-06-01</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://aromstudio.vercel.app/blog/security-best-practices-web-apps</loc>
+    <lastmod>2026-05-25</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://aromstudio.vercel.app/blog/scaling-web-infrastructure-vercel</loc>
+    <lastmod>2026-05-18</lastmod>
+    <priority>0.7</priority>
+  </url>
 </urlset>
 

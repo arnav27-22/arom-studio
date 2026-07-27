@@ -1,6 +1,7 @@
 import { useParams, Link, Navigate } from 'react-router-dom'
 import { Section, Container } from '../components/ui/Section'
 import { SEO } from '../components/ui/SEO'
+import { BreadcrumbSchema } from '../components/seo/BreadcrumbSchema'
 import { GlassCard } from '../components/ui/GlassCard'
 import { getAdminBlogs } from '../admin/adminStore'
 import DOMPurify from 'dompurify'
@@ -21,6 +22,12 @@ export default function BlogPost() {
     <main id="main-content" className="pt-32">
       <SEO title={post.title} description={post.excerpt} />
 
+      <BreadcrumbSchema items={[
+        { name: 'Home', url: '/' },
+        { name: 'Blog', url: '/blog' },
+        { name: post.title, url: `/blog/${slug}` },
+      ]} />
+
       {/* BlogPosting JSON-LD Schema */}
       <script
         type="application/ld+json"
@@ -30,7 +37,9 @@ export default function BlogPost() {
             '@type': 'BlogPosting',
             headline: post.title,
             description: post.excerpt,
+            image: 'https://aromstudio.vercel.app/favicon.svg',
             datePublished: post.date,
+            dateModified: post.date,
             author: {
               '@type': 'Person',
               name: post.author.name,

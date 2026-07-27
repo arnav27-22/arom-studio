@@ -1,6 +1,7 @@
 import { useParams, Link } from 'react-router-dom'
 import { ArrowUpRight } from 'lucide-react'
 import { SEO } from '../components/ui/SEO'
+import { BreadcrumbSchema } from '../components/seo/BreadcrumbSchema'
 import { Section, Container } from '../components/ui/Section'
 import { services } from '../data/services'
 import { indianCities, getCityFromSlug, slugifyCity } from '../data/cities'
@@ -32,6 +33,12 @@ export default function CityService() {
         description={description}
         canonicalPath={`/services/${slug}/in/${cityName}`}
       />
+      <BreadcrumbSchema items={[
+        { name: 'Home', url: '/' },
+        { name: 'Services', url: '/services' },
+        { name: service.title, url: `/services/${slug}` },
+        { name: city, url: `/services/${slug}/in/${cityName}` },
+      ]} />
       <Section>
         <Container>
           <Link to="/services" className="inline-flex items-center gap-1.5 text-sm text-white/50 hover:text-white font-body mb-8 transition-colors">

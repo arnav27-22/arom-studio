@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import { prisma } from '../database/prisma'
 import { wsManager } from '../websocket/WebSocketManager'
+import { sseService } from '../services/SSEService'
 
 export class LeadController {
   async getAll(req: Request, res: Response, next: NextFunction) {
@@ -46,6 +47,7 @@ export class LeadController {
         },
       })
       wsManager.broadcastToAll('lead:created', lead)
+      sseService.broadcast('lead', { action: 'created', data: lead })
       res.json({ success: true, id: lead.id })
     } catch (err) {
       next(err)

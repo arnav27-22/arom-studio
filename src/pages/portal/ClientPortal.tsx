@@ -3,19 +3,31 @@ import { NavLink, Outlet } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Upload, Clock, Handshake, ChevronLeft, ChevronRight, Menu, X,
-  PenSquare, FileCheck, ScrollText, ClipboardCheck, FileText
+  PenSquare, FileCheck, ScrollText, ClipboardCheck, FileText,
+  ClipboardList, Settings, GitCompare, CreditCard, Receipt,
+  MessageSquare, Download, LayoutDashboard, CheckCircle, MessageCircle
 } from 'lucide-react'
 import { cn } from '../../lib/cn'
 
 const sidebarLinks = [
+  { label: 'Dashboard', href: '/clientportal/dashboard', icon: LayoutDashboard },
   { label: 'Client Inquiry Form', href: '/clientportal/inquiry', icon: PenSquare },
   { label: 'Project Proposal', href: '/clientportal/proposal', icon: FileCheck },
   { label: 'Website Agreement', href: '/clientportal/agreement', icon: ScrollText },
   { label: 'Discovery Questionnaire', href: '/clientportal/questionnaire', icon: ClipboardCheck },
+  { label: 'Specification', href: '/clientportal/specification', icon: ClipboardList },
+  { label: 'Design Approval', href: '/clientportal/design-approval', icon: CheckCircle },
   { label: 'Project Timeline', href: '/clientportal/timeline', icon: Clock },
   { label: 'Content Collection', href: '/clientportal/content', icon: FileText },
+  { label: 'Revision Requests', href: '/clientportal/revision-requests', icon: GitCompare },
   { label: 'Assets Upload', href: '/clientportal/assets', icon: Upload },
   { label: 'Handover', href: '/clientportal/handover', icon: Handshake },
+  { label: 'Payments', href: '/clientportal/payments', icon: CreditCard },
+  { label: 'Invoices', href: '/clientportal/invoices', icon: Receipt },
+  { label: 'Downloads', href: '/clientportal/downloads', icon: Download },
+  { label: 'Chat', href: '/clientportal/chat', icon: MessageCircle },
+  { label: 'Feedback', href: '/clientportal/feedback', icon: MessageSquare },
+  { label: 'Settings', href: '/clientportal/settings', icon: Settings },
 ]
 
 export default function ClientPortal() {

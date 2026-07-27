@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import { prisma } from '../database/prisma'
 import { wsManager } from '../websocket/WebSocketManager'
+import { sseService } from '../services/SSEService'
 
 export class DiscoveryController {
   async getAll(req: Request, res: Response, next: NextFunction) {
@@ -42,6 +43,7 @@ export class DiscoveryController {
         },
       })
       wsManager.broadcastToAll('discovery:created', form)
+      sseService.broadcast('discovery', { action: 'created', data: form })
       res.json({ success: true, id: form.id })
     } catch (err) {
       next(err)

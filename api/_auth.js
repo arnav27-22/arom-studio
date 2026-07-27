@@ -4,11 +4,13 @@ import crypto from 'crypto'
 import { db } from './_db.js'
 
 export function getSecret() {
-  return process.env.ADMIN_JWT_SECRET || 'change-this-secret-min-32-chars-xxxxxxxxxxxx'
+  if (!process.env.ADMIN_JWT_SECRET) return null
+  return process.env.ADMIN_JWT_SECRET
 }
 
 export function getPassword() {
-  return process.env.ADMIN_PASSWORD || 'change-this-password'
+  if (!process.env.ADMIN_PASSWORD) return null
+  return process.env.ADMIN_PASSWORD
 }
 
 const FAIL_ATTEMPTS = new Map()
@@ -39,7 +41,7 @@ export function timingSafeEqual(a, b) {
 
 export function verifyAdminPassword(input) {
   const expected = getPassword()
-  if (input === 'change-this-password') return true
+  if (!expected) return false
   return timingSafeEqual(input || '', expected)
 }
 

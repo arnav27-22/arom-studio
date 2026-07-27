@@ -38,6 +38,16 @@ const AssetsUpload = lazy(() => import('./pages/portal/AssetsUpload'))
 const ProjectTimeline = lazy(() => import('./pages/portal/ProjectTimeline'))
 const ContentCollection = lazy(() => import('./pages/portal/ContentCollection'))
 const Handover = lazy(() => import('./pages/portal/Handover'))
+const Specification = lazy(() => import('./pages/portal/Specification'))
+const Settings = lazy(() => import('./pages/portal/Settings'))
+const RevisionRequests = lazy(() => import('./pages/portal/RevisionRequests'))
+const Payments = lazy(() => import('./pages/portal/Payments'))
+const Invoices = lazy(() => import('./pages/portal/Invoices'))
+const Feedback = lazy(() => import('./pages/portal/Feedback'))
+const Downloads = lazy(() => import('./pages/portal/Downloads'))
+const Dashboard = lazy(() => import('./pages/portal/Dashboard'))
+const DesignApproval = lazy(() => import('./pages/portal/DesignApproval'))
+const Chat = lazy(() => import('./pages/portal/Chat'))
 const AdminApp = lazy(() => import('./admin/AdminApp'))
 
 function ScrollToTop() {
@@ -112,6 +122,16 @@ export default function App() {
                         <Route path="content" element={<ContentCollection />} />
                         <Route path="assets" element={<AssetsUpload />} />
                         <Route path="handover" element={<Handover />} />
+                        <Route path="specification" element={<Specification />} />
+                        <Route path="settings" element={<Settings />} />
+                        <Route path="revision-requests" element={<RevisionRequests />} />
+                        <Route path="payments" element={<Payments />} />
+                        <Route path="invoices" element={<Invoices />} />
+                        <Route path="feedback" element={<Feedback />} />
+                        <Route path="downloads" element={<Downloads />} />
+                        <Route path="dashboard" element={<Dashboard />} />
+                        <Route path="design-approval" element={<DesignApproval />} />
+                        <Route path="chat" element={<Chat />} />
                       </Route>
                       <Route path="*" element={<NotFound />} />
                     </Routes>

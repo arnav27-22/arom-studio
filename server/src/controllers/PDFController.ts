@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import { prisma } from '../database/prisma'
 import { wsManager } from '../websocket/WebSocketManager'
+import { sseService } from '../services/SSEService'
 import { storePDF, retrievePDF, deleteStoredPDF, verifyPDFIntegrity, generateReferenceNumber, computeSHA256, countPages } from '../services/PDFStorageService'
 
 export class PDFController {
@@ -130,6 +131,7 @@ export class PDFController {
       })
 
       wsManager.broadcastToAll('pdf:created', pdf)
+      sseService.broadcast('pdf', { action: 'created', data: pdf })
       res.json({ ok: true, id: pdf.id, sha256Hash: stored.sha256Hash, referenceNumber })
     } catch (err) {
       next(err)

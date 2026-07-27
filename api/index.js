@@ -3,6 +3,8 @@ import { db } from './_db.js'
 import { requireAuth, verifyToken, signToken, timingSafeEqual, checkRateLimit, recordFailure, getPassword, verifyAdminPassword } from './_auth.js'
 import { computeDashboard, computeAnalytics } from './stats.js'
 
+const sseClients = new Map()
+
 function j(res, data) {
   res.writeHead(200, {
     'Content-Type': 'application/json',
@@ -23,6 +25,13 @@ function send(res, status, data) {
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
   })
   res.end(JSON.stringify(data))
+}
+
+function broadcast(event, data) {
+  const msg = `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`
+  for (const [id, client] of sseClients) {
+    try { client.write(msg) } catch { sseClients.delete(id) }
+  }
 }
 
 function parseCookies(req) {
@@ -134,6 +143,22 @@ export default async function handler(req, res) {
     if (!cookies.admin_token || !verifyToken(cookies.admin_token)) {
       return send(res, 401, { error: 'Unauthorized' })
     }
+  }
+
+  // ====== ADMIN SSE (Server-Sent Events) ======
+  if (pathname === '/api/admin/events' && req.method === 'GET') {
+    res.writeHead(200, {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Credentials': 'true',
+    })
+    res.write('event: connected\ndata: {}\n\n')
+    const clientId = crypto.randomUUID()
+    sseClients.set(clientId, res)
+    req.on('close', () => { sseClients.delete(clientId) })
+    return
   }
 
   // ====== ADMIN DASHBOARD ======
@@ -472,6 +497,7 @@ export default async function handler(req, res) {
       scrollDepth: body.scrollDepth || 0,
       pageViewsCount: body.pageViewsCount || 1,
     })
+    broadcast('visitor', { action: 'pageview', data: body })
     return j(res, { ok: true })
   }
 
@@ -507,6 +533,7 @@ export default async function handler(req, res) {
       sessionId: body.sessionId || '',
     }
     await db.append('real_pdfs', pdfRecord)
+    broadcast('pdf', { action: 'created', data: pdfRecord })
     return j(res, { ok: true, id: pdfId, sha256Hash: body.sha256Hash || '', referenceNumber: pdfRecord.referenceNumber })
   }
 
@@ -515,12 +542,14 @@ export default async function handler(req, res) {
     const convs = (await db.read('real_ai_conversations')) || []
     if (body.action === 'delete') {
       await db.write('real_ai_conversations', convs.filter(c => c.id !== body.id))
+      broadcast('ai_conversation', { action: 'delete', data: body })
       return j(res, { success: true })
     }
     if (body.action === 'rename') {
       const t = convs.find(c => c.id === body.id)
       if (t) t.title = body.title
       await db.write('real_ai_conversations', convs)
+      broadcast('ai_conversation', { action: 'rename', data: body })
       return j(res, { success: true })
     }
     if (body.action === 'save' && body.data) {
@@ -528,6 +557,7 @@ export default async function handler(req, res) {
       if (idx !== -1) convs[idx] = body.data
       else convs.unshift(body.data)
       await db.write('real_ai_conversations', convs)
+      broadcast('ai_conversation', { action: 'saved', data: body })
       return j(res, { success: true })
     }
     return j(res, { ok: true })
@@ -551,6 +581,7 @@ export default async function handler(req, res) {
     }
     leads.unshift(lead)
     await db.write('real_leads', leads)
+    broadcast('lead', { action: 'created', data: lead })
     return j(res, { success: true, id: lead.id })
   }
 
@@ -574,6 +605,7 @@ export default async function handler(req, res) {
     }
     discovery.unshift(item)
     await db.write('real_discovery', item ? discovery : [])
+    broadcast('discovery', { action: 'created', data: item })
     return j(res, { success: true, id: item.id })
   }
 
@@ -583,6 +615,6 @@ export default async function handler(req, res) {
 
     return send(res, 404, { error: 'Not found' })
   } catch (err) {
-    return send(res, 500, { error: err.message || 'Internal server error', stack: err.stack })
+    return send(res, 500, { error: 'Internal server error' })
   }
 }

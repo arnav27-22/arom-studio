@@ -314,6 +314,8 @@ let __cache: StoreData = { ...EMPTY_DATA }
 let __syncInProgress = false
 let __syncTriggered = false
 let __wsHandlersInitialized = false
+let __sse: EventSource | null = null
+let __ssePollTimer: ReturnType<typeof setInterval> | null = null
 
 const COLLECTION_ENDPOINTS: Record<string, string> = {
   visitors: '/api/admin/visitors',
@@ -397,6 +399,7 @@ export async function syncFromCloud(): Promise<StoreData> {
       }
     }
     initWebSocketHandlers()
+    initSSE()
     return __cache
   } finally {
     __syncInProgress = false
@@ -424,6 +427,41 @@ export function formatIST(dateString?: string): string {
       hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true,
     }) + ' IST'
   } catch { return dateString }
+}
+
+export function initSSE(): void {
+  if (__sse) return
+  try {
+    __sse = new EventSource('/api/admin/events')
+
+    __sse.addEventListener('visitor', () => syncFromCloud())
+    __sse.addEventListener('pdf', () => syncFromCloud())
+    __sse.addEventListener('ai_conversation', () => syncFromCloud())
+    __sse.addEventListener('lead', () => syncFromCloud())
+    __sse.addEventListener('discovery', () => syncFromCloud())
+
+    __sse.onerror = () => {
+      destroySSE()
+      if (!__ssePollTimer) {
+        __ssePollTimer = setInterval(() => syncFromCloud(), 30000)
+      }
+    }
+  } catch {
+    if (!__ssePollTimer) {
+      __ssePollTimer = setInterval(() => syncFromCloud(), 30000)
+    }
+  }
+}
+
+export function destroySSE(): void {
+  if (__sse) {
+    __sse.close()
+    __sse = null
+  }
+  if (__ssePollTimer) {
+    clearInterval(__ssePollTimer)
+    __ssePollTimer = null
+  }
 }
 
 export async function logAuditEvent(

@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import { prisma } from '../database/prisma'
 import { wsManager } from '../websocket/WebSocketManager'
+import { sseService } from '../services/SSEService'
 
 export class AIController {
   async getConversations(req: Request, res: Response, next: NextFunction) {
@@ -37,6 +38,7 @@ export class AIController {
           data: { deletedAt: new Date() },
         })
         wsManager.broadcastToAll('ai:conversation:deleted', { id: body.id })
+        sseService.broadcast('ai_conversation', { action: 'delete', data: body })
         res.json({ success: true })
         return
       }
@@ -47,6 +49,7 @@ export class AIController {
           data: { title: body.title },
         })
         wsManager.broadcastToAll('ai:conversation:updated', conv)
+        sseService.broadcast('ai_conversation', { action: 'rename', data: body })
         res.json({ success: true })
         return
       }
@@ -81,6 +84,7 @@ export class AIController {
             include: { messages: true },
           })
           wsManager.broadcastToAll('ai:conversation:updated', conv)
+          sseService.broadcast('ai_conversation', { action: 'saved', data: body })
           res.json({ success: true })
         } else {
           const conv = await prisma.aIConversation.create({
@@ -104,6 +108,7 @@ export class AIController {
             include: { messages: true },
           })
           wsManager.broadcastToAll('ai:conversation:created', conv)
+          sseService.broadcast('ai_conversation', { action: 'saved', data: body })
           res.json({ success: true })
         }
         return
@@ -127,6 +132,7 @@ export class AIController {
         data: { deletedAt: new Date() },
       })
       wsManager.broadcastToAll('ai:conversation:deleted', { id })
+      sseService.broadcast('ai_conversation', { action: 'delete', data: { id } })
       res.json({ success: true })
     } catch (err) {
       next(err)
