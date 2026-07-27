@@ -1,3 +1,4 @@
+import path from 'path'
 import http from 'http'
 import express from 'express'
 import cookieParser from 'cookie-parser'
@@ -53,6 +54,16 @@ async function main(): Promise<void> {
   })
 
   app.use('/api', routes)
+
+  const distPath = path.resolve(process.cwd(), 'dist')
+  app.use(express.static(distPath))
+
+  const storagePath = path.resolve(process.cwd(), 'server', 'storage', 'pdfs')
+  app.use('/storage/pdfs', express.static(storagePath))
+
+  app.get('*', (_req, res) => {
+    res.sendFile(path.join(distPath, 'index.html'))
+  })
 
   app.use(errorHandler)
 

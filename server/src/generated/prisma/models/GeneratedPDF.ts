@@ -28,10 +28,14 @@ export type AggregateGeneratedPDF = {
 
 export type GeneratedPDFAvgAggregateOutputType = {
   fileSizeKb: number | null
+  pageCount: number | null
+  downloadCount: number | null
 }
 
 export type GeneratedPDFSumAggregateOutputType = {
   fileSizeKb: number | null
+  pageCount: number | null
+  downloadCount: number | null
 }
 
 export type GeneratedPDFMinAggregateOutputType = {
@@ -40,12 +44,26 @@ export type GeneratedPDFMinAggregateOutputType = {
   title: string | null
   clientName: string | null
   clientEmail: string | null
+  company: string | null
+  phone: string | null
   fileSizeKb: number | null
   deviceType: string | null
   browser: string | null
   os: string | null
   pdfDataUrl: string | null
   storageUrl: string | null
+  storageProvider: string | null
+  sha256Hash: string | null
+  pageCount: number | null
+  referenceNumber: string | null
+  agreementId: string | null
+  version: string | null
+  status: string | null
+  downloadCount: number | null
+  fileName: string | null
+  createdById: string | null
+  visitorId: string | null
+  sessionId: string | null
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
@@ -57,12 +75,26 @@ export type GeneratedPDFMaxAggregateOutputType = {
   title: string | null
   clientName: string | null
   clientEmail: string | null
+  company: string | null
+  phone: string | null
   fileSizeKb: number | null
   deviceType: string | null
   browser: string | null
   os: string | null
   pdfDataUrl: string | null
   storageUrl: string | null
+  storageProvider: string | null
+  sha256Hash: string | null
+  pageCount: number | null
+  referenceNumber: string | null
+  agreementId: string | null
+  version: string | null
+  status: string | null
+  downloadCount: number | null
+  fileName: string | null
+  createdById: string | null
+  visitorId: string | null
+  sessionId: string | null
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
@@ -74,12 +106,26 @@ export type GeneratedPDFCountAggregateOutputType = {
   title: number
   clientName: number
   clientEmail: number
+  company: number
+  phone: number
   fileSizeKb: number
   deviceType: number
   browser: number
   os: number
   pdfDataUrl: number
   storageUrl: number
+  storageProvider: number
+  sha256Hash: number
+  pageCount: number
+  referenceNumber: number
+  agreementId: number
+  version: number
+  status: number
+  downloadCount: number
+  fileName: number
+  createdById: number
+  visitorId: number
+  sessionId: number
   metadata: number
   createdAt: number
   updatedAt: number
@@ -90,10 +136,14 @@ export type GeneratedPDFCountAggregateOutputType = {
 
 export type GeneratedPDFAvgAggregateInputType = {
   fileSizeKb?: true
+  pageCount?: true
+  downloadCount?: true
 }
 
 export type GeneratedPDFSumAggregateInputType = {
   fileSizeKb?: true
+  pageCount?: true
+  downloadCount?: true
 }
 
 export type GeneratedPDFMinAggregateInputType = {
@@ -102,12 +152,26 @@ export type GeneratedPDFMinAggregateInputType = {
   title?: true
   clientName?: true
   clientEmail?: true
+  company?: true
+  phone?: true
   fileSizeKb?: true
   deviceType?: true
   browser?: true
   os?: true
   pdfDataUrl?: true
   storageUrl?: true
+  storageProvider?: true
+  sha256Hash?: true
+  pageCount?: true
+  referenceNumber?: true
+  agreementId?: true
+  version?: true
+  status?: true
+  downloadCount?: true
+  fileName?: true
+  createdById?: true
+  visitorId?: true
+  sessionId?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -119,12 +183,26 @@ export type GeneratedPDFMaxAggregateInputType = {
   title?: true
   clientName?: true
   clientEmail?: true
+  company?: true
+  phone?: true
   fileSizeKb?: true
   deviceType?: true
   browser?: true
   os?: true
   pdfDataUrl?: true
   storageUrl?: true
+  storageProvider?: true
+  sha256Hash?: true
+  pageCount?: true
+  referenceNumber?: true
+  agreementId?: true
+  version?: true
+  status?: true
+  downloadCount?: true
+  fileName?: true
+  createdById?: true
+  visitorId?: true
+  sessionId?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -136,12 +214,26 @@ export type GeneratedPDFCountAggregateInputType = {
   title?: true
   clientName?: true
   clientEmail?: true
+  company?: true
+  phone?: true
   fileSizeKb?: true
   deviceType?: true
   browser?: true
   os?: true
   pdfDataUrl?: true
   storageUrl?: true
+  storageProvider?: true
+  sha256Hash?: true
+  pageCount?: true
+  referenceNumber?: true
+  agreementId?: true
+  version?: true
+  status?: true
+  downloadCount?: true
+  fileName?: true
+  createdById?: true
+  visitorId?: true
+  sessionId?: true
   metadata?: true
   createdAt?: true
   updatedAt?: true
@@ -241,12 +333,26 @@ export type GeneratedPDFGroupByOutputType = {
   title: string
   clientName: string
   clientEmail: string | null
+  company: string | null
+  phone: string | null
   fileSizeKb: number
   deviceType: string | null
   browser: string | null
   os: string | null
   pdfDataUrl: string | null
   storageUrl: string | null
+  storageProvider: string | null
+  sha256Hash: string | null
+  pageCount: number
+  referenceNumber: string | null
+  agreementId: string | null
+  version: string | null
+  status: string
+  downloadCount: number
+  fileName: string | null
+  createdById: string | null
+  visitorId: string | null
+  sessionId: string | null
   metadata: runtime.JsonValue | null
   createdAt: Date
   updatedAt: Date
@@ -282,12 +388,26 @@ export type GeneratedPDFWhereInput = {
   title?: Prisma.StringFilter<"GeneratedPDF"> | string
   clientName?: Prisma.StringFilter<"GeneratedPDF"> | string
   clientEmail?: Prisma.StringNullableFilter<"GeneratedPDF"> | string | null
+  company?: Prisma.StringNullableFilter<"GeneratedPDF"> | string | null
+  phone?: Prisma.StringNullableFilter<"GeneratedPDF"> | string | null
   fileSizeKb?: Prisma.IntFilter<"GeneratedPDF"> | number
   deviceType?: Prisma.StringNullableFilter<"GeneratedPDF"> | string | null
   browser?: Prisma.StringNullableFilter<"GeneratedPDF"> | string | null
   os?: Prisma.StringNullableFilter<"GeneratedPDF"> | string | null
   pdfDataUrl?: Prisma.StringNullableFilter<"GeneratedPDF"> | string | null
   storageUrl?: Prisma.StringNullableFilter<"GeneratedPDF"> | string | null
+  storageProvider?: Prisma.StringNullableFilter<"GeneratedPDF"> | string | null
+  sha256Hash?: Prisma.StringNullableFilter<"GeneratedPDF"> | string | null
+  pageCount?: Prisma.IntFilter<"GeneratedPDF"> | number
+  referenceNumber?: Prisma.StringNullableFilter<"GeneratedPDF"> | string | null
+  agreementId?: Prisma.StringNullableFilter<"GeneratedPDF"> | string | null
+  version?: Prisma.StringNullableFilter<"GeneratedPDF"> | string | null
+  status?: Prisma.StringFilter<"GeneratedPDF"> | string
+  downloadCount?: Prisma.IntFilter<"GeneratedPDF"> | number
+  fileName?: Prisma.StringNullableFilter<"GeneratedPDF"> | string | null
+  createdById?: Prisma.StringNullableFilter<"GeneratedPDF"> | string | null
+  visitorId?: Prisma.StringNullableFilter<"GeneratedPDF"> | string | null
+  sessionId?: Prisma.StringNullableFilter<"GeneratedPDF"> | string | null
   metadata?: Prisma.JsonNullableFilter<"GeneratedPDF">
   createdAt?: Prisma.DateTimeFilter<"GeneratedPDF"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"GeneratedPDF"> | Date | string
@@ -300,12 +420,26 @@ export type GeneratedPDFOrderByWithRelationInput = {
   title?: Prisma.SortOrder
   clientName?: Prisma.SortOrder
   clientEmail?: Prisma.SortOrderInput | Prisma.SortOrder
+  company?: Prisma.SortOrderInput | Prisma.SortOrder
+  phone?: Prisma.SortOrderInput | Prisma.SortOrder
   fileSizeKb?: Prisma.SortOrder
   deviceType?: Prisma.SortOrderInput | Prisma.SortOrder
   browser?: Prisma.SortOrderInput | Prisma.SortOrder
   os?: Prisma.SortOrderInput | Prisma.SortOrder
   pdfDataUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   storageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  storageProvider?: Prisma.SortOrderInput | Prisma.SortOrder
+  sha256Hash?: Prisma.SortOrderInput | Prisma.SortOrder
+  pageCount?: Prisma.SortOrder
+  referenceNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  agreementId?: Prisma.SortOrderInput | Prisma.SortOrder
+  version?: Prisma.SortOrderInput | Prisma.SortOrder
+  status?: Prisma.SortOrder
+  downloadCount?: Prisma.SortOrder
+  fileName?: Prisma.SortOrderInput | Prisma.SortOrder
+  createdById?: Prisma.SortOrderInput | Prisma.SortOrder
+  visitorId?: Prisma.SortOrderInput | Prisma.SortOrder
+  sessionId?: Prisma.SortOrderInput | Prisma.SortOrder
   metadata?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -321,12 +455,26 @@ export type GeneratedPDFWhereUniqueInput = Prisma.AtLeast<{
   title?: Prisma.StringFilter<"GeneratedPDF"> | string
   clientName?: Prisma.StringFilter<"GeneratedPDF"> | string
   clientEmail?: Prisma.StringNullableFilter<"GeneratedPDF"> | string | null
+  company?: Prisma.StringNullableFilter<"GeneratedPDF"> | string | null
+  phone?: Prisma.StringNullableFilter<"GeneratedPDF"> | string | null
   fileSizeKb?: Prisma.IntFilter<"GeneratedPDF"> | number
   deviceType?: Prisma.StringNullableFilter<"GeneratedPDF"> | string | null
   browser?: Prisma.StringNullableFilter<"GeneratedPDF"> | string | null
   os?: Prisma.StringNullableFilter<"GeneratedPDF"> | string | null
   pdfDataUrl?: Prisma.StringNullableFilter<"GeneratedPDF"> | string | null
   storageUrl?: Prisma.StringNullableFilter<"GeneratedPDF"> | string | null
+  storageProvider?: Prisma.StringNullableFilter<"GeneratedPDF"> | string | null
+  sha256Hash?: Prisma.StringNullableFilter<"GeneratedPDF"> | string | null
+  pageCount?: Prisma.IntFilter<"GeneratedPDF"> | number
+  referenceNumber?: Prisma.StringNullableFilter<"GeneratedPDF"> | string | null
+  agreementId?: Prisma.StringNullableFilter<"GeneratedPDF"> | string | null
+  version?: Prisma.StringNullableFilter<"GeneratedPDF"> | string | null
+  status?: Prisma.StringFilter<"GeneratedPDF"> | string
+  downloadCount?: Prisma.IntFilter<"GeneratedPDF"> | number
+  fileName?: Prisma.StringNullableFilter<"GeneratedPDF"> | string | null
+  createdById?: Prisma.StringNullableFilter<"GeneratedPDF"> | string | null
+  visitorId?: Prisma.StringNullableFilter<"GeneratedPDF"> | string | null
+  sessionId?: Prisma.StringNullableFilter<"GeneratedPDF"> | string | null
   metadata?: Prisma.JsonNullableFilter<"GeneratedPDF">
   createdAt?: Prisma.DateTimeFilter<"GeneratedPDF"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"GeneratedPDF"> | Date | string
@@ -339,12 +487,26 @@ export type GeneratedPDFOrderByWithAggregationInput = {
   title?: Prisma.SortOrder
   clientName?: Prisma.SortOrder
   clientEmail?: Prisma.SortOrderInput | Prisma.SortOrder
+  company?: Prisma.SortOrderInput | Prisma.SortOrder
+  phone?: Prisma.SortOrderInput | Prisma.SortOrder
   fileSizeKb?: Prisma.SortOrder
   deviceType?: Prisma.SortOrderInput | Prisma.SortOrder
   browser?: Prisma.SortOrderInput | Prisma.SortOrder
   os?: Prisma.SortOrderInput | Prisma.SortOrder
   pdfDataUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   storageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  storageProvider?: Prisma.SortOrderInput | Prisma.SortOrder
+  sha256Hash?: Prisma.SortOrderInput | Prisma.SortOrder
+  pageCount?: Prisma.SortOrder
+  referenceNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  agreementId?: Prisma.SortOrderInput | Prisma.SortOrder
+  version?: Prisma.SortOrderInput | Prisma.SortOrder
+  status?: Prisma.SortOrder
+  downloadCount?: Prisma.SortOrder
+  fileName?: Prisma.SortOrderInput | Prisma.SortOrder
+  createdById?: Prisma.SortOrderInput | Prisma.SortOrder
+  visitorId?: Prisma.SortOrderInput | Prisma.SortOrder
+  sessionId?: Prisma.SortOrderInput | Prisma.SortOrder
   metadata?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -365,12 +527,26 @@ export type GeneratedPDFScalarWhereWithAggregatesInput = {
   title?: Prisma.StringWithAggregatesFilter<"GeneratedPDF"> | string
   clientName?: Prisma.StringWithAggregatesFilter<"GeneratedPDF"> | string
   clientEmail?: Prisma.StringNullableWithAggregatesFilter<"GeneratedPDF"> | string | null
+  company?: Prisma.StringNullableWithAggregatesFilter<"GeneratedPDF"> | string | null
+  phone?: Prisma.StringNullableWithAggregatesFilter<"GeneratedPDF"> | string | null
   fileSizeKb?: Prisma.IntWithAggregatesFilter<"GeneratedPDF"> | number
   deviceType?: Prisma.StringNullableWithAggregatesFilter<"GeneratedPDF"> | string | null
   browser?: Prisma.StringNullableWithAggregatesFilter<"GeneratedPDF"> | string | null
   os?: Prisma.StringNullableWithAggregatesFilter<"GeneratedPDF"> | string | null
   pdfDataUrl?: Prisma.StringNullableWithAggregatesFilter<"GeneratedPDF"> | string | null
   storageUrl?: Prisma.StringNullableWithAggregatesFilter<"GeneratedPDF"> | string | null
+  storageProvider?: Prisma.StringNullableWithAggregatesFilter<"GeneratedPDF"> | string | null
+  sha256Hash?: Prisma.StringNullableWithAggregatesFilter<"GeneratedPDF"> | string | null
+  pageCount?: Prisma.IntWithAggregatesFilter<"GeneratedPDF"> | number
+  referenceNumber?: Prisma.StringNullableWithAggregatesFilter<"GeneratedPDF"> | string | null
+  agreementId?: Prisma.StringNullableWithAggregatesFilter<"GeneratedPDF"> | string | null
+  version?: Prisma.StringNullableWithAggregatesFilter<"GeneratedPDF"> | string | null
+  status?: Prisma.StringWithAggregatesFilter<"GeneratedPDF"> | string
+  downloadCount?: Prisma.IntWithAggregatesFilter<"GeneratedPDF"> | number
+  fileName?: Prisma.StringNullableWithAggregatesFilter<"GeneratedPDF"> | string | null
+  createdById?: Prisma.StringNullableWithAggregatesFilter<"GeneratedPDF"> | string | null
+  visitorId?: Prisma.StringNullableWithAggregatesFilter<"GeneratedPDF"> | string | null
+  sessionId?: Prisma.StringNullableWithAggregatesFilter<"GeneratedPDF"> | string | null
   metadata?: Prisma.JsonNullableWithAggregatesFilter<"GeneratedPDF">
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"GeneratedPDF"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"GeneratedPDF"> | Date | string
@@ -383,12 +559,26 @@ export type GeneratedPDFCreateInput = {
   title?: string
   clientName?: string
   clientEmail?: string | null
+  company?: string | null
+  phone?: string | null
   fileSizeKb?: number
   deviceType?: string | null
   browser?: string | null
   os?: string | null
   pdfDataUrl?: string | null
   storageUrl?: string | null
+  storageProvider?: string | null
+  sha256Hash?: string | null
+  pageCount?: number
+  referenceNumber?: string | null
+  agreementId?: string | null
+  version?: string | null
+  status?: string
+  downloadCount?: number
+  fileName?: string | null
+  createdById?: string | null
+  visitorId?: string | null
+  sessionId?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -401,12 +591,26 @@ export type GeneratedPDFUncheckedCreateInput = {
   title?: string
   clientName?: string
   clientEmail?: string | null
+  company?: string | null
+  phone?: string | null
   fileSizeKb?: number
   deviceType?: string | null
   browser?: string | null
   os?: string | null
   pdfDataUrl?: string | null
   storageUrl?: string | null
+  storageProvider?: string | null
+  sha256Hash?: string | null
+  pageCount?: number
+  referenceNumber?: string | null
+  agreementId?: string | null
+  version?: string | null
+  status?: string
+  downloadCount?: number
+  fileName?: string | null
+  createdById?: string | null
+  visitorId?: string | null
+  sessionId?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -419,12 +623,26 @@ export type GeneratedPDFUpdateInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   clientName?: Prisma.StringFieldUpdateOperationsInput | string
   clientEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  company?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fileSizeKb?: Prisma.IntFieldUpdateOperationsInput | number
   deviceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   browser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   os?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pdfDataUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   storageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  storageProvider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sha256Hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  agreementId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  version?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  downloadCount?: Prisma.IntFieldUpdateOperationsInput | number
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  visitorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -437,12 +655,26 @@ export type GeneratedPDFUncheckedUpdateInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   clientName?: Prisma.StringFieldUpdateOperationsInput | string
   clientEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  company?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fileSizeKb?: Prisma.IntFieldUpdateOperationsInput | number
   deviceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   browser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   os?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pdfDataUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   storageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  storageProvider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sha256Hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  agreementId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  version?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  downloadCount?: Prisma.IntFieldUpdateOperationsInput | number
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  visitorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -455,12 +687,26 @@ export type GeneratedPDFCreateManyInput = {
   title?: string
   clientName?: string
   clientEmail?: string | null
+  company?: string | null
+  phone?: string | null
   fileSizeKb?: number
   deviceType?: string | null
   browser?: string | null
   os?: string | null
   pdfDataUrl?: string | null
   storageUrl?: string | null
+  storageProvider?: string | null
+  sha256Hash?: string | null
+  pageCount?: number
+  referenceNumber?: string | null
+  agreementId?: string | null
+  version?: string | null
+  status?: string
+  downloadCount?: number
+  fileName?: string | null
+  createdById?: string | null
+  visitorId?: string | null
+  sessionId?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -473,12 +719,26 @@ export type GeneratedPDFUpdateManyMutationInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   clientName?: Prisma.StringFieldUpdateOperationsInput | string
   clientEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  company?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fileSizeKb?: Prisma.IntFieldUpdateOperationsInput | number
   deviceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   browser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   os?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pdfDataUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   storageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  storageProvider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sha256Hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  agreementId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  version?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  downloadCount?: Prisma.IntFieldUpdateOperationsInput | number
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  visitorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -491,12 +751,26 @@ export type GeneratedPDFUncheckedUpdateManyInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   clientName?: Prisma.StringFieldUpdateOperationsInput | string
   clientEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  company?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fileSizeKb?: Prisma.IntFieldUpdateOperationsInput | number
   deviceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   browser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   os?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pdfDataUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   storageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  storageProvider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sha256Hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  agreementId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  version?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  downloadCount?: Prisma.IntFieldUpdateOperationsInput | number
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  visitorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -509,12 +783,26 @@ export type GeneratedPDFCountOrderByAggregateInput = {
   title?: Prisma.SortOrder
   clientName?: Prisma.SortOrder
   clientEmail?: Prisma.SortOrder
+  company?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
   fileSizeKb?: Prisma.SortOrder
   deviceType?: Prisma.SortOrder
   browser?: Prisma.SortOrder
   os?: Prisma.SortOrder
   pdfDataUrl?: Prisma.SortOrder
   storageUrl?: Prisma.SortOrder
+  storageProvider?: Prisma.SortOrder
+  sha256Hash?: Prisma.SortOrder
+  pageCount?: Prisma.SortOrder
+  referenceNumber?: Prisma.SortOrder
+  agreementId?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  downloadCount?: Prisma.SortOrder
+  fileName?: Prisma.SortOrder
+  createdById?: Prisma.SortOrder
+  visitorId?: Prisma.SortOrder
+  sessionId?: Prisma.SortOrder
   metadata?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -523,6 +811,8 @@ export type GeneratedPDFCountOrderByAggregateInput = {
 
 export type GeneratedPDFAvgOrderByAggregateInput = {
   fileSizeKb?: Prisma.SortOrder
+  pageCount?: Prisma.SortOrder
+  downloadCount?: Prisma.SortOrder
 }
 
 export type GeneratedPDFMaxOrderByAggregateInput = {
@@ -531,12 +821,26 @@ export type GeneratedPDFMaxOrderByAggregateInput = {
   title?: Prisma.SortOrder
   clientName?: Prisma.SortOrder
   clientEmail?: Prisma.SortOrder
+  company?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
   fileSizeKb?: Prisma.SortOrder
   deviceType?: Prisma.SortOrder
   browser?: Prisma.SortOrder
   os?: Prisma.SortOrder
   pdfDataUrl?: Prisma.SortOrder
   storageUrl?: Prisma.SortOrder
+  storageProvider?: Prisma.SortOrder
+  sha256Hash?: Prisma.SortOrder
+  pageCount?: Prisma.SortOrder
+  referenceNumber?: Prisma.SortOrder
+  agreementId?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  downloadCount?: Prisma.SortOrder
+  fileName?: Prisma.SortOrder
+  createdById?: Prisma.SortOrder
+  visitorId?: Prisma.SortOrder
+  sessionId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -548,12 +852,26 @@ export type GeneratedPDFMinOrderByAggregateInput = {
   title?: Prisma.SortOrder
   clientName?: Prisma.SortOrder
   clientEmail?: Prisma.SortOrder
+  company?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
   fileSizeKb?: Prisma.SortOrder
   deviceType?: Prisma.SortOrder
   browser?: Prisma.SortOrder
   os?: Prisma.SortOrder
   pdfDataUrl?: Prisma.SortOrder
   storageUrl?: Prisma.SortOrder
+  storageProvider?: Prisma.SortOrder
+  sha256Hash?: Prisma.SortOrder
+  pageCount?: Prisma.SortOrder
+  referenceNumber?: Prisma.SortOrder
+  agreementId?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  downloadCount?: Prisma.SortOrder
+  fileName?: Prisma.SortOrder
+  createdById?: Prisma.SortOrder
+  visitorId?: Prisma.SortOrder
+  sessionId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -561,6 +879,8 @@ export type GeneratedPDFMinOrderByAggregateInput = {
 
 export type GeneratedPDFSumOrderByAggregateInput = {
   fileSizeKb?: Prisma.SortOrder
+  pageCount?: Prisma.SortOrder
+  downloadCount?: Prisma.SortOrder
 }
 
 
@@ -571,12 +891,26 @@ export type GeneratedPDFSelect<ExtArgs extends runtime.Types.Extensions.Internal
   title?: boolean
   clientName?: boolean
   clientEmail?: boolean
+  company?: boolean
+  phone?: boolean
   fileSizeKb?: boolean
   deviceType?: boolean
   browser?: boolean
   os?: boolean
   pdfDataUrl?: boolean
   storageUrl?: boolean
+  storageProvider?: boolean
+  sha256Hash?: boolean
+  pageCount?: boolean
+  referenceNumber?: boolean
+  agreementId?: boolean
+  version?: boolean
+  status?: boolean
+  downloadCount?: boolean
+  fileName?: boolean
+  createdById?: boolean
+  visitorId?: boolean
+  sessionId?: boolean
   metadata?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -589,12 +923,26 @@ export type GeneratedPDFSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   title?: boolean
   clientName?: boolean
   clientEmail?: boolean
+  company?: boolean
+  phone?: boolean
   fileSizeKb?: boolean
   deviceType?: boolean
   browser?: boolean
   os?: boolean
   pdfDataUrl?: boolean
   storageUrl?: boolean
+  storageProvider?: boolean
+  sha256Hash?: boolean
+  pageCount?: boolean
+  referenceNumber?: boolean
+  agreementId?: boolean
+  version?: boolean
+  status?: boolean
+  downloadCount?: boolean
+  fileName?: boolean
+  createdById?: boolean
+  visitorId?: boolean
+  sessionId?: boolean
   metadata?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -607,12 +955,26 @@ export type GeneratedPDFSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   title?: boolean
   clientName?: boolean
   clientEmail?: boolean
+  company?: boolean
+  phone?: boolean
   fileSizeKb?: boolean
   deviceType?: boolean
   browser?: boolean
   os?: boolean
   pdfDataUrl?: boolean
   storageUrl?: boolean
+  storageProvider?: boolean
+  sha256Hash?: boolean
+  pageCount?: boolean
+  referenceNumber?: boolean
+  agreementId?: boolean
+  version?: boolean
+  status?: boolean
+  downloadCount?: boolean
+  fileName?: boolean
+  createdById?: boolean
+  visitorId?: boolean
+  sessionId?: boolean
   metadata?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -625,19 +987,33 @@ export type GeneratedPDFSelectScalar = {
   title?: boolean
   clientName?: boolean
   clientEmail?: boolean
+  company?: boolean
+  phone?: boolean
   fileSizeKb?: boolean
   deviceType?: boolean
   browser?: boolean
   os?: boolean
   pdfDataUrl?: boolean
   storageUrl?: boolean
+  storageProvider?: boolean
+  sha256Hash?: boolean
+  pageCount?: boolean
+  referenceNumber?: boolean
+  agreementId?: boolean
+  version?: boolean
+  status?: boolean
+  downloadCount?: boolean
+  fileName?: boolean
+  createdById?: boolean
+  visitorId?: boolean
+  sessionId?: boolean
   metadata?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
 }
 
-export type GeneratedPDFOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "pdfType" | "title" | "clientName" | "clientEmail" | "fileSizeKb" | "deviceType" | "browser" | "os" | "pdfDataUrl" | "storageUrl" | "metadata" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["generatedPDF"]>
+export type GeneratedPDFOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "pdfType" | "title" | "clientName" | "clientEmail" | "company" | "phone" | "fileSizeKb" | "deviceType" | "browser" | "os" | "pdfDataUrl" | "storageUrl" | "storageProvider" | "sha256Hash" | "pageCount" | "referenceNumber" | "agreementId" | "version" | "status" | "downloadCount" | "fileName" | "createdById" | "visitorId" | "sessionId" | "metadata" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["generatedPDF"]>
 
 export type $GeneratedPDFPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "GeneratedPDF"
@@ -648,12 +1024,26 @@ export type $GeneratedPDFPayload<ExtArgs extends runtime.Types.Extensions.Intern
     title: string
     clientName: string
     clientEmail: string | null
+    company: string | null
+    phone: string | null
     fileSizeKb: number
     deviceType: string | null
     browser: string | null
     os: string | null
     pdfDataUrl: string | null
     storageUrl: string | null
+    storageProvider: string | null
+    sha256Hash: string | null
+    pageCount: number
+    referenceNumber: string | null
+    agreementId: string | null
+    version: string | null
+    status: string
+    downloadCount: number
+    fileName: string | null
+    createdById: string | null
+    visitorId: string | null
+    sessionId: string | null
     metadata: runtime.JsonValue | null
     createdAt: Date
     updatedAt: Date
@@ -1086,12 +1476,26 @@ export interface GeneratedPDFFieldRefs {
   readonly title: Prisma.FieldRef<"GeneratedPDF", 'String'>
   readonly clientName: Prisma.FieldRef<"GeneratedPDF", 'String'>
   readonly clientEmail: Prisma.FieldRef<"GeneratedPDF", 'String'>
+  readonly company: Prisma.FieldRef<"GeneratedPDF", 'String'>
+  readonly phone: Prisma.FieldRef<"GeneratedPDF", 'String'>
   readonly fileSizeKb: Prisma.FieldRef<"GeneratedPDF", 'Int'>
   readonly deviceType: Prisma.FieldRef<"GeneratedPDF", 'String'>
   readonly browser: Prisma.FieldRef<"GeneratedPDF", 'String'>
   readonly os: Prisma.FieldRef<"GeneratedPDF", 'String'>
   readonly pdfDataUrl: Prisma.FieldRef<"GeneratedPDF", 'String'>
   readonly storageUrl: Prisma.FieldRef<"GeneratedPDF", 'String'>
+  readonly storageProvider: Prisma.FieldRef<"GeneratedPDF", 'String'>
+  readonly sha256Hash: Prisma.FieldRef<"GeneratedPDF", 'String'>
+  readonly pageCount: Prisma.FieldRef<"GeneratedPDF", 'Int'>
+  readonly referenceNumber: Prisma.FieldRef<"GeneratedPDF", 'String'>
+  readonly agreementId: Prisma.FieldRef<"GeneratedPDF", 'String'>
+  readonly version: Prisma.FieldRef<"GeneratedPDF", 'String'>
+  readonly status: Prisma.FieldRef<"GeneratedPDF", 'String'>
+  readonly downloadCount: Prisma.FieldRef<"GeneratedPDF", 'Int'>
+  readonly fileName: Prisma.FieldRef<"GeneratedPDF", 'String'>
+  readonly createdById: Prisma.FieldRef<"GeneratedPDF", 'String'>
+  readonly visitorId: Prisma.FieldRef<"GeneratedPDF", 'String'>
+  readonly sessionId: Prisma.FieldRef<"GeneratedPDF", 'String'>
   readonly metadata: Prisma.FieldRef<"GeneratedPDF", 'Json'>
   readonly createdAt: Prisma.FieldRef<"GeneratedPDF", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"GeneratedPDF", 'DateTime'>

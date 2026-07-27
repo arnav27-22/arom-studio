@@ -178,6 +178,56 @@ export default async function handler(req, res) {
     return j(res, { success: true })
   }
 
+  if (pathname.match(/^\/api\/admin\/pdfs\/[^\/]+\/download$/) && req.method === 'GET') {
+    const pdfId = pathname.split('/')[4]
+    const pdfs = (await db.read('real_pdfs')) || []
+    const pdf = pdfs.find(p => p.id === pdfId)
+    if (!pdf) return send(res, 404, { error: 'PDF not found' })
+    if (pdf.pdfDataUrl) {
+      const base64 = pdf.pdfDataUrl.replace(/^data:application\/pdf;base64,/, '')
+      const buffer = Buffer.from(base64, 'base64')
+      res.writeHead(200, {
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename="${pdf.fileName || (pdf.title || pdf.pdfType).replace(/\s+/g, '_') + '.pdf'}"`,
+        'Content-Length': buffer.length,
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': 'true',
+      })
+      res.end(buffer)
+      return
+    }
+    return send(res, 404, { error: 'PDF data not available' })
+  }
+
+  if (pathname.match(/^\/api\/admin\/pdfs\/[^\/]+\/preview$/) && req.method === 'GET') {
+    const pdfId = pathname.split('/')[4]
+    const pdfs = (await db.read('real_pdfs')) || []
+    const pdf = pdfs.find(p => p.id === pdfId)
+    if (!pdf) return send(res, 404, { error: 'PDF not found' })
+    if (pdf.pdfDataUrl) {
+      const base64 = pdf.pdfDataUrl.replace(/^data:application\/pdf;base64,/, '')
+      const buffer = Buffer.from(base64, 'base64')
+      res.writeHead(200, {
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `inline; filename="${pdf.fileName || 'document.pdf'}"`,
+        'Content-Length': buffer.length,
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': 'true',
+      })
+      res.end(buffer)
+      return
+    }
+    return send(res, 404, { error: 'PDF data not available' })
+  }
+
+  if (pathname.startsWith('/api/admin/pdfs/') && req.method === 'GET') {
+    const pdfId = pathname.split('/').pop()
+    const pdfs = (await db.read('real_pdfs')) || []
+    const pdf = pdfs.find(p => p.id === pdfId)
+    if (!pdf) return send(res, 404, { error: 'PDF not found' })
+    return j(res, pdf)
+  }
+
   // ====== ADMIN LEADS ======
   if (pathname === '/api/admin/leads') {
     const leads = (await db.read('real_leads')) || []
@@ -427,20 +477,37 @@ export default async function handler(req, res) {
 
   if ((pathname === '/api/track/save-pdf' || pathname === '/api/track/save' || pathname === '/api/pdfs/save') && req.method === 'POST') {
     const body = await getJSON(req)
-    await db.append('real_pdfs', {
-      id: body.id || crypto.randomUUID(),
-      createdAt: new Date().toISOString(),
+    const pdfId = body.id || crypto.randomUUID()
+    const pdfRecord = {
+      id: pdfId,
+      createdAt: body.createdAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
       pdfType: body.pdfType || 'Document',
       title: body.title || body.storageKey || 'PDF Document',
       clientName: body.clientName || 'Client',
       clientEmail: body.clientEmail || '',
+      company: body.company || '',
+      phone: body.phone || '',
       fileSizeKb: body.fileSizeKb || 180,
+      pageCount: body.pageCount || 0,
       deviceType: body.deviceType || 'desktop',
       browser: body.browser || 'Chrome',
       os: body.os || 'Windows',
       pdfDataUrl: body.pdfDataUrl || '',
-    })
-    return j(res, { ok: true })
+      storageUrl: body.storageUrl || '',
+      storageProvider: body.storageProvider || 'inline',
+      sha256Hash: body.sha256Hash || '',
+      referenceNumber: body.referenceNumber || `PDF-${pdfId.slice(0, 8).toUpperCase()}`,
+      agreementId: body.agreementId || '',
+      version: body.version || '1.0.0',
+      status: body.status || 'Final',
+      downloadCount: body.downloadCount || 0,
+      fileName: body.fileName || `${(body.title || body.pdfType || 'Document').replace(/\s+/g, '_')}.pdf`,
+      visitorId: body.visitorId || '',
+      sessionId: body.sessionId || '',
+    }
+    await db.append('real_pdfs', pdfRecord)
+    return j(res, { ok: true, id: pdfId, sha256Hash: body.sha256Hash || '', referenceNumber: pdfRecord.referenceNumber })
   }
 
   if (pathname === '/api/track/ai-conversation' && req.method === 'POST') {

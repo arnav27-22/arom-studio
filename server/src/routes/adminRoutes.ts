@@ -67,6 +67,8 @@ router.post('/visitors/track-page-view', auditLog('TRACK_PAGE_VIEW', 'visitors')
 // PDFs
 router.get('/pdfs', (req, res, next) => pdfController.getAll(req, res, next))
 router.get('/pdfs/:id', (req, res, next) => pdfController.getOne(req, res, next))
+router.get('/pdfs/:id/download', (req, res, next) => pdfController.download(req, res, next))
+router.get('/pdfs/:id/preview', (req, res, next) => pdfController.preview(req, res, next))
 router.delete('/pdfs/:id', auditLog('DELETE_PDF', 'pdfs'), (req, res, next) => pdfController.delete(req, res, next))
 router.post('/pdfs/save', auditLog('SAVE_PDF', 'pdfs'), (req, res, next) => pdfController.save(req, res, next))
 

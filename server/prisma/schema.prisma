@@ -190,25 +190,40 @@ model VisitorSession {
 }
 
 model GeneratedPDF {
-  id          String   @id @default(cuid())
-  pdfType     String   @default("Document")
-  title       String   @default("PDF Document")
-  clientName  String   @default("Client")
-  clientEmail String?
-  fileSizeKb  Int      @default(0)
-  deviceType  String?
-  browser     String?
-  os          String?
-  pdfDataUrl  String?
-  storageUrl  String?
-  metadata    Json?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  deletedAt   DateTime?
+  id              String    @id @default(cuid())
+  pdfType         String    @default("Document")
+  title           String    @default("PDF Document")
+  clientName      String    @default("Client")
+  clientEmail     String?
+  company         String?
+  phone           String?
+  fileSizeKb      Int       @default(0)
+  deviceType      String?
+  browser         String?
+  os              String?
+  pdfDataUrl      String?
+  storageUrl      String?
+  storageProvider String?   @default("filesystem")
+  sha256Hash      String?
+  pageCount       Int       @default(0)
+  referenceNumber String?
+  agreementId     String?
+  version         String?   @default("1.0.0")
+  status          String    @default("Final")
+  downloadCount   Int       @default(0)
+  fileName        String?
+  createdById     String?
+  visitorId       String?
+  sessionId       String?
+  metadata        Json?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
 
   @@index([createdAt])
   @@index([pdfType])
   @@index([clientName])
+  @@index([referenceNumber])
 }
 
 model Lead {
