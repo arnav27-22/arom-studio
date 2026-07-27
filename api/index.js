@@ -773,6 +773,6 @@ export default async function handler(req, res) {
     return send(res, 404, { error: 'Not found' })
   } catch (err) {
     console.error('Handler error:', err)
-    return send(res, 500, { error: 'Internal server error', debug: err.message })
+    return send(res, 500, { error: 'Internal server error' })
   }
 }

@@ -1,5 +1,5 @@
-import pkg from 'pg'
-const { Pool } = pkg
+import pg from 'pg'
+const { Pool } = pg
 
 let pool
 
@@ -440,6 +440,7 @@ async function ensureSchema() {
 let schemaEnsured = false
 
 async function ensureInitialized() {
+  requireDB()
   if (!schemaEnsured) {
     schemaEnsured = true
     await ensureSchema()
