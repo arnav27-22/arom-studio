@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { CheckCircle2, Clock, Circle, ChevronDown, Edit3, Plus, Trash2, Route } from 'lucide-react'
+import { CheckCircle2, Clock, Circle, ChevronDown, Route } from 'lucide-react'
 import { cn } from '../../lib/cn'
 
 interface Phase {
@@ -13,34 +13,9 @@ interface Phase {
 
 const defaultPhases: Phase[] = []
 
-const statuses = ['completed', 'active', 'upcoming'] as const
-
 export default function ProjectTimeline() {
-  const [phases, setPhases] = useState<Phase[]>(defaultPhases)
+  const [phases] = useState<Phase[]>(defaultPhases)
   const [expanded, setExpanded] = useState<number | null>(null)
-  const [editing, setEditing] = useState<number | null>(null)
-  const [editPhase, setEditPhase] = useState<Phase | null>(null)
-
-  const addPhase = () => {
-    setPhases((prev) => [...prev, { name: 'New Phase', status: 'upcoming', duration: 'Week ?', desc: 'Description', details: '' }])
-  }
-
-  const removePhase = (index: number) => {
-    setPhases((prev) => prev.filter((_, i) => i !== index))
-  }
-
-  const startEditing = (index: number) => {
-    setEditing(index)
-    setEditPhase({ ...phases[index] })
-  }
-
-  const saveEditing = () => {
-    if (editing !== null && editPhase) {
-      setPhases((prev) => prev.map((p, i) => i === editing ? { ...p, ...editPhase } : p))
-    }
-    setEditing(null)
-    setEditPhase(null)
-  }
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -49,9 +24,6 @@ export default function ProjectTimeline() {
           <h1 className="font-heading text-3xl md:text-4xl text-white tracking-[-1px]">Project Timeline</h1>
           <p className="text-sm text-white/50 font-body font-light mt-1">Track your project progress from start to finish.</p>
         </div>
-        <button onClick={addPhase} className="flex items-center gap-1.5 text-xs text-accent hover:text-accent/80 font-body font-medium whitespace-nowrap">
-          <Plus className="h-3.5 w-3.5" /> Add Phase
-        </button>
       </div>
 
       {/* Timeline */}
@@ -61,7 +33,7 @@ export default function ProjectTimeline() {
           {phases.length === 0 ? (
             <div className="pl-12 glass rounded-[20px] p-12 flex flex-col items-center justify-center gap-3">
               <Route className="h-10 w-10 text-white/20" />
-              <p className="text-white/30 font-body text-sm">No timeline set yet. Click "Add Phase" to build your project roadmap.</p>
+              <p className="text-white/30 font-body text-sm">No timeline set yet. Your project roadmap will appear here once it's ready.</p>
             </div>
           ) : phases.map((phase, i) => {
             const Icon = phase.status === 'completed' ? CheckCircle2 : phase.status === 'active' ? Clock : Circle
@@ -83,68 +55,47 @@ export default function ProjectTimeline() {
                   )} />
                 </div>
 
-                {editing === i ? (
-                  <div className="glass rounded-[20px] p-5 border border-accent/40">
-                    <div className="space-y-3">
-                      <input value={editPhase?.name || ''} onChange={(e) => setEditPhase((prev) => prev ? { ...prev, name: e.target.value } : null)} placeholder="Phase name" className="w-full bg-white/5 border border-white/10 rounded-[10px] px-3 py-2 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-accent/40 font-body font-heading" />
-                      <input value={editPhase?.duration || ''} onChange={(e) => setEditPhase((prev) => prev ? { ...prev, duration: e.target.value } : null)} placeholder="Duration (e.g. Week 1)" className="w-full bg-white/5 border border-white/10 rounded-[10px] px-3 py-2 text-xs text-white placeholder:text-white/20 focus:outline-none focus:border-accent/40 font-body" />
-                      <div className="flex gap-2">
-                        {statuses.map((s) => (
-                          <button key={s} onClick={() => setEditPhase((prev) => prev ? { ...prev, status: s } : null)} className={cn('text-xs px-3 py-1.5 rounded-full border font-body transition-all', editPhase?.status === s ? 'bg-accent/20 border-accent/50 text-accent' : 'border-white/10 text-white/50 hover:border-white/30')}>{s}</button>
-                        ))}
-                      </div>
-                      <textarea value={editPhase?.desc || ''} onChange={(e) => setEditPhase((prev) => prev ? { ...prev, desc: e.target.value } : null)} placeholder="Short description" rows={2} className="w-full bg-white/5 border border-white/10 rounded-[10px] px-3 py-2 text-xs text-white placeholder:text-white/20 focus:outline-none focus:border-accent/40 font-body resize-none" />
-                      <textarea value={editPhase?.details || ''} onChange={(e) => setEditPhase((prev) => prev ? { ...prev, details: e.target.value } : null)} placeholder="Detailed description (optional)" rows={3} className="w-full bg-white/5 border border-white/10 rounded-[10px] px-3 py-2 text-xs text-white placeholder:text-white/20 focus:outline-none focus:border-accent/40 font-body resize-none" />
-                      <div className="flex justify-between pt-1">
-                        <button onClick={() => { removePhase(i); setEditing(null) }} className="text-xs text-red-400 hover:text-red-300 font-body flex items-center gap-1"><Trash2 className="h-3 w-3" /> Remove</button>
-                        <button onClick={saveEditing} className="text-xs text-accent hover:text-accent/80 font-body">Done</button>
-                      </div>
+                <button
+                  onClick={() => setExpanded(expanded === i ? null : i)}
+                  className={cn(
+                    'w-full text-left glass rounded-[20px] p-5 transition-all duration-300 cursor-pointer',
+                    phase.status === 'active' ? 'border border-accent/30' : '',
+                    expanded === i ? 'border-accent/40' : '',
+                  )}
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <h3 className={cn(
+                      'font-heading text-lg',
+                      phase.status === 'completed' ? 'text-white/60' : 'text-white',
+                    )}>{phase.name}</h3>
+                    <div className="flex items-center gap-2">
+                      {phase.duration && (
+                        <span className="text-[10px] text-white/40 font-body uppercase tracking-[0.1em]">{phase.duration}</span>
+                      )}
+                      <ChevronDown className={cn(
+                        'h-4 w-4 text-white/30 transition-transform duration-300',
+                        expanded === i ? 'rotate-180' : '',
+                      )} />
                     </div>
                   </div>
-                ) : (
-                  <button
-                    onClick={() => setExpanded(expanded === i ? null : i)}
-                    className={cn(
-                      'w-full text-left glass rounded-[20px] p-5 transition-all duration-300 cursor-pointer',
-                      phase.status === 'active' ? 'border border-accent/30' : '',
-                      expanded === i ? 'border-accent/40' : '',
+                  <p className={cn(
+                    'text-xs font-body font-light',
+                    phase.status === 'completed' ? 'text-white/40' : 'text-white/60',
+                  )}>{phase.desc}</p>
+                  <AnimatePresence>
+                    {expanded === i && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="overflow-hidden"
+                      >
+                        <p className="text-xs text-white/50 font-body font-light mt-3 pt-3 border-t border-white/10">{phase.details}</p>
+                      </motion.div>
                     )}
-                  >
-                    <div className="flex items-center justify-between mb-1">
-                      <h3 className={cn(
-                        'font-heading text-lg',
-                        phase.status === 'completed' ? 'text-white/60' : 'text-white',
-                      )}>{phase.name}</h3>
-                      <div className="flex items-center gap-2">
-                        <button onClick={(e) => { e.stopPropagation(); startEditing(i) }} className="text-white/30 hover:text-accent transition-colors"><Edit3 className="h-3.5 w-3.5" /></button>
-                        {phase.duration && (
-                          <span className="text-[10px] text-white/40 font-body uppercase tracking-[0.1em]">{phase.duration}</span>
-                        )}
-                        <ChevronDown className={cn(
-                          'h-4 w-4 text-white/30 transition-transform duration-300',
-                          expanded === i ? 'rotate-180' : '',
-                        )} />
-                      </div>
-                    </div>
-                    <p className={cn(
-                      'text-xs font-body font-light',
-                      phase.status === 'completed' ? 'text-white/40' : 'text-white/60',
-                    )}>{phase.desc}</p>
-                    <AnimatePresence>
-                      {expanded === i && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: 'auto', opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.3 }}
-                          className="overflow-hidden"
-                        >
-                          <p className="text-xs text-white/50 font-body font-light mt-3 pt-3 border-t border-white/10">{phase.details}</p>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </button>
-                )}
+                  </AnimatePresence>
+                </button>
               </motion.div>
             )
           })}

@@ -373,7 +373,7 @@ export default async function handler(req, res) {
           visitors, pdfs, leads, invoices, logs, clients, projects,
           proposals, agreements, payments, content, assets, approvals,
           timelines, handovers, feedbacks, notifications, recycleBin,
-          discovery, aiConversations,
+          discovery, aiConversations, cms,
         ] = await Promise.all([
           readAll('visitors'), readAll('generated_pdfs'), readAll('leads'),
           readAll('invoices'), readAll('audit_logs'), readAll('clients'),
@@ -381,7 +381,7 @@ export default async function handler(req, res) {
           readAll('payments'), readAll('content_collection'), readAll('asset_folders'),
           readAll('design_approvals'), readAll('project_timelines'), readAll('handovers'),
           readAll('feedbacks'), readAll('notifications'), readAll('recycle_bin'),
-          readAll('discovery_forms'), readAll('ai_conversations'),
+          readAll('discovery_forms'), readAll('ai_conversations'), readAll('cms_content'),
         ])
         return j(res, {
           visitors, pdfs, leads, invoices, logs,
@@ -399,6 +399,7 @@ export default async function handler(req, res) {
           notifications: notifications.length ? notifications : undefined,
           discoveryQuestionnaires: discovery,
           recycleBin, aiConversations,
+          cmsContent: cms,
         })
       }
       if (req.method === 'POST') {
@@ -429,7 +430,7 @@ export default async function handler(req, res) {
             handovers: 'handovers', feedbacks: 'feedbacks', notifications: 'notifications',
             discoveryQuestionnaires: 'discovery_forms', visitors: 'visitors', pdfs: 'generated_pdfs',
             invoices: 'invoices', leads: 'leads', recycleBin: 'recycle_bin',
-            logs: 'audit_logs',
+            logs: 'audit_logs', cmsContent: 'cms_content',
           }
           for (const [key, tableName] of Object.entries(map)) {
             if (Array.isArray(item[key])) {
@@ -567,6 +568,38 @@ export default async function handler(req, res) {
       }
       const rows = await readAll('invoices')
       return j(res, { total: rows.length, invoices: rows })
+    }
+
+    // CMS
+    if (pathname === '/api/admin/cms') {
+      const rows = await readAll('cms_content')
+      return j(res, rows)
+    }
+
+    if (pathname.match(/^\/api\/admin\/cms\/(.+)$/)) {
+      const cmsId = pathname.match(/^\/api\/admin\/cms\/(.+)$/)[1]
+      if (req.method === 'PUT') {
+        const body = await getJSON(req)
+        await insertRow('cms_content', {
+          id: cmsId,
+          updated_at: new Date().toISOString(),
+          title: body.title || '',
+          content: body.content ? JSON.stringify(body.content) : '{}',
+          published: body.published || false,
+          metadata: body.metadata ? JSON.stringify(body.metadata) : '{}',
+        })
+        const updated = await getById('cms_content', cmsId)
+        return j(res, updated)
+      }
+      const item = await getById('cms_content', cmsId)
+      return j(res, item || { id: cmsId, title: '', content: {}, published: false })
+    }
+
+    if (pathname.match(/^\/api\/cms\/(.+)$/) && req.method === 'GET') {
+      const cmsId = pathname.match(/^\/api\/cms\/(.+)$/)[1]
+      const item = await getById('cms_content', cmsId)
+      if (!item || !item.published) return j(res, { id: cmsId, content: {} })
+      return j(res, { id: item.id, title: item.title, content: item.content, updated_at: item.updated_at })
     }
 
     // Generic collection endpoints

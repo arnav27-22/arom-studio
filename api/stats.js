@@ -1,134 +1,97 @@
-import { readAll } from './_db.js'
+import { query, readAll } from './_db.js'
 
 export async function computeDashboard() {
   try {
-    const now = new Date()
-    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-    const weekAgo = new Date(now - 7 * 86400000)
-    const monthAgo = new Date(now - 30 * 86400000)
-    const fiveMinAgo = new Date(now - 5 * 60000)
+    const timezone = 'Asia/Kolkata'
 
-    const [visitors, pdfs, leads, logs, conversations] = await Promise.all([
-      readAll('visitors'),
-      readAll('generated_pdfs'),
-      readAll('leads'),
-      readAll('audit_logs'),
-      readAll('ai_conversations'),
+    const [visitorCounts, deviceRows, browserRows, countryRows, cityRows, dailyRows, returningBounce, pdfInfo, leadInfo, aiInfo, logsArr, vArr] = await Promise.all([
+      query(`SELECT
+        COUNT(*)::int AS total,
+        COUNT(*) FILTER (WHERE created_at AT TIME ZONE 'UTC' AT TIME ZONE $1 >= (CURRENT_TIMESTAMP AT TIME ZONE $1)::date)::int AS today,
+        COUNT(*) FILTER (WHERE created_at >= NOW() - INTERVAL '7 days')::int AS this_week,
+        COUNT(*) FILTER (WHERE created_at >= NOW() - INTERVAL '30 days')::int AS this_month,
+        COUNT(*) FILTER (WHERE created_at >= NOW() - INTERVAL '5 minutes')::int AS recent_count
+      FROM visitors`, [timezone]),
+      query(`SELECT COALESCE(device_type, 'desktop') AS k, COUNT(*)::int AS c FROM visitors GROUP BY k`),
+      query(`SELECT COALESCE(browser, 'Unknown') AS k, COUNT(*)::int AS c FROM visitors GROUP BY k`),
+      query(`SELECT country AS k, COUNT(*)::int AS c FROM visitors WHERE country IS NOT NULL AND country != '' GROUP BY k ORDER BY c DESC`),
+      query(`SELECT city AS k, COUNT(*)::int AS c FROM visitors WHERE city IS NOT NULL AND city != '' GROUP BY k ORDER BY c DESC`),
+      query(`SELECT created_at::date::text AS d, COUNT(*)::int AS c FROM visitors GROUP BY d ORDER BY d`),
+      query(`SELECT COALESCE(is_returning, FALSE) AS returning, COUNT(*)::int AS c FROM visitors GROUP BY is_returning`),
+      query(`SELECT COUNT(*)::int AS total, COUNT(*) FILTER (WHERE created_at AT TIME ZONE 'UTC' AT TIME ZONE $1 >= (CURRENT_TIMESTAMP AT TIME ZONE $1)::date)::int AS today, COALESCE(AVG(file_size_kb), 0)::int AS avg_size FROM generated_pdfs`, [timezone]),
+      query(`SELECT COUNT(*)::int AS total, COUNT(*) FILTER (WHERE status = 'New')::int AS new_count FROM leads`),
+      query(`SELECT COUNT(*)::int AS total, COUNT(*) FILTER (WHERE COALESCE(updated_at, created_at) AT TIME ZONE 'UTC' AT TIME ZONE $1 >= (CURRENT_TIMESTAMP AT TIME ZONE $1)::date)::int AS today, SUM(CASE WHEN messages IS NOT NULL AND jsonb_typeof(messages) = 'array' THEN jsonb_array_length(messages) ELSE 0 END)::int AS total_messages FROM ai_conversations`, [timezone]),
+      readAll('audit_logs', 'created_at DESC', 10),
+      readAll('visitors', 'created_at DESC', 10),
     ])
 
-    const vArr = Array.isArray(visitors) ? visitors : []
-    const pArr = Array.isArray(pdfs) ? pdfs : []
-    const lArr = Array.isArray(leads) ? leads : []
-    const logsArr = Array.isArray(logs) ? logs : []
-    const aiArr = Array.isArray(conversations) ? conversations : []
+    const v = visitorCounts.rows[0]
+    const deviceMap = {}
+    deviceRows.rows.forEach(r => { deviceMap[r.k] = r.c })
+    const browserMap = {}
+    browserRows.rows.forEach(r => { browserMap[r.k] = r.c })
+    const countryMap = {}
+    countryRows.rows.forEach(r => { countryMap[r.k] = r.c })
+    const cityMap = {}
+    cityRows.rows.forEach(r => { cityMap[r.k] = r.c })
+    const dailyMap = {}
+    dailyRows.rows.forEach(r => { dailyMap[r.d] = r.c })
 
-    const todayVisits = vArr.filter(v => {
-      const d = v.createdAt ? new Date(v.createdAt) : null
-      return d && d >= todayStart
-    })
-    const weekVisits = vArr.filter(v => {
-      const d = v.createdAt ? new Date(v.createdAt) : null
-      return d && d >= weekAgo
-    })
-    const monthVisits = vArr.filter(v => {
-      const d = v.createdAt ? new Date(v.createdAt) : null
-      return d && d >= monthAgo
-    })
+    const pageQ = await query(`SELECT page, COUNT(*)::int AS c FROM visitors GROUP BY page ORDER BY c DESC LIMIT 1`)
+    const topPage = pageQ.rows[0]?.page || '/'
 
-    const pageCounts = {}
-    vArr.forEach(v => { pageCounts[v.page] = (pageCounts[v.page] || 0) + 1 })
-    const topPage = Object.entries(pageCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || '/'
+    const activeSessionsQ = await query(`SELECT COUNT(DISTINCT session_id)::int AS c FROM visitors WHERE created_at >= NOW() - INTERVAL '5 minutes'`)
+    const activeSessions = activeSessionsQ.rows[0]?.c || 0
 
-    const activeSessions = new Set(
-      vArr.filter(v => {
-        const d = v.createdAt ? new Date(v.createdAt) : null
-        return d && d >= fiveMinAgo
-      }).map(v => v.sessionId)
-    ).size
+    let returningCount = 0
+    let totalVisits = v.total
+    returningBounce.rows.forEach(r => { if (r.returning) returningCount = r.c })
 
-    const deviceBreakdown = {}
-    vArr.forEach(v => {
-      const t = v.deviceType || 'desktop'
-      deviceBreakdown[t] = (deviceBreakdown[t] || 0) + 1
-    })
+    const bounceQ = await query(`SELECT COUNT(*)::int AS c FROM visitors WHERE is_bounce = TRUE`)
+    const bounceCount = bounceQ.rows[0]?.c || 0
+    const bounceRate = totalVisits ? Math.round((bounceCount / totalVisits) * 100) : 0
 
-    const browserBreakdown = {}
-    vArr.forEach(v => {
-      const b = v.browser || 'Unknown'
-      browserBreakdown[b] = (browserBreakdown[b] || 0) + 1
-    })
+    const p = pdfInfo.rows[0]
+    const l = leadInfo.rows[0]
+    const a = aiInfo.rows[0]
 
-    const countryCounts = {}
-    vArr.forEach(v => {
-      if (v.country) countryCounts[v.country] = (countryCounts[v.country] || 0) + 1
-    })
-
-    const cityCounts = {}
-    vArr.forEach(v => {
-      if (v.city) cityCounts[v.city] = (cityCounts[v.city] || 0) + 1
-    })
-
-    const dailyVisits = {}
-    vArr.forEach(v => {
-      if (v.createdAt) {
-        const d = v.createdAt.slice(0, 10)
-        dailyVisits[d] = (dailyVisits[d] || 0) + 1
-      }
-    })
-
-    const returningCount = vArr.filter(v => v.isReturning).length
-    const bounceCount = vArr.filter(v => v.isBounce).length
-    const bounceRate = vArr.length ? Math.round((bounceCount / vArr.length) * 100) : 0
-
-    const pdfTodayCount = pArr.filter(p => {
-      const d = p.createdAt ? new Date(p.createdAt) : null
-      return d && d >= todayStart
-    }).length
-    const aiTodayCount = aiArr.filter(a => {
-      const lastActive = a.lastActiveAt || a.createdAt
-      const d = lastActive ? new Date(lastActive) : null
-      return d && d >= todayStart
-    }).length
-    const aiTotalMessages = aiArr.reduce((sum, c) => sum + (Array.isArray(c.messages) ? c.length : 0), 0)
+    const logsArray = Array.isArray(logsArr) ? logsArr : []
+    const visitorsArray = Array.isArray(vArr) ? vArr : []
 
     return {
       visitors: {
-        total: vArr.length,
-        today: todayVisits.length,
-        thisWeek: weekVisits.length,
-        thisMonth: monthVisits.length,
+        total: v.total,
+        today: v.today,
+        thisWeek: v.this_week,
+        thisMonth: v.this_month,
         activeSessions,
         returning: returningCount,
-        new: vArr.length - returningCount,
+        new: totalVisits - returningCount,
         bounceRate,
         topPage,
-        deviceBreakdown,
-        browserBreakdown,
-        countryCounts,
-        cityCounts,
-        dailyVisits,
+        deviceBreakdown: deviceMap,
+        browserBreakdown: browserMap,
+        countryCounts: countryMap,
+        cityCounts: cityMap,
+        dailyVisits: dailyMap,
       },
       pdfs: {
-        total: pArr.length,
-        today: pdfTodayCount,
-        avgSize: pArr.length > 0
-          ? Math.round(pArr.reduce((s, e) => s + (e.fileSizeKb || 0), 0) / pArr.length)
-          : 0,
+        total: p.total,
+        today: p.today,
+        avgSize: p.avg_size,
       },
       leads: {
-        total: lArr.length,
-        new: lArr.filter(l => l.status === 'New').length,
+        total: l.total,
+        new: l.new_count,
       },
       ai: {
-        totalConversations: aiArr.length,
-        today: aiTodayCount,
-        totalMessages: aiTotalMessages,
-        avgMessagesPerConversation: aiArr.length > 0
-          ? (aiTotalMessages / aiArr.length).toFixed(1)
-          : '0',
+        totalConversations: a.total,
+        today: a.today,
+        totalMessages: a.total_messages,
+        avgMessagesPerConversation: a.total > 0 ? (a.total_messages / a.total).toFixed(1) : '0',
       },
       activity: {
-        recent: [...logsArr, ...vArr.slice(-5)]
+        recent: [...logsArray, ...visitorsArray]
           .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
           .slice(0, 10),
       },

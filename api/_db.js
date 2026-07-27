@@ -418,6 +418,15 @@ async function ensureSchema() {
       content TEXT DEFAULT '',
       metadata JSONB DEFAULT '{}'::jsonb
     );
+
+    CREATE TABLE IF NOT EXISTS cms_content (
+      id TEXT PRIMARY KEY,
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      title TEXT DEFAULT '',
+      content JSONB DEFAULT '{}'::jsonb,
+      published BOOLEAN DEFAULT FALSE,
+      metadata JSONB DEFAULT '{}'::jsonb
+    );
   `)
 
   const missing = []
@@ -427,7 +436,7 @@ async function ensureSchema() {
     'audit_logs', 'blog_posts', 'recycle_bin',
     'clients', 'proposals', 'agreements', 'payments', 'content_collection',
     'asset_folders', 'design_approvals', 'project_timelines', 'handovers',
-    'feedbacks', 'ai_knowledge',
+    'feedbacks', 'ai_knowledge', 'cms_content',
   ]
   for (const name of required) {
     if (!(await tableExists(name))) missing.push(name)

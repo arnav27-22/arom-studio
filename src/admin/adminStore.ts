@@ -277,6 +277,14 @@ export interface AdminDiscoveryQuestionnaire {
   fullData?: any
 }
 
+export interface AdminCmsEntry {
+  id: string
+  title: string
+  content: any
+  published: boolean
+  updated_at?: string
+}
+
 export interface AdminRecycleItem {
   id: string
   originalCollection: keyof StoreData
@@ -308,6 +316,7 @@ export interface StoreData {
   feedbacks: AdminFeedback[]
   notifications: AdminNotification[]
   discoveryQuestionnaires: AdminDiscoveryQuestionnaire[]
+  cmsContent: AdminCmsEntry[]
   recycleBin: AdminRecycleItem[]
 }
 
@@ -316,6 +325,7 @@ const EMPTY_DATA: StoreData = {
   clients: [], projects: [], proposals: [], agreements: [], payments: [],
   content: [], assets: [], approvals: [], timelines: [], handovers: [],
   feedbacks: [], notifications: [], discoveryQuestionnaires: [],
+  cmsContent: [],
   recycleBin: [],
 }
 
@@ -355,6 +365,7 @@ const COLLECTION_ENDPOINTS: Record<string, string> = {
   feedbacks: '/api/admin/feedbacks',
   notifications: '/api/admin/notifications',
   discoveryQuestionnaires: '/api/admin/discovery',
+  cmsContent: '/api/admin/cms',
   recycleBin: '/api/admin/recycle',
 }
 

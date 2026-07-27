@@ -33,7 +33,8 @@ import { AIConversations } from './sections/AIConversations'
 import { AIKnowledge } from './sections/AIKnowledge'
 import { RecycleBin } from './sections/RecycleBin'
 import { LinkClicks } from './sections/LinkClicks'
-import { FileQuestion, Bot, Brain, MousePointer2 } from 'lucide-react'
+import { CMSPage } from './sections/CMSPage'
+import { FileQuestion, Bot, Brain, MousePointer2, PenSquare } from 'lucide-react'
 
 import { syncFromCloud, initSSE, destroySSE } from './adminStore'
 import { adminWS } from './wsClient'
@@ -48,6 +49,7 @@ const systemSections = [
   { id: 'leads', label: 'Contact Form Leads', icon: Mail },
   { id: 'analytics', label: 'Page Analytics', icon: LineChart },
   { id: 'logs', label: 'System Audit Logs', icon: ShieldCheck },
+  { id: 'cms', label: 'Content Editor (CMS)', icon: PenSquare },
   { id: 'link_clicks', label: 'Link Clicks', icon: MousePointer2 },
   { id: 'settings', label: 'Security & Settings', icon: Settings },
   { id: 'recycle_bin', label: 'Recycle Bin', icon: Trash2 },
@@ -203,6 +205,7 @@ export function AdminDashboard({ onLogout }: { onLogout: () => void }) {
               {active === 'leads' && <Leads />}
               {active === 'analytics' && <PageAnalytics />}
               {active === 'logs' && <SystemLogs />}
+              {active === 'cms' && <CMSPage />}
               {active === 'link_clicks' && <LinkClicks />}
               {active === 'settings' && <SettingsPage onNavigate={(s) => { setActive(s); setSidebarOpen(false) }} />}
               {active === 'recycle_bin' && <RecycleBin />}
