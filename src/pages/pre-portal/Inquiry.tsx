@@ -48,15 +48,18 @@ export default function Inquiry() {
     setSending(true)
 
     try {
-      const { recordAdminLead } = await import('../../admin/adminStore')
-      recordAdminLead({
-        name: form.name,
-        email: form.email,
-        phone: form.phone,
-        company: form.company,
-        service: form.projectType,
-        budget: form.budget,
-        message: form.description,
+      await fetch('/api/track/lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          phone: form.phone,
+          company: form.company,
+          service: form.projectType,
+          budget: form.budget,
+          message: form.description,
+        }),
       })
     } catch {
       // non-blocking

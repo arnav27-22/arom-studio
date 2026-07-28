@@ -103,29 +103,36 @@ export function trackClick(type: string, label: string) {
   }).catch(() => {})
 }
 
-export function trackPDFDownload(pdfType: string, storageKey: string, fileSizeKb: number = 0, pdfDataUrl?: string, clientName: string = 'Client', agreementId?: string) {
+export function trackPDFDownload(pdfType: string, storageKey: string, fileSizeKb: number = 0, pdfDataUrl?: string, clientName: string = 'Client', agreementId?: string, extra?: Record<string, any>) {
   const info = getDeviceInfo()
+  const payload: Record<string, any> = {
+    sessionId: getSessionId(),
+    pdfType,
+    fileSizeKb,
+    storageKey,
+    clientName,
+    deviceType: info.deviceType,
+    browser: info.browser,
+    os: info.os,
+    agreementId: agreementId || '',
+  }
+  if (pdfDataUrl) payload.pdfDataUrl = pdfDataUrl
+  if (extra) {
+    if (extra.email) payload.clientEmail = extra.email
+    if (extra.phone) payload.phone = extra.phone
+    if (extra.company) payload.company = extra.company
+    if (extra.title) payload.title = extra.title
+  }
 
   fetch('/api/track/save-pdf', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      sessionId: getSessionId(),
-      pdfType,
-      fileSizeKb,
-      storageKey,
-      clientName,
-      pdfDataUrl,
-      deviceType: info.deviceType,
-      browser: info.browser,
-      os: info.os,
-      agreementId: agreementId || '',
-    }),
+    body: JSON.stringify(payload),
     keepalive: true,
   }).catch(() => {})
 }
 
-export function uploadPDF(docOrUrl: any, pdfType: string, storageKey: string, clientName: string = 'Client', agreementId?: string) {
+export function uploadPDF(docOrUrl: any, pdfType: string, storageKey: string, clientName: string = 'Client', agreementId?: string, extra?: Record<string, any>) {
   try {
     let dataUrl = ''
     if (typeof docOrUrl === 'string') {
@@ -134,7 +141,7 @@ export function uploadPDF(docOrUrl: any, pdfType: string, storageKey: string, cl
       dataUrl = docOrUrl.output('datauristring')
     }
     const fileSizeKb = dataUrl ? Math.round(dataUrl.length / 1333) : 180
-    trackPDFDownload(pdfType, storageKey, fileSizeKb, dataUrl, clientName, agreementId)
+    trackPDFDownload(pdfType, storageKey, fileSizeKb, dataUrl, clientName, agreementId, extra)
   } catch (e) {
     console.error('Failed in uploadPDF:', e)
   }

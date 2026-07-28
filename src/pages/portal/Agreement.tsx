@@ -113,7 +113,9 @@ export default function Agreement() {
     const doc = buildAgreementPDF(agreementData)
 
     const agreementFile = `Website_Agreement_${(clientName || 'Client').replace(/\s+/g, '_')}_${todayStr()}.pdf`
-    uploadPDF(doc, 'Website Agreement', agreementFile, clientName, agreementId)
+    uploadPDF(doc, 'Website Agreement', agreementFile, clientName, agreementId, { email: clientEmail, phone: clientPhone, company: clientAddress, title: `Website Agreement - ${clientName}` })
+
+    doc.save(agreementFile)
 
     try {
       const store = getAdminStore()

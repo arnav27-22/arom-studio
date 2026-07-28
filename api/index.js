@@ -1,4 +1,6 @@
 import crypto from 'crypto'
+import fs from 'fs'
+import path from 'path'
 import { init, query, readAll, readWhere, insertRow, deleteWhere, deleteAll, countWhere, updateWhere, getById } from './_db.js'
 import { requireAuth, verifyToken, signToken, checkRateLimit, recordFailure, verifyAdminPassword, logAdminEvent } from './_auth.js'
 import { computeDashboard, computeAnalytics } from './stats.js'
@@ -151,44 +153,59 @@ export default async function handler(req, res) {
       return j(res, { success: true })
     }
 
+    async function getPDFBuffer(pdf) {
+      if (pdf.storage_url) {
+        try {
+          const possiblePaths = [
+            path.join(process.cwd(), 'server', 'storage', 'pdfs', path.basename(pdf.storage_url)),
+            path.join(process.cwd(), 'uploads', path.basename(pdf.storage_url)),
+            pdf.storage_url,
+          ]
+          for (const fp of possiblePaths) {
+            if (fs.existsSync(fp)) return fs.readFileSync(fp)
+          }
+        } catch {}
+      }
+      if (pdf.pdf_data_url) {
+        const base64 = pdf.pdf_data_url.replace(/^data:application\/pdf;base64,/, '')
+        return Buffer.from(base64, 'base64')
+      }
+      return null
+    }
+
     if (pathname.match(/^\/api\/admin\/pdfs\/[^\/]+\/download$/) && req.method === 'GET') {
       const pdfId = pathname.split('/')[4]
       const pdf = await getById('generated_pdfs', pdfId)
       if (!pdf) return send(res, 404, { error: 'PDF not found' })
-      if (pdf.pdf_data_url) {
-        const base64 = pdf.pdf_data_url.replace(/^data:application\/pdf;base64,/, '')
-        const buffer = Buffer.from(base64, 'base64')
-        res.writeHead(200, {
-          'Content-Type': 'application/pdf',
-          'Content-Disposition': `attachment; filename="${(pdf.file_name || pdf.title || pdf.pdf_type).replace(/\s+/g, '_') + '.pdf'}"`,
-          'Content-Length': buffer.length,
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Credentials': 'true',
-        })
-        res.end(buffer)
-        return
-      }
-      return send(res, 404, { error: 'PDF data not available' })
+      const buffer = await getPDFBuffer(pdf)
+      if (!buffer) return send(res, 404, { error: 'PDF data not available' })
+      const downloadName = (pdf.file_name || pdf.title || pdf.pdf_type || 'document').replace(/\s+/g, '_') + '.pdf'
+      res.writeHead(200, {
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename="${downloadName}"`,
+        'Content-Length': buffer.length,
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': 'true',
+      })
+      res.end(buffer)
+      return
     }
 
     if (pathname.match(/^\/api\/admin\/pdfs\/[^\/]+\/preview$/) && req.method === 'GET') {
       const pdfId = pathname.split('/')[4]
       const pdf = await getById('generated_pdfs', pdfId)
       if (!pdf) return send(res, 404, { error: 'PDF not found' })
-      if (pdf.pdf_data_url) {
-        const base64 = pdf.pdf_data_url.replace(/^data:application\/pdf;base64,/, '')
-        const buffer = Buffer.from(base64, 'base64')
-        res.writeHead(200, {
-          'Content-Type': 'application/pdf',
-          'Content-Disposition': `inline; filename="${pdf.file_name || 'document.pdf'}"`,
-          'Content-Length': buffer.length,
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Credentials': 'true',
-        })
-        res.end(buffer)
-        return
-      }
-      return send(res, 404, { error: 'PDF data not available' })
+      const buffer = await getPDFBuffer(pdf)
+      if (!buffer) return send(res, 404, { error: 'PDF data not available' })
+      res.writeHead(200, {
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `inline; filename="${pdf.file_name || 'document.pdf'}"`,
+        'Content-Length': buffer.length,
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': 'true',
+      })
+      res.end(buffer)
+      return
     }
 
     if (pathname.startsWith('/api/admin/pdfs/') && req.method === 'GET') {
@@ -373,7 +390,7 @@ export default async function handler(req, res) {
           visitors, pdfs, leads, invoices, logs, clients, projects,
           proposals, agreements, payments, content, assets, approvals,
           timelines, handovers, feedbacks, notifications, recycleBin,
-          discovery, aiConversations, cms,
+          discovery, aiConversations, cms, linkClicks,
         ] = await Promise.all([
           readAll('visitors'), readAll('generated_pdfs'), readAll('leads'),
           readAll('invoices'), readAll('audit_logs'), readAll('clients'),
@@ -382,9 +399,10 @@ export default async function handler(req, res) {
           readAll('design_approvals'), readAll('project_timelines'), readAll('handovers'),
           readAll('feedbacks'), readAll('notifications'), readAll('recycle_bin'),
           readAll('discovery_forms'), readAll('ai_conversations'), readAll('cms_content'),
+          readAll('link_clicks'),
         ])
         return j(res, {
-          visitors, pdfs, leads, invoices, logs,
+          visitors, pdfs, leads, invoices, logs, linkClicks,
           clients: clients.length ? clients : undefined,
           projects: projects.length ? projects : undefined,
           proposals: proposals.length ? proposals : undefined,

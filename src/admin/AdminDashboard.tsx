@@ -1,13 +1,11 @@
 import { useState, useEffect } from 'react'
 import {
-  BarChart3, Users, FileText, Mail, LineChart, Settings, LogOut, Menu, X, Receipt, ShieldCheck,
+  BarChart3, FileText, Mail, LineChart, Settings, LogOut, Menu, X, Receipt, ShieldCheck,
   UserCheck, Briefcase, FileSpreadsheet, FileSignature, CreditCard, FolderKanban, FolderUp,
   CheckSquare, GitCommit, PackageCheck, MessageSquareHeart, Bell, Trash2
 } from 'lucide-react'
 
-// Existing System Dashboard Sections
 import { Overview } from './sections/Overview'
-import { Visitors } from './sections/Visitors'
 import { PDFActivity } from './sections/PDFActivity'
 import { Leads } from './sections/Leads'
 import { PageAnalytics } from './sections/PageAnalytics'
@@ -43,7 +41,7 @@ const systemSections = [
   { id: 'overview', label: 'Overview', icon: BarChart3 },
   { id: 'ai_conversations', label: 'AI Conversations', icon: Bot },
   { id: 'ai_knowledge', label: 'AI Knowledge Base', icon: Brain },
-  { id: 'visitors', label: 'Visitors Log', icon: Users },
+
   { id: 'pdfs', label: 'PDF Documents Archive', icon: FileText },
   { id: 'invoices', label: 'Invoice Generator', icon: Receipt },
   { id: 'leads', label: 'Contact Form Leads', icon: Mail },
@@ -199,7 +197,7 @@ export function AdminDashboard({ onLogout }: { onLogout: () => void }) {
               {active === 'overview' && <Overview />}
               {active === 'ai_conversations' && <AIConversations />}
               {active === 'ai_knowledge' && <AIKnowledge />}
-              {active === 'visitors' && <Visitors />}
+
               {active === 'pdfs' && <PDFActivity />}
               {active === 'invoices' && <InvoicesPage />}
               {active === 'leads' && <Leads />}

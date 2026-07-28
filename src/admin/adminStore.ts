@@ -11,33 +11,6 @@ export function useAdminStore(): StoreData {
   return store
 }
 
-export interface AdminVisitor {
-  id: string
-  sessionId?: string
-  createdAt: string
-  lastActivityAt?: string
-  page: string
-  entryPage?: string
-  exitPage?: string
-  deviceType: 'desktop' | 'mobile' | 'tablet'
-  deviceLabel?: string
-  deviceBrand?: string
-  network?: string
-  browser: string
-  os: string
-  country: string
-  city?: string
-  ip?: string
-  referrer: string
-  timeOnPage: number
-  sessionDuration?: number
-  scrollDepth: number
-  pageViewsCount?: number
-  isReturning?: boolean
-  isBounce?: boolean
-  isLive?: boolean
-}
-
 export interface AdminLead {
   id: string
   createdAt: string
@@ -55,15 +28,28 @@ export interface AdminLead {
 export interface AdminPDF {
   id: string
   createdAt: string
-  pdfType: string
-  title: string
-  clientName: string
+  pdfType?: string
+  title?: string
+  clientName?: string
   clientEmail?: string
-  fileSizeKb: number
+  company?: string
+  phone?: string
+  fileSizeKb?: number
+  pageCount?: number
+  referenceNumber?: string
+  agreementId?: string
+  sha256Hash?: string
+  storageUrl?: string
+  storageProvider?: string
+  version?: string
+  status?: string
+  downloadCount?: number
+  fileName?: string
   deviceType?: string
   browser?: string
   os?: string
   pdfDataUrl?: string
+  updatedAt?: string
 }
 
 export interface InvoiceItem {
@@ -298,7 +284,7 @@ export interface AdminRecycleItem {
 }
 
 export interface StoreData {
-  visitors: AdminVisitor[]
+  linkClicks: any[]
   leads: AdminLead[]
   pdfs: AdminPDF[]
   invoices: AdminInvoice[]
@@ -321,7 +307,7 @@ export interface StoreData {
 }
 
 const EMPTY_DATA: StoreData = {
-  visitors: [], leads: [], pdfs: [], invoices: [], logs: [],
+  linkClicks: [], leads: [], pdfs: [], invoices: [], logs: [],
   clients: [], projects: [], proposals: [], agreements: [], payments: [],
   content: [], assets: [], approvals: [], timelines: [], handovers: [],
   feedbacks: [], notifications: [], discoveryQuestionnaires: [],
@@ -347,7 +333,7 @@ function notifySubscribers() {
 }
 
 const COLLECTION_ENDPOINTS: Record<string, string> = {
-  visitors: '/api/admin/visitors',
+  linkClicks: '/api/admin/link-clicks',
   leads: '/api/admin/leads',
   pdfs: '/api/admin/pdfs',
   invoices: '/api/admin/invoices',
@@ -407,7 +393,7 @@ export async function syncFromCloud(): Promise<StoreData> {
       for (const key of Object.keys(EMPTY_DATA)) {
         const val = (resp as any)[key]
         if (Array.isArray(val)) {
-          (updated as any)[key] = key === 'visitors' || key === 'pdfs' || key === 'leads' || key === 'invoices' || key === 'logs'
+          (updated as any)[key] = key === 'pdfs' || key === 'leads' || key === 'invoices' || key === 'logs'
             ? sortByCreatedAt(val)
             : val
         }
@@ -421,7 +407,7 @@ export async function syncFromCloud(): Promise<StoreData> {
       )
       for (const { key, data } of results) {
         if (Array.isArray(data)) {
-          (__cache as any)[key] = key === 'visitors' || key === 'pdfs' || key === 'leads' || key === 'invoices' || key === 'logs'
+          (__cache as any)[key] = key === 'pdfs' || key === 'leads' || key === 'invoices' || key === 'logs'
             ? sortByCreatedAt(data)
             : data
         }
@@ -464,7 +450,6 @@ export function initSSE(): void {
   try {
     __sse = new EventSource('/api/admin/events')
 
-    __sse.addEventListener('visitor', () => syncFromCloud())
     __sse.addEventListener('pdf', () => syncFromCloud())
     __sse.addEventListener('ai_conversation', () => syncFromCloud())
     __sse.addEventListener('lead', () => syncFromCloud())
@@ -651,22 +636,6 @@ export async function recordAdminInvoice(invoice: Omit<AdminInvoice, 'id' | 'cre
 function initWebSocketHandlers() {
   if (__wsHandlersInitialized) return
   __wsHandlersInitialized = true
-
-  adminWS.on('visitor:created', (data) => {
-    if (data?.id && !__cache.visitors.some(v => v.id === data.id)) {
-      __cache.visitors = [data, ...__cache.visitors]
-    }
-  })
-  adminWS.on('visitor:updated', (data) => {
-    if (data?.id) {
-      __cache.visitors = __cache.visitors.map(v => v.id === data.id ? data : v)
-    }
-  })
-  adminWS.on('visitor:deleted', (data) => {
-    if (data?.id) {
-      __cache.visitors = __cache.visitors.filter(v => v.id !== data.id)
-    }
-  })
 
   adminWS.on('pdf:created', (data) => {
     if (data?.id && !__cache.pdfs.some(p => p.id === data.id)) {

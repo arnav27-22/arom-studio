@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Download, CheckCircle2 } from 'lucide-react'
 import { generateDiscoveryQuestionnairePDF } from '../../lib/professionalPDF'
-import { recordAdminDiscoveryQuestionnaire } from '../../admin/adminStore'
 import { GlassCard } from '../../components/ui/GlassCard'
 import Button from '../../components/ui/Button'
 
@@ -144,18 +143,22 @@ export default function DiscoveryQuestionnaire() {
   const handleDownload = () => {
     if (!declaration) return
     generateDiscoveryQuestionnairePDF(data)
-    recordAdminDiscoveryQuestionnaire({
-      fullName: data.fullName,
-      company: data.company,
-      email: data.email,
-      phone: data.phone,
-      website: data.website,
-      budget: data.budget,
-      urgency: data.urgency,
-      preferredLaunchDate: data.launchDate,
-      contentProvider: data.contentProvider,
-      fullData: data,
-    })
+    fetch('/api/track/discovery', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        fullName: data.fullName,
+        company: data.company,
+        email: data.email,
+        phone: data.phone,
+        website: data.website,
+        budget: data.budget,
+        urgency: data.urgency,
+        preferredLaunchDate: data.launchDate,
+        contentProvider: data.contentProvider,
+        fullData: data,
+      }),
+    }).catch(() => {})
   }
 
   const canDownload = data.fullName.trim() !== '' && declaration
