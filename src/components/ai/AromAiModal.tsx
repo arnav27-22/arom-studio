@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Bot, Send, X, Plus, Trash2, Edit2, History, Maximize2, Minimize2, Sparkles, User, Check, Search } from 'lucide-react'
+import { Bot, Send, X, Plus, Trash2, Edit2, History, Maximize2, Minimize2, Sparkles, User, Check, Search, ArrowRight } from 'lucide-react'
 import {
   getAiConversations,
   saveAiConversation,
@@ -10,20 +10,9 @@ import {
   detectDeviceAndBrowser,
   getAiKnowledge,
 } from '../../lib/aiStore'
-import { generateAiResponse } from '../../lib/aiEngine'
+import { generateAiResponse, createDefaultContext } from '../../lib/aiEngine'
+import type { AiContext } from '../../lib/aiStore'
 import type { AiConversation, AiMessage } from '../../types/ai'
-
-const SUGGESTED_QUESTIONS = [
-  'How much does a website cost?',
-  'What services do you offer?',
-  'How long does development take?',
-  'How does your process work?',
-  'Can I track my project?',
-  'Do you build ecommerce websites?',
-  'What technologies do you use?',
-  'Do you provide SEO?',
-  'Do you provide maintenance?',
-]
 
 interface AromAiModalProps {
   isOpen: boolean
@@ -34,6 +23,8 @@ export function AromAiModal({ isOpen, onClose }: AromAiModalProps) {
   const [conversations, setConversations] = useState<AiConversation[]>([])
   const [currentConvId, setCurrentConvId] = useState<string>('')
   const [messages, setMessages] = useState<AiMessage[]>([])
+  const [context, setContext] = useState<AiContext>(createDefaultContext())
+  const [followUps, setFollowUps] = useState<string[]>([])
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   const [showHistory, setShowHistory] = useState(false)
@@ -55,8 +46,10 @@ export function AromAiModal({ isOpen, onClose }: AromAiModalProps) {
     if (isOpen) {
       const list = reloadConversations()
       if (list.length > 0 && !currentConvId) {
-        setCurrentConvId(list[0].id)
-        setMessages(list[0].messages)
+        const conv = list[0]
+        setCurrentConvId(conv.id)
+        setMessages(conv.messages)
+        setContext(conv.context || createDefaultContext())
       } else if (list.length === 0) {
         handleNewChat()
       }
@@ -72,6 +65,7 @@ export function AromAiModal({ isOpen, onClose }: AromAiModalProps) {
     const { device, browser } = detectDeviceAndBrowser()
     const visitorId = getVisitorId()
     const now = new Date().toISOString()
+    const freshContext = createDefaultContext()
 
     const newConv: AiConversation = {
       id: crypto.randomUUID(),
@@ -83,11 +77,14 @@ export function AromAiModal({ isOpen, onClose }: AromAiModalProps) {
       device,
       browser,
       status: 'Active',
+      context: freshContext,
     }
 
     saveAiConversation(newConv)
     setCurrentConvId(newConv.id)
     setMessages([])
+    setContext(freshContext)
+    setFollowUps([])
     reloadConversations()
     setShowHistory(false)
   }
@@ -95,6 +92,7 @@ export function AromAiModal({ isOpen, onClose }: AromAiModalProps) {
   const handleSelectConversation = (conv: AiConversation) => {
     setCurrentConvId(conv.id)
     setMessages(conv.messages)
+    setContext(conv.context || createDefaultContext())
     setShowHistory(false)
   }
 
@@ -103,8 +101,10 @@ export function AromAiModal({ isOpen, onClose }: AromAiModalProps) {
     deleteAiConversation(id)
     const remaining = reloadConversations()
     if (remaining.length > 0) {
-      setCurrentConvId(remaining[0].id)
-      setMessages(remaining[0].messages)
+      const conv = remaining[0]
+      setCurrentConvId(conv.id)
+      setMessages(conv.messages)
+      setContext(conv.context || createDefaultContext())
     } else {
       handleNewChat()
     }
@@ -141,8 +141,8 @@ export function AromAiModal({ isOpen, onClose }: AromAiModalProps) {
     setMessages(updatedMessages)
     setInput('')
     setIsTyping(true)
+    setFollowUps([])
 
-    // Save active chat state
     let conv = conversations.find((c) => c.id === currentConvId)
     if (!conv) {
       const { device, browser } = detectDeviceAndBrowser()
@@ -156,6 +156,7 @@ export function AromAiModal({ isOpen, onClose }: AromAiModalProps) {
         device,
         browser,
         status: 'Active',
+        context,
       }
     } else {
       if (conv.messages.length === 0) {
@@ -163,15 +164,19 @@ export function AromAiModal({ isOpen, onClose }: AromAiModalProps) {
       }
       conv.messages = updatedMessages
       conv.lastActiveAt = now
+      conv.context = context
     }
 
     saveAiConversation(conv)
     reloadConversations()
 
-    // Simulate AI response delay
     setTimeout(() => {
       const knowledge = getAiKnowledge()
-      const aiReplyText = generateAiResponse(text, knowledge)
+      const result = generateAiResponse(text, knowledge, context)
+      const { text: aiReplyText, followUps: newFollowUps, context: newCtx } = result
+
+      setContext(newCtx)
+      setFollowUps(newFollowUps)
 
       const aiMsg: AiMessage = {
         id: crypto.randomUUID(),
@@ -186,11 +191,12 @@ export function AromAiModal({ isOpen, onClose }: AromAiModalProps) {
 
       if (conv) {
         conv.messages = finalMessages
+        conv.context = newCtx
         conv.lastActiveAt = new Date().toISOString()
         saveAiConversation(conv)
         reloadConversations()
       }
-    }, 500)
+    }, 500 + Math.random() * 300)
   }
 
   // Format Simple Markdown Text into JSX
@@ -272,7 +278,9 @@ export function AromAiModal({ isOpen, onClose }: AromAiModalProps) {
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" /> Online
                   </span>
                 </div>
-                <p className="text-[11px] text-white/50 font-body">Your AI Website Consultant</p>
+                <p className="text-[11px] text-white/50 font-body">
+                  {context.userName ? `Chatting with ${context.userName}` : 'Your AI Website Consultant'}
+                </p>
               </div>
             </div>
 
@@ -401,9 +409,13 @@ export function AromAiModal({ isOpen, onClose }: AromAiModalProps) {
                         <Sparkles className="h-5 w-5 text-white" />
                       </div>
                       <div>
-                        <h3 className="font-heading text-sm text-white font-bold">Hello 👋 I'm AROM AI</h3>
+                        <h3 className="font-heading text-sm text-white font-bold">
+                          {context.userName ? `Welcome back, ${context.userName} 👋` : "Hello 👋 I'm AROM AI"}
+                        </h3>
                         <p className="text-xs text-white/70 leading-relaxed mt-1">
-                          I'm your official AI consultant for AROM STUDIO. I can help you understand our services, pricing, website development process, technologies, timeline, proposal process, client portal, SEO, maintenance, support, and much more.
+                          {context.userName
+                            ? "How can I help you with your project today?"
+                            : "I'm your official AI consultant for AROM STUDIO. I can help you understand our services, pricing, website development process, and much more."}
                         </p>
                       </div>
                     </div>
@@ -411,7 +423,12 @@ export function AromAiModal({ isOpen, onClose }: AromAiModalProps) {
                     <div>
                       <span className="text-[11px] font-semibold text-white/60 uppercase tracking-wider block mb-2">Suggested Questions</span>
                       <div className="flex flex-wrap gap-2">
-                        {SUGGESTED_QUESTIONS.map((q, idx) => (
+                        {[
+                          'How much does a website cost?',
+                          'What services do you offer?',
+                          'How long does development take?',
+                          'Can I track my project?',
+                        ].map((q, idx) => (
                           <button
                             key={idx}
                             onClick={() => handleSendMessage(q)}
@@ -426,34 +443,53 @@ export function AromAiModal({ isOpen, onClose }: AromAiModalProps) {
                 )}
 
                 {/* Messages Stream — Elegant Native Bubbles */}
-                {messages.map((msg) => (
-                  <div key={msg.id} className={`flex gap-3 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                    {msg.sender === 'ai' && (
-                      <div className="w-8 h-8 rounded-xl bg-white/5 border border-white/15 flex items-center justify-center shrink-0 mt-1">
-                        <Bot className="h-4 w-4 text-white" />
-                      </div>
-                    )}
-
-                    <div
-                      className={`max-w-[85%] rounded-[20px] p-3.5 shadow-md ${
-                        msg.sender === 'user'
-                          ? 'bg-white/10 border border-white/15 text-white rounded-br-none'
-                          : 'glass bg-white/[0.03] border border-white/10 text-white/90 rounded-bl-none'
-                      }`}
-                    >
-                      {msg.sender === 'user' ? (
-                        <p className="text-xs text-white leading-relaxed">{msg.text}</p>
-                      ) : (
-                        <div>{renderFormattedMarkdown(msg.text)}</div>
+                {messages.map((msg, msgIdx) => (
+                  <div key={msg.id}>
+                    <div className={`flex gap-3 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                      {msg.sender === 'ai' && (
+                        <div className="w-8 h-8 rounded-xl bg-white/5 border border-white/15 flex items-center justify-center shrink-0 mt-1">
+                          <Bot className="h-4 w-4 text-white" />
+                        </div>
                       )}
-                      <span className="text-[9px] text-white/30 font-mono block text-right mt-1.5">
-                        {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </span>
+
+                      <div
+                        className={`max-w-[85%] rounded-[20px] p-3.5 shadow-md ${
+                          msg.sender === 'user'
+                            ? 'bg-white/10 border border-white/15 text-white rounded-br-none'
+                            : 'glass bg-white/[0.03] border border-white/10 text-white/90 rounded-bl-none'
+                        }`}
+                      >
+                        {msg.sender === 'user' ? (
+                          <p className="text-xs text-white leading-relaxed">{msg.text}</p>
+                        ) : (
+                          <div>{renderFormattedMarkdown(msg.text)}</div>
+                        )}
+                        <span className="text-[9px] text-white/30 font-mono block text-right mt-1.5">
+                          {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                      </div>
+
+                      {msg.sender === 'user' && (
+                        <div className="w-8 h-8 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center shrink-0 mt-1">
+                          <User className="h-4 w-4 text-white/80" />
+                        </div>
+                      )}
                     </div>
 
-                    {msg.sender === 'user' && (
-                      <div className="w-8 h-8 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center shrink-0 mt-1">
-                        <User className="h-4 w-4 text-white/80" />
+                    {/* Follow-up Questions after last AI message */}
+                    {msg.sender === 'ai' && msgIdx === messages.length - 1 && followUps.length > 0 && (
+                      <div className="mt-3 ml-11">
+                        <div className="flex flex-wrap gap-2">
+                          {followUps.map((fq, fi) => (
+                            <button
+                              key={fi}
+                              onClick={() => handleSendMessage(fq)}
+                              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/15 border border-white/10 hover:border-accent/40 text-xs text-white/70 hover:text-accent transition-all cursor-pointer"
+                            >
+                              <ArrowRight className="h-3 w-3" /> {fq}
+                            </button>
+                          ))}
+                        </div>
                       </div>
                     )}
                   </div>

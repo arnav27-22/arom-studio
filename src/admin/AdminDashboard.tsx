@@ -29,18 +29,26 @@ import { NotificationsCenter } from './sections/NotificationsCenter'
 import { DiscoveryQuestionnairesAdmin } from './sections/DiscoveryQuestionnairesAdmin'
 import { AIConversations } from './sections/AIConversations'
 import { AIKnowledge } from './sections/AIKnowledge'
+import { AIOverview } from './sections/AIOverview'
+import { AIMemory } from './sections/AIMemory'
+import { AIAnalytics } from './sections/AIAnalytics'
+import { AIPromptManagement } from './sections/AIPromptManagement'
 import { RecycleBin } from './sections/RecycleBin'
 import { LinkClicks } from './sections/LinkClicks'
 import { CMSPage } from './sections/CMSPage'
-import { FileQuestion, Bot, Brain, MousePointer2, PenSquare } from 'lucide-react'
+import { FileQuestion, Bot, Brain, MousePointer2, PenSquare, LayoutDashboard, Database, PenTool } from 'lucide-react'
 
 import { syncFromCloud, initSSE, destroySSE } from './adminStore'
 import { adminWS } from './wsClient'
 
 const systemSections = [
   { id: 'overview', label: 'Overview', icon: BarChart3 },
+  { id: 'ai_overview', label: 'AI Overview', icon: LayoutDashboard },
   { id: 'ai_conversations', label: 'AI Conversations', icon: Bot },
   { id: 'ai_knowledge', label: 'AI Knowledge Base', icon: Brain },
+  { id: 'ai_memory', label: 'AI Memory Bank', icon: Database },
+  { id: 'ai_analytics', label: 'AI Analytics', icon: BarChart3 },
+  { id: 'ai_prompts', label: 'AI Prompt Mgmt', icon: PenTool },
 
   { id: 'pdfs', label: 'PDF Documents Archive', icon: FileText },
   { id: 'invoices', label: 'Invoice Generator', icon: Receipt },
@@ -195,8 +203,12 @@ export function AdminDashboard({ onLogout }: { onLogout: () => void }) {
             <>
               {/* System Dashboard Sections */}
               {active === 'overview' && <Overview />}
+              {active === 'ai_overview' && <AIOverview />}
               {active === 'ai_conversations' && <AIConversations />}
               {active === 'ai_knowledge' && <AIKnowledge />}
+              {active === 'ai_memory' && <AIMemory />}
+              {active === 'ai_analytics' && <AIAnalytics />}
+              {active === 'ai_prompts' && <AIPromptManagement />}
 
               {active === 'pdfs' && <PDFActivity />}
               {active === 'invoices' && <InvoicesPage />}

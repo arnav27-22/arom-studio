@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
-import { Brain, Plus, Edit, Trash2, Save, X, BookOpen, Key, RefreshCw, Layers } from 'lucide-react'
+import { Brain, Plus, Edit, Trash2, Save, X, BookOpen, Key, RefreshCw, Layers, Download, Upload, History } from 'lucide-react'
 import { getAiKnowledge, loadAiKnowledgeFromServer, saveAiKnowledge } from '../../lib/aiStore'
 import { INITIAL_AI_KNOWLEDGE } from '../../lib/aiEngine'
 import type { AiKnowledgeItem } from '../../types/ai'
@@ -10,6 +10,8 @@ export function AIKnowledge() {
   const [items, setItems] = useState<AiKnowledgeItem[]>(getAiKnowledge())
   const [modalOpen, setModalOpen] = useState(false)
   const [editingItem, setEditingItem] = useState<AiKnowledgeItem | null>(null)
+  const [versionModalOpen, setVersionModalOpen] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Form State
   const [title, setTitle] = useState('')
@@ -110,6 +112,59 @@ export function AIKnowledge() {
     }
   }
 
+  const handleExportJson = () => {
+    const data = JSON.stringify(items, null, 2)
+    const blob = new Blob([data], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `arom-ai-knowledge-${new Date().toISOString().slice(0, 10)}.json`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const handleImportJson = () => {
+    fileInputRef.current?.click()
+  }
+
+  const handleFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = (ev) => {
+      try {
+        const imported = JSON.parse(ev.target?.result as string)
+        if (Array.isArray(imported)) {
+          if (confirm(`Import ${imported.length} knowledge items? This will replace all current items.`)) {
+            saveAiKnowledge(imported as AiKnowledgeItem[])
+            reload()
+          }
+        } else {
+          alert('Invalid JSON format. Expected an array of knowledge items.')
+        }
+      } catch {
+        alert('Failed to parse JSON file.')
+      }
+    }
+    reader.readAsText(file)
+    e.target.value = ''
+  }
+
+  const getVersionHistory = () => {
+    return items
+      .filter(i => i.createdAt || i.updatedAt)
+      .map(i => ({
+        id: i.id,
+        title: i.title || i.question,
+        version: i.version || '1.0',
+        created: i.createdAt ? new Date(i.createdAt).toLocaleString() : 'Unknown',
+        updated: i.updatedAt ? new Date(i.updatedAt).toLocaleString() : 'Unknown',
+        author: i.author || 'System',
+        status: i.status || 'Active',
+      }))
+      .sort((a, b) => new Date(b.updated).getTime() - new Date(a.updated).getTime())
+  }
+
   const columns = [
     {
       key: 'question',
@@ -181,6 +236,25 @@ export function AIKnowledge() {
         </div>
         <div className="flex items-center gap-2">
           <button
+            onClick={handleExportJson}
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white/80 hover:text-white text-xs transition-all cursor-pointer"
+          >
+            <Download className="h-3.5 w-3.5" /> Export JSON
+          </button>
+          <button
+            onClick={handleImportJson}
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white/80 hover:text-white text-xs transition-all cursor-pointer"
+          >
+            <Upload className="h-3.5 w-3.5" /> Import JSON
+          </button>
+          <input ref={fileInputRef} type="file" accept=".json" className="hidden" onChange={handleFileSelected} />
+          <button
+            onClick={() => setVersionModalOpen(true)}
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white/80 hover:text-white text-xs transition-all cursor-pointer"
+          >
+            <History className="h-3.5 w-3.5" /> Version History
+          </button>
+          <button
             onClick={handleResetDefaults}
             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white/80 hover:text-white text-xs transition-all cursor-pointer"
           >
@@ -214,6 +288,49 @@ export function AIKnowledge() {
           </div>
         )}
       </div>
+
+      {/* Version History Modal */}
+      {versionModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md" onClick={() => setVersionModalOpen(false)}>
+          <div className="glass rounded-[28px] p-6 md:p-8 max-w-3xl w-full max-h-[90vh] flex flex-col border border-white/15 shadow-2xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between pb-4 border-b border-white/10 shrink-0">
+              <div className="flex items-center gap-2">
+                <History className="h-5 w-5 text-accent" />
+                <h3 className="font-heading text-lg text-white">Version History</h3>
+              </div>
+              <button onClick={() => setVersionModalOpen(false)} className="p-1.5 text-white/50 hover:text-white rounded-lg cursor-pointer">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto pt-6">
+              {items.length > 0 ? (
+                <div className="space-y-2">
+                  {getVersionHistory().slice(0, 50).map((v) => (
+                    <div key={v.id} className="flex items-center justify-between py-2 px-4 rounded-2xl bg-white/5 border border-white/10">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs text-white font-medium truncate">{v.title}</p>
+                        <p className="text-[10px] text-white/40 mt-0.5">ID: {v.id.slice(0, 16)}... | v{v.version}</p>
+                      </div>
+                      <div className="flex items-center gap-3 shrink-0 ml-4">
+                        <span className="text-[10px] text-white/40">{v.author}</span>
+                        <span className={`text-[9px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wider border ${v.status === 'Active' ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' : 'text-amber-400 bg-amber-500/10 border-amber-500/20'}`}>
+                          {v.status}
+                        </span>
+                        <span className="text-[10px] text-white/50 font-mono">{v.updated}</span>
+                      </div>
+                    </div>
+                  ))}
+                  {getVersionHistory().length > 50 && (
+                    <p className="text-xs text-white/40 text-center py-2">Showing 50 of {getVersionHistory().length} items</p>
+                  )}
+                </div>
+              ) : (
+                <p className="text-xs text-white/40 text-center py-8">No version history available.</p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Add / Edit Knowledge Modal */}
       {modalOpen && (

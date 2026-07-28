@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
-import { Bot, MessageSquare, Users, Clock, Search, Printer, FileText, Trash2, ExternalLink, X, User } from 'lucide-react'
+import { Bot, MessageSquare, Users, Clock, Search, Printer, FileText, Trash2, ExternalLink, X, User, Globe } from 'lucide-react'
 import { getAiConversations, loadAiConversationsFromServer, deleteAiConversation, type AiConversation } from '../../lib/aiStore'
 import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
@@ -50,11 +50,17 @@ export function AIConversations() {
   }
 
   const filteredConversations = conversations.filter(
-    (c) =>
-      c.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      c.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      c.visitorId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      c.messages.some((m) => m.text.toLowerCase().includes(searchTerm.toLowerCase()))
+    (c) => {
+      const term = searchTerm.toLowerCase()
+      return (
+        c.title.toLowerCase().includes(term) ||
+        c.id.toLowerCase().includes(term) ||
+        c.visitorId.toLowerCase().includes(term) ||
+        (c.context?.userName || '').toLowerCase().includes(term) ||
+        (c.context?.language || '').toLowerCase().includes(term) ||
+        c.messages.some((m) => m.text.toLowerCase().includes(term))
+      )
+    }
   )
 
   // Metrics
@@ -75,6 +81,29 @@ export function AIConversations() {
           <p className="text-white/40 text-[10px] font-mono mt-0.5">{row.id} • {row.visitorId}</p>
         </div>
       ),
+    },
+    {
+      key: 'user',
+      label: 'User',
+      render: (_: any, row: AiConversation) => {
+        const userName = row.context?.userName
+        const lang = row.context?.language
+        return (
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center">
+              <User className="h-3.5 w-3.5 text-accent" />
+            </div>
+            <div>
+              <p className="text-xs text-white font-medium">{userName || 'Anonymous'}</p>
+              {lang && lang !== 'en' && (
+                <span className="text-[9px] text-white/40 flex items-center gap-1">
+                  <Globe className="h-2.5 w-2.5" /> {lang === 'mr' ? 'Marathi' : 'Hindi'}
+                </span>
+              )}
+            </div>
+          </div>
+        )
+      },
     },
     {
       key: 'messages',
@@ -190,7 +219,13 @@ export function AIConversations() {
                 <div>
                   <h3 className="font-heading text-lg text-white font-bold">{selectedConv.title}</h3>
                   <p className="text-xs text-white/50 font-mono">
-                    ID: {selectedConv.id} • Visitor: {selectedConv.visitorId} • Device: {selectedConv.device} ({selectedConv.browser})
+                    ID: {selectedConv.id}
+                    {selectedConv.context?.userName && <> • User: {selectedConv.context.userName}</>}
+                    {selectedConv.context?.language && selectedConv.context.language !== 'en' && <> • Lang: {selectedConv.context.language === 'mr' ? 'Marathi' : 'Hindi'}</>}
+                    {selectedConv.context?.projectType && <> • Project: {selectedConv.context.projectType}</>}
+                  </p>
+                  <p className="text-[10px] text-white/30 font-mono mt-0.5">
+                    Visitor: {selectedConv.visitorId} • Device: {selectedConv.device} ({selectedConv.browser})
                   </p>
                 </div>
               </div>

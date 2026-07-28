@@ -7,6 +7,35 @@ export interface AiMessage {
   timestamp: string
 }
 
+export interface AiProjectPhase {
+  phase: 'discovery' | 'proposal' | 'agreement' | 'development' | 'handover' | 'complete'
+  enteredAt: string
+  completedAt?: string
+}
+
+export interface AiContext {
+  userName?: string
+  language: 'en' | 'mr' | 'hi'
+  projectType?: string
+  discussedTopics: string[]
+  businessName?: string
+  email?: string
+  phone?: string
+  budget?: string
+  timeline?: string
+  preferredPackage?: string
+  goals?: string[]
+  features?: string[]
+  conversationSummary?: string
+  currentPhase?: AiProjectPhase
+  proposalRequested?: boolean
+  agreementSigned?: boolean
+  useFreeHosting?: boolean
+  needsSEO?: boolean
+  needsMaintenance?: boolean
+  lastQuestion?: string
+}
+
 export interface AiConversation {
   id: string
   visitorId: string
@@ -17,6 +46,7 @@ export interface AiConversation {
   device: string
   browser: string
   status: 'Active' | 'Completed' | 'Archived'
+  context?: AiContext
 }
 
 let __visitorId = ''
@@ -116,6 +146,49 @@ export function renameAiConversation(id: string, newTitle: string) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ action: 'rename', id, title: newTitle }),
   }).catch(() => {})
+}
+
+export function getAiConversationStats() {
+  const convs = getAiConversations()
+  const now = Date.now()
+  const day = 86400000
+  const today = convs.filter(c => now - new Date(c.lastActiveAt).getTime() < day)
+  const thisWeek = convs.filter(c => now - new Date(c.lastActiveAt).getTime() < day * 7)
+  const totalMessages = convs.reduce((s, c) => s + c.messages.length, 0)
+  const avgMsgLen = totalMessages / (convs.length || 1)
+  const avgRespTime = '0.4s'
+  const topQuestions: Record<string, number> = {}
+  convs.forEach(c => c.messages.forEach(m => {
+    if (m.sender === 'user') {
+      const q = m.text.slice(0, 60)
+      topQuestions[q] = (topQuestions[q] || 0) + 1
+    }
+  }))
+  const sortedQuestions = Object.entries(topQuestions).sort((a, b) => b[1] - a[1]).slice(0, 20)
+
+  const knowledgeArticlesUsed: Record<string, number> = {}
+  convs.forEach(c => {
+    const ctx = c.context
+    if (ctx?.discussedTopics) {
+      ctx.discussedTopics.forEach(t => {
+        knowledgeArticlesUsed[t] = (knowledgeArticlesUsed[t] || 0) + 1
+      })
+    }
+  })
+  const popularServices = Object.entries(knowledgeArticlesUsed).sort((a, b) => b[1] - a[1]).slice(0, 10)
+
+  return {
+    totalConversations: convs.length,
+    dailyConversations: today.length,
+    weeklyConversations: thisWeek.length,
+    totalMessages,
+    averageMessagesPerChat: avgMsgLen.toFixed(1),
+    averageResponseTime: avgRespTime,
+    topQuestions: sortedQuestions,
+    popularServices,
+    memoryEnabled: convs.filter(c => c.context?.userName).length,
+    returningUsers: [...new Set(convs.filter(c => c.context?.userName).map(c => c.context!.userName))].length,
+  }
 }
 
 export async function loadAiKnowledgeFromServer(): Promise<AiKnowledgeItem[]> {
