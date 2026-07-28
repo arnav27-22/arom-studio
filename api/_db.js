@@ -1,6 +1,21 @@
 import pg from 'pg'
 const { Pool } = pg
 
+const ALLOWED_TABLES = new Set([
+  'visitors', 'visitor_sessions', 'ai_conversations', 'generated_pdfs',
+  'leads', 'discovery_forms', 'invoices', 'projects', 'notifications',
+  'audit_logs', 'blog_posts', 'recycle_bin',
+  'clients', 'proposals', 'agreements', 'payments', 'content_collection',
+  'asset_folders', 'design_approvals', 'project_timelines', 'handovers',
+  'feedbacks', 'ai_knowledge', 'cms_content', 'link_clicks',
+])
+
+function validateTable(table) {
+  if (!ALLOWED_TABLES.has(table)) {
+    throw new Error(`Invalid table name: ${table}`)
+  }
+}
+
 let pool
 
 function requireDB() {
@@ -10,7 +25,7 @@ function requireDB() {
     throw new Error(
       'DATABASE_URL environment variable is required.\n' +
       'Set DATABASE_URL in your Vercel project dashboard (Settings → Environment Variables).\n' +
-      'Example: postgresql://user:password@ep-example-123456.us-east-2.aws.neon.tech/dbname?sslmode=require'
+      'Example: postgresql://user:***@ep-example-123456.us-east-2.aws.neon.tech/dbname?sslmode=require'
     )
   }
   const isNeon = url.includes('neon.tech')
@@ -468,25 +483,31 @@ export async function init() {
 }
 
 export async function readAll(table, orderBy = 'created_at DESC', limit = null) {
+  validateTable(table)
   await ensureInitialized()
+  const cleanOrderBy = orderBy.replace(/[^a-zA-Z0-9_\s,]/g, '')
   const sql = limit
-    ? `SELECT * FROM ${table} ORDER BY ${orderBy} LIMIT $1`
-    : `SELECT * FROM ${table} ORDER BY ${orderBy}`
+    ? `SELECT * FROM ${table} ORDER BY ${cleanOrderBy} LIMIT $1`
+    : `SELECT * FROM ${table} ORDER BY ${cleanOrderBy}`
   const params = limit ? [limit] : []
   const { rows } = await query(sql, params)
   return rows
 }
 
 export async function readWhere(table, column, value, orderBy = 'created_at DESC') {
+  validateTable(table)
+  const cleanColumn = column.replace(/[^a-zA-Z0-9_]/g, '')
+  const cleanOrderBy = orderBy.replace(/[^a-zA-Z0-9_\s,]/g, '')
   await ensureInitialized()
   const { rows } = await query(
-    `SELECT * FROM ${table} WHERE ${column} = $1 ORDER BY ${orderBy}`,
+    `SELECT * FROM ${table} WHERE ${cleanColumn} = $1 ORDER BY ${cleanOrderBy}`,
     [value]
   )
   return rows
 }
 
 export async function insertRow(table, data) {
+  validateTable(table)
   await ensureInitialized()
   const keys = Object.keys(data)
   const values = Object.values(data)
@@ -499,31 +520,39 @@ export async function insertRow(table, data) {
 }
 
 export async function deleteWhere(table, column, value) {
+  validateTable(table)
+  const cleanColumn = column.replace(/[^a-zA-Z0-9_]/g, '')
   await ensureInitialized()
-  await query(`DELETE FROM ${table} WHERE ${column} = $1`, [value])
+  await query(`DELETE FROM ${table} WHERE ${cleanColumn} = $1`, [value])
 }
 
 export async function deleteAll(table) {
+  validateTable(table)
   await ensureInitialized()
   await query(`DELETE FROM ${table}`)
 }
 
 export async function countWhere(table, column, value) {
+  validateTable(table)
+  const cleanColumn = column.replace(/[^a-zA-Z0-9_]/g, '')
   await ensureInitialized()
   const { rows } = await query(
-    `SELECT COUNT(*)::int AS count FROM ${table} WHERE ${column} = $1`,
+    `SELECT COUNT(*)::int AS count FROM ${table} WHERE ${cleanColumn} = $1`,
     [value]
   )
   return rows[0].count
 }
 
 export async function countAll(table) {
+  validateTable(table)
   await ensureInitialized()
   const { rows } = await query(`SELECT COUNT(*)::int AS count FROM ${table}`)
   return rows[0].count
 }
 
 export async function updateWhere(table, data, column, value) {
+  validateTable(table)
+  const cleanColumn = column.replace(/[^a-zA-Z0-9_]/g, '')
   await ensureInitialized()
   const keys = Object.keys(data)
   const setClause = keys.map((k, i) => `${k} = $${i + 2}`).join(', ')
@@ -535,6 +564,7 @@ export async function updateWhere(table, data, column, value) {
 }
 
 export async function getById(table, id) {
+  validateTable(table)
   await ensureInitialized()
   const { rows } = await query(`SELECT * FROM ${table} WHERE id = $1`, [id])
   return rows[0] || null

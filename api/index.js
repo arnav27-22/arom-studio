@@ -7,25 +7,43 @@ import { computeDashboard, computeAnalytics } from './stats.js'
 
 const sseClients = new Map()
 
-function j(res, data) {
-  res.writeHead(200, {
+function getCorsHeaders(req) {
+  const origin = req.headers.origin || ''
+  const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:3001',
+    'https://arom-studio.vercel.app',
+    'https://www.aromstudio.in',
+  ]
+  const allowOrigin = allowedOrigins.includes(origin) || origin.endsWith('.vercel.app') ? origin : (origin ? origin : '*')
+  return {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': allowOrigin,
+    'Access-Control-Allow-Credentials': 'true',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-CSRF-Token',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  }
+}
+
+function j(res, data, req = null) {
+  const headers = req ? getCorsHeaders(req) : {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Credentials': 'true',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  })
+  }
+  res.writeHead(200, headers)
   res.end(JSON.stringify(data))
 }
 
-function send(res, status, data) {
-  res.writeHead(status, {
+function send(res, status, data, req = null) {
+  const headers = req ? getCorsHeaders(req) : {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Credentials': 'true',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  })
+  }
+  res.writeHead(status, headers)
   res.end(JSON.stringify(data))
 }
 
@@ -74,7 +92,7 @@ export default async function handler(req, res) {
     if (pathname === '/api/admin/auth') {
       if (req.method === 'GET') {
         const cookies = parseCookies(req)
-        return j(res, { authenticated: !!(cookies.admin_token && verifyToken(cookies.admin_token)) })
+return j(res, { authenticated: !!(cookies.admin_token && verifyToken(cookies.admin_token)) }, req)
       }
       if (req.method === 'POST') {
         const body = await getJSON(req)
@@ -85,21 +103,21 @@ export default async function handler(req, res) {
           }
           const token = signToken()
           res.setHeader('Set-Cookie', `admin_token=${token}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=28800`)
-          return j(res, { success: true })
+return j(res, { success: true }, req)
         }
         if (body.action === 'logout') {
           res.setHeader('Set-Cookie', 'admin_token=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0')
-          return j(res, { success: true })
+return j(res, { success: true }, req)
         }
       }
-      return send(res, 400, { error: 'Invalid' })
+return send(res, 400, { error: 'Invalid' }, req)
     }
 
     // Require auth for all /api/admin/ routes
     if (pathname.startsWith('/api/admin/')) {
       const cookies = parseCookies(req)
       if (!cookies.admin_token || !verifyToken(cookies.admin_token)) {
-        return send(res, 401, { error: 'Unauthorized' })
+return send(res, 401, { error: 'Unauthorized' }, req)
       }
     }
 
@@ -122,35 +140,35 @@ export default async function handler(req, res) {
     // Dashboard
     if (pathname === '/api/admin/dashboard' || pathname === '/api/admin/statistics') {
       const stats = await computeDashboard()
-      return j(res, stats)
+return j(res, stats, req)
     }
 
     // Analytics
     if (pathname === '/api/admin/analytics') {
       const analytics = await computeAnalytics()
-      return j(res, analytics)
+return j(res, analytics, req)
     }
 
     // Visitors
     if (pathname === '/api/admin/visitors') {
       if (req.method === 'DELETE') {
         await deleteAll('visitors')
-        return j(res, { success: true })
+return j(res, { success: true }, req)
       }
       const rows = await readAll('visitors')
-      return j(res, { total: rows.length, visitors: rows })
+return j(res, { total: rows.length, visitors: rows }, req)
     }
 
     // PDFs
     if (pathname === '/api/admin/pdfs') {
       const rows = await readAll('generated_pdfs')
-      return j(res, { total: rows.length, pdfs: rows })
+return j(res, { total: rows.length, pdfs: rows }, req)
     }
 
     if (pathname.startsWith('/api/admin/pdfs/') && req.method === 'DELETE') {
       const pdfId = pathname.split('/').pop()
       await deleteWhere('generated_pdfs', 'id', pdfId)
-      return j(res, { success: true })
+return j(res, { success: true }, req)
     }
 
     async function getPDFBuffer(pdf) {
@@ -212,7 +230,7 @@ export default async function handler(req, res) {
       const pdfId = pathname.split('/').pop()
       const pdf = await getById('generated_pdfs', pdfId)
       if (!pdf) return send(res, 404, { error: 'PDF not found' })
-      return j(res, pdf)
+return j(res, pdf, req)
     }
 
     // Leads
@@ -233,15 +251,15 @@ export default async function handler(req, res) {
           country: body.country || '',
         }
         await insertRow('leads', row)
-        return j(res, row)
+return j(res, row, req)
       }
       if (req.method === 'PUT') {
         const body = await getJSON(req)
         await updateWhere('leads', { status: body.status }, 'id', body.id)
-        return j(res, { success: true })
+return j(res, { success: true }, req)
       }
       const rows = await readAll('leads')
-      return j(res, { total: rows.length, leads: rows })
+return j(res, { total: rows.length, leads: rows }, req)
     }
 
     // AI Conversations
@@ -250,24 +268,24 @@ export default async function handler(req, res) {
         const body = await getJSON(req)
         if (body.action === 'delete') {
           await deleteWhere('ai_conversations', 'id', body.id)
-          return j(res, { success: true })
+return j(res, { success: true }, req)
         }
         if (body.action === 'rename') {
           await updateWhere('ai_conversations', { title: body.title }, 'id', body.id)
-          return j(res, { success: true })
+return j(res, { success: true }, req)
         }
         if (body.action === 'save' && body.data) {
           await insertRow('ai_conversations', { ...body.data, updated_at: new Date().toISOString() })
-          return j(res, { success: true })
+return j(res, { success: true }, req)
         }
       }
       if (req.method === 'DELETE') {
         const body = await getJSON(req)
         await deleteWhere('ai_conversations', 'id', body.id)
-        return j(res, { success: true })
+return j(res, { success: true }, req)
       }
       const convs = await readAll('ai_conversations')
-      return j(res, { total: convs.length, conversations: convs })
+return j(res, { total: convs.length, conversations: convs }, req)
     }
 
     // AI Knowledge
@@ -280,10 +298,10 @@ export default async function handler(req, res) {
             await insertRow('ai_knowledge', item)
           }
         }
-        return j(res, { success: true })
+return j(res, { success: true }, req)
       }
       const items = await readAll('ai_knowledge')
-      return j(res, { items })
+return j(res, { items }, req)
     }
 
     // Overview (legacy)
@@ -317,10 +335,10 @@ export default async function handler(req, res) {
           ip_hash: crypto.createHash('sha256').update(ip).digest('hex').slice(0, 16),
         }
         await insertRow('audit_logs', entry)
-        return j(res, entry)
+return j(res, entry, req)
       }
       const rows = await readAll('audit_logs')
-      return j(res, { total: rows.length, logs: rows })
+return j(res, { total: rows.length, logs: rows }, req)
     }
 
     // Settings
@@ -339,7 +357,7 @@ export default async function handler(req, res) {
     // Activity
     if (pathname === '/api/admin/activity') {
       const stats = await computeDashboard()
-      return j(res, { events: stats.activity.recent })
+return j(res, { events: stats.activity.recent }, req)
     }
 
     // Recycle Bin
@@ -365,22 +383,22 @@ export default async function handler(req, res) {
             }
             await deleteWhere('recycle_bin', 'id', body.id)
           }
-          return j(res, { success: true })
+return j(res, { success: true }, req)
         }
         if (body.action === 'permanent_delete') {
           const ids = Array.isArray(body.ids) ? body.ids : [body.id]
           for (const id of ids) {
             await deleteWhere('recycle_bin', 'id', id)
           }
-          return j(res, { success: true })
+return j(res, { success: true }, req)
         }
         if (body.action === 'empty') {
           await deleteAll('recycle_bin')
-          return j(res, { success: true })
+return j(res, { success: true }, req)
         }
       }
       const items = await readAll('recycle_bin')
-      return j(res, { total: items.length, items })
+return j(res, { total: items.length, items }, req)
     }
 
     // Sync endpoint
@@ -459,7 +477,7 @@ export default async function handler(req, res) {
             }
           }
         }
-        return j(res, { success: true })
+return j(res, { success: true }, req)
       }
     }
 
@@ -483,15 +501,15 @@ export default async function handler(req, res) {
           full_data: body.fullData ? JSON.stringify(body.fullData) : '{}',
         }
         await insertRow('discovery_forms', row)
-        return j(res, { ...row, id: row.id })
+return j(res, { ...row, id: row.id }, req)
       }
       if (req.method === 'DELETE') {
         const body = await getJSON(req)
         await deleteWhere('discovery_forms', 'id', body.id)
-        return j(res, { success: true })
+return j(res, { success: true }, req)
       }
       const items = await readAll('discovery_forms')
-      return j(res, { total: items.length, questionnaires: items })
+return j(res, { total: items.length, questionnaires: items }, req)
     }
 
     // Recycle bin restore
@@ -507,15 +525,15 @@ export default async function handler(req, res) {
             results.push({ recycleId: id, itemData: record.item_data, originalCollection: record.original_collection })
           }
         }
-        return j(res, { success: true, restoredItems: results })
+return j(res, { success: true, restoredItems: results }, req)
       }
       const record = await getById('recycle_bin', body.recycleId)
       if (record && record.item_data && record.original_collection) {
         await insertRow(record.original_collection, record.item_data)
         await deleteWhere('recycle_bin', 'id', body.recycleId)
-        return j(res, { success: true, itemData: record.item_data, originalCollection: record.original_collection })
+return j(res, { success: true, itemData: record.item_data, originalCollection: record.original_collection }, req)
       }
-      return j(res, { success: false })
+return j(res, { success: false }, req)
     }
 
     if (pathname === '/api/admin/recycle/permanent-delete' && req.method === 'POST') {
@@ -524,12 +542,12 @@ export default async function handler(req, res) {
       for (const id of ids) {
         await deleteWhere('recycle_bin', 'id', id)
       }
-      return j(res, { success: true })
+return j(res, { success: true }, req)
     }
 
     if (pathname === '/api/admin/recycle/empty' && req.method === 'POST') {
       await deleteAll('recycle_bin')
-      return j(res, { success: true })
+return j(res, { success: true }, req)
     }
 
     // Logs POST (create audit log)
@@ -555,7 +573,7 @@ export default async function handler(req, res) {
         file_name: body.fileName || '',
       }
       await insertRow('generated_pdfs', entry)
-      return j(res, entry)
+return j(res, entry, req)
     }
 
     // Invoices
@@ -582,16 +600,16 @@ export default async function handler(req, res) {
           notes: body.notes || '',
         }
         await insertRow('invoices', invoice)
-        return j(res, { ...invoice, id: invoice.id })
+return j(res, { ...invoice, id: invoice.id }, req)
       }
       const rows = await readAll('invoices')
-      return j(res, { total: rows.length, invoices: rows })
+return j(res, { total: rows.length, invoices: rows }, req)
     }
 
     // CMS
     if (pathname === '/api/admin/cms') {
       const rows = await readAll('cms_content')
-      return j(res, rows)
+return j(res, rows, req)
     }
 
     if (pathname.match(/^\/api\/admin\/cms\/(.+)$/)) {
@@ -607,17 +625,17 @@ export default async function handler(req, res) {
           metadata: body.metadata ? JSON.stringify(body.metadata) : '{}',
         })
         const updated = await getById('cms_content', cmsId)
-        return j(res, updated)
+return j(res, updated, req)
       }
       const item = await getById('cms_content', cmsId)
-      return j(res, item || { id: cmsId, title: '', content: {}, published: false })
+return j(res, item || { id: cmsId, title: '', content: {}, published: false }, req)
     }
 
     if (pathname.match(/^\/api\/cms\/(.+)$/) && req.method === 'GET') {
       const cmsId = pathname.match(/^\/api\/cms\/(.+)$/)[1]
       const item = await getById('cms_content', cmsId)
       if (!item || !item.published) return j(res, { id: cmsId, content: {} })
-      return j(res, { id: item.id, title: item.title, content: item.content, updated_at: item.updated_at })
+return j(res, { id: item.id, title: item.title, content: item.content, updated_at: item.updated_at }, req)
     }
 
     // Agreements (specific handler for correct field mapping)
@@ -636,10 +654,10 @@ export default async function handler(req, res) {
           download_url: body.downloadUrl || '',
         }
         await insertRow('agreements', row)
-        return j(res, { ...body, id: row.id })
+return j(res, { ...body, id: row.id }, req)
       }
       const rows = await readAll('agreements')
-      return j(res, rows)
+return j(res, rows, req)
     }
 
     // Generic collection endpoints
@@ -656,10 +674,10 @@ export default async function handler(req, res) {
           const body = await getJSON(req)
           const row = { id: body.id || crypto.randomUUID(), ...body, created_at: new Date().toISOString() }
           await insertRow(table, row)
-          return j(res, row)
+return j(res, row, req)
         }
         const rows = await readAll(table)
-        return j(res, rows)
+return j(res, rows, req)
       }
 
       if (pathname.startsWith(`/api/admin/${route}/`) && req.method === 'DELETE') {
@@ -676,7 +694,7 @@ export default async function handler(req, res) {
           })
         }
         await deleteWhere(table, 'id', itemId)
-        return j(res, { success: true, recycleItem: item ? { id: crypto.randomUUID(), originalCollection: route, itemData: item, title: item.title || item.name || item.client_name || itemId } : null })
+return j(res, { success: true, recycleItem: item ? { id: crypto.randomUUID(), originalCollection: route, itemData: item, title: item.title || item.name || item.client_name || itemId } : null }, req)
       }
     }
 
@@ -715,7 +733,7 @@ export default async function handler(req, res) {
         page_views_count: body.pageViewsCount || 1,
       })
       broadcast('visitor', { action: 'pageview', data: body })
-      return j(res, { ok: true })
+return j(res, { ok: true }, req)
     }
 
     // PDF tracking
@@ -751,7 +769,7 @@ export default async function handler(req, res) {
         session_id: body.sessionId || '',
       })
       broadcast('pdf', { action: 'created', data: { id: pdfId } })
-      return j(res, { ok: true, id: pdfId, sha256Hash: body.sha256Hash || '', referenceNumber: `PDF-${pdfId.slice(0, 8).toUpperCase()}` })
+return j(res, { ok: true, id: pdfId, sha256Hash: body.sha256Hash || '', referenceNumber: `PDF-${pdfId.slice(0, 8).toUpperCase()}` }, req)
     }
 
     // AI conversation tracking
@@ -760,12 +778,12 @@ export default async function handler(req, res) {
       if (body.action === 'delete') {
         await deleteWhere('ai_conversations', 'id', body.id)
         broadcast('ai_conversation', { action: 'delete', data: body })
-        return j(res, { success: true })
+return j(res, { success: true }, req)
       }
       if (body.action === 'rename') {
         await updateWhere('ai_conversations', { title: body.title }, 'id', body.id)
         broadcast('ai_conversation', { action: 'rename', data: body })
-        return j(res, { success: true })
+return j(res, { success: true }, req)
       }
       if (body.action === 'save' && body.data) {
         const conv = {
@@ -776,9 +794,9 @@ export default async function handler(req, res) {
         }
         await insertRow('ai_conversations', conv)
         broadcast('ai_conversation', { action: 'saved', data: body })
-        return j(res, { success: true })
+return j(res, { success: true }, req)
       }
-      return j(res, { ok: true })
+return j(res, { ok: true }, req)
     }
 
     // Lead tracking
@@ -799,7 +817,7 @@ export default async function handler(req, res) {
       }
       await insertRow('leads', lead)
       broadcast('lead', { action: 'created', data: lead })
-      return j(res, { success: true, id: lead.id })
+return j(res, { success: true, id: lead.id }, req)
     }
 
     // Discovery tracking
@@ -822,16 +840,16 @@ export default async function handler(req, res) {
       }
       await insertRow('discovery_forms', item)
       broadcast('discovery', { action: 'created', data: item })
-      return j(res, { success: true, id: item.id })
+return j(res, { success: true, id: item.id }, req)
     }
 
     if (pathname.startsWith('/api/track/')) {
-      return j(res, { ok: true })
+return j(res, { ok: true }, req)
     }
 
-    return send(res, 404, { error: 'Not found' })
+return send(res, 404, { error: 'Not found' }, req)
   } catch (err) {
     console.error('Handler error:', err)
-    return send(res, 500, { error: 'Internal server error' })
+return send(res, 500, { error: 'Internal server error' }, req)
   }
 }

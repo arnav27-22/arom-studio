@@ -4,10 +4,47 @@ import http from 'http'
 import { randomUUID, createHash, timingSafeEqual } from 'crypto'
 import jwt from 'jsonwebtoken'
 
+// Load .env manually (no dotenv dependency needed for this script)
+const envPath = path.resolve(process.cwd(), '.env')
+if (fs.existsSync(envPath)) {
+  const envContent = fs.readFileSync(envPath, 'utf-8')
+  for (const line of envContent.split('\n')) {
+    const trimmed = line.trim()
+    if (!trimmed || trimmed.startsWith('#')) continue
+    const eqIdx = trimmed.indexOf('=')
+    if (eqIdx === -1) continue
+    const key = trimmed.slice(0, eqIdx).trim()
+    let value = trimmed.slice(eqIdx + 1).trim()
+    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+      value = value.slice(1, -1)
+    }
+    if (!process.env[key]) {
+      process.env[key] = value
+    }
+  }
+}
+
 const PORT = 3001
 const DATA_DIR = path.resolve(process.cwd(), 'data')
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'change-this-password'
-const JWT_SECRET = process.env.JWT_SECRET || 'change-this-secret-in-production'
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD
+const JWT_SECRET = process.env.ADMIN_JWT_SECRET
+
+// Require secure credentials in production
+if (!ADMIN_PASSWORD || !JWT_SECRET) {
+  console.error('\x1b[31m[FATAL] Missing required environment variables: ADMIN_PASSWORD and ADMIN_JWT_SECRET must be set in .env\x1b[0m')
+  console.error('\x1b[33m  Copy .env.example to .env and set secure values before starting.\x1b[0m')
+  process.exit(1)
+}
+
+if (ADMIN_PASSWORD === 'change-this-password') {
+  console.error('\x1b[31m[FATAL] ADMIN_PASSWORD must be changed from the default value in .env\x1b[0m')
+  process.exit(1)
+}
+
+if (JWT_SECRET.length < 32) {
+  console.error('\x1b[31m[FATAL] ADMIN_JWT_SECRET must be at least 32 characters\x1b[0m')
+  process.exit(1)
+}
 
 function ensureDir() { if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true }) }
 function dbRead(name) {
@@ -43,17 +80,42 @@ function parseCookies(req) {
   })
   return cookies
 }
-function send(res, status, data) {
-  res.writeHead(status, {
+function getCorsHeaders(req) {
+  const origin = req.headers.origin || ''
+  const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:3001',
+  ]
+  const allowOrigin = allowedOrigins.includes(origin) ? origin : 'http://localhost:5173'
+  return {
     'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': allowOrigin,
     'Access-Control-Allow-Credentials': 'true',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  })
+  }
+}
+
+function send(res, status, data, req = null) {
+  const headers = req ? getCorsHeaders(req) : {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': 'http://localhost:5173',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  }
+  res.writeHead(status, headers)
   res.end(JSON.stringify(data))
 }
-function j(res, data) { return send(res, 200, data) }
+function j(res, data, req = null) {
+  const headers = req ? getCorsHeaders(req) : {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': 'http://localhost:5173',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  }
+  res.writeHead(200, headers)
+  res.end(JSON.stringify(data))
+}
 
 function verifyAuth(req) {
   const cookies = parseCookies(req)
@@ -175,15 +237,15 @@ async function handler(req, res) {
         if (match) match = timingSafeEqual(bufA, bufB)
         if (!match) { recordFailure(ip); return send(res, 401, { error: 'Incorrect password' }) }
         const token = jwt.sign({ role: 'admin' }, JWT_SECRET, { expiresIn: '8h' })
-        res.setHeader('Set-Cookie', `admin_token=${token}; HttpOnly; Path=/; Max-Age=28800; SameSite=Lax`)
-        return j(res, { success: true })
+        res.setHeader('Set-Cookie', `admin_token=${token}; HttpOnly; Path=/; Max-Age=28800; SameSite=Strict`)
+return j(res, { success: true }, req)
       }
       if (body.action === 'logout') {
         res.setHeader('Set-Cookie', 'admin_token=; HttpOnly; Path=/; Max-Age=0')
-        return j(res, { success: true })
+return j(res, { success: true }, req)
       }
     }
-    return send(res, 400, { error: 'Invalid' })
+return send(res, 400, { error: 'Invalid' }, req)
   }
 
   // Require auth for all /api/admin/ routes (except auth itself)
@@ -203,20 +265,20 @@ async function handler(req, res) {
   if (pathname === '/api/admin/visitors') {
     if (req.method === 'DELETE') { dbWrite('real_visitors', []); return j(res, { success: true }) }
     const visits = dbRead('real_visitors') || []
-    return j(res, { total: visits.length, visitors: visits.reverse() })
+return j(res, { total: visits.length, visitors: visits.reverse() }, req)
   }
 
   // PDFs
   if (pathname === '/api/admin/pdfs') {
     const pdfs = dbRead('real_pdfs') || []
-    return j(res, { total: pdfs.length, pdfs: pdfs.reverse() })
+return j(res, { total: pdfs.length, pdfs: pdfs.reverse() }, req)
   }
   if (pathname.startsWith('/api/admin/pdfs/') && req.method === 'DELETE') {
     const pdfId = pathname.split('/').pop()
     let pdfs = dbRead('real_pdfs') || []
     pdfs = pdfs.filter(p => p.id !== pdfId)
     dbWrite('real_pdfs', pdfs)
-    return j(res, { success: true })
+return j(res, { success: true }, req)
   }
 
   // Leads
@@ -226,9 +288,9 @@ async function handler(req, res) {
       const body = await getJSON(req)
       const idx = leads.findIndex(l => l.id === body.id)
       if (idx !== -1) { leads[idx].status = body.status || leads[idx].status; dbWrite('real_leads', leads); return j(res, { success: true }) }
-      return send(res, 404, { error: 'Not found' })
+return send(res, 404, { error: 'Not found' }, req)
     }
-    return j(res, { total: leads.length, leads: leads.reverse() })
+return j(res, { total: leads.length, leads: leads.reverse() }, req)
   }
 
   // AI Conversations
@@ -242,18 +304,18 @@ async function handler(req, res) {
         const idx = convs.findIndex(c => c.id === body.data?.id)
         if (idx !== -1) convs[idx] = body.data; else convs.unshift(body.data)
         dbWrite('real_ai_conversations', convs)
-        return j(res, { success: true })
+return j(res, { success: true }, req)
       }
     }
     if (req.method === 'DELETE') { const b = await getJSON(req); dbWrite('real_ai_conversations', convs.filter(c => c.id !== b.id)); return j(res, { success: true }) }
-    return j(res, { total: convs.length, conversations: convs.reverse() })
+return j(res, { total: convs.length, conversations: convs.reverse() }, req)
   }
 
   // AI Knowledge
   if (pathname === '/api/admin/ai/knowledge') {
     const knowledge = dbRead('real_ai_knowledge') || []
     if (req.method === 'POST') { const b = await getJSON(req); dbWrite('real_ai_knowledge', b.items || []); return j(res, { success: true }) }
-    return j(res, { items: knowledge })
+return j(res, { items: knowledge }, req)
   }
 
   // Discovery Questionnaires
@@ -262,9 +324,9 @@ async function handler(req, res) {
     if (req.method === 'DELETE') {
       const b = await getJSON(req)
       dbWrite('real_discovery', items.filter(i => i.id !== b.id))
-      return j(res, { success: true })
+return j(res, { success: true }, req)
     }
-    return j(res, { total: items.length, questionnaires: items.reverse() })
+return j(res, { total: items.length, questionnaires: items.reverse() }, req)
   }
 
   // Overview (legacy)
@@ -302,12 +364,12 @@ async function handler(req, res) {
           if (!exists && record.itemData) { coll.unshift(record.itemData); dbWrite(dbName, coll) }
           dbWrite('real_recycle_bin', bin.filter(r => r.id !== body.id))
         }
-        return j(res, { success: true })
+return j(res, { success: true }, req)
       }
       if (body.action === 'permanent_delete') { const ids = Array.isArray(body.ids) ? body.ids : [body.id]; dbWrite('real_recycle_bin', bin.filter(r => !ids.includes(r.id))); return j(res, { success: true }) }
       if (body.action === 'empty') { dbWrite('real_recycle_bin', []); return j(res, { success: true }) }
     }
-    return j(res, { total: bin.length, items: bin.reverse() })
+return j(res, { total: bin.length, items: bin.reverse() }, req)
   }
 
   // Sync (legacy)
@@ -351,7 +413,7 @@ async function handler(req, res) {
         const map = { clients: 'real_clients', projects: 'real_projects', proposals: 'real_proposals', agreements: 'real_agreements', payments: 'real_payments', content: 'real_content', assets: 'real_assets', approvals: 'real_approvals', timelines: 'real_timelines', handovers: 'real_handovers', feedbacks: 'real_feedbacks', notifications: 'real_notifications', discoveryQuestionnaires: 'real_discovery', visitors: 'real_visitors', pdfs: 'real_pdfs', invoices: 'real_invoices', leads: 'real_leads', blogs: 'real_blogs', recycleBin: 'real_recycle_bin', logs: 'system_logs' }
         for (const [k, v] of Object.entries(map)) { if (Array.isArray(item[k])) dbWrite(v, item[k]) }
       }
-      return j(res, { success: true })
+return j(res, { success: true }, req)
     }
   }
 
@@ -372,7 +434,7 @@ async function handler(req, res) {
       deviceBrand: brand, browser: body.deviceInfo?.browser || 'Chrome',
       referrer: body.referrer || 'Direct', timeOnPage: 30, scrollDepth: 80, pageViewsCount: 1,
     })
-    return j(res, { ok: true })
+return j(res, { ok: true }, req)
   }
 
   if ((pathname === '/api/pdfs/save' || pathname === '/api/track/save-pdf' || pathname === '/api/track/save') && req.method === 'POST') {
@@ -384,7 +446,7 @@ async function handler(req, res) {
       deviceType: body.deviceType || 'desktop', browser: body.browser || 'Chrome', os: body.os || 'Windows',
       pdfDataUrl: body.pdfDataUrl || '',
     })
-    return j(res, { ok: true })
+return j(res, { ok: true }, req)
   }
 
   if ((pathname === '/api/track/ai-conversation') && req.method === 'POST') {
@@ -396,9 +458,9 @@ async function handler(req, res) {
       const idx = convs.findIndex(c => c.id === body.data?.id)
       if (idx !== -1) convs[idx] = body.data; else convs.unshift(body.data)
       dbWrite('real_ai_conversations', convs)
-      return j(res, { success: true })
+return j(res, { success: true }, req)
     }
-    return j(res, { ok: true })
+return j(res, { ok: true }, req)
   }
 
   if ((pathname === '/api/track/lead' || pathname === '/api/track/leads') && req.method === 'POST') {
@@ -413,7 +475,7 @@ async function handler(req, res) {
     }
     leads.unshift(lead)
     dbWrite('real_leads', leads)
-    return j(res, { success: true, id: lead.id })
+return j(res, { success: true, id: lead.id }, req)
   }
 
   if (pathname === '/api/track/discovery' && req.method === 'POST') {
@@ -429,12 +491,12 @@ async function handler(req, res) {
     }
     discovery.unshift(item)
     dbWrite('real_discovery', discovery)
-    return j(res, { success: true, id: item.id })
+return j(res, { success: true, id: item.id }, req)
   }
 
   if (pathname.startsWith('/api/track/')) return j(res, { ok: true })
 
-  send(res, 404, { error: 'Not found' })
+send(res, 404, { error: 'Not found' }, req)
 }
 
 function checkRateLimit(ip) {

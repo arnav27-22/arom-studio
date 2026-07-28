@@ -10,7 +10,7 @@ import {
   detectDeviceAndBrowser,
   getAiKnowledge,
 } from '../../lib/aiStore'
-import { generateAiResponse, createDefaultContext } from '../../lib/aiEngine'
+import { generateAiResponse, createDefaultContext, calculateLeadScore } from '../../lib/aiEngine'
 import type { AiContext } from '../../lib/aiStore'
 import type { AiConversation, AiMessage } from '../../types/ai'
 
@@ -281,6 +281,18 @@ export function AromAiModal({ isOpen, onClose }: AromAiModalProps) {
                 <p className="text-[11px] text-white/50 font-body">
                   {context.userName ? `Chatting with ${context.userName}` : 'Your AI Website Consultant'}
                 </p>
+                {context.userName && (
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <span className="text-[9px] text-accent bg-accent/10 px-1.5 py-0.5 rounded-full border border-accent/20">
+                      Score: {calculateLeadScore(context)}
+                    </span>
+                    {context.projectType && (
+                      <span className="text-[9px] text-white/60 bg-white/5 px-1.5 py-0.5 rounded-full border border-white/10 capitalize">
+                        {context.projectType}
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
 
