@@ -42,8 +42,8 @@ router.post('/upload', requireAuth, rateLimiter, async (req, res, next) => {
   }
 })
 
-// Global search (keep for backward compat)
-router.get('/search', async (req, res, next) => {
+// Global search (requires auth)
+router.get('/search', requireAuth, async (req, res, next) => {
   try {
     const query = req.query.q as string
     if (!query || query.length < 2) {

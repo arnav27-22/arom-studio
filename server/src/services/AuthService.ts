@@ -1,4 +1,5 @@
 ﻿import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
 import { prisma } from '../database/prisma'
 import { CONFIG } from '../config'
 import { signToken } from '../middleware/auth'
@@ -15,18 +16,17 @@ export class AuthService {
   }
 
   async checkAuth(token?: string): Promise<boolean> {
-    if (!token) return false
-    try {
-      const jwt = await import('jsonwebtoken')
-      jwt.default.verify(token, CONFIG.JWT_SECRET)
-      return true
-    } catch {
-      return false
+      if (!token) return false
+      try {
+        jwt.verify(token, CONFIG.JWT_SECRET)
+        return true
+      } catch {
+        return false
+      }
     }
-  }
 
   async login(password: string, ip: string): Promise<string> {
-    if (!password || password.length < 8) {
+    if (!password) {
       throw new UnauthorizedError('Incorrect password')
     }
 

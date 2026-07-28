@@ -33,9 +33,11 @@ export class AuthController {
   }
 
   async login(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { password } = req.body
-      validatePassword(password)
+      try {
+        const { password } = req.body
+        if (!password || password.length < 1) {
+          throw new ValidationError('Password is required')
+        }
       const ip = req.ip || req.socket.remoteAddress || ''
       const token = await authService.login(password, ip)
 
