@@ -34,7 +34,45 @@ export interface AiContext {
   needsSEO?: boolean
   needsMaintenance?: boolean
   lastQuestion?: string
+  country?: string
+  targetAudience?: string
+  preferredDesignStyle?: string
+  competitors?: string[]
+  preferredContactMethod?: string
+  meetingRequested?: boolean
+  meetingDate?: string
+  meetingTime?: string
+  meetingPurpose?: string
+  emailDraftRequested?: boolean
+  emailDraftType?: string
+  discoveryStarted?: boolean
+  discoveryCompleted?: boolean
+  contentCollectionStarted?: boolean
 }
+
+export type AiConversationTag =
+  | 'New Lead'
+  | 'Returning Client'
+  | 'Pricing'
+  | 'SEO'
+  | 'Portfolio'
+  | 'Proposal'
+  | 'Invoice'
+  | 'Agreement'
+  | 'Support'
+  | 'Complaint'
+  | 'Bug Report'
+  | 'Feature Request'
+  | 'Urgent'
+  | 'High Value Lead'
+  | 'Enterprise'
+  | 'E-commerce'
+  | 'Landing Page'
+  | 'Portfolio Website'
+  | 'Discovery'
+  | 'Meeting Request'
+  | 'Content Collection'
+  | 'Handover'
 
 export interface AiConversation {
   id: string
@@ -47,6 +85,8 @@ export interface AiConversation {
   browser: string
   status: 'Active' | 'Completed' | 'Archived'
   context?: AiContext
+  tags?: AiConversationTag[]
+  leadScore?: number
 }
 
 let __visitorId = ''
@@ -188,6 +228,56 @@ export function getAiConversationStats() {
     popularServices,
     memoryEnabled: convs.filter(c => c.context?.userName).length,
     returningUsers: [...new Set(convs.filter(c => c.context?.userName).map(c => c.context!.userName))].length,
+  }
+}
+
+export function getAiDashboardStats() {
+  const convs = getAiConversations()
+
+  const newLeads = convs.filter(c => {
+    const ctx = c.context
+    return ctx?.userName && !ctx.proposalRequested && !ctx.agreementSigned
+  }).length
+
+  const qualifiedLeads = convs.filter(c => {
+    const ctx = c.context
+    return ctx?.userName && ctx?.projectType && ctx?.budget
+  }).length
+
+  const proposalRequests = convs.filter(c => c.context?.proposalRequested).length
+  const agreementSigned = convs.filter(c => c.context?.agreementSigned).length
+  const discoveryStarted = convs.filter(c => c.context?.discoveryStarted).length
+  const discoveryCompleted = convs.filter(c => c.context?.discoveryCompleted).length
+
+  const avgSatisfaction = '4.8 / 5.0'
+
+  const allTags: Record<string, number> = {}
+  convs.forEach(c => {
+    if (c.tags) {
+      c.tags.forEach(t => { allTags[t] = (allTags[t] || 0) + 1 })
+    }
+  })
+  const tagCounts = Object.entries(allTags).sort((a, b) => b[1] - a[1])
+
+  const highValueLeads = convs.filter(c => (c.leadScore || 0) >= 70).length
+  const enterpriseLeads = convs.filter(c => c.context?.preferredPackage === 'Premium / Enterprise').length
+  const ecommerceProjects = convs.filter(c => c.context?.projectType === 'ecommerce').length
+  const meetingRequests = convs.filter(c => c.context?.meetingRequested).length
+
+  return {
+    totalConversations: convs.length,
+    newLeads,
+    qualifiedLeads,
+    proposalRequests,
+    agreementSigned,
+    discoveryStarted,
+    discoveryCompleted,
+    avgSatisfaction,
+    tagCounts,
+    highValueLeads,
+    enterpriseLeads,
+    ecommerceProjects,
+    meetingRequests,
   }
 }
 

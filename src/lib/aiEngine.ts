@@ -1,6 +1,7 @@
 // AROM AI — INTELLIGENT REASONING & RESPONSE ENGINE (Version 5.0)
 import type { AiKnowledgeItem } from '../types/ai'
 import type { AiContext } from './aiStore'
+import type { AiProjectPhase } from './aiStore'
 export type { AiKnowledgeItem }
 
 export const REASONING_ENGINE_PROMPT_V5 = `
@@ -95,6 +96,150 @@ function extractPackage(text: string): string | null {
   return null
 }
 
+function extractCompany(text: string): string | null {
+  const patterns = [
+    /(?:my company|my business|my firm|i run|i own|we are)\s+(?:is|are|called)?\s*([A-Za-z0-9\s&]+?)(?:\.|,|and|which|that|in|for|we|i\s|$)/i,
+    /(?:company|business|firm|studio|agency|brand)\s*(?:name)?\s*(?:is)?\s*:?\s*([A-Za-z0-9\s&]+?)(?:\.|,|$)/i,
+  ]
+  for (const p of patterns) {
+    const m = text.match(p)
+    if (m && m[1].trim().length > 1) return m[1].trim()
+  }
+  return null
+}
+
+function extractCountry(text: string): string | null {
+  const countries: Record<string, string> = {
+    india: 'India', usa: 'USA', america: 'USA', 'united states': 'USA',
+    uk: 'UK', 'united kingdom': 'UK', canada: 'Canada', australia: 'Australia',
+    dubai: 'UAE', uae: 'UAE', germany: 'Germany', singapore: 'Singapore',
+    japan: 'Japan', china: 'China', brazil: 'Brazil', 'saudi arabia': 'Saudi Arabia',
+  }
+  const lower = text.toLowerCase()
+  for (const [key, val] of Object.entries(countries)) {
+    if (lower.includes(key)) return val
+  }
+  return null
+}
+
+function extractTargetAudience(text: string): string | null {
+  const patterns = [
+    /(?:target|audience|customer|client|visitor|user)\s*(?:is|are|audience)?\s*:?\s*([A-Za-z0-9\s&]+?)(?:\.|,|$)/i,
+    /(?:for|serving|helping|catering to)\s+([A-Za-z0-9\s&]+?)(?:\.|,|and|which|who|in|$)/i,
+  ]
+  for (const p of patterns) {
+    const m = text.match(p)
+    if (m && m[1].trim().length > 2) return m[1].trim()
+  }
+  return null
+}
+
+function extractDesignStyle(text: string): string | null {
+  const styles: Record<string, string> = {
+    'modern': 'Modern',
+    'minimal': 'Minimal',
+    'dark': 'Dark',
+    'glass': 'Glassmorphic',
+    'luxury': 'Luxury',
+    'creative': 'Creative',
+    'corporate': 'Corporate',
+    'colorful': 'Colorful',
+    'elegant': 'Elegant',
+    'playful': 'Playful',
+    'simple': 'Simple',
+    'clean': 'Clean',
+  }
+  const lower = text.toLowerCase()
+  for (const [key, val] of Object.entries(styles)) {
+    if (lower.includes(key)) return val
+  }
+  return null
+}
+
+function extractFeatures(text: string): string[] {
+  const found: string[] = []
+  const featurePatterns = [
+    /(?:need|need a|needs|require|requires|want|wants|looking for|add|include|with)\s+([A-Za-z0-9\s]+?)(?:\.|,|and|also|$)/gi,
+  ]
+  for (const p of featurePatterns) {
+    let m: RegExpExecArray | null
+    while ((m = p.exec(text)) !== null) {
+      const f = m[1].trim().toLowerCase()
+      if (f.length > 2 && f.length < 40) found.push(f)
+    }
+  }
+  const knownFeatures = ['booking', 'payment', 'chat', 'login', 'dashboard', 'cms', 'blog', 'gallery',
+    'cart', 'search', 'filter', 'review', 'rating', 'notification', 'email', 'api']
+  return found.filter(f => knownFeatures.some(k => f.includes(k)))
+}
+
+function extractContactMethod(text: string): string | null {
+  const lower = text.toLowerCase()
+  if (/\b(email|e-?mail)\b/i.test(lower)) return 'Email'
+  if (/\b(phone|call|telephone)\b/i.test(lower)) return 'Phone'
+  if (/\b(whatsapp|wa)\b/i.test(lower)) return 'WhatsApp'
+  if (/\b(sms|text|message)\b/i.test(lower)) return 'SMS'
+  return null
+}
+
+function extractMeetingInfo(text: string): { date?: string; time?: string; purpose?: string } | null {
+  const lower = text.toLowerCase()
+  if (!/\b(meeting|schedule|book|call|consultation|discuss)\b/i.test(lower)) return null
+  const result: { date?: string; time?: string; purpose?: string } = {}
+  const dateMatch = lower.match(/(?:on|at|this)\s+(monday|tuesday|wednesday|thursday|friday|saturday|sunday|tomorrow|today)/i)
+  if (dateMatch) result.date = dateMatch[1]
+  const timeMatch = lower.match(/(\d{1,2})\s*(?::(\d{2}))?\s*(am|pm)/i)
+  if (timeMatch) result.time = `${timeMatch[1]}${timeMatch[2] ? ':' + timeMatch[2] : ''} ${timeMatch[3]}`
+  const purposeMatch = lower.match(/(?:about|regarding|discuss|talk about)\s+([A-Za-z0-9\s]+?)(?:\.|,|$)/i)
+  if (purposeMatch) result.purpose = purposeMatch[1].trim()
+  return Object.keys(result).length > 0 ? result : null
+}
+
+export function calculateLeadScore(context: AiContext): number {
+  let score = 0
+  if (context.userName) score += 10
+  if (context.email) score += 5
+  if (context.phone) score += 5
+  if (context.businessName) score += 10
+  if (context.projectType) score += 15
+  if (context.budget) score += 15
+  if (context.timeline) score += 10
+  if (context.preferredPackage) score += 10
+  if (context.country) score += 5
+  if (context.targetAudience) score += 5
+  if (context.preferredDesignStyle) score += 5
+  if (context.needsSEO) score += 5
+  if (context.needsMaintenance) score += 5
+  if (context.discussedTopics.length >= 3) score += 5
+  if (context.proposalRequested) score += 10
+  if (context.meetingRequested) score += 5
+  if (context.currentPhase?.phase === 'proposal') score += 15
+  if (context.currentPhase?.phase === 'agreement') score += 20
+  if (context.currentPhase?.phase === 'development') score += 25
+  if (context.currentPhase?.phase === 'handover') score += 30
+  return Math.min(score, 100)
+}
+
+export function generateConversationTags(context: AiContext): string[] {
+  const tags: string[] = []
+  if (context.userName) tags.push('New Lead')
+  if (context.proposalRequested) tags.push('Proposal')
+  if (context.agreementSigned) tags.push('Agreement')
+  if (context.meetingRequested) tags.push('Meeting Request')
+  if (context.discoveryStarted) tags.push('Discovery')
+  if (context.contentCollectionStarted) tags.push('Content Collection')
+  if (context.projectType === 'ecommerce') tags.push('E-commerce')
+  if (context.preferredPackage === 'Premium / Enterprise') tags.push('Enterprise')
+  if (context.needsSEO) tags.push('SEO')
+  if (context.needsMaintenance) tags.push('Support')
+  if (context.discussedTopics.includes('Portfolio')) tags.push('Portfolio')
+  if (context.discussedTopics.includes('Pricing') && !context.budget) tags.push('Pricing')
+  if (context.budget && parseInt(context.budget.replace(/[^0-9]/g, '')) > 60000) tags.push('High Value Lead')
+  const score = calculateLeadScore(context)
+  if (score >= 50) { if (!tags.includes('High Value Lead')) tags.push('High Value Lead') }
+  return [...new Set(tags)]
+}
+
 /**
  * AiContextManager — tracks conversation state, name, language, topics, budget, timeline, package, and generates summaries
  */
@@ -107,6 +252,16 @@ export class AiContextManager {
 
   getContext(): AiContext {
     return { ...this.context }
+  }
+
+  setPhase(phase: AiProjectPhase['phase']): void {
+    const now = new Date().toISOString()
+    const current = this.context.currentPhase
+    if (current && current.phase === phase) return
+    if (current && current.phase !== phase) {
+      current.completedAt = now
+    }
+    this.context.currentPhase = { phase, enteredAt: now }
   }
 
   updateFromUserMessage(text: string): void {
@@ -135,6 +290,54 @@ export class AiContextManager {
       this.context.preferredPackage = pkg
     }
 
+    const company = extractCompany(text)
+    if (company && !this.context.businessName) {
+      this.context.businessName = company
+    }
+
+    const country = extractCountry(text)
+    if (country && !this.context.country) {
+      this.context.country = country
+    }
+
+    const audience = extractTargetAudience(text)
+    if (audience && !this.context.targetAudience) {
+      this.context.targetAudience = audience
+    }
+
+    const design = extractDesignStyle(text)
+    if (design && !this.context.preferredDesignStyle) {
+      this.context.preferredDesignStyle = design
+    }
+
+    const contactMethod = extractContactMethod(text)
+    if (contactMethod && !this.context.preferredContactMethod) {
+      this.context.preferredContactMethod = contactMethod
+    }
+
+    const meetingInfo = extractMeetingInfo(text)
+    if (meetingInfo) {
+      this.context.meetingRequested = true
+      if (meetingInfo.date && !this.context.meetingDate) this.context.meetingDate = meetingInfo.date
+      if (meetingInfo.time && !this.context.meetingTime) this.context.meetingTime = meetingInfo.time
+      if (meetingInfo.purpose && !this.context.meetingPurpose) this.context.meetingPurpose = meetingInfo.purpose
+    }
+
+    const features = extractFeatures(text)
+    if (features.length > 0) {
+      this.context.features = [...new Set([...(this.context.features || []), ...features])]
+    }
+
+    if (/\b(email|e-?mail)\b/i.test(text)) {
+      const emailMatch = text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/)
+      if (emailMatch && !this.context.email) this.context.email = emailMatch[0]
+    }
+
+    if (/\b(phone|mobile|whatsapp|call)\b/i.test(text)) {
+      const phoneMatch = text.match(/(?:\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/)
+      if (phoneMatch && !this.context.phone) this.context.phone = phoneMatch[0]
+    }
+
     const projectIndicators = [
       { type: 'gym', words: ['gym', 'fitness', 'workout', 'trainer', 'crossfit', 'health club'] },
       { type: 'restaurant', words: ['restaurant', 'food', 'cafe', 'dining', 'bakery', 'cloud kitchen'] },
@@ -156,8 +359,10 @@ export class AiContextManager {
 
     if (lower.includes('seo') && !this.context.needsSEO) this.context.needsSEO = true
     if (/\b(maintenance|support|maintain|update)/i.test(lower) && !this.context.needsMaintenance) this.context.needsMaintenance = true
-    if (/\b(proposal|quote|estimat)/i.test(lower)) this.context.proposalRequested = true
-    if (/\b(agreement|sign|contract)/i.test(lower)) this.context.agreementSigned = true
+    if (/\b(proposal|quote|estimat)/i.test(lower)) { this.context.proposalRequested = true; this.setPhase('proposal') }
+    if (/\b(agreement|sign|contract)/i.test(lower)) { this.context.agreementSigned = true; this.setPhase('agreement') }
+    if (/\b(discovery|questionnaire|form)/i.test(lower)) this.context.discoveryStarted = true
+    if (/\b(logo|brand|color|font|image|photo|video|content|asset)/i.test(lower)) this.context.contentCollectionStarted = true
 
     const topicKeywords: Record<string, string[]> = {
       'Pricing': ['price', 'cost', 'pricing', 'package', 'plan', 'budget', 'rupees', '₹', 'money', 'afford'],
@@ -193,10 +398,13 @@ export class AiContextManager {
     if (ctx.preferredPackage) parts.push(`Package: ${ctx.preferredPackage}`)
     if (ctx.budget) parts.push(`Budget: ${ctx.budget}`)
     if (ctx.timeline) parts.push(`Timeline: ${ctx.timeline}`)
+    if (ctx.country) parts.push(`Country: ${ctx.country}`)
+    if (ctx.targetAudience) parts.push(`Audience: ${ctx.targetAudience}`)
     if (ctx.discussedTopics.length > 0) parts.push(`Discussed: ${ctx.discussedTopics.join(', ')}`)
     if (ctx.needsSEO) parts.push('Needs SEO')
     if (ctx.needsMaintenance) parts.push('Needs Maintenance')
     if (ctx.proposalRequested) parts.push('Proposal requested')
+    if (ctx.meetingRequested) parts.push('Meeting requested')
     if (ctx.features && ctx.features.length > 0) parts.push(`Features: ${ctx.features.join(', ')}`)
     return parts.join(' | ')
   }
@@ -204,22 +412,31 @@ export class AiContextManager {
   greetMessage(): string {
     const name = this.context.userName
     const lang = this.context.language
+    const phase = this.context.currentPhase?.phase
 
     if (lang === 'mr') {
-      return `नमस्कार${name ? ' ' + name : ''}! 👋\n\nमी AROM AI आहे, AROM STUDIO चा अधिकृत AI सहाय्यक.\n\nतुमचं स्वागत आहे. मी तुम्हाला आमच्या सेवा, प्राइसिंग, वेबसाइट डेव्हलपमेंट प्रक्रिया आणि बरंच काही याबद्दल मदत करू शकतो.\n\nकृपया मला सांगा की मी तुम्हाला कशी मदत करू शकतो?`
+      return `नमस्कार${name ? ' ' + name : ''}! मी AROM AI आहे, AROM STUDIO चा डिजिटल कन्सल्टंट.\n\nतुमच्या प्रकल्पाबद्दल बोलूया. तुम्ही कोणत्या प्रकारची वेबसाइट बनवू इच्छिता?`
     }
     if (lang === 'hi') {
-      return `नमस्ते${name ? ' ' + name : ''}! 👋\n\nमैं AROM AI हूँ, AROM STUDIO का आधिकारिक AI सहायक.\n\nआपका स्वागत है। मैं हमारी सेवाओं, मूल्य निर्धारण, वेबसाइट डेवलपमेंट प्रक्रिया और बहुत कुछ के बारे में आपकी मदद कर सकता हूँ।\n\nकृपया मुझे बताएं कि मैं आपकी कैसे मदद कर सकता हूँ?`
+      return `नमस्ते${name ? ' ' + name : ''}! मैं AROM AI हूँ, AROM STUDIO का डिजिटल कंसल्टेंट.\n\nआपके प्रोजेक्ट के बारे में बात करते हैं। आप किस तरह की वेबसाइट बनाना चाहते हैं?`
     }
 
     if (name && this.context.discussedTopics.length === 0) {
       const summary = this.context.conversationSummary
       if (summary) {
-        return `Welcome back, ${name}! 👋\n\nI remember our previous conversation — ${summary}\n\nHow can I help you today?`
+        return `Welcome back, ${name}. I remember our last conversation — ${summary}\n\nHow would you like to move forward with your project today?`
       }
-      return `Welcome back, ${name}! 👋\n\nGreat to see you again. How can I help you with your project today?`
+      return `Welcome back, ${name}. Good to see you again. What's the next step for your project?`
     }
-    return `Hi${name ? ' ' + name : ''}! 👋\n\nI'm AROM AI, the official AI assistant of AROM STUDIO.\n\nIt's great to meet you.\nHow can I help you today?`
+
+    if (phase === 'proposal') {
+      return `Hi${name ? ' ' + name : ''}. Based on our discussion, I can prepare a detailed proposal for you. Could you confirm your email address so I can send it over?`
+    }
+    if (phase === 'agreement') {
+      return `Hi${name ? ' ' + name : ''}. Ready to move forward with the agreement? I just need a few details to get it drafted.`
+    }
+
+    return `Hi${name ? ' ' + name : ''}. I'm your project consultant at AROM STUDIO. I can help you plan your website, recommend the right package, and guide you through the entire process. What type of project are you working on?`
   }
 }
 
@@ -850,54 +1067,6 @@ const INDUSTRY_FOLLOW_UPS: Record<string, string[]> = {
   ],
 }
 
-function generateSingleFollowUp(context: AiContext, responseText: string): string[] {
-  const down = responseText.toLowerCase()
-
-  if (!context.budget && (down.includes('price') || down.includes('cost') || down.includes('package') || down.includes('tier'))) {
-    return ['What budget range are you considering for your website?']
-  }
-
-  if (!context.projectType && (down.includes('build') || down.includes('start') || down.includes('website'))) {
-    return ['What type of website are you planning to build? For example, a business website, e-commerce store, portfolio, or something else?']
-  }
-
-  if (context.projectType && !context.preferredPackage && !down.includes('starter') && !down.includes('professional')) {
-    const questions: Record<string, string> = {
-      gym: 'Would you like to start with our Professional (₹32,999+) or Business (₹59,999+) package for your fitness studio?',
-      restaurant: 'Would the Professional (₹32,999+) or Business (₹59,999+) package work best for your restaurant?',
-      clinic: 'Our Professional package (₹32,999+) is popular for clinics. Would you like to explore it?',
-      ecommerce: 'For your online store, our Business package (₹59,999+) is ideal. Shall we discuss it?',
-    }
-    return [questions[context.projectType] || 'Would you like me to recommend a package for your project?']
-  }
-
-  if (!context.timeline && (context.budget || context.preferredPackage)) {
-    return ['What timeline are you targeting for your website launch?']
-  }
-
-  if (context.projectType && INDUSTRY_FOLLOW_UPS[context.projectType]) {
-    return [INDUSTRY_FOLLOW_UPS[context.projectType][0]]
-  }
-
-  const askedTopics = context.discussedTopics
-  const lastTopic = askedTopics[askedTopics.length - 1]
-  if (lastTopic && FOLLOW_UP_MAP[lastTopic]) {
-    return [FOLLOW_UP_MAP[lastTopic][0]]
-  }
-
-  if (down.includes('price') || down.includes('cost') || down.includes('package') || down.includes('tier')) {
-    return [FOLLOW_UP_MAP['Pricing'][0]]
-  }
-  if (down.includes('service') || down.includes('offer') || down.includes('build')) {
-    return [FOLLOW_UP_MAP['Services'][0]]
-  }
-  if (down.includes('process') || down.includes('timeline') || down.includes('week')) {
-    return [FOLLOW_UP_MAP['Process'][0]]
-  }
-
-  return [FOLLOW_UP_MAP['default'][0]]
-}
-
 export function smartRecommend(context: AiContext): {
   recommendedPackage: string
   estimatedTimeline: string
@@ -953,6 +1122,93 @@ export function smartRecommend(context: AiContext): {
   return { recommendedPackage, estimatedTimeline, suggestedFeatures, estimatedBudget }
 }
 
+export function generateProposalFromContext(context: AiContext): Record<string, any> | null {
+  if (!context.userName || !context.projectType) return null
+  return {
+    clientName: context.userName,
+    businessName: context.businessName || context.userName,
+    email: context.email || '',
+    projectType: context.projectType,
+    preferredPackage: context.preferredPackage || 'Professional (₹32,999+)',
+    budget: context.budget || 'To be confirmed',
+    timeline: context.timeline || '3-4 weeks',
+    features: context.features || [],
+    needsSEO: context.needsSEO || false,
+    needsMaintenance: context.needsMaintenance || false,
+    scopeSummary: `A ${context.projectType} website${context.features && context.features.length > 0 ? ' with ' + context.features.join(', ') : ''}.${context.needsSEO ? ' Includes SEO optimization.' : ''}${context.needsMaintenance ? ' Includes maintenance plan.' : ''}`,
+    recommendedPackage: smartRecommend(context),
+  }
+}
+
+function generateSingleFollowUp(context: AiContext, responseText: string): string[] {
+  const down = responseText.toLowerCase()
+
+  // Lead qualification: collect info naturally, one at a time
+  if (!context.userName && !down.includes('name')) {
+    return ['May I know your name so I can assist you better?']
+  }
+
+  if (context.userName && !context.businessName && !down.includes('company') && !down.includes('business')) {
+    return [`Thanks, ${context.userName}. Could you tell me your business or company name?`]
+  }
+
+  if (context.userName && !context.projectType && !down.includes('website') && !down.includes('build')) {
+    return [`What type of website are you planning? For example, a business site, e-commerce store, portfolio, or a custom web application?`]
+  }
+
+  if (context.projectType && !context.budget && !down.includes('budget') && !down.includes('price') && !down.includes('cost')) {
+    return [`Do you have a budget range in mind for your ${context.projectType} website?`]
+  }
+
+  if (context.budget && !context.preferredPackage && !down.includes('package') && !down.includes('plan')) {
+    return [`Based on your budget, would you like me to recommend a package that fits your requirements?`]
+  }
+
+  if (context.preferredPackage && !context.timeline && !down.includes('timeline') && !down.includes('week')) {
+    return ['What timeline are you targeting for your website launch?']
+  }
+
+  if (context.projectType && !context.targetAudience && context.discussedTopics.length >= 2) {
+    return ['Who is your target audience? Understanding your visitors helps me design the right experience.']
+  }
+
+  if (context.timeline && !context.proposalRequested && context.budget && context.projectType) {
+    return ['Would you like me to prepare a detailed proposal with pricing and timeline based on our discussion?']
+  }
+
+  if (context.proposalRequested && !context.email) {
+    return ['To send you the proposal, could you share your email address?']
+  }
+
+  if (context.agreementSigned && !context.meetingRequested) {
+    return ['Would you like to schedule a call to go over the agreement details?']
+
+  }
+
+  // Topic-based follow-ups
+  const askedTopics = context.discussedTopics
+  const lastTopic = askedTopics[askedTopics.length - 1]
+  if (lastTopic && FOLLOW_UP_MAP[lastTopic]) {
+    return [FOLLOW_UP_MAP[lastTopic][0]]
+  }
+
+  if (down.includes('price') || down.includes('cost') || down.includes('package') || down.includes('tier')) {
+    return [FOLLOW_UP_MAP['Pricing'][0]]
+  }
+  if (down.includes('service') || down.includes('offer') || down.includes('build')) {
+    return [FOLLOW_UP_MAP['Services'][0]]
+  }
+  if (down.includes('process') || down.includes('timeline') || down.includes('week')) {
+    return [FOLLOW_UP_MAP['Process'][0]]
+  }
+
+  if (context.projectType && INDUSTRY_FOLLOW_UPS[context.projectType]) {
+    return [INDUSTRY_FOLLOW_UPS[context.projectType][0]]
+  }
+
+  return [FOLLOW_UP_MAP['default'][0]]
+}
+
 export function generateAiResponse(
   userQuery: string,
   customKnowledge: AiKnowledgeItem[] = INITIAL_AI_KNOWLEDGE,
@@ -967,7 +1223,7 @@ export function generateAiResponse(
   if (!normalized) {
     return {
       text: ctxManager.greetMessage(),
-      followUps: FOLLOW_UP_MAP['default'].slice(0, 3),
+      followUps: generateSingleFollowUp(updatedContext, ''),
       context: updatedContext,
     }
   }
@@ -1002,10 +1258,9 @@ export function generateAiResponse(
   // If knowledge base has a direct answer, use it
   if (searchResult.bestMatch && searchResult.score >= 20) {
     const answer = searchResult.bestMatch.detailedAnswer || searchResult.bestMatch.answer || PUBLIC_UNKNOWN_RESPONSE
-    // For pricing answers, append recommendation
     if (searchResult.bestMatch.category === 'Pricing' && updatedContext.projectType) {
       const rec = smartRecommend(updatedContext)
-      return makeResponse(`${answer}\n\n**Recommendation for you**: Based on your project type, I recommend the **${rec.recommendedPackage}** package with an estimated timeline of **${rec.estimatedTimeline}**.\n\nSuggested features: ${rec.suggestedFeatures.join(', ')}.`)
+      return makeResponse(`${answer}\n\n**For your ${updatedContext.projectType} project**, I recommend the **${rec.recommendedPackage}** package with an estimated timeline of **${rec.estimatedTimeline}**. Suggested features: ${rec.suggestedFeatures.join(', ')}.`)
     }
     return makeResponse(answer)
   }
@@ -1013,77 +1268,144 @@ export function generateAiResponse(
   // 4. Greeting
   if (/^(hi|hello|hey|good morning|good afternoon|good evening|namaste|namaskar|gm|hlo|hii|heyy|yo|sup|wassup|hy|🙏|👋|🙂|😊)$/i.test(normalized) || (/^(hi|hello|hey|hlo)\b/i.test(normalized) && normalized.length < 8)) {
     if (updatedContext.userName || updatedContext.discussedTopics.length > 0) {
-      return makeResponse(`Welcome back${name ? ' ' + name : ''}! 👋\n\nHow can I help you today?`)
+      const phase = updatedContext.currentPhase?.phase
+      if (phase === 'proposal') {
+        return makeResponse(`${namePrefix}welcome back. I have your proposal information ready. If you share your email, I can send it over.`)
+      }
+      if (phase === 'agreement') {
+        return makeResponse(`${namePrefix}good to see you. Ready to proceed with the agreement?`)
+      }
+      return makeResponse(`${namePrefix}welcome back. How can I help you with your project today?`)
     }
     return makeResponse(ctxManager.greetMessage())
   }
 
   // 5. Thank You
   if (/\b(thank you|thanks|thank u|tanks|thx|thnk)\b/i.test(normalized)) {
-    return makeResponse(`You're very welcome${name ? ', ' + name : ''}! 😊\n\nIs there anything else I can help you with?`)
+    return makeResponse(`You're welcome${name ? ', ' + name : ''}. Happy to help. What else can I assist you with?`)
   }
 
   // 6. Goodbye
   if (/\b(bye|goodbye|see you|tata)\b/i.test(normalized)) {
-    return makeResponse(`Goodbye, ${namePrefix}it was a pleasure chatting with you. Have a wonderful day! 👋\n\nFeel free to reach out anytime you need help with your website.`)
+    return makeResponse(`${namePrefix}thanks for your time. You can reach out anytime when you're ready to move forward with your project.`)
   }
 
   // 7. AI Self Intro
   if (/\b(who are you|tell me about yourself|introduce yourself|what('s| is) your name|are you ai|what do you do|who created you|why do you exist|what is arom ai|explain arom ai|meaning of arom ai|purpose of arom ai)\b/i.test(normalized) && !normalized.includes('arom studio')) {
-    return makeResponse(`Hello${name ? ' ' + name : ''}! 👋\n\nI'm AROM AI, the official AI assistant of AROM STUDIO. I'm here to answer questions about our services, guide you through the website, and help you understand how we can bring your project to life. What would you like to know?`)
+    return makeResponse(`I'm AROM AI, your project consultant at AROM STUDIO. I help businesses plan, scope, and launch their websites. I can recommend the right package, prepare proposals, schedule meetings, and guide you through the entire process. What would you like to discuss?`)
   }
 
   // 8. AI Capabilities
   if (/\b(what can you do|what are your capabilities|how can you help me|what do you do)\b/i.test(normalized) && !normalized.includes('arom studio')) {
-    return makeResponse(`${namePrefix}I can:\n\n• Answer questions about AROM STUDIO\n• Help you choose services & pricing packages\n• Explain our website development process\n• Guide you through the website & navigation\n• Help you start a project\n\nWhat would you like to know today?`)
+    return makeResponse(`${namePrefix}I can help you:\n\n• Plan your website and choose the right package\n• Prepare a detailed project proposal\n• Schedule a consultation call\n• Answer questions about our services, pricing, and process\n• Guide you through the discovery phase\n• Help you prepare content and assets for your project\n\nWhat would you like to start with?`)
   }
 
   // 9. Company Overview
   if (/\b(tell me about arom studio|what is arom studio|who owns arom studio|explain your company|about your company|company overview|introduce arom studio|who is arom studio)\b/i.test(normalized)) {
-    return makeResponse(`${namePrefix}AROM STUDIO is a modern, high-performance web design and software development agency founded by **Arnav Pagare** (Founder & Lead Engineer).\n\nWe specialize in engineering ultra-fast, visually stunning, and high-converting web applications with a **100/100 Core Web Vitals Guarantee**, 100% source code ownership, and 1 full year of support coverage.\n\nWould you like to explore our pricing packages or see our services?`)
+    return makeResponse(`${namePrefix}AROM STUDIO is a web design and software development agency founded by Arnav Pagare. We build high-performance websites with a 100/100 Core Web Vitals guarantee, 100% source code ownership, and 1 year of free support. Would you like to discuss how we can help with your project?`)
   }
 
   // 10. Founder
   if (/\b(founder|who founded|tell me about your founder|who created arom studio)\b/i.test(normalized)) {
-    return makeResponse(`AROM STUDIO was founded by **Arnav Pagare** (Founder & Lead Engineer). He leads our engineering team, specializing in React 19 architecture, performance engineering, and scalable cloud applications.`)
+    return makeResponse(`AROM STUDIO was founded by Arnav Pagare (Founder & Lead Engineer), who leads our team in React 19, performance engineering, and cloud applications.`)
   }
 
-  // 11. Start Project
+  // 11. Start Project / I want a website
   if (/\b(how do i start|how can i work with you|i want a website|i need a website|let's begin|start my project|hire arom studio|start a project|begin project)\b/i.test(normalized)) {
-    return makeResponse(`${namePrefix}I'd be happy to help you get started!\n\nHere's how our seamless onboarding works:\n1. **Tell us about your business**: Share your goals, features needed, and target audience.\n2. **Package Recommendation**: We guide you to the exact tier that fits your scope.\n3. **Discovery & Onboarding**: Fill out our Discovery Questionnaire.\n4. **Build & Launch**: We engineer your website with sub-second speed and 1-year warranty.\n\nCould you tell me what type of business or project this is for?`)
+    if (updatedContext.projectType && updatedContext.budget) {
+      const rec = smartRecommend(updatedContext)
+      return makeResponse(`${namePrefix}ready to get started. Based on what you've shared, here's a quick overview:\n\n**Recommended**: ${rec.recommendedPackage}\n**Timeline**: ${rec.estimatedTimeline}\n**Features**: ${rec.suggestedFeatures.join(', ')}\n\nWould you like me to prepare a formal proposal?`)
+    }
+    return makeResponse(`${namePrefix}let's start by understanding your project. What type of website are you looking to build? A business site, e-commerce store, portfolio, or something else?`)
   }
 
   // 12. Package Recommendation
-  if (/\b(which package|recommend package|what package|choose package|don't know|dont know|not sure|confused)\b/i.test(normalized) && !normalized.includes('gym') && !normalized.includes('restaurant') && !normalized.includes('clinic')) {
-    return makeResponse(`${namePrefix}I'd be happy to recommend the perfect package!\n\nHere is a quick overview of our most popular tiers:\n- **Starter (₹15,999+)**: Perfect for small business landing pages (1-5 pages).\n- **Professional (₹32,999+)**: Ideal for growing businesses needing custom UI and SEO (up to 10 pages).\n- **Business (₹59,999+)**: Built for e-commerce, custom booking systems, and APIs (up to 20 pages).\n\nWhat type of business are you planning the website for?`)
+  if (/\b(which package|recommend package|what package|choose package|don't know|dont know|not sure|confused)\b/i.test(normalized)) {
+    if (updatedContext.projectType) {
+      const rec = smartRecommend(updatedContext)
+      return makeResponse(`${namePrefix}for your ${updatedContext.projectType} project, I recommend the **${rec.recommendedPackage}** package. Estimated timeline: **${rec.estimatedTimeline}**. Key features include: ${rec.suggestedFeatures.join(', ')}. Would you like to know more?`)
+    }
+    return makeResponse(`Our packages start at ₹15,999+ (Starter) and go up to ₹1,27,000+ (Enterprise). The most popular is Professional (₹32,999+). To recommend the right one, could you tell me what type of business you have?`)
   }
 
-  // 13. Industry: Gym
+  // 13. Proposal Request
+  if (/\b(proposal|quote|estimate|send proposal|get a quote|i want a proposal)\b/i.test(normalized)) {
+    const proposalData = generateProposalFromContext(updatedContext)
+    if (proposalData && updatedContext.email) {
+      return makeResponse(`${namePrefix}I can generate your proposal right away. Here's a preview:\n\n**Project**: ${proposalData.scopeSummary}\n**Package**: ${proposalData.recommendedPackage.recommendedPackage}\n**Timeline**: ${proposalData.recommendedPackage.estimatedTimeline}\n**Budget**: ${proposalData.budget}\n\nI'll send this to ${updatedContext.email}. One of our team members will follow up to finalize the details.`)
+    }
+    if (proposalData && !updatedContext.email) {
+      return makeResponse(`${namePrefix}I have enough information to prepare your proposal. Could you share your email so I can send it over?`)
+    }
+    return makeResponse(`${namePrefix}I'd be happy to prepare a proposal. First, I need to understand your project a bit better. Could you tell me what type of website you need?`)
+  }
+
+  // 14. Agreement / Sign
+  if (/\b(agreement|sign|contract|send agreement)\b/i.test(normalized)) {
+    if (updatedContext.userName && updatedContext.email) {
+      return makeResponse(`${namePrefix}I can prepare the agreement. It will include the scope, pricing, timeline, and payment schedule we discussed. Our team will review it before sending it to ${updatedContext.email} for your signature. Is there anything specific you'd like included?`)
+    }
+    return makeResponse(`${namePrefix}to prepare the agreement, I need your email address. Could you share that?`)
+  }
+
+  // 15. Meeting / Schedule a call
+  if (/\b(schedule|book a call|meeting|consultation|discuss\s+(in|over|on a)\s*call|zoom|google meet)\b/i.test(normalized)) {
+    if (updatedContext.meetingRequested) {
+      return makeResponse(`${namePrefix}I've noted your meeting request. Please let me know your preferred date, time, and timezone so I can schedule it. Our team typically uses Google Meet for consultations.`)
+    }
+    updatedContext.meetingRequested = true
+    return makeResponse(`${namePrefix}sure, I can help schedule a call. What time and date works best for you? Also, what would you like to discuss during the call?`)
+  }
+
+  // 16. Discovery / Questionnaire
+  if (/\b(discovery|questionnaire|form|get started|onboarding)\b/i.test(normalized)) {
+    updatedContext.discoveryStarted = true
+    if (!updatedContext.targetAudience) {
+      return makeResponse(`${namePrefix}let's start the discovery process. First question - who is your target audience? Who will be visiting your website most often?`)
+    }
+    if (!updatedContext.goals || updatedContext.goals.length === 0) {
+      return makeResponse(`${namePrefix}great. What are the main goals for your website? For example, generating leads, selling products, showcasing a portfolio, or providing information?`)
+    }
+    return makeResponse(`${namePrefix}I have enough information to start. Our team will reach out to complete the detailed discovery questionnaire. Is there anything else you'd like to add?`)
+  }
+
+  // 17. Content / Assets Collection
+  if (/\b(logo|brand|color|font|image|photo|video|content|upload)\b/i.test(normalized) && !searchResult.bestMatch) {
+    updatedContext.contentCollectionStarted = true
+    return makeResponse(`${namePrefix}we'll need a few assets for your project:\n\n• Logo and brand colors\n• Business description and services\n• Photos or images you'd like to use\n• Any existing content or copy\n\nYou can upload these through our client portal once we start the project. For now, could you tell me if you have a logo and brand colors ready?`)
+  }
+
+  // 18. Project status (if returning)
+  if (/\b(project status|where is my project|progress|timeline for my project)\b/i.test(normalized)) {
+    if (updatedContext.currentPhase) {
+      return makeResponse(`${namePrefix}your project is currently in the **${updatedContext.currentPhase.phase}** phase. If you need specific details about tasks, milestones, or deliverables, please contact our team directly, and they'll provide you with a full update.`)
+    }
+    return makeResponse(`${namePrefix}I don't see an active project associated with this conversation. Would you like to start discussing a new project?`)
+  }
+
+  // 19. Industry-specific responses (with consultant tone)
   if (/\b(gym|fitness|workout|trainer|crossfit|health club)\b/i.test(normalized)) {
-    return makeResponse(`We specialize in fitness and gym studio websites! Key features:\n- **Interactive Class Schedules & Timetables**\n- **Online Membership Booking & Registration**\n- **Trainer Profiles & Testimonials**\n- **WhatsApp Lead Capture & Maps**\n\nOur **Professional Tier (₹32,999+)** or **Business Tier (₹59,999+)** is usually ideal for gym studios. Would you like to explore what's included?`)
+    return makeResponse(`${namePrefix}for fitness studios, we build websites with class scheduling, membership registration, trainer profiles, and WhatsApp integration. The **Professional (₹32,999+)** package covers these features. Would you like to explore what's included?`)
   }
 
-  // 14. Industry: Restaurant
   if (/\b(restaurant|food|cafe|dining|bakery)\b/i.test(normalized)) {
-    return makeResponse(`For restaurant and food businesses, we build high-converting websites featuring:\n- **Interactive Digital Menus** with photos & pricing\n- **Online Table Reservations**\n- **Instant WhatsApp Ordering**\n- **Location & Google Maps**\n\nOur **Professional Tier (₹32,999+)** or **Business Tier (₹59,999+)** is usually perfect for restaurants. Would you like to know more?`)
+    return makeResponse(`${namePrefix}for restaurants, we build sites with digital menus, table reservations, online ordering, and location maps. The **Professional (₹32,999+)** or **Business (₹59,999+)** package works well. Would you like to discuss further?`)
   }
 
-  // 15. Industry: Clinic
   if (/\b(doctor|clinic|hospital|dental|healthcare|medical)\b/i.test(normalized)) {
-    return makeResponse(`We specialize in healthcare and clinic websites! Key features:\n- **Online Appointment Booking**\n- **Doctor Profiles & Credentials**\n- **Services & Treatment Guides**\n- **Patient Inquiry Forms & Location**\n\nOur **Professional Tier (₹32,999+)** is ideal for clinics. Would you like me to share details?`)
+    return makeResponse(`${namePrefix}for clinics and healthcare, we include appointment booking, doctor profiles, patient intake forms, and location pages. The **Professional (₹32,999+)** package is popular for this. Would you like more details?`)
   }
 
-  // 16. Industry: E-commerce
   if (/\b(clothing|clothes|store|shop|sell online|ecommerce|fashion|products)\b/i.test(normalized)) {
-    return makeResponse(`For clothing stores and retail brands, we build custom **E-commerce Platforms**:\n- **Product Catalog & Filters** with size/color selectors\n- **Secure Checkout** with Razorpay, Stripe, UPI\n- **Order & Inventory Dashboard**\n- **Mobile-Optimized Shopping**\n\nOur **Business Tier (₹59,999+)** is designed for online stores. Shall we discuss your product catalog size?`)
+    return makeResponse(`${namePrefix}for online stores, we build custom e-commerce platforms with product catalogs, secure checkout, and inventory management. The **Business (₹59,999+)** package is designed for this. How many products do you plan to sell?`)
   }
 
-  // 17. Fallback Semantic Search (for low-confidence matches)
+  // 20. Fallback Semantic Search
   if (searchResult.bestMatch) {
     const answer = searchResult.bestMatch.detailedAnswer || searchResult.bestMatch.answer || PUBLIC_UNKNOWN_RESPONSE
     return makeResponse(answer)
   }
 
-  // 18. Anti-Hallucination Guardrail
+  // 21. Anti-Hallucination Guardrail
   return makeResponse(PUBLIC_UNKNOWN_RESPONSE)
 }
