@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { CheckSquare, Search, ExternalLink, MessageSquare, CheckCircle2, Clock, AlertTriangle, Plus, X, Send, Trash2, Download } from 'lucide-react'
-import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, type AdminDesignApproval } from '../adminStore'
+import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, recordAdminApproval, type AdminDesignApproval } from '../adminStore'
 import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function DesignApproval() {
@@ -100,12 +100,11 @@ export function DesignApproval() {
     setStore(updated)
   }
 
-  const handleCreateApproval = (e: React.FormEvent) => {
+  const handleCreateApproval = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!form.projectName) return
 
-    const newApp: AdminDesignApproval = {
-      id: crypto.randomUUID(),
+    const created = await recordAdminApproval({
       projectName: form.projectName,
       clientName: form.clientName || 'Apex Innovations',
       status: 'Waiting Approval',
@@ -114,11 +113,13 @@ export function DesignApproval() {
       comments: [
         { author: 'Om (Lead Designer)', text: 'Initial design prototype ready for client sign-off.', createdAt: new Date().toISOString() },
       ],
-    }
+    })
 
-    const updated = { ...store, approvals: [newApp, ...store.approvals] }
-    saveAdminStore(updated)
-    setStore(updated)
+    if (created) {
+      const updated = { ...store, approvals: [created, ...store.approvals] }
+      saveAdminStore(updated)
+      setStore(updated)
+    }
     setShowAddModal(false)
   }
 

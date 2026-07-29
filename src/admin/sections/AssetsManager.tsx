@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { FolderUp, Search, Plus, ExternalLink, Download, CheckCircle2, AlertCircle, Clock, X, Trash2 } from 'lucide-react'
-import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, type AdminAssetFolder } from '../adminStore'
+import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, recordAdminAsset, type AdminAssetFolder } from '../adminStore'
 import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function AssetsManager() {
@@ -58,12 +58,11 @@ export function AssetsManager() {
   const needsFilesFolders = assets.filter((a) => a.folderStatus === 'Needs Files').length
   const totalMissing = assets.reduce((acc, a) => acc + (a.missingFilesCount || 0), 0)
 
-  const handleCreateAssetFolder = (e: React.FormEvent) => {
+  const handleCreateAssetFolder = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!form.clientName) return
 
-    const newFolder: AdminAssetFolder = {
-      id: crypto.randomUUID(),
+    const created = await recordAdminAsset({
       clientName: form.clientName,
       projectName: form.projectName || 'Web Development Project',
       googleDriveLink: form.googleDriveLink,
@@ -76,11 +75,13 @@ export function AssetsManager() {
         { name: 'High-Res Product Imagery', received: false },
         { name: 'Brand Video Asset (MP4)', received: false },
       ],
-    }
+    })
 
-    const updated = { ...store, assets: [newFolder, ...store.assets] }
-    saveAdminStore(updated)
-    setStore(updated)
+    if (created) {
+      const updated = { ...store, assets: [created, ...store.assets] }
+      saveAdminStore(updated)
+      setStore(updated)
+    }
     setShowAddModal(false)
   }
 

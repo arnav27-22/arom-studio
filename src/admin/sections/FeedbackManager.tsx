@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { MessageSquareHeart, Star, CheckCircle2, Search, Lightbulb, Plus, X, Trash2, Download } from 'lucide-react'
-import { getAdminStore, saveAdminStore, moveToRecycleBin, type AdminFeedback } from '../adminStore'
+import { getAdminStore, saveAdminStore, moveToRecycleBin, recordAdminFeedback, type AdminFeedback } from '../adminStore'
 import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function FeedbackManager() {
@@ -72,12 +72,11 @@ export function FeedbackManager() {
     setStore(updated)
   }
 
-  const handleAddFeedback = (e: React.FormEvent) => {
+  const handleAddFeedback = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!form.clientName || !form.review) return
 
-    const newFb: AdminFeedback = {
-      id: crypto.randomUUID(),
+    const created = await recordAdminFeedback({
       clientName: form.clientName,
       company: form.company || 'Client Partner',
       rating: Number(form.rating) || 5,
@@ -85,12 +84,13 @@ export function FeedbackManager() {
       testimonialApproved: true,
       portfolioPermission: true,
       clientSuggestions: form.clientSuggestions || 'None',
-      createdAt: new Date().toISOString(),
-    }
+    })
 
-    const updated = { ...store, feedbacks: [newFb, ...store.feedbacks] }
-    saveAdminStore(updated)
-    setStore(updated)
+    if (created) {
+      const updated = { ...store, feedbacks: [created, ...store.feedbacks] }
+      saveAdminStore(updated)
+      setStore(updated)
+    }
     setShowAddModal(false)
   }
 

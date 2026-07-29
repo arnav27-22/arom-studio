@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { PackageCheck, Search, Download, ExternalLink, Key, Globe, Server, CheckCircle2, Clock, Plus, X, Trash2 } from 'lucide-react'
-import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, type AdminHandover } from '../adminStore'
+import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, recordAdminHandover, type AdminHandover } from '../adminStore'
 import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function HandoverManager() {
@@ -62,12 +62,11 @@ export function HandoverManager() {
   const delivered = handovers.filter((h) => h.status === 'Delivered').length
   const ready = handovers.filter((h) => h.status === 'Ready').length
 
-  const handleCreateHandover = (e: React.FormEvent) => {
+  const handleCreateHandover = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!form.projectName) return
 
-    const newHnd: AdminHandover = {
-      id: crypto.randomUUID(),
+    const created = await recordAdminHandover({
       projectName: form.projectName,
       clientName: form.clientName || 'Apex Innovations',
       status: 'Ready',
@@ -80,11 +79,13 @@ export function HandoverManager() {
       warrantyPeriodMonths: form.warrantyPeriodMonths,
       supportExpiryDate: new Date(Date.now() + form.warrantyPeriodMonths * 30 * 86400000).toISOString().slice(0, 10),
       handoverDate: new Date().toISOString().slice(0, 10),
-    }
+    })
 
-    const updated = { ...store, handovers: [newHnd, ...store.handovers] }
-    saveAdminStore(updated)
-    setStore(updated)
+    if (created) {
+      const updated = { ...store, handovers: [created, ...store.handovers] }
+      saveAdminStore(updated)
+      setStore(updated)
+    }
     setShowAddModal(false)
   }
 

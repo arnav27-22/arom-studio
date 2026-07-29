@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { Briefcase, Search, Plus, CheckCircle2, Clock, Archive, Rocket, Users, X, Eye, Trash2, Download } from 'lucide-react'
-import { getAdminStore, saveAdminStore, moveToRecycleBin, type AdminProject } from '../adminStore'
+import { getAdminStore, saveAdminStore, moveToRecycleBin, recordAdminProject, type AdminProject } from '../adminStore'
 import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function ProjectManagement() {
@@ -66,12 +66,11 @@ export function ProjectManagement() {
   const launchedProjects = projects.filter((p) => p.status === 'Launched' || p.launchStatus === 'Live').length
   const inReviewProjects = projects.filter((p) => p.status === 'In Review').length
 
-  const handleAddProject = (e: React.FormEvent) => {
+  const handleAddProject = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!form.title) return
 
-    const newProj: AdminProject = {
-      id: crypto.randomUUID(),
+    const created = await recordAdminProject({
       title: form.title,
       clientId: 'cli_1',
       clientName: form.clientName || clients[0]?.companyName || 'Apex Innovations',
@@ -89,12 +88,13 @@ export function ProjectManagement() {
         { title: 'UI Design & Wireframing', completed: false, dueDate: form.dueDate },
       ],
       launchStatus: 'Pending',
-      createdAt: new Date().toISOString(),
-    }
+    })
 
-    const updated = { ...store, projects: [newProj, ...store.projects] }
-    saveAdminStore(updated)
-    setStore(updated)
+    if (created) {
+      const updated = { ...store, projects: [created, ...store.projects] }
+      saveAdminStore(updated)
+      setStore(updated)
+    }
     setShowAddModal(false)
   }
 
