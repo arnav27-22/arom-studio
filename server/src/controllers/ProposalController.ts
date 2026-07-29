@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import { prisma } from '../database/prisma'
 import { wsManager } from '../websocket/WebSocketManager'
+import { softDelete } from '../utils/softDelete'
 
 export class ProposalController {
   async getAll(req: Request, res: Response, next: NextFunction) {
@@ -41,7 +42,7 @@ export class ProposalController {
           clientEmail: body.clientEmail || '',
           title: body.title,
           amount: body.amount || 0,
-          status: body.status || 'DRAFT',
+          status: (body.status || 'DRAFT').toUpperCase(),
           validUntil: body.validUntil ? new Date(body.validUntil) : new Date(Date.now() + 30 * 86400000),
           downloadUrl: body.downloadUrl || '',
           scopeSummary: body.scopeSummary || '',
@@ -54,9 +55,11 @@ export class ProposalController {
 
   async update(req: Request, res: Response, next: NextFunction) {
     try {
+      const data = { ...req.body }
+      if (data.status) data.status = data.status.toUpperCase()
       const proposal = await prisma.proposal.update({
         where: { id: req.params.id as string },
-        data: req.body,
+        data,
       })
       wsManager.broadcastToAll('proposal:updated', proposal)
       res.json(proposal)
@@ -65,12 +68,9 @@ export class ProposalController {
 
   async delete(req: Request, res: Response, next: NextFunction) {
     try {
-      await prisma.proposal.update({
-        where: { id: req.params.id as string },
-        data: { deletedAt: new Date() },
-      })
+      const result = await softDelete('proposals', req.params.id as string)
       wsManager.broadcastToAll('proposal:deleted', { id: req.params.id as string })
-      res.json({ success: true })
+      res.json(result)
     } catch (err) { next(err) }
   }
 }

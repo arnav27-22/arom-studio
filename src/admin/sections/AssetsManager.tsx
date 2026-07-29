@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { FolderUp, Search, Plus, ExternalLink, Download, CheckCircle2, AlertCircle, Clock, X, Trash2 } from 'lucide-react'
-import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, recordAdminAsset, type AdminAssetFolder } from '../adminStore'
+import { getAdminStore, moveToRecycleBin, syncFromCloud, formatIST, recordAdminAsset, type AdminAssetFolder } from '../adminStore'
 import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function AssetsManager() {
@@ -28,7 +28,7 @@ export function AssetsManager() {
   const handleDeleteAsset = (id: string) => {
     const a = store.assets.find((x) => x.id === id)
     moveToRecycleBin('assets', id, a?.clientName || 'Asset Folder', a?.projectName)
-    setStore(getAdminStore())
+    syncFromCloud().then(s => setStore(s))
     if (selectedAsset?.id === id) setSelectedAsset(null)
   }
 
@@ -78,9 +78,7 @@ export function AssetsManager() {
     })
 
     if (created) {
-      const updated = { ...store, assets: [created, ...store.assets] }
-      saveAdminStore(updated)
-      setStore(updated)
+      syncFromCloud().then(s => setStore(s))
     }
     setShowAddModal(false)
   }
@@ -251,7 +249,7 @@ export function AssetsManager() {
                 <input
                   required
                   type="text"
-                  placeholder="Apex Innovations Global"
+                  placeholder="Client Name"
                   value={form.clientName}
                   onChange={(e) => setForm({ ...form, clientName: e.target.value })}
                   className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-accent"

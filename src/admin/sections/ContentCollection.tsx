@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
-import { FolderKanban, Search, Download, CheckCircle2, Clock, FileText, Eye, X, Trash2 } from 'lucide-react'
-import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, type AdminContentItem } from '../adminStore'
+import { FolderKanban, Search, Download, CheckCircle2, Clock, FileText, Eye, X, Trash2, Plus } from 'lucide-react'
+import { getAdminStore, saveAdminStore, moveToRecycleBin, syncFromCloud, formatIST, recordAdminContentItem, type AdminContentItem } from '../adminStore'
 import { exportSectionReportPDF, generateContentCollectionPDF } from '../../lib/professionalPDF'
 
 export function ContentCollection() {
@@ -10,6 +10,8 @@ export function ContentCollection() {
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('All')
   const [selectedItem, setSelectedItem] = useState<AdminContentItem | null>(null)
+  const [showAddModal, setShowAddModal] = useState(false)
+  const [form, setForm] = useState({ clientName: '', projectName: '' })
 
   const handleDownloadContentPDF = () => {
     const contentList = store.content || []
@@ -61,6 +63,7 @@ export function ContentCollection() {
     const updated = { ...store, content: updatedContent }
     saveAdminStore(updated)
     setStore(updated)
+    syncFromCloud()
     if (selectedItem?.id === contentId) {
       setSelectedItem(updatedContent.find((x) => x.id === contentId) || null)
     }
@@ -69,8 +72,35 @@ export function ContentCollection() {
   const handleDeleteContent = (id: string) => {
     const item = items.find((x) => x.id === id)
     moveToRecycleBin('content', id, item?.clientName || 'Content Item', item?.projectName)
-    setStore(getAdminStore())
+    syncFromCloud().then(s => setStore(s))
     if (selectedItem?.id === id) setSelectedItem(null)
+  }
+
+  const handleCreateContent = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!form.clientName || !form.projectName) return
+    const created = await recordAdminContentItem({
+      clientName: form.clientName,
+      projectName: form.projectName,
+      status: 'Pending',
+      completionPercentage: 0,
+      updatedAt: new Date().toISOString(),
+      checklist: [
+        { section: 'Home Page', status: 'Pending' },
+        { section: 'About Us', status: 'Pending' },
+        { section: 'Services', status: 'Pending' },
+        { section: 'FAQs', status: 'Pending' },
+        { section: 'Contact Details', status: 'Pending' },
+        { section: 'Social Media', status: 'Pending' },
+        { section: 'SEO Meta', status: 'Pending' },
+      ],
+      downloadUrl: '',
+    })
+    if (created) {
+      syncFromCloud().then(s => setStore(s))
+    }
+    setShowAddModal(false)
+    setForm({ clientName: '', projectName: '' })
   }
 
   const columns = [
@@ -173,9 +203,15 @@ export function ContentCollection() {
         </div>
         <button
           onClick={handleDownloadContentPDF}
-          className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-accent text-black font-semibold text-xs hover:bg-accent/90 transition-all shadow-lg cursor-pointer shrink-0"
+          className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-white/10 text-white font-semibold text-xs hover:bg-white/20 transition-all cursor-pointer shrink-0"
         >
           <Download className="h-4 w-4" /> Download Content PDF
+        </button>
+        <button
+          onClick={() => setShowAddModal(true)}
+          className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-accent text-black font-semibold text-xs hover:bg-accent/90 transition-all shadow-lg cursor-pointer shrink-0"
+        >
+          <Plus className="h-4 w-4" /> Add Content
         </button>
       </div>
 
@@ -259,6 +295,52 @@ export function ContentCollection() {
                 Close View
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Content Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="glass rounded-[28px] border border-white/10 p-6 w-full max-w-md space-y-5">
+            <div className="flex items-center justify-between border-b border-white/10 pb-4">
+              <h3 className="text-base font-bold text-white font-heading">New Content Project</h3>
+              <button onClick={() => setShowAddModal(false)} className="text-white/40 hover:text-white cursor-pointer">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <form onSubmit={handleCreateContent} className="space-y-4 text-xs">
+              <div>
+                <label className="text-white/60 block mb-1 font-medium">Client Name *</label>
+                <input
+                  required
+                  type="text"
+                  placeholder="Client Name"
+                  value={form.clientName}
+                  onChange={(e) => setForm({ ...form, clientName: e.target.value })}
+                  className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-accent"
+                />
+              </div>
+              <div>
+                <label className="text-white/60 block mb-1 font-medium">Project Name *</label>
+                <input
+                  required
+                  type="text"
+                  placeholder="Project Name"
+                  value={form.projectName}
+                  onChange={(e) => setForm({ ...form, projectName: e.target.value })}
+                  className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-accent"
+                />
+              </div>
+              <div className="flex justify-end gap-3 pt-2">
+                <button type="button" onClick={() => setShowAddModal(false)} className="px-4 py-2 rounded-xl bg-white/5 text-white/70 hover:text-white cursor-pointer">
+                  Cancel
+                </button>
+                <button type="submit" className="px-4 py-2 rounded-xl bg-accent text-black font-semibold hover:bg-accent/90 cursor-pointer">
+                  Create Content Project
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

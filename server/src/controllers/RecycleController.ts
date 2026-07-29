@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import { prisma } from '../database/prisma'
 import { wsManager } from '../websocket/WebSocketManager'
+import { restoreFromRecycle } from '../utils/restoreFromRecycle'
 
 export class RecycleController {
   async getAll(req: Request, res: Response, next: NextFunction) {
@@ -25,50 +26,42 @@ export class RecycleController {
 
   async restore(req: Request, res: Response, next: NextFunction) {
     try {
-      const { id } = req.body
-      const record = await prisma.recycleBin.findUnique({ where: { id } })
+      const { id, recycleIds, bulk } = req.body
 
+      if (bulk && Array.isArray(recycleIds)) {
+        const restoredItems: any[] = []
+        for (const recycleId of recycleIds) {
+          const record = await prisma.recycleBin.findUnique({ where: { id: recycleId } })
+          if (record) {
+            const success = await restoreFromRecycle(record)
+            if (success) {
+              await prisma.recycleBin.delete({ where: { id: recycleId } })
+              restoredItems.push({ recycleId, originalCollection: record.originalCollection, itemData: record.itemData })
+            }
+          }
+        }
+        wsManager.broadcastToAll('recycle:restored', { ids: recycleIds })
+        res.json({ success: true, restoredItems })
+        return
+      }
+
+      const record = await prisma.recycleBin.findUnique({ where: { id } })
       if (!record) {
         res.status(404).json({ error: 'Record not found in recycle bin' })
         return
       }
 
-      const collection = record.originalCollection
-      const itemData = record.itemData as Record<string, unknown>
-
-      switch (collection) {
-        case 'VISITORS':
-          await prisma.visitor.upsert({
-            where: { id: itemData.id as string },
-            update: { deletedAt: null },
-            create: itemData as any,
-          })
-          break
-        case 'PDFS':
-          await prisma.generatedPDF.upsert({
-            where: { id: itemData.id as string },
-            update: { deletedAt: null },
-            create: itemData as any,
-          })
-          break
-        case 'LEADS':
-          await prisma.lead.upsert({
-            where: { id: itemData.id as string },
-            update: { deletedAt: null },
-            create: itemData as any,
-          })
-          break
-        default:
-          await prisma.recycleBin.update({
-            where: { id },
-            data: { restoredAt: new Date() },
-          })
-          break
+      const success = await restoreFromRecycle(record)
+      if (!success) {
+        await prisma.recycleBin.update({
+          where: { id },
+          data: { restoredAt: new Date() },
+        })
       }
 
       await prisma.recycleBin.delete({ where: { id } })
-      wsManager.broadcastToAll('recycle:restored', { id, collection })
-      res.json({ success: true })
+      wsManager.broadcastToAll('recycle:restored', { id, collection: record.originalCollection })
+      res.json({ success: true, originalCollection: record.originalCollection, itemData: record.itemData })
     } catch (err) {
       next(err)
     }

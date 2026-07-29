@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { MessageSquareHeart, Star, CheckCircle2, Search, Lightbulb, Plus, X, Trash2, Download } from 'lucide-react'
-import { getAdminStore, saveAdminStore, moveToRecycleBin, recordAdminFeedback } from '../adminStore'
+import { getAdminStore, saveAdminStore, moveToRecycleBin, syncFromCloud, recordAdminFeedback } from '../adminStore'
 import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function FeedbackManager() {
@@ -39,7 +39,7 @@ export function FeedbackManager() {
   const handleDeleteFeedback = (id: string) => {
     const f = feedbacks.find((x) => x.id === id)
     moveToRecycleBin('feedbacks', id, f?.clientName || 'Feedback', f?.company)
-    setStore(getAdminStore())
+    syncFromCloud().then(s => setStore(s))
   }
 
   const filteredFeedbacks = feedbacks.filter((f) => {
@@ -61,6 +61,7 @@ export function FeedbackManager() {
     const updated = { ...store, feedbacks: updatedFbs }
     saveAdminStore(updated)
     setStore(updated)
+    syncFromCloud()
   }
 
   const handleTogglePortfolio = (id: string) => {
@@ -70,6 +71,7 @@ export function FeedbackManager() {
     const updated = { ...store, feedbacks: updatedFbs }
     saveAdminStore(updated)
     setStore(updated)
+    syncFromCloud()
   }
 
   const handleAddFeedback = async (e: React.FormEvent) => {
@@ -87,9 +89,7 @@ export function FeedbackManager() {
     })
 
     if (created) {
-      const updated = { ...store, feedbacks: [created, ...store.feedbacks] }
-      saveAdminStore(updated)
-      setStore(updated)
+      syncFromCloud().then(s => setStore(s))
     }
     setShowAddModal(false)
   }
@@ -227,7 +227,7 @@ export function FeedbackManager() {
                   <label className="text-white/60 block mb-1 font-medium">Company</label>
                   <input
                     type="text"
-                    placeholder="Apex Innovations"
+                    placeholder="Company Name"
                     value={form.company}
                     onChange={(e) => setForm({ ...form, company: e.target.value })}
                     className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-accent"

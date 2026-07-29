@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { PackageCheck, Search, Download, ExternalLink, Key, Globe, Server, CheckCircle2, Clock, Plus, X, Trash2 } from 'lucide-react'
-import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, recordAdminHandover, type AdminHandover } from '../adminStore'
+import { getAdminStore, moveToRecycleBin, syncFromCloud, formatIST, recordAdminHandover, type AdminHandover } from '../adminStore'
 import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function HandoverManager() {
@@ -28,7 +28,7 @@ export function HandoverManager() {
   const handleDeleteHandover = (id: string) => {
     const h = store.handovers.find((x) => x.id === id)
     moveToRecycleBin('handovers', id, h?.projectName || 'Project Handover', h?.clientName)
-    setStore(getAdminStore())
+    syncFromCloud().then(s => setStore(s))
     if (selectedHandover?.id === id) setSelectedHandover(null)
   }
 
@@ -68,7 +68,7 @@ export function HandoverManager() {
 
     const created = await recordAdminHandover({
       projectName: form.projectName,
-      clientName: form.clientName || 'Apex Innovations',
+      clientName: form.clientName || '',
       status: 'Ready',
       downloadZipUrl: '#',
       githubLink: form.githubLink,
@@ -82,9 +82,7 @@ export function HandoverManager() {
     })
 
     if (created) {
-      const updated = { ...store, handovers: [created, ...store.handovers] }
-      saveAdminStore(updated)
-      setStore(updated)
+      syncFromCloud().then(s => setStore(s))
     }
     setShowAddModal(false)
   }

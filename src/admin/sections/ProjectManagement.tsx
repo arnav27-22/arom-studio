@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { Briefcase, Search, Plus, CheckCircle2, Clock, Archive, Rocket, Users, X, Eye, Trash2, Download } from 'lucide-react'
-import { getAdminStore, saveAdminStore, moveToRecycleBin, recordAdminProject, type AdminProject } from '../adminStore'
+import { getAdminStore, saveAdminStore, moveToRecycleBin, syncFromCloud, recordAdminProject, type AdminProject } from '../adminStore'
 import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function ProjectManagement() {
@@ -49,7 +49,7 @@ export function ProjectManagement() {
   const handleDeleteProject = (id: string) => {
     const p = projects.find((x) => x.id === id)
     moveToRecycleBin('projects', id, p?.title, p?.clientName)
-    setStore(getAdminStore())
+    syncFromCloud().then(s => setStore(s))
     if (selectedProject?.id === id) setSelectedProject(null)
   }
 
@@ -73,7 +73,7 @@ export function ProjectManagement() {
     const created = await recordAdminProject({
       title: form.title,
       clientId: 'cli_1',
-      clientName: form.clientName || clients[0]?.companyName || 'Apex Innovations',
+      clientName: form.clientName || clients[0]?.companyName || '',
       status: form.status,
       progress: Number(form.progress) || 0,
       startDate: form.startDate,
@@ -91,9 +91,7 @@ export function ProjectManagement() {
     })
 
     if (created) {
-      const updated = { ...store, projects: [created, ...store.projects] }
-      saveAdminStore(updated)
-      setStore(updated)
+      syncFromCloud().then(s => setStore(s))
     }
     setShowAddModal(false)
   }
@@ -105,6 +103,7 @@ export function ProjectManagement() {
     const updated = { ...store, projects: updatedProjects }
     saveAdminStore(updated)
     setStore(updated)
+    syncFromCloud()
   }
 
   const handleToggleLaunch = (id: string) => {
@@ -119,6 +118,7 @@ export function ProjectManagement() {
     const updated = { ...store, projects: updatedProjects }
     saveAdminStore(updated)
     setStore(updated)
+    syncFromCloud()
   }
 
   const columns = [
@@ -333,7 +333,7 @@ export function ProjectManagement() {
                         {c.companyName}
                       </option>
                     ))}
-                    {!clients.length && <option value="Apex Innovations">Apex Innovations</option>}
+                    {!clients.length && <option value="" disabled>No clients available</option>}
                   </select>
                 </div>
                 <div>

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { CreditCard, Search, DollarSign, Clock, AlertCircle, Download, Bell, Plus, X, Trash2 } from 'lucide-react'
-import { getAdminStore, saveAdminStore, moveToRecycleBin, recordAdminPayment, type AdminPayment } from '../adminStore'
+import { getAdminStore, saveAdminStore, moveToRecycleBin, syncFromCloud, recordAdminPayment, type AdminPayment } from '../adminStore'
 import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function PaymentsManager() {
@@ -28,12 +28,12 @@ export function PaymentsManager() {
   const handleDeletePayment = (id: string) => {
     const p = payments.find((x) => x.id === id)
     moveToRecycleBin('payments', id, p?.invoiceNumber || p?.clientName, p?.clientName)
-    setStore(getAdminStore())
+    syncFromCloud().then(s => setStore(s))
   }
 
   const [form, setForm] = useState({
     invoiceNumber: 'INV-2026-004',
-    clientName: 'Apex Innovations Global',
+    clientName: '',
     amount: 5000,
     dueDate: '2026-08-15',
     status: 'Pending' as 'Pending' | 'Paid' | 'Overdue',
@@ -68,6 +68,7 @@ export function PaymentsManager() {
     const updated = { ...store, payments: updatedPayments }
     saveAdminStore(updated)
     setStore(updated)
+    syncFromCloud()
   }
 
   const handleAddPayment = async (e: React.FormEvent) => {
@@ -88,9 +89,7 @@ export function PaymentsManager() {
     })
 
     if (created) {
-      const updated = { ...store, payments: [created, ...store.payments] }
-      saveAdminStore(updated)
-      setStore(updated)
+      syncFromCloud().then(s => setStore(s))
     }
     setShowAddModal(false)
   }
@@ -250,7 +249,7 @@ export function PaymentsManager() {
                 <input
                   required
                   type="text"
-                  placeholder="Apex Innovations Global"
+                  placeholder="Client Name"
                   value={form.clientName}
                   onChange={(e) => setForm({ ...form, clientName: e.target.value })}
                   className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-accent"
@@ -259,7 +258,7 @@ export function PaymentsManager() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-white/60 block mb-1 font-medium">Amount ($)</label>
+                  <label className="text-white/60 block mb-1 font-medium">Amount (₹)</label>
                   <input
                     type="number"
                     value={form.amount}

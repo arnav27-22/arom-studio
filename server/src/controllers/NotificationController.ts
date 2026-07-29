@@ -28,6 +28,23 @@ export class NotificationController {
     }
   }
 
+  async create(req: Request, res: Response, next: NextFunction) {
+    try {
+      const notification = await prisma.notification.create({
+        data: {
+          title: req.body.title || 'Notification',
+          message: req.body.message || '',
+          type: req.body.type || 'info',
+          read: false,
+        },
+      })
+      wsManager.broadcastToAll('notification:created', notification)
+      res.json(notification)
+    } catch (err) {
+      next(err)
+    }
+  }
+
   async markRead(req: Request, res: Response, next: NextFunction) {
     try {
       const id = req.params.id as string

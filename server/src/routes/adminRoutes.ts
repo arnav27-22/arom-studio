@@ -149,8 +149,9 @@ router.get('/settings', (req, res, next) => settingsController.get(req, res, nex
 router.post('/settings', auditLog('UPDATE_SETTINGS', 'settings'), validate(settingUpdateSchema), (req, res, next) => settingsController.update(req, res, next))
 
 // Notifications
-router.get('/notifications', (req, res, next) => notificationController.getAll(req, res, next))
-router.post('/notifications/:id/read', auditLog('MARK_NOTIFICATION_READ', 'notifications'), (req, res, next) => notificationController.markRead(req, res, next))
+      router.get('/notifications', (req, res, next) => notificationController.getAll(req, res, next))
+      router.post('/notifications', auditLog('CREATE_NOTIFICATION', 'notifications'), (req, res, next) => notificationController.create(req, res, next))
+      router.post('/notifications/:id/read', auditLog('MARK_NOTIFICATION_READ', 'notifications'), (req, res, next) => notificationController.markRead(req, res, next))
 router.post('/notifications/read-all', auditLog('MARK_ALL_NOTIFICATIONS_READ', 'notifications'), (req, res, next) => notificationController.markAllRead(req, res, next))
 router.delete('/notifications/:id', auditLog('DELETE_NOTIFICATION', 'notifications'), (req, res, next) => notificationController.delete(req, res, next))
 

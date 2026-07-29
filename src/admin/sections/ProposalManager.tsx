@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { FileSpreadsheet, Search, Plus, Download, Copy, CheckCircle2, Eye, Clock, FileText, X, Trash2 } from 'lucide-react'
-import { getAdminStore, saveAdminStore, moveToRecycleBin, recordAdminProposal, type AdminProposal } from '../adminStore'
+import { getAdminStore, saveAdminStore, moveToRecycleBin, syncFromCloud, recordAdminProposal, type AdminProposal } from '../adminStore'
 import { exportSectionReportPDF, generateProposalPDF } from '../../lib/professionalPDF'
 
 export function ProposalManager() {
@@ -24,8 +24,6 @@ export function ProposalManager() {
   useEffect(() => {
     setStore(getAdminStore())
   }, [])
-
-  const reload = () => setStore(getAdminStore())
 
   const handleDownloadProposalsPDF = () => {
     const proposals = store.proposals || []
@@ -55,9 +53,7 @@ export function ProposalManager() {
       scopeSummary: form.scopeSummary,
     })
     if (created) {
-      const updated = { ...store, proposals: [created, ...store.proposals] }
-      saveAdminStore(updated)
-      setStore(updated)
+      syncFromCloud().then(s => setStore(s))
     }
     setShowAddModal(false)
     setForm({ title: '', clientName: '', clientEmail: '', amount: 12000, scopeSummary: '' })
@@ -75,12 +71,13 @@ export function ProposalManager() {
     const updated = { ...store, proposals: [dup, ...store.proposals] }
     saveAdminStore(updated)
     setStore(updated)
+    syncFromCloud()
   }
 
   const handleDeleteProposal = (id: string) => {
     const p = store.proposals.find((x) => x.id === id)
     moveToRecycleBin('proposals', id, `${p?.proposalNumber || 'Proposal'} - ${p?.clientName || 'Client'}`, `₹${p?.amount || 0}`)
-    reload()
+    syncFromCloud().then(s => setStore(s))
   }
 
   const proposals = store.proposals || []
@@ -325,7 +322,7 @@ export function ProposalManager() {
               </div>
 
               <div>
-                <label className="text-white/60 block mb-1 font-medium">Estimated Amount ($)</label>
+                <label className="text-white/60 block mb-1 font-medium">Estimated Amount (₹)</label>
                 <input
                   type="number"
                   value={form.amount}

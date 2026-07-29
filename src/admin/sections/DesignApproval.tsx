@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { CheckSquare, Search, ExternalLink, MessageSquare, CheckCircle2, Clock, AlertTriangle, Plus, X, Send, Trash2, Download } from 'lucide-react'
-import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, recordAdminApproval, type AdminDesignApproval } from '../adminStore'
+import { getAdminStore, saveAdminStore, moveToRecycleBin, syncFromCloud, formatIST, recordAdminApproval, type AdminDesignApproval } from '../adminStore'
 import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function DesignApproval() {
@@ -43,7 +43,7 @@ export function DesignApproval() {
   const handleDeleteApproval = (id: string) => {
     const a = approvals.find((x) => x.id === id)
     moveToRecycleBin('approvals', id, a?.projectName || 'Design Approval', a?.clientName)
-    setStore(getAdminStore())
+    syncFromCloud().then(s => setStore(s))
     if (selectedApproval?.id === id) setSelectedApproval(null)
   }
 
@@ -80,6 +80,7 @@ export function DesignApproval() {
     const updated = { ...store, approvals: updatedApprovals }
     saveAdminStore(updated)
     setStore(updated)
+    syncFromCloud()
     setSelectedApproval(updatedApprovals.find((a) => a.id === selectedApproval.id) || null)
     setNewComment('')
   }
@@ -98,6 +99,7 @@ export function DesignApproval() {
     const updated = { ...store, approvals: updatedApprovals }
     saveAdminStore(updated)
     setStore(updated)
+    syncFromCloud()
   }
 
   const handleCreateApproval = async (e: React.FormEvent) => {
@@ -106,7 +108,7 @@ export function DesignApproval() {
 
     const created = await recordAdminApproval({
       projectName: form.projectName,
-      clientName: form.clientName || 'Apex Innovations',
+      clientName: form.clientName || '',
       status: 'Waiting Approval',
       previewUrl: form.previewUrl,
       version: form.version,
@@ -116,9 +118,7 @@ export function DesignApproval() {
     })
 
     if (created) {
-      const updated = { ...store, approvals: [created, ...store.approvals] }
-      saveAdminStore(updated)
-      setStore(updated)
+      syncFromCloud().then(s => setStore(s))
     }
     setShowAddModal(false)
   }

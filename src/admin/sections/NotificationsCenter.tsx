@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { Bell, Mail, FileSpreadsheet, CreditCard, CheckSquare, Rocket, PackageCheck, ShieldAlert, Check, Search, Trash2, Download } from 'lucide-react'
-import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST } from '../adminStore'
+import { getAdminStore, saveAdminStore, moveToRecycleBin, syncFromCloud, formatIST } from '../adminStore'
 import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function NotificationsCenter() {
@@ -31,7 +31,7 @@ export function NotificationsCenter() {
     e.stopPropagation()
     const n = notifications.find((x) => x.id === id)
     moveToRecycleBin('notifications', id, n?.title || 'Notification', n?.message)
-    setStore(getAdminStore())
+    syncFromCloud().then(s => setStore(s))
   }
 
   const handleClearAll = () => {
@@ -39,6 +39,7 @@ export function NotificationsCenter() {
       const updated = { ...store, notifications: [] }
       saveAdminStore(updated)
       setStore(updated)
+      syncFromCloud()
     }
   }
 
@@ -47,6 +48,7 @@ export function NotificationsCenter() {
     const updated = { ...store, notifications: updatedNotifs }
     saveAdminStore(updated)
     setStore(updated)
+    syncFromCloud()
   }
 
   const filteredNotifications = notifications.filter((n) => {
@@ -67,6 +69,7 @@ export function NotificationsCenter() {
     const updated = { ...store, notifications: updatedNotifs }
     saveAdminStore(updated)
     setStore(updated)
+    syncFromCloud()
   }
 
   const getNotificationIcon = (type: string) => {

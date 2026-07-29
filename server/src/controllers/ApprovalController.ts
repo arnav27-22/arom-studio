@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import { prisma } from '../database/prisma'
 import { wsManager } from '../websocket/WebSocketManager'
+import { softDelete } from '../utils/softDelete'
 
 export class ApprovalController {
   async getAll(req: Request, res: Response, next: NextFunction) {
@@ -63,12 +64,9 @@ export class ApprovalController {
 
   async delete(req: Request, res: Response, next: NextFunction) {
     try {
-      await prisma.designApproval.update({
-        where: { id: req.params.id as string },
-        data: { deletedAt: new Date() },
-      })
+      const result = await softDelete('approvals', req.params.id as string)
       wsManager.broadcastToAll('approval:deleted', { id: req.params.id as string })
-      res.json({ success: true })
+      res.json(result)
     } catch (err) { next(err) }
   }
 }

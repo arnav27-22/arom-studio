@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import { prisma } from '../database/prisma'
 import { wsManager } from '../websocket/WebSocketManager'
+import { softDelete } from '../utils/softDelete'
 import { sseService } from '../services/SSEService'
 
 export class LeadController {
@@ -74,12 +75,9 @@ export class LeadController {
   async delete(req: Request, res: Response, next: NextFunction) {
     try {
       const id = req.params.id as string
-      await prisma.lead.update({
-        where: { id },
-        data: { deletedAt: new Date() },
-      })
+      const result = await softDelete('leads', id)
       wsManager.broadcastToAll('lead:deleted', { id })
-      res.json({ success: true })
+      res.json(result)
     } catch (err) {
       next(err)
     }

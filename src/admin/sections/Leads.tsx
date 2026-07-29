@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { Mail, CheckCircle2, Archive, Eye, Download, Plus, Trash2 } from 'lucide-react'
-import { getAdminStore, saveAdminStore, formatIST, recordAdminLead, type AdminLead } from '../adminStore'
+import { getAdminStore, saveAdminStore, syncFromCloud, formatIST, recordAdminLead, type AdminLead } from '../adminStore'
 import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function Leads() {
@@ -42,6 +42,7 @@ export function Leads() {
     s.leads = s.leads.map((l) => (l.id === id ? { ...l, status } : l))
     saveAdminStore(s)
     reload()
+    syncFromCloud()
   }
 
   const handleDeleteLead = (id: string) => {
@@ -50,6 +51,7 @@ export function Leads() {
       s.leads = s.leads.filter((l) => l.id !== id)
       saveAdminStore(s)
       reload()
+      syncFromCloud()
     }
   }
 
@@ -69,6 +71,7 @@ export function Leads() {
       s.leads.unshift(created)
       saveAdminStore(s)
       reload()
+      syncFromCloud()
     }
     setShowAddModal(false)
     setName('')

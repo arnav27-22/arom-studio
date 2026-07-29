@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import { prisma } from '../database/prisma'
 import { wsManager } from '../websocket/WebSocketManager'
+import { softDelete } from '../utils/softDelete'
 
 export class AgreementController {
   async getAll(req: Request, res: Response, next: NextFunction) {
@@ -39,7 +40,7 @@ export class AgreementController {
           agreementNumber: body.agreementNumber || `AGR-${Date.now()}`,
           clientName: body.clientName,
           clientEmail: body.clientEmail || '',
-          status: body.status || 'PENDING',
+          status: (body.status || 'PENDING').toUpperCase(),
           agreementVersion: body.agreementVersion || '1.0',
           signedDate: body.signedDate ? new Date(body.signedDate) : null,
           downloadUrl: body.downloadUrl || '',
@@ -52,9 +53,11 @@ export class AgreementController {
 
   async update(req: Request, res: Response, next: NextFunction) {
     try {
+      const data = { ...req.body }
+      if (data.status) data.status = data.status.toUpperCase()
       const agreement = await prisma.agreement.update({
         where: { id: req.params.id as string },
-        data: req.body,
+        data,
       })
       wsManager.broadcastToAll('agreement:updated', agreement)
       res.json(agreement)
@@ -63,12 +66,9 @@ export class AgreementController {
 
   async delete(req: Request, res: Response, next: NextFunction) {
     try {
-      await prisma.agreement.update({
-        where: { id: req.params.id as string },
-        data: { deletedAt: new Date() },
-      })
+      const result = await softDelete('agreements', req.params.id as string)
       wsManager.broadcastToAll('agreement:deleted', { id: req.params.id as string })
-      res.json({ success: true })
+      res.json(result)
     } catch (err) { next(err) }
   }
 }

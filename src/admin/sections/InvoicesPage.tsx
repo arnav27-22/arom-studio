@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Plus, Download, Eye, Trash2, FileText, CheckCircle2, Clock } from 'lucide-react'
-import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, recordAdminInvoice, type AdminInvoice, type InvoiceItem } from '../adminStore'
+import { getAdminStore, saveAdminStore, moveToRecycleBin, syncFromCloud, formatIST, recordAdminInvoice, type AdminInvoice, type InvoiceItem } from '../adminStore'
 import { StatCard } from '../components/StatCard'
 import { generateInvoicePDF, exportSectionReportPDF } from '../../lib/professionalPDF'
 
@@ -81,6 +81,7 @@ export function InvoicesPage() {
     s.invoices = s.invoices.map((inv) => (inv.id === id ? { ...inv, status: newStatus } : inv))
     saveAdminStore(s)
     reloadStore()
+    syncFromCloud()
   }
 
   const handleCreateInvoice = async (e: React.FormEvent) => {
@@ -109,7 +110,7 @@ export function InvoicesPage() {
 
     const created = await recordAdminInvoice(newInvoice)
     if (created?.id) {
-      reloadStore()
+      syncFromCloud().then(s => setStore(s))
       setShowCreateModal(false)
       setClientName('')
       setClientEmail('')
@@ -133,7 +134,7 @@ export function InvoicesPage() {
   const handleDeleteInvoice = (id: string) => {
     const inv = store.invoices.find((x) => x.id === id)
     moveToRecycleBin('invoices', id, inv?.invoiceNumber || inv?.clientName, inv?.clientName)
-    reloadStore()
+    syncFromCloud().then(s => setStore(s))
   }
 
   const filteredInvoices = statusFilter === 'All'

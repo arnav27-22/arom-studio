@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express'
 import { prisma } from '../database/prisma'
 import { wsManager } from '../websocket/WebSocketManager'
 import { sseService } from '../services/SSEService'
+import { softDelete } from '../utils/softDelete'
 
 export class AIController {
   async getConversations(req: Request, res: Response, next: NextFunction) {
@@ -85,7 +86,7 @@ export class AIController {
           })
           wsManager.broadcastToAll('ai:conversation:updated', conv)
           sseService.broadcast('ai_conversation', { action: 'saved', data: body })
-          res.json({ success: true })
+          res.json(conv)
         } else {
           const conv = await prisma.aIConversation.create({
             data: {
@@ -109,7 +110,7 @@ export class AIController {
           })
           wsManager.broadcastToAll('ai:conversation:created', conv)
           sseService.broadcast('ai_conversation', { action: 'saved', data: body })
-          res.json({ success: true })
+          res.json(conv)
         }
         return
       }
@@ -127,13 +128,10 @@ export class AIController {
         res.status(400).json({ error: 'Conversation id is required' })
         return
       }
-      await prisma.aIConversation.update({
-        where: { id },
-        data: { deletedAt: new Date() },
-      })
+      const result = await softDelete('aiConversations', id)
       wsManager.broadcastToAll('ai:conversation:deleted', { id })
       sseService.broadcast('ai_conversation', { action: 'delete', data: { id } })
-      res.json({ success: true })
+      res.json(result)
     } catch (err) {
       next(err)
     }
