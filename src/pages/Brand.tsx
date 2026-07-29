@@ -64,7 +64,7 @@ export default function Brand() {
             <h2 className="text-2xl font-heading text-white mt-10 mb-4">Official Links</h2>
             <ul className="space-y-2 text-white/70">
               <li><strong>Website:</strong> <a href="https://aromstudio.vercel.app" className="text-accent underline">https://aromstudio.vercel.app</a></li>
-              <li><strong>Instagram:</strong> <a href="https://www.instagram.com/aromstudio.web/" className="text-accent underline">https://www.instagram.com/aromstudio.web/</a></li>
+              <li><strong>Instagram:</strong> <a href="https://www.instagram.com/aromstudio.in/" className="text-accent underline">https://www.instagram.com/aromstudio.in/</a></li>
               <li><strong>Email:</strong> <a href="mailto:aromstudio27@gmail.com" className="text-accent underline">aromstudio27@gmail.com</a></li>
             </ul>
 

@@ -33,7 +33,7 @@ Our mission is to create fast, modern, scalable, SEO-friendly, and user-focused 
 
 🌐 Website: https://aromstudio.vercel.app
 
-📸 Instagram: https://www.instagram.com/aromstudio.web/
+📸 Instagram: https://www.instagram.com/aromstudio.in/
 
 📧 Email: aromstudio27@gmail.com
 

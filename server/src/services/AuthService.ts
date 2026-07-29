@@ -1,6 +1,5 @@
 ﻿import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
-import { prisma } from '../database/prisma'
 import { CONFIG } from '../config'
 import { signToken } from '../middleware/auth'
 import { UnauthorizedError } from '../utils/errors'

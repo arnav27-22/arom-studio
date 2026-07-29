@@ -5,10 +5,10 @@ import { logger } from '../utils/logger'
 export function auditLog(action: string, module: string) {
   return async (req: Request, res: Response, next: NextFunction) => {
     const originalJson = res.json.bind(res)
-    let body: unknown
+    let _body: unknown
 
     res.json = function (data: unknown) {
-      body = data
+      _body = data
       return originalJson(data)
     } as typeof res.json
 

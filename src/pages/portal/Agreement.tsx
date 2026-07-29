@@ -109,6 +109,8 @@ export default function Agreement() {
       supportPeriod,
       agreementId,
       referenceNumber: 'AGR-' + String(Date.now()).slice(-6),
+      agreedSections: checkedSections,
+      agreedDeclaration: declaration,
     }
     const doc = buildAgreementPDF(agreementData)
 

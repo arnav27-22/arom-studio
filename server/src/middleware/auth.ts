@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
 import { CONFIG } from '../config'
-import { prisma } from '../database/prisma'
 import { UnauthorizedError, ForbiddenError } from '../utils/errors'
 
 export interface AuthPayload {

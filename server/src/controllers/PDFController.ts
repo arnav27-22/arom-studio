@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express'
 import { prisma } from '../database/prisma'
 import { wsManager } from '../websocket/WebSocketManager'
 import { sseService } from '../services/SSEService'
-import { storePDF, retrievePDF, deleteStoredPDF, verifyPDFIntegrity, generateReferenceNumber, computeSHA256, countPages } from '../services/PDFStorageService'
+import { storePDF, retrievePDF, verifyPDFIntegrity, generateReferenceNumber } from '../services/PDFStorageService'
 
 export class PDFController {
   async getAll(req: Request, res: Response, next: NextFunction) {

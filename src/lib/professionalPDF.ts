@@ -196,7 +196,7 @@ export function addHeader(doc: jsPDF, documentTitle: string) {
   doc.text(fmtDateTime(), pw - 15, 9, { align: 'right' })
 }
 
-export function finalizeDoc(doc: jsPDF) {
+export function finalizeDoc(doc: jsPDF, reference?: string) {
   const pw = doc.internal.pageSize.getWidth()
   const ph = doc.internal.pageSize.getHeight()
   const totalPages = doc.getNumberOfPages()
@@ -215,7 +215,8 @@ export function finalizeDoc(doc: jsPDF) {
     doc.setFont('helvetica', 'normal')
     doc.setFontSize(6.5)
     doc.setTextColor(BRAND.light.r, BRAND.light.g, BRAND.light.b)
-    doc.text(`${BRAND.nameUpper}  |  ${BRAND.email}  |  ${BRAND.url}`, MARGIN_LEFT, ph - 8)
+    const leftText = reference ? `${BRAND.nameUpper}  |  Ref: ${reference}` : `${BRAND.nameUpper}  |  ${BRAND.email}  |  ${BRAND.url}`
+    doc.text(leftText, MARGIN_LEFT, ph - 8)
 
     doc.setFont('helvetica', 'bold')
     doc.text(`Page ${contentNum} of ${totalContent}`, pw - MARGIN_RIGHT, ph - 8, { align: 'right' })

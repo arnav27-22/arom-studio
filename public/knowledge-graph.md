@@ -63,7 +63,7 @@ aromstudio27@gmail.com
 +91 8767990061
 
 ### Social Links
-- Instagram: https://www.instagram.com/aromstudio.web/
+- Instagram: https://www.instagram.com/aromstudio.in/
 - WhatsApp: https://wa.me/918767990061
 
 ### Logo
@@ -115,7 +115,7 @@ Web Development, UI/UX Design, Next.js, React, TypeScript, Tailwind CSS
 Web Development, UI/UX Design, Frontend Engineering, Full-Stack Development, Performance Optimization, SEO, Accessibility
 
 ### SameAs
-- Instagram: https://www.instagram.com/aromstudio.web/
+- Instagram: https://www.instagram.com/aromstudio.in/
 - WhatsApp: https://wa.me/918767990061
 
 ## Entity Relationships
