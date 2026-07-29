@@ -17,6 +17,7 @@ import { notificationController } from '../controllers/NotificationController'
 import { searchController } from '../controllers/SearchController'
 import { discoveryController } from '../controllers/DiscoveryController'
 import { blogController } from '../controllers/BlogController'
+import { sseService } from '../services/SSEService'
 import { requireAuth } from '../middleware/auth'
 import { rateLimiter, loginRateLimiter } from '../middleware/rateLimiter'
 import { auditLog } from '../middleware/auditLogger'
@@ -155,6 +156,11 @@ router.get('/blogs', (req, res, next) => blogController.list(req, res, next))
 router.post('/blogs', auditLog('CREATE_BLOG', 'blogs'), (req, res, next) => blogController.create(req, res, next))
 router.put('/blogs/:id', auditLog('UPDATE_BLOG', 'blogs'), (req, res, next) => blogController.update(req, res, next))
 router.delete('/blogs/:id', auditLog('DELETE_BLOG', 'blogs'), (req, res, next) => blogController.delete(req, res, next))
+
+// Server-Sent Events for real-time admin updates
+router.get('/events', (req, res) => {
+  sseService.addClient(res)
+})
 
 // Blog slug-based lookup (adminStore passes slug as identifier)
 router.put('/blogs/slug/:slug', auditLog('UPDATE_BLOG', 'blogs'), async (req, res, next) => {

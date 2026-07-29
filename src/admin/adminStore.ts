@@ -302,6 +302,7 @@ export interface StoreData {
   feedbacks: AdminFeedback[]
   notifications: AdminNotification[]
   discoveryQuestionnaires: AdminDiscoveryQuestionnaire[]
+  aiConversations: any[]
   cmsContent: AdminCmsEntry[]
   recycleBin: AdminRecycleItem[]
 }
@@ -311,6 +312,7 @@ const EMPTY_DATA: StoreData = {
   clients: [], projects: [], proposals: [], agreements: [], payments: [],
   content: [], assets: [], approvals: [], timelines: [], handovers: [],
   feedbacks: [], notifications: [], discoveryQuestionnaires: [],
+  aiConversations: [],
   cmsContent: [],
   recycleBin: [],
 }

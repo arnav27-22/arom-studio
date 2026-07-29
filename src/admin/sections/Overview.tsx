@@ -24,6 +24,7 @@ export function Overview() {
   const notifications = store.notifications || []
   const discoveryQ = store.discoveryQuestionnaires || []
   const content = store.content || []
+  const aiConversations = store.aiConversations || []
 
   const totalRevenue = clients.reduce((acc, c) => acc + (c.totalRevenue || 0), 0)
   const pendingPayments = invoices.filter(i => i.status === 'Pending').reduce((acc, i) => acc + i.totalAmount, 0)
@@ -68,6 +69,7 @@ export function Overview() {
         <StatCard label="Completed Projects" value={completedProjects} icon={<CheckCircle2 className="h-4 w-4 text-emerald-400" />} />
         <StatCard label="Discovery Forms" value={discoveryQ.length} icon={<Mail className="h-4 w-4 text-accent" />} />
         <StatCard label="Content Collection" value={content.length} icon={<Database className="h-4 w-4 text-accent" />} />
+        <StatCard label="AI Conversations" value={aiConversations.length} icon={<Activity className="h-4 w-4 text-accent" />} />
         <StatCard label="Notifications" value={notifications.length} sub={`${notifications.filter(n => !n.read).length} unread`} icon={<Bell className="h-4 w-4 text-accent" />} />
         <StatCard label="Database Status" value="Connected" icon={<Database className="h-4 w-4 text-emerald-400" />} />
         <StatCard label="System Health" value="Good" icon={<HardDrive className="h-4 w-4 text-emerald-400" />} />
