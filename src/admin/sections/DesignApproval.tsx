@@ -30,12 +30,12 @@ export function DesignApproval() {
   const [form, setForm] = useState({
     projectName: '',
     clientName: '',
-    previewUrl: 'https://figma.com/@arom-studio',
+    previewUrl: '',
     version: 'v1.0',
   })
 
   useEffect(() => {
-    setStore(getAdminStore())
+    syncFromCloud().then(s => setStore(s))
   }, [])
 
   const approvals = store.approvals || []

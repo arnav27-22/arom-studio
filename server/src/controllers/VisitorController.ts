@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import { prisma } from '../database/prisma'
 import { wsManager } from '../websocket/WebSocketManager'
+import { softDelete } from '../utils/softDelete'
 import { sseService } from '../services/SSEService'
 
 export class VisitorController {
@@ -66,12 +67,9 @@ export class VisitorController {
   async deleteOne(req: Request, res: Response, next: NextFunction) {
     try {
       const id = req.params.id as string
-      await prisma.visitor.update({
-        where: { id },
-        data: { deletedAt: new Date() },
-      })
+      const result = await softDelete('visitors', id)
       wsManager.broadcastToAll('visitor:deleted', { id })
-      res.json({ success: true })
+      res.json(result)
     } catch (err) {
       next(err)
     }

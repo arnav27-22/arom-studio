@@ -110,13 +110,17 @@ export function Overview() {
             <h3 className="text-xs font-semibold text-accent uppercase tracking-wider mb-4">Quick Actions</h3>
             <div className="grid grid-cols-2 gap-2">
               {[
-                { label: 'New Client', icon: Users, action: "document.querySelector('[data-section=clients]')?.click()" },
-                { label: 'New Invoice', icon: CreditCard, action: '' },
-                { label: 'New Task', icon: CheckSquare, action: '' },
-                { label: 'Schedule Meeting', icon: Calendar, action: '' },
+                { label: 'New Client', icon: Users, section: 'clients' },
+                { label: 'New Invoice', icon: CreditCard, section: 'invoices' },
+                { label: 'New Task', icon: CheckSquare, section: 'tasks' },
+                { label: 'Schedule Meeting', icon: Calendar, section: 'meetings' },
               ].map(q => (
-                <button key={q.label} className="p-3 rounded-xl bg-white/5 hover:bg-accent/10 border border-white/10 hover:border-accent/30 text-xs text-white/70 hover:text-accent transition-all text-left flex items-center gap-2">
-                  <q.icon className="h-3.5 w-3.5 shrink-0" />
+                <button
+                  key={q.label}
+                  onClick={() => { (document.querySelector(`[data-section=${q.section}]`) as HTMLElement)?.click() }}
+                  className="p-3 rounded-xl bg-white/5 hover:bg-accent/10 border border-white/10 hover:border-accent/30 text-xs text-white/70 hover:text-accent transition-all text-left flex items-center gap-2 cursor-pointer"
+                >
+                  <q.icon className='h-3.5 w-3.5 shrink-0' />
                   {q.label}
                 </button>
               ))}

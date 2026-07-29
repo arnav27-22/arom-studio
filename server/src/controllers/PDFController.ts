@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express'
 import { prisma } from '../database/prisma'
 import { wsManager } from '../websocket/WebSocketManager'
 import { sseService } from '../services/SSEService'
+import { softDelete } from '../utils/softDelete'
 import { storePDF, retrievePDF, verifyPDFIntegrity, generateReferenceNumber } from '../services/PDFStorageService'
 
 export class PDFController {
@@ -224,19 +225,9 @@ export class PDFController {
   async delete(req: Request, res: Response, next: NextFunction) {
     try {
       const id = req.params.id as string
-      const pdf = await prisma.generatedPDF.findUnique({ where: { id } })
-      if (!pdf) {
-        res.status(404).json({ error: 'PDF not found' })
-        return
-      }
-
-      await prisma.generatedPDF.update({
-        where: { id },
-        data: { deletedAt: new Date() },
-      })
-
+      const result = await softDelete('pdfs', id)
       wsManager.broadcastToAll('pdf:deleted', { id })
-      res.json({ success: true, recycleItem: pdf })
+      res.json(result)
     } catch (err) {
       next(err)
     }

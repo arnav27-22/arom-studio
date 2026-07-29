@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { Mail, CheckCircle2, Archive, Eye, Download, Plus, Trash2 } from 'lucide-react'
-import { getAdminStore, saveAdminStore, syncFromCloud, formatIST, recordAdminLead, type AdminLead } from '../adminStore'
+import { getAdminStore, saveAdminStore, syncFromCloud, formatIST, recordAdminLead, moveToRecycleBin, type AdminLead } from '../adminStore'
 import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function Leads() {
@@ -31,7 +31,7 @@ export function Leads() {
   const [service, setService] = useState('Custom Business Website')
   const [message, setMessage] = useState('')
 
-  const reload = () => setStore(getAdminStore())
+  const reload = () => syncFromCloud().then(s => setStore(s))
 
   useEffect(() => {
     reload()
@@ -46,13 +46,9 @@ export function Leads() {
   }
 
   const handleDeleteLead = (id: string) => {
-    if (confirm('Delete lead inquiry?')) {
-      const s = getAdminStore()
-      s.leads = s.leads.filter((l) => l.id !== id)
-      saveAdminStore(s)
-      reload()
-      syncFromCloud()
-    }
+    const l = store.leads?.find((x: AdminLead) => x.id === id)
+    moveToRecycleBin('leads', id, l?.name, l?.email)
+    syncFromCloud().then(() => reload())
   }
 
   const handleAddLead = async (e: React.FormEvent) => {

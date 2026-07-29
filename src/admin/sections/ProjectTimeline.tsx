@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { GitCommit, Search, CheckCircle2, Clock, AlertTriangle, Layers, Trash2, Download } from 'lucide-react'
-import { getAdminStore, moveToRecycleBin } from '../adminStore'
+import { getAdminStore, moveToRecycleBin, syncFromCloud } from '../adminStore'
 import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function ProjectTimeline() {
@@ -9,7 +9,7 @@ export function ProjectTimeline() {
   const [search, setSearch] = useState('')
 
   useEffect(() => {
-    setStore(getAdminStore())
+    syncFromCloud().then(s => setStore(s))
   }, [])
 
   const handleDownloadTimelinesPDF = () => {
@@ -28,7 +28,7 @@ export function ProjectTimeline() {
   const handleDeleteTimeline = (id: string) => {
     const t = store.timelines.find((x) => x.id === id)
     moveToRecycleBin('timelines', id, t?.projectName || 'Project Timeline', t?.clientName)
-    setStore(getAdminStore())
+    syncFromCloud().then(s => setStore(s))
   }
 
   const timelines = store.timelines || []

@@ -34,13 +34,13 @@ export function ProjectManagement() {
     status: 'In Progress' as const,
     priority: 'High' as const,
     startDate: new Date().toISOString().slice(0, 10),
-    dueDate: '2026-08-30',
-    progress: 25,
-    team: 'Arnav (Lead Developer), Om (Lead Designer)',
+    dueDate: '',
+    progress: 0,
+    team: '',
   })
 
   useEffect(() => {
-    setStore(getAdminStore())
+    syncFromCloud().then(s => setStore(s))
   }, [])
 
   const projects = store.projects || []

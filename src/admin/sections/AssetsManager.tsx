@@ -35,12 +35,12 @@ export function AssetsManager() {
   const [form, setForm] = useState({
     clientName: '',
     projectName: '',
-    googleDriveLink: 'https://drive.google.com/drive/folders/',
+    googleDriveLink: '',
     folderStatus: 'Syncing' as const,
   })
 
   useEffect(() => {
-    setStore(getAdminStore())
+    syncFromCloud().then(s => setStore(s))
   }, [])
 
   const assets = store.assets || []

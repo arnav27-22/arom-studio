@@ -12,7 +12,6 @@ export function DiscoveryQuestionnairesAdmin() {
   const [selectedDq, setSelectedDq] = useState<AdminDiscoveryQuestionnaire | null>(null)
 
   useEffect(() => {
-    setStore(getAdminStore())
     syncFromCloud().then((updated) => setStore(updated))
   }, [])
 
@@ -60,7 +59,6 @@ export function DiscoveryQuestionnairesAdmin() {
   const handleDeleteDq = (id: string) => {
     const item = items.find((x) => x.id === id)
     moveToRecycleBin('discoveryQuestionnaires', id, item?.fullName || 'Discovery Questionnaire', item?.company)
-    setStore(getAdminStore())
     if (selectedDq?.id === id) setSelectedDq(null)
   }
 

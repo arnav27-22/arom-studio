@@ -2,8 +2,8 @@ import { Request, Response, NextFunction } from 'express'
 import { prisma } from '../database/prisma'
 
 function toCollection(path: string): string {
-  const parts = path.replace('/api/admin/', '').split('/')
-  return parts[0] === 'data' && parts[1] ? parts[1] : parts[0]
+  const match = path.match(/(?:\/api)?\/admin\/([^/?]+)/)
+  return match ? match[1] : ''
 }
 
 export class DataStoreController {

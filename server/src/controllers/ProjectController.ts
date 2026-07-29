@@ -39,7 +39,10 @@ export class ProjectController {
 
   async create(req: Request, res: Response, next: NextFunction) {
     try {
-      const project = await prisma.project.create({ data: req.body })
+      const data = { ...req.body }
+      if (data.status) data.status = data.status.toUpperCase()
+      if (data.launchStatus) data.launchStatus = data.launchStatus.toUpperCase()
+      const project = await prisma.project.create({ data })
       wsManager.broadcastToAll('project:created', project)
       res.json(project)
     } catch (err) {
@@ -49,9 +52,12 @@ export class ProjectController {
 
   async update(req: Request, res: Response, next: NextFunction) {
     try {
+      const data = { ...req.body }
+      if (data.status) data.status = data.status.toUpperCase()
+      if (data.launchStatus) data.launchStatus = data.launchStatus.toUpperCase()
       const project = await prisma.project.update({
         where: { id: req.params.id as string },
-        data: req.body,
+        data,
       })
       wsManager.broadcastToAll('project:updated', project)
       res.json(project)

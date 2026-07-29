@@ -62,7 +62,7 @@ const systemSections = [
   { id: 'pdfs', label: 'PDF Documents Archive', icon: FileText },
   { id: 'invoices', label: 'Invoice Generator', icon: Receipt },
   { id: 'leads', label: 'Contact Form Leads', icon: Mail },
-  { id: 'analytics', label: 'Page Analytics', icon: LineChart },
+  { id: 'page_analytics', label: 'Page Analytics', icon: LineChart },
   { id: 'logs', label: 'System Audit Logs', icon: ShieldCheck },
   { id: 'cms', label: 'Content Editor (CMS)', icon: PenSquare },
   { id: 'link_clicks', label: 'Link Clicks', icon: MousePointer2 },
@@ -230,7 +230,7 @@ export function AdminDashboard({ onLogout }: { onLogout: () => void }) {
               {active === 'pdfs' && <PDFActivity />}
               {active === 'invoices' && <InvoicesPage />}
               {active === 'leads' && <Leads />}
-              {active === 'analytics' && <PageAnalytics />}
+              {active === 'page_analytics' && <PageAnalytics />}
               {active === 'logs' && <SystemLogs />}
               {active === 'cms' && <CMSPage />}
               {active === 'link_clicks' && <LinkClicks />}

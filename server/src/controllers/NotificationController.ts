@@ -34,7 +34,7 @@ export class NotificationController {
         data: {
           title: req.body.title || 'Notification',
           message: req.body.message || '',
-          type: req.body.type || 'info',
+          type: (req.body.type || 'INQUIRY').toUpperCase(),
           read: false,
         },
       })

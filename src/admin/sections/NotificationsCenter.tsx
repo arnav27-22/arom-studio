@@ -10,7 +10,7 @@ export function NotificationsCenter() {
   const [typeFilter, setTypeFilter] = useState<string>('All')
 
   useEffect(() => {
-    setStore(getAdminStore())
+    syncFromCloud().then(s => setStore(s))
   }, [])
 
   const handleDownloadNotificationsPDF = () => {

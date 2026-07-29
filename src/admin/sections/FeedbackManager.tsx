@@ -31,7 +31,7 @@ export function FeedbackManager() {
   })
 
   useEffect(() => {
-    setStore(getAdminStore())
+    syncFromCloud().then(s => setStore(s))
   }, [])
 
   const feedbacks = store.feedbacks || []

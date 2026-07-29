@@ -36,15 +36,15 @@ export function HandoverManager() {
     projectName: '',
     clientName: '',
     domain: '',
-    hosting: 'Vercel Enterprise',
+    hosting: '',
     githubLink: '',
     adminLoginUrl: '',
     adminUsername: '',
-    warrantyPeriodMonths: 12,
+    warrantyPeriodMonths: 0,
   })
 
   useEffect(() => {
-    setStore(getAdminStore())
+    syncFromCloud().then(s => setStore(s))
   }, [])
 
   const handovers = store.handovers || []

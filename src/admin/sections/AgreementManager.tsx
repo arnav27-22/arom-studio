@@ -28,7 +28,7 @@ export function AgreementManager() {
   const handleDeleteAgreement = (id: string) => {
     const a = agreements.find((x) => x.id === id)
     moveToRecycleBin('agreements', id, a?.agreementNumber || a?.clientName, a?.clientName)
-    setStore(getAdminStore())
+    syncFromCloud().then(s => setStore(s))
   }
 
   const [form, setForm] = useState({

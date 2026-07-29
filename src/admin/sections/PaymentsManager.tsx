@@ -32,15 +32,15 @@ export function PaymentsManager() {
   }
 
   const [form, setForm] = useState({
-    invoiceNumber: 'INV-2026-004',
+    invoiceNumber: '',
     clientName: '',
-    amount: 5000,
-    dueDate: '2026-08-15',
+    amount: 0,
+    dueDate: '',
     status: 'Pending' as 'Pending' | 'Paid' | 'Overdue',
   })
 
   useEffect(() => {
-    setStore(getAdminStore())
+    syncFromCloud().then(s => setStore(s))
   }, [])
 
   const payments = store.payments || []

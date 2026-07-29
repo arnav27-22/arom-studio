@@ -38,7 +38,7 @@ export function InvoicesPage() {
   const [notes, setNotes] = useState('Payment due within 7 days. Thank you for choosing AROM STUDIO.')
   const [items, setItems] = useState<InvoiceItem[]>([])
 
-  const reloadStore = () => setStore(getAdminStore())
+  const reloadStore = () => syncFromCloud().then(s => setStore(s))
 
   useEffect(() => {
     reloadStore()

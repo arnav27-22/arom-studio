@@ -29,7 +29,7 @@ export function ContentCollection() {
 
 
   useEffect(() => {
-    setStore(getAdminStore())
+    syncFromCloud().then(s => setStore(s))
   }, [])
 
   const items = store.content || []

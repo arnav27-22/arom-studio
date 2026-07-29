@@ -87,7 +87,7 @@ export function BackupManager() {
                   {b.downloadUrl && (
                     <a href={b.downloadUrl} download className="p-1.5 rounded-lg bg-white/5 hover:bg-accent/20 text-white/60 hover:text-accent transition-colors cursor-pointer"><Download className="h-3.5 w-3.5" /></a>
                   )}
-                  <button className="p-1.5 rounded-lg bg-white/5 hover:bg-red-500/20 text-white/60 hover:text-red-400 transition-colors cursor-pointer"><Trash2 className="h-3.5 w-3.5" /></button>
+                  <button onClick={async () => { await fetch(`/api/backups/${b.filename || b.id}`, { method: 'DELETE', credentials: 'include' }); fetchBackups() }} className="p-1.5 rounded-lg bg-white/5 hover:bg-red-500/20 text-white/60 hover:text-red-400 transition-colors cursor-pointer"><Trash2 className="h-3.5 w-3.5" /></button>
                 </div>
               </div>
             ))}

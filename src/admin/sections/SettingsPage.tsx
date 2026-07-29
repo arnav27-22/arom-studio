@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { CheckCircle2, ShieldCheck, Database, Key, Trash2, ArrowRight, Download, AlertTriangle, HelpCircle } from 'lucide-react'
-import { getAdminStore, formatIST } from '../adminStore'
+import { getAdminStore, syncFromCloud, formatIST } from '../adminStore'
 import { exportSectionReportPDF } from '../../lib/professionalPDF'
 import { cn } from '../../lib/cn'
 
@@ -21,7 +21,7 @@ export function SettingsPage({ onNavigate }: { onNavigate?: (section: string) =>
   const [data, setData] = useState<any>(DEFAULT_SETTINGS)
   const [store, setStore] = useState(getAdminStore())
 
-  const reloadStore = () => setStore(getAdminStore())
+  const reloadStore = () => syncFromCloud().then(s => setStore(s))
 
   useEffect(() => {
     reloadStore()

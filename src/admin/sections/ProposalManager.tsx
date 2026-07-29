@@ -17,12 +17,12 @@ export function ProposalManager() {
     title: '',
     clientName: '',
     clientEmail: '',
-    amount: 12000,
-    scopeSummary: 'Full custom design, React development, real-time analytics & ongoing support.',
+    amount: 0,
+    scopeSummary: '',
   })
 
   useEffect(() => {
-    setStore(getAdminStore())
+    syncFromCloud().then(s => setStore(s))
   }, [])
 
   const handleDownloadProposalsPDF = () => {

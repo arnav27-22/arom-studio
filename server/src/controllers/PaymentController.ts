@@ -42,7 +42,7 @@ export class PaymentController {
           amount: body.amount || 0,
           dueDate: new Date(body.dueDate || Date.now()),
           paidDate: body.paidDate ? new Date(body.paidDate) : null,
-          status: body.status || 'Pending',
+          status: (body.status || 'PENDING').toUpperCase(),
           invoiceLink: body.invoiceLink || '',
           receiptUrl: body.receiptUrl || '',
           paymentMethod: body.paymentMethod || '',
@@ -56,9 +56,11 @@ export class PaymentController {
 
   async update(req: Request, res: Response, next: NextFunction) {
     try {
+      const data = { ...req.body }
+      if (data.status) data.status = data.status.toUpperCase()
       const payment = await prisma.payment.update({
         where: { id: req.params.id as string },
-        data: req.body,
+        data,
       })
       wsManager.broadcastToAll('payment:updated', payment)
       res.json(payment)

@@ -383,6 +383,8 @@ const COLLECTION_ENDPOINTS: Record<string, string> = {
   media: '/api/admin/media',
   passwords: '/api/admin/passwords',
   documents: '/api/admin/documents',
+  visitors: '/api/admin/visitors',
+  aiConversations: '/api/admin/ai-conversations',
 }
 
 async function api(path: string, options?: RequestInit): Promise<any> {
@@ -419,7 +421,7 @@ function toTitleCase(s: string) {
 
 function normalizeStatuses(arr: any[]): any[] {
   if (!Array.isArray(arr)) return arr
-  const STATUS_KEYS = new Set(['status', 'launchStatus', 'paymentStatus', 'leadStatus'])
+  const STATUS_KEYS = new Set(['status', 'launchStatus', 'paymentStatus', 'leadStatus', 'folderStatus', 'priority'])
   return arr.map(item => {
     if (!item || typeof item !== 'object') return item
     const copy = { ...item }
@@ -478,7 +480,7 @@ export function getAdminStore(): StoreData {
     __syncTriggered = true
     syncFromCloud().then(notifySubscribers)
   }
-  return __cache
+  return { ...__cache, recycleBin: [...(__cache.recycleBin || [])] }
 }
 
 export function saveAdminStore(data: StoreData): void {
@@ -582,6 +584,20 @@ export async function recordAdminClient(client: Omit<AdminClient, 'id' | 'create
   }
   return created
 }
+
+
+export async function updateAdminClient(id: string, client: Partial<Omit<AdminClient, 'id' | 'createdAt'>>): Promise<AdminClient | null> {
+  const updated = await api(`/api/admin/clients/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(client),
+  })
+  if (updated?.id) {
+    __cache.clients = __cache.clients.map(c => c.id === id ? updated : c)
+  }
+  return updated
+}
+
 
 export async function recordAdminProposal(proposal: Omit<AdminProposal, 'id' | 'createdAt'>): Promise<AdminProposal | null> {
   const created = await api('/api/admin/proposals', {
@@ -801,6 +817,18 @@ export async function recordAdminInvoice(invoice: Omit<AdminInvoice, 'id' | 'cre
   if (created?.id) {
     const normalized = normalizeStatuses([created])[0]
     __cache.invoices = [normalized, ...__cache.invoices]
+  }
+  return created
+}
+
+export async function recordAdminNotification(notification: Omit<AdminNotification, 'id' | 'createdAt'>): Promise<AdminNotification | null> {
+  const created = await api('/api/admin/notifications', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(notification),
+  })
+  if (created?.id) {
+    __cache.notifications = [created, ...__cache.notifications]
   }
   return created
 }
