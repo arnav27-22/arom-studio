@@ -36,7 +36,7 @@ export function PaymentsManager() {
     clientName: 'Apex Innovations Global',
     amount: 5000,
     dueDate: '2026-08-15',
-    status: 'Pending' as const,
+    status: 'Pending' as 'Pending' | 'Paid' | 'Overdue',
   })
 
   useEffect(() => {

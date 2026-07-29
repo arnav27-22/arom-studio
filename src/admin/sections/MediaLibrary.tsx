@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Image, Search, Trash2, FolderOpen, X, Plus, Link } from 'lucide-react'
+import { Image, Search, FolderOpen, X, Plus, Link } from 'lucide-react'
 import { getAdminStore, syncFromCloud, logAuditEvent } from '../adminStore'
 
 interface MediaItem {

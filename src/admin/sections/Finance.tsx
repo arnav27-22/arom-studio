@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { DollarSign, Plus, TrendingUp, TrendingDown, X, Search, Trash2, BarChart3, Download, Calendar } from 'lucide-react'
-import { getAdminStore, syncFromCloud, saveAdminStore, formatIST } from '../adminStore'
+import { getAdminStore, syncFromCloud } from '../adminStore'
 import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 interface Transaction {

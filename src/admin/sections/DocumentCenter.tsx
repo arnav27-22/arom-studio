@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { getAdminStore, subscribe, syncFromCloud, formatIST, saveAdminStore } from '../adminStore'
-import { FileText, Download, Plus, Search, Trash2, X, File as FileIcon, ExternalLink, Filter } from 'lucide-react'
+import { getAdminStore, subscribe, syncFromCloud, saveAdminStore } from '../adminStore'
+import { FileText, Plus, Search, Trash2, X, File as FileIcon, ExternalLink } from 'lucide-react'
 
 const DOCUMENT_TYPES = [
   'Receipt', 'Quotation', 'Project Brief', 'Brand Guideline',

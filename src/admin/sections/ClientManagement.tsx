@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
-import { UserCheck, Search, Plus, ExternalLink, Mail, Phone, DollarSign, Briefcase, Eye, Trash2, X, Clock, Download, MessageCircle, MapPin, CreditCard, Hash, Tag, Building2, FileText, Calendar, Globe, Users } from 'lucide-react'
+import { UserCheck, Search, Plus, ExternalLink, Mail, Phone, DollarSign, Briefcase, Eye, Trash2, X, Clock, Download, MessageCircle, MapPin, Hash, FileText, Globe, Users } from 'lucide-react'
 import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, recordAdminClient, type AdminClient } from '../adminStore'
 import { exportSectionReportPDF } from '../../lib/professionalPDF'
 

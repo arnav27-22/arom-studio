@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Calendar, Plus, Search, Trash2, Clock, Users, X } from 'lucide-react'
-import { getAdminStore, saveAdminStore, syncFromCloud, formatIST } from '../adminStore'
+import { getAdminStore, syncFromCloud } from '../adminStore'
 
 interface Meeting {
   id: string

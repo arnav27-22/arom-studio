@@ -67,14 +67,6 @@ export function CMSPage() {
     }))
   }
 
-  const removeSection = (key: string) => {
-    const { [key]: _, ...rest } = activeEntry.content
-    setEntries(prev => ({
-      ...prev,
-      [activeId]: { ...prev[activeId], content: rest },
-    }))
-  }
-
   const togglePublished = () => {
     setEntries(prev => ({
       ...prev,
@@ -109,12 +101,6 @@ export function CMSPage() {
   const addArrayItem = (key: string) => {
     const arr = content[key] || []
     setField(key, [...arr, ''])
-  }
-
-  const updateArrayItem = (key: string, idx: number, value: string) => {
-    const arr = [...(content[key] || [])]
-    arr[idx] = value
-    setField(key, arr)
   }
 
   const removeArrayItem = (key: string, idx: number) => {

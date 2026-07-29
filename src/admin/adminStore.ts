@@ -296,6 +296,7 @@ export interface AdminRecycleItem {
 }
 
 export interface StoreData {
+  visitors: any[]
   linkClicks: any[]
   leads: AdminLead[]
   pdfs: AdminPDF[]
@@ -327,7 +328,7 @@ export interface StoreData {
 }
 
 const EMPTY_DATA: StoreData = {
-  linkClicks: [], leads: [], pdfs: [], invoices: [], logs: [],
+  visitors: [], linkClicks: [], leads: [], pdfs: [], invoices: [], logs: [],
   clients: [], projects: [], proposals: [], agreements: [], payments: [],
   content: [], assets: [], approvals: [], timelines: [], handovers: [],
   feedbacks: [], notifications: [], discoveryQuestionnaires: [],

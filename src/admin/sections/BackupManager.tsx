@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { HardDrive, Download, RefreshCw, ShieldCheck, CheckCircle2, AlertCircle, Clock, Database, Trash2 } from 'lucide-react'
+import { HardDrive, Download, RefreshCw, ShieldCheck, CheckCircle2, Clock, Database, Trash2 } from 'lucide-react'
 import { formatIST } from '../adminStore'
 
 export function BackupManager() {

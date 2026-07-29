@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { StatCard } from '../components/StatCard'
-import { FileText, Mail, DollarSign, Users, CheckCircle2, Clock, Database, HardDrive, Activity, Bell, Download, Briefcase, CreditCard, TrendingUp, Lock, Image, Calendar, CheckSquare } from 'lucide-react'
+import { FileText, DollarSign, Users, Clock, Activity, Download, Briefcase, TrendingUp, Lock, Image, Calendar, CheckSquare, CreditCard } from 'lucide-react'
 import { getAdminStore, subscribe, syncFromCloud, formatIST } from '../adminStore'
+import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function Overview() {
   const [store, setStore] = useState(getAdminStore())
@@ -19,8 +20,6 @@ export function Overview() {
   const projects = store.projects || []
   const invoices = store.invoices || []
   const notifications = store.notifications || []
-  const discoveryQ = store.discoveryQuestionnaires || []
-  const content = store.content || []
   const aiConversations = store.aiConversations || []
   const tasks = store.tasks || []
   const meetings = store.meetings || []
@@ -58,7 +57,6 @@ export function Overview() {
             ['AI Conversations', aiConversations.length], ['Media Items', media.length],
             ['Stored Credentials', passwords.length],
           ]
-          const { exportSectionReportPDF } = require('../../lib/professionalPDF')
           exportSectionReportPDF('Executive Overview Report', 'AROM Studio Business Summary', headers, rows, 'Executive_Report')
         }} className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-accent text-black font-semibold text-xs hover:bg-accent/90 transition-all cursor-pointer shadow-lg">
           <Download className="h-4 w-4" /> Download Report

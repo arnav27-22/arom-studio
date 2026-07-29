@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { CheckSquare, Plus, Search, Trash2, Clock, AlertCircle, Calendar, Edit3, X } from 'lucide-react'
-import { getAdminStore, saveAdminStore, syncFromCloud, formatIST, logAuditEvent } from '../adminStore'
+import { CheckSquare, Plus, Search, Trash2, Calendar, Edit3, X } from 'lucide-react'
+import { getAdminStore, syncFromCloud, logAuditEvent } from '../adminStore'
 
 interface Task {
   id: string

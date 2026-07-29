@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { MessageSquareHeart, Star, CheckCircle2, Search, Lightbulb, Plus, X, Trash2, Download } from 'lucide-react'
-import { getAdminStore, saveAdminStore, moveToRecycleBin, recordAdminFeedback, type AdminFeedback } from '../adminStore'
+import { getAdminStore, saveAdminStore, moveToRecycleBin, recordAdminFeedback } from '../adminStore'
 import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function FeedbackManager() {
