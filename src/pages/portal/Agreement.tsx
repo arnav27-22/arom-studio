@@ -67,7 +67,6 @@ export default function Agreement() {
   const [projectDescription, setProjectDescription] = useState('')
   const [timeline, setTimeline] = useState('4-6 Weeks')
   const [advancePct, setAdvancePct] = useState('50')
-  const [supportPeriod, setSupportPeriod] = useState<'7' | '15' | '30'>('30')
   const [selectedServices, setSelectedServices] = useState<string[]>([])
   const [checkedSections, setCheckedSections] = useState<Record<string, boolean>>({})
   const [declaration, setDeclaration] = useState(false)
@@ -106,7 +105,6 @@ export default function Agreement() {
       timeline,
       advancePercentage: advancePct,
       finalPercentage: finalPct,
-      supportPeriod,
       agreementId,
       referenceNumber: 'AGR-' + String(Date.now()).slice(-6),
       agreedSections: checkedSections,
@@ -233,14 +231,6 @@ export default function Agreement() {
             </div>
           </div>
 
-          <h4 className="font-heading text-base text-white mt-6 mb-3">Support Period</h4>
-          <div className="flex gap-3">
-            {(['7', '15', '30'] as const).map((days) => (
-              <button key={days} onClick={() => setSupportPeriod(days)} className={`text-sm px-5 py-2.5 rounded-full border font-body transition-all ${supportPeriod === days ? 'bg-accent/20 border-accent/50 text-accent' : 'border-white/10 text-white/50 hover:border-white/30'}`}>
-                {days} Days
-              </button>
-            ))}
-          </div>
         </GlassCard>
 
         {/* Full Agreement Text with Checkboxes */}

@@ -897,7 +897,6 @@ export function generateAgreementPDF(data: {
   timeline: string
   advancePercentage: string
   finalPercentage: string
-  supportPeriod: string
   agreementId?: string
 }) {
   const agreementData: AgreementData = {
@@ -910,7 +909,6 @@ export function generateAgreementPDF(data: {
     selectedServices: data.selectedServices || [],
     advancePercentage: data.advancePercentage,
     finalPercentage: data.finalPercentage,
-    supportPeriod: data.supportPeriod,
     effectiveDate: data.effectiveDate,
     agreementId: data.agreementId || '',
     referenceNumber: generateReference('AGR'),

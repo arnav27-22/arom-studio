@@ -11,7 +11,6 @@ export interface AgreementData {
   selectedServices: string[]
   advancePercentage: string
   finalPercentage: string
-  supportPeriod: string
   effectiveDate: string
   agreementId: string
   referenceNumber: string
@@ -32,9 +31,8 @@ const BRAND = {
   muted: { r: 200, g: 200, b: 210 },
 }
 
-const PARAGRAPH_LINE_H = 6.5
-const SECTION_SPACING = 14
-const PARAGRAPH_SPACING = 3
+const LINE_H = 6.5
+const SECTION_GAP = 14
 
 function formatDate(iso: string): string {
   if (!iso) return today()
@@ -46,25 +44,29 @@ function formatDate(iso: string): string {
   }
 }
 
-function checkPageBreak(doc: jsPDF, layout: PageLayout, y: number, needed: number): number {
-  if (y + needed > layout.contentBottom) {
-    doc.addPage()
-    return layout.contentTop
+function estimateSectionHeight(doc: jsPDF, paragraphs: string[], layout: PageLayout): number {
+  let total = 20
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(8.5)
+  for (const para of paragraphs) {
+    if (para === '') { total += 3; continue }
+    const isBullet = para.startsWith('  -') || para.startsWith('  •')
+    const text = para.replace(/\*\*/g, '').trim().replace(/^[-•]\s*/, '')
+    const w = isBullet ? layout.contentWidth - 14 : layout.contentWidth
+    total += doc.splitTextToSize(text, w).length * LINE_H + 3
   }
-  return y
+  return total + SECTION_GAP
 }
 
-function writeAgreementSection(
+function writeSectionContent(
   doc: jsPDF,
   y: number,
   sectionNum: string,
   title: string,
   paragraphs: string[],
   layout: PageLayout,
+  checked: boolean,
 ): number {
-  const headingH = 14
-  y = checkPageBreak(doc, layout, y, headingH)
-
   doc.setFillColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
   doc.rect(layout.marginLeft, y - 2, 2.5, 9, 'F')
 
@@ -72,25 +74,36 @@ function writeAgreementSection(
   doc.setFontSize(10.5)
   doc.setTextColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
   doc.text(`${sectionNum}. ${title}`, layout.marginLeft + 6, y + 3.5)
-  y += headingH
+  y += 16
+
+  if (checked) {
+    const bx = layout.marginLeft + 1
+    const by = y
+    doc.setDrawColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
+    doc.setLineWidth(0.4)
+    doc.rect(bx, by, 3.2, 3.2, 'S')
+    doc.setLineWidth(0.6)
+    doc.line(bx + 0.7, by + 2.2, bx + 1.3, by + 2.7)
+    doc.line(bx + 1.3, by + 2.7, bx + 2.6, by + 0.5)
+
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(7.5)
+    doc.setTextColor(BRAND.mid.r, BRAND.mid.g, BRAND.mid.b)
+    doc.text(`I have read and agree to Section ${sectionNum}: ${title}`, bx + 7, by + 2.5)
+    y += 7
+  }
 
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(8.5)
   doc.setTextColor(BRAND.mid.r, BRAND.mid.g, BRAND.mid.b)
 
   for (const para of paragraphs) {
-    if (para === '') {
-      y = checkPageBreak(doc, layout, y, PARAGRAPH_LINE_H)
-      y += PARAGRAPH_SPACING
-      continue
-    }
+    if (para === '') { y += 3; continue }
 
     const isBullet = para.startsWith('  -') || para.startsWith('  •')
     const text = para.replace(/\*\*/g, '').trim().replace(/^[-•]\s*/, '')
     const wrapWidth = isBullet ? layout.contentWidth - 14 : layout.contentWidth
     const split = doc.splitTextToSize(text, wrapWidth)
-
-    y = checkPageBreak(doc, layout, y, split.length * PARAGRAPH_LINE_H + 4)
 
     if (isBullet) {
       doc.setFontSize(5)
@@ -99,22 +112,19 @@ function writeAgreementSection(
       doc.setFontSize(8.5)
       doc.setTextColor(BRAND.mid.r, BRAND.mid.g, BRAND.mid.b)
       for (const s of split) {
-        y = checkPageBreak(doc, layout, y, PARAGRAPH_LINE_H)
         doc.text(s, layout.marginLeft + 8, y)
-        y += PARAGRAPH_LINE_H
+        y += LINE_H
       }
     } else {
       for (const s of split) {
-        y = checkPageBreak(doc, layout, y, PARAGRAPH_LINE_H)
         doc.text(s, layout.marginLeft, y)
-        y += PARAGRAPH_LINE_H
+        y += LINE_H
       }
     }
-
-    y += PARAGRAPH_SPACING
+    y += 3
   }
 
-  y += SECTION_SPACING
+  y += SECTION_GAP
   return y
 }
 
@@ -123,18 +133,21 @@ function writeDeclarationSection(
   y: number,
   layout: PageLayout,
   data: AgreementData,
-  effDate: string
+  effDate: string,
 ): number {
-  const needed = 90
-  y = checkPageBreak(doc, layout, y, needed)
+  const needed = 120
+  if (y + needed > layout.contentBottom) {
+    doc.addPage()
+    y = layout.contentTop
+  }
 
-  doc.setDrawColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
-  doc.setLineWidth(0.5)
+  doc.setDrawColor(BRAND.dark.r, BRAND.dark.g, BRAND.dark.b)
+  doc.setLineWidth(0.8)
   doc.line(layout.marginLeft, y, layout.marginLeft + layout.contentWidth, y)
-  y += 10
+  y += 12
 
   doc.setFont('helvetica', 'bold')
-  doc.setFontSize(13)
+  doc.setFontSize(14)
   doc.setTextColor(BRAND.dark.r, BRAND.dark.g, BRAND.dark.b)
   doc.text('Client Declaration', layout.marginLeft, y)
   y += 10
@@ -142,66 +155,78 @@ function writeDeclarationSection(
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(9)
   doc.setTextColor(BRAND.mid.r, BRAND.mid.g, BRAND.mid.b)
-
-  const checkboxTexts = [
-    'I confirm that I have carefully read this Website Development Agreement.',
-    'I understand all terms and conditions.',
-    'I voluntarily agree to this Agreement.',
-    'I confirm that the information provided is accurate.',
-  ]
-
-  for (let i = 0; i < checkboxTexts.length; i++) {
-    const bx = layout.marginLeft + 1
-    const by = y
-    doc.setDrawColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
-    doc.setLineWidth(0.5)
-    doc.rect(bx, by, 4.5, 4.5, 'S')
-    doc.setLineWidth(0.7)
-    doc.line(bx + 1, by + 3, bx + 2, by + 4)
-    doc.line(bx + 2, by + 4, bx + 4, by + 1)
-
-    doc.setFont('helvetica', 'normal')
-    doc.setFontSize(9)
-    doc.setTextColor(BRAND.mid.r, BRAND.mid.g, BRAND.mid.b)
-    doc.text(checkboxTexts[i], bx + 9, y + 3.5)
-    y += 8
-  }
-
-  y += 4
+  doc.text(`This declaration confirms the Client's acceptance of the Website Development Agreement.`, layout.marginLeft, y)
+  y += 10
 
   doc.setDrawColor(BRAND.muted.r, BRAND.muted.g, BRAND.muted.b)
   doc.setLineWidth(0.3)
   doc.line(layout.marginLeft, y, layout.marginLeft + layout.contentWidth, y)
   y += 8
 
-  doc.setFont('helvetica', 'normal')
+  doc.setFont('helvetica', 'bold')
   doc.setFontSize(9)
   doc.setTextColor(BRAND.dark.r, BRAND.dark.g, BRAND.dark.b)
-  doc.text(`Client Name: ${data.clientName}`, layout.marginLeft, y)
+  doc.text('Client Information', layout.marginLeft, y)
   y += 7
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(9)
+  doc.setTextColor(BRAND.mid.r, BRAND.mid.g, BRAND.mid.b)
+  doc.text(`Client Name: ${data.clientName}`, layout.marginLeft, y)
+  y += 6
   if (data.clientEmail) {
     doc.text(`Email: ${data.clientEmail}`, layout.marginLeft, y)
-    y += 7
+    y += 6
   }
   doc.text(`Date: ${effDate}`, layout.marginLeft, y)
-  y += 7
-  if (data.referenceNumber) {
-    doc.text(`Reference: ${data.referenceNumber}`, layout.marginLeft, y)
-    y += 7
-  }
+  y += 10
 
-  y += 4
-
-  doc.setDrawColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
-  doc.setLineWidth(0.5)
+  doc.setDrawColor(BRAND.muted.r, BRAND.muted.g, BRAND.muted.b)
+  doc.setLineWidth(0.3)
   doc.line(layout.marginLeft, y, layout.marginLeft + layout.contentWidth, y)
   y += 8
+
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(9)
+  doc.setTextColor(BRAND.dark.r, BRAND.dark.g, BRAND.dark.b)
+  doc.text('Acknowledgments', layout.marginLeft, y)
+  y += 8
+
+  const statements = [
+    'I confirm that I have carefully read this Website Development Agreement.',
+    'I understand every clause and condition.',
+    'I voluntarily agree to all terms.',
+    'I confirm the information provided is correct.',
+  ]
+
+  for (const stmt of statements) {
+    const bx = layout.marginLeft + 1
+    const by = y
+    doc.setDrawColor(BRAND.primary.r, BRAND.primary.g, BRAND.primary.b)
+    doc.setLineWidth(0.4)
+    doc.rect(bx, by, 3.5, 3.5, 'S')
+    doc.setLineWidth(0.6)
+    doc.line(bx + 0.8, by + 2.5, bx + 1.4, by + 3)
+    doc.line(bx + 1.4, by + 3, bx + 2.8, by + 0.6)
+
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(9)
+    doc.setTextColor(BRAND.mid.r, BRAND.mid.g, BRAND.mid.b)
+    doc.text(stmt, bx + 8, by + 2.5)
+    y += 8
+  }
+
+  y += 6
+
+  doc.setDrawColor(BRAND.dark.r, BRAND.dark.g, BRAND.dark.b)
+  doc.setLineWidth(0.8)
+  doc.line(layout.marginLeft, y, layout.marginLeft + layout.contentWidth, y)
+  y += 10
 
   doc.setFont('helvetica', 'italic')
   doc.setFontSize(7.5)
   doc.setTextColor(BRAND.light.r, BRAND.light.g, BRAND.light.b)
-  const declNote = 'This Agreement was accepted electronically through the AROM Studio Client Portal. The checked confirmations above serve as the Client\'s binding acceptance.'
-  const wrapped = doc.splitTextToSize(declNote, layout.contentWidth)
+  const note = 'This Agreement was accepted electronically through the AROM Studio Client Portal. The checked confirmations above serve as the Client\'s binding acceptance.'
+  const wrapped = doc.splitTextToSize(note, layout.contentWidth)
   for (const w of wrapped) {
     doc.text(w, layout.marginLeft, y)
     y += 4.5
@@ -212,7 +237,10 @@ function writeDeclarationSection(
 }
 
 function writeContactFooter(doc: jsPDF, y: number, layout: PageLayout): number {
-  y = checkPageBreak(doc, layout, y, 16)
+  if (y + 16 > layout.contentBottom) {
+    doc.addPage()
+    y = layout.contentTop
+  }
   doc.setDrawColor(BRAND.muted.r, BRAND.muted.g, BRAND.muted.b)
   doc.setLineWidth(0.3)
   doc.line(layout.marginLeft, y, layout.marginLeft + layout.contentWidth, y)
@@ -561,13 +589,20 @@ export function buildAgreementPDF(data: AgreementData): jsPDF {
   y += 10
 
   for (const section of SECTIONS) {
-    y = writeAgreementSection(doc, y, section.num, section.title, section.paragraphs, layout)
+    const sectionId = `sec${section.num}_${section.title.toLowerCase().replace(/\s+/g, '_')}`
+    const checked = !!(data.agreedSections && data.agreedSections[sectionId])
+    const estimated = estimateSectionHeight(doc, section.paragraphs, layout)
+    if (y + estimated > layout.contentBottom) {
+      doc.addPage()
+      y = layout.contentTop
+    }
+    y = writeSectionContent(doc, y, section.num, section.title, section.paragraphs, layout, checked)
   }
 
   y = writeDeclarationSection(doc, y, layout, data, effDate)
   y = writeContactFooter(doc, y, layout)
 
-  finalizeDoc(doc, data.referenceNumber)
+  finalizeDoc(doc)
   applyContentPageHeaders(doc, 'Website Development Agreement')
 
   return doc
