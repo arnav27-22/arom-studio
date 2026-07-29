@@ -27,6 +27,7 @@ import { timelineController } from '../controllers/TimelineController'
 import { handoverController } from '../controllers/HandoverController'
 import { feedbackController } from '../controllers/FeedbackController'
 import { cmsController } from '../controllers/CmsController'
+import { dataStoreController } from '../controllers/DataStoreController'
 import { sseService } from '../services/SSEService'
 import { requireAuth } from '../middleware/auth'
 import { rateLimiter, loginRateLimiter } from '../middleware/rateLimiter'
@@ -234,6 +235,16 @@ router.delete('/feedbacks/:id', auditLog('DELETE_FEEDBACK', 'feedbacks'), (req, 
 router.get('/cms', (req, res, next) => cmsController.getAll(req, res, next))
 router.get('/cms/:id', (req, res, next) => cmsController.getOne(req, res, next))
 router.put('/cms/:id', auditLog('UPDATE_CMS', 'cms'), (req, res, next) => cmsController.update(req, res, next))
+
+// DataStore-based modules (generic CRUD)
+const DATA_COLLECTIONS = ['tasks', 'meetings', 'expenses', 'incomes', 'media', 'passwords']
+for (const col of DATA_COLLECTIONS) {
+  router.get(`/${col}`, (req, res, next) => dataStoreController.getAll(req, res, next))
+  router.get(`/${col}/:id`, (req, res, next) => dataStoreController.getOne(req, res, next))
+  router.post(`/${col}`, auditLog(`CREATE_${col.toUpperCase()}`, col), (req, res, next) => dataStoreController.create(req, res, next))
+  router.put(`/${col}/:id`, auditLog(`UPDATE_${col.toUpperCase()}`, col), (req, res, next) => dataStoreController.update(req, res, next))
+  router.delete(`/${col}/:id`, auditLog(`DELETE_${col.toUpperCase()}`, col), (req, res, next) => dataStoreController.delete(req, res, next))
+}
 
 // Server-Sent Events for real-time admin updates
 router.get('/events', (req, res) => {

@@ -305,6 +305,12 @@ export interface StoreData {
   aiConversations: any[]
   cmsContent: AdminCmsEntry[]
   recycleBin: AdminRecycleItem[]
+  tasks: any[]
+  meetings: any[]
+  expenses: any[]
+  incomes: any[]
+  media: any[]
+  passwords: any[]
 }
 
 const EMPTY_DATA: StoreData = {
@@ -315,6 +321,7 @@ const EMPTY_DATA: StoreData = {
   aiConversations: [],
   cmsContent: [],
   recycleBin: [],
+  tasks: [], meetings: [], expenses: [], incomes: [], media: [], passwords: [],
 }
 
 let __cache: StoreData = { ...EMPTY_DATA }
@@ -355,6 +362,12 @@ const COLLECTION_ENDPOINTS: Record<string, string> = {
   discoveryQuestionnaires: '/api/admin/discovery',
   cmsContent: '/api/admin/cms',
   recycleBin: '/api/admin/recycle',
+  tasks: '/api/admin/tasks',
+  meetings: '/api/admin/meetings',
+  expenses: '/api/admin/expenses',
+  incomes: '/api/admin/incomes',
+  media: '/api/admin/media',
+  passwords: '/api/admin/passwords',
 }
 
 async function api(path: string, options?: RequestInit): Promise<any> {

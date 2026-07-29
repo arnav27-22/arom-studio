@@ -20,7 +20,8 @@ router.get('/sync', async (_req, res, next) => {
     const [visitors, pdfs, leads, invoices, logs, clients, projects,
       proposals, agreements, payments, notifications, recycleBin,
       discoveryQuestionnaires, aiConversations, linkClicks,
-      contentItems, assetItems, approvalItems, timelineItems, handoverItems, feedbackItems] = await Promise.all([
+      contentItems, assetItems, approvalItems, timelineItems, handoverItems, feedbackItems,
+      cmsEntries, taskEntries, meetingEntries, expenseEntries, incomeEntries, mediaEntries, passwordEntries] = await Promise.all([
       prisma.visitor.findMany({ where: { deletedAt: null }, orderBy: { createdAt: 'desc' } }),
       prisma.generatedPDF.findMany({ where: { deletedAt: null }, orderBy: { createdAt: 'desc' } }),
       prisma.lead.findMany({ where: { deletedAt: null }, orderBy: { createdAt: 'desc' } }),
@@ -42,6 +43,13 @@ router.get('/sync', async (_req, res, next) => {
       prisma.projectTimeline.findMany({ where: { deletedAt: null }, orderBy: { createdAt: 'desc' } }),
       prisma.handover.findMany({ where: { deletedAt: null }, orderBy: { createdAt: 'desc' } }),
       prisma.feedback.findMany({ where: { deletedAt: null }, orderBy: { createdAt: 'desc' } }),
+      prisma.dataStore.findMany({ where: { collection: 'cms' } }),
+      prisma.dataStore.findMany({ where: { collection: 'tasks' }, orderBy: { createdAt: 'desc' } }),
+      prisma.dataStore.findMany({ where: { collection: 'meetings' }, orderBy: { createdAt: 'desc' } }),
+      prisma.dataStore.findMany({ where: { collection: 'expenses' }, orderBy: { createdAt: 'desc' } }),
+      prisma.dataStore.findMany({ where: { collection: 'incomes' }, orderBy: { createdAt: 'desc' } }),
+      prisma.dataStore.findMany({ where: { collection: 'media' }, orderBy: { createdAt: 'desc' } }),
+      prisma.dataStore.findMany({ where: { collection: 'passwords' }, orderBy: { createdAt: 'desc' } }),
     ])
     res.json({
       visitors, pdfs, leads, invoices, logs, linkClicks,
@@ -59,7 +67,13 @@ router.get('/sync', async (_req, res, next) => {
       notifications: notifications.length ? notifications : undefined,
       discoveryQuestionnaires,
       recycleBin, aiConversations,
-      cmsContent: await prisma.dataStore.findMany({ where: { collection: 'cms' } }),
+      cmsContent: cmsEntries,
+      tasks: taskEntries,
+      meetings: meetingEntries,
+      expenses: expenseEntries,
+      incomes: incomeEntries,
+      media: mediaEntries,
+      passwords: passwordEntries,
     })
   } catch (err) { next(err) }
 })

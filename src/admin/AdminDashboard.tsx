@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react'
 import {
   BarChart3, FileText, Mail, LineChart, Settings, LogOut, Menu, X, Receipt, ShieldCheck,
   UserCheck, Briefcase, FileSpreadsheet, FileSignature, CreditCard, FolderKanban, FolderUp,
-  CheckSquare, GitCommit, PackageCheck, MessageSquareHeart, Bell, Trash2
+  CheckSquare, GitCommit, PackageCheck, MessageSquareHeart, Bell, Trash2,
+  Calendar, DollarSign, Image, Lock
 } from 'lucide-react'
 
 import { Overview } from './sections/Overview'
@@ -12,6 +13,11 @@ import { PageAnalytics } from './sections/PageAnalytics'
 import { SettingsPage } from './sections/SettingsPage'
 import { InvoicesPage } from './sections/InvoicesPage'
 import { SystemLogs } from './sections/SystemLogs'
+import { TaskManager } from './sections/TaskManager'
+import { Meetings } from './sections/Meetings'
+import { Finance } from './sections/Finance'
+import { MediaLibrary } from './sections/MediaLibrary'
+import { PasswordVault } from './sections/PasswordVault'
 
 // 12 New Business & Agency Management Sections
 import { ClientManagement } from './sections/ClientManagement'
@@ -59,6 +65,11 @@ const systemSections = [
   { id: 'link_clicks', label: 'Link Clicks', icon: MousePointer2 },
   { id: 'settings', label: 'Security & Settings', icon: Settings },
   { id: 'recycle_bin', label: 'Recycle Bin', icon: Trash2 },
+  { id: 'tasks', label: 'Task Manager', icon: CheckSquare },
+  { id: 'meetings', label: 'Meetings', icon: Calendar },
+  { id: 'finance', label: 'Finance', icon: DollarSign },
+  { id: 'media', label: 'Media Library', icon: Image },
+  { id: 'passwords', label: 'Password Vault', icon: Lock },
 ]
 
 const agencySections = [
@@ -219,6 +230,12 @@ export function AdminDashboard({ onLogout }: { onLogout: () => void }) {
               {active === 'link_clicks' && <LinkClicks />}
               {active === 'settings' && <SettingsPage onNavigate={(s) => { setActive(s); setSidebarOpen(false) }} />}
               {active === 'recycle_bin' && <RecycleBin />}
+
+              {active === 'tasks' && <TaskManager />}
+              {active === 'meetings' && <Meetings />}
+              {active === 'finance' && <Finance />}
+              {active === 'media' && <MediaLibrary />}
+              {active === 'passwords' && <PasswordVault />}
 
               {/* 13 Agency Management Sections */}
               {active === 'clients' && <ClientManagement />}
