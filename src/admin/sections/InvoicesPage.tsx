@@ -52,12 +52,15 @@ export function InvoicesPage() {
   const taxAmount = (taxable * currentTaxRate) / 100
   const totalAmount = taxable + taxAmount
 
+  const fmt = (n: number) => (n ?? 0).toLocaleString('en-IN')
   const currencySymbol = currency === 'INR' ? '₹' : '$'
+
+  const uid = () => crypto.randomUUID?.() ?? Date.now().toString(36) + Math.random().toString(36).slice(2, 8)
 
   const handleAddItem = () => {
     setItems([
       ...items,
-      { id: crypto.randomUUID?.() ?? Date.now().toString(36), description: 'Service item', quantity: 1, unitPrice: 0 },
+      { id: uid(), description: 'Service item', quantity: 1, unitPrice: 0 },
     ])
   }
 
@@ -69,7 +72,7 @@ export function InvoicesPage() {
 
   const handleItemChange = (id: string, field: string, value: any) => {
     setItems(
-      items.map((item) => (item.id === id ? { ...item, [field]: value } : item))
+      items.map((item) => (item.id === id ? { ...item, [field]: value ?? 0 } : item))
     )
   }
 
@@ -216,7 +219,7 @@ export function InvoicesPage() {
                     <td className="py-3 px-2 text-white/60">{formatIST(inv.createdAt)}</td>
                     <td className="py-3 px-2 text-white/60 font-mono">{inv.dueDate}</td>
                     <td className="py-3 px-2 text-right font-mono font-medium text-white">
-                      {inv.currency === 'INR' ? '₹' : '$'}{inv.totalAmount.toLocaleString('en-IN')}
+                      {inv.currency === 'INR' ? '₹' : '$'}{fmt(inv.totalAmount)}
                     </td>
                     <td className="py-3 px-2 text-center">
                       <span className={`px-2.5 py-1 rounded-full text-[10px] font-medium uppercase ${

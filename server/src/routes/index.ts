@@ -13,6 +13,74 @@ router.use('/track', trackingRoutes)
 router.use('/', healthRoutes)
 router.use('/', openapiRoutes)
 
+// Sync endpoint - returns all data for admin store
+router.get('/sync', async (_req, res, next) => {
+  try {
+    const { prisma } = await import('../database/prisma')
+    const [visitors, pdfs, leads, invoices, logs, clients, projects,
+      proposals, agreements, payments, notifications, recycleBin,
+      discoveryQuestionnaires, aiConversations, linkClicks] = await Promise.all([
+      prisma.visitor.findMany({ where: { deletedAt: null }, orderBy: { createdAt: 'desc' } }),
+      prisma.generatedPDF.findMany({ where: { deletedAt: null }, orderBy: { createdAt: 'desc' } }),
+      prisma.lead.findMany({ where: { deletedAt: null }, orderBy: { createdAt: 'desc' } }),
+      prisma.invoice.findMany({ where: { deletedAt: null }, orderBy: { createdAt: 'desc' } }),
+      prisma.auditLog.findMany({ orderBy: { createdAt: 'desc' } }),
+      prisma.client.findMany({ where: { deletedAt: null }, orderBy: { createdAt: 'desc' } }),
+      prisma.project.findMany({ where: { deletedAt: null }, orderBy: { createdAt: 'desc' } }),
+      prisma.proposal.findMany({ where: { deletedAt: null }, orderBy: { createdAt: 'desc' } }),
+      prisma.agreement.findMany({ where: { deletedAt: null }, orderBy: { createdAt: 'desc' } }),
+      prisma.payment.findMany({ where: { deletedAt: null }, orderBy: { createdAt: 'desc' } }),
+      prisma.notification.findMany({ orderBy: { createdAt: 'desc' } }),
+      prisma.recycleBin.findMany({ orderBy: { deletedAt: 'desc' } }),
+      prisma.discoveryForm.findMany({ where: { deletedAt: null }, orderBy: { createdAt: 'desc' } }),
+      prisma.aIConversation.findMany({ where: { deletedAt: null }, orderBy: { lastActiveAt: 'desc' }, include: { messages: { orderBy: { timestamp: 'asc' } } } }),
+      prisma.linkClick.findMany({ orderBy: { createdAt: 'desc' } }),
+    ])
+    res.json({
+      visitors, pdfs, leads, invoices, logs, linkClicks,
+      clients: clients.length ? clients : undefined,
+      projects: projects.length ? projects : undefined,
+      proposals: proposals.length ? proposals : undefined,
+      agreements: agreements.length ? agreements : undefined,
+      payments: payments.length ? payments : undefined,
+      content: undefined,
+      assets: undefined,
+      approvals: undefined,
+      timelines: undefined,
+      handovers: undefined,
+      feedbacks: undefined,
+      notifications: notifications.length ? notifications : undefined,
+      discoveryQuestionnaires,
+      recycleBin, aiConversations,
+      cmsContent: undefined,
+    })
+  } catch (err) { next(err) }
+})
+
+router.post('/sync', async (req, res, next) => {
+  try {
+    const body = req.body
+    const action = body.action || body.type
+    const item = body.data || body
+    if (action === 'pdf' || action === 'save-pdf') {
+      const { pdfController } = await import('../controllers/PDFController')
+      req.body = item
+      return pdfController.save(req, res, next)
+    }
+    if (action === 'lead') {
+      const { leadController } = await import('../controllers/LeadController')
+      req.body = item
+      return leadController.create(req, res, next)
+    }
+    if (action === 'ai_conversation') {
+      const { aiController } = await import('../controllers/AIController')
+      req.body = { action: 'save', data: item }
+      return aiController.saveConversation(req, res, next)
+    }
+    res.json({ success: true })
+  } catch (err) { next(err) }
+})
+
 // Blog public routes
 router.get('/blog/:slug', async (req, res, next) => {
   try {

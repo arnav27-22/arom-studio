@@ -24,6 +24,10 @@ async function main(): Promise<void> {
   logger.info('Connecting to database...')
   await connectDatabase()
 
+  // Initialize auth service
+  const { authService } = await import('./services/AuthService')
+  await authService.initialize()
+
   // Setup Prisma monitoring
   setupPrismaMonitoring()
 
@@ -33,8 +37,7 @@ async function main(): Promise<void> {
   app.use(securityHeaders)
   app.use(corsConfig)
   app.use(cookieParser())
-  app.use(csrfProtection)
-  app.use(express.json({ limit: '10mb' }))
+  app.use(express.json({ limit: '50mb' }))
   app.use(requestIdMiddleware)
   app.use(responseTimingMiddleware)
 
@@ -61,7 +64,7 @@ async function main(): Promise<void> {
   const storagePath = path.resolve(process.cwd(), 'server', 'storage', 'pdfs')
   app.use('/storage/pdfs', express.static(storagePath))
 
-  app.get('*', (_req, res) => {
+  app.get('/{*path}', (_req, res) => {
     res.sendFile(path.join(distPath, 'index.html'))
   })
 

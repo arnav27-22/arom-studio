@@ -200,7 +200,7 @@ export function HeroSection() {
             <svg className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-white/80 mb-2 sm:mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
-            <p className="font-heading text-3xl sm:text-5xl md:text-6xl text-white tracking-[-1px] leading-none">100/100</p>
+            <p className="font-heading text-3xl sm:text-5xl md:text-6xl text-white tracking-[-1px] leading-none">100%</p>
             <p className="text-[10px] sm:text-sm text-white/80 font-body font-light mt-1 sm:mt-1.5">Lighthouse Score</p>
           </div>
         </motion.div>

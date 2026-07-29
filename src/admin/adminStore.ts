@@ -417,6 +417,8 @@ export async function syncFromCloud(): Promise<StoreData> {
     initSSE()
     notifySubscribers()
     return __cache
+  } catch {
+    return __cache
   } finally {
     __syncInProgress = false
   }

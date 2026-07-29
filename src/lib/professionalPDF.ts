@@ -1245,6 +1245,8 @@ export function exportSectionReportPDF(
   doc.save(fileName)
 }
 
+export { BRAND }
+
 export function generateInvoicePDF(inv: AdminInvoiceData): jsPDF {
   const doc = createDoc()
   const layout = getPageLayout(doc)

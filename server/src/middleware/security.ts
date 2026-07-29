@@ -30,7 +30,7 @@ export const corsConfig = cors({
   origin: CONFIG.CORS_ORIGIN.split(',').map((o) => o.trim()),
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-Id', 'X-Correlation-Id'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-Id', 'X-Correlation-Id', 'X-CSRF-Token'],
   exposedHeaders: ['X-Request-Id', 'X-Response-Time'],
   maxAge: 86400,
 })

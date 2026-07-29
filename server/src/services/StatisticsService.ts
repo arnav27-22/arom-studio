@@ -111,10 +111,10 @@ export class StatisticsService {
         _count: { city: true },
       }),
       prisma.$queryRaw<Array<{ date: string; count: bigint }>>`
-        SELECT DATE(created_at)::text as date, COUNT(*)::int as count
+        SELECT DATE("createdAt")::text as date, COUNT(*)::int as count
         FROM "Visitor"
-        WHERE deleted_at IS NULL
-        GROUP BY DATE(created_at)
+        WHERE "deletedAt" IS NULL
+        GROUP BY DATE("createdAt")
         ORDER BY date
       `,
       prisma.generatedPDF.count({ where: whereActive }),
@@ -244,10 +244,10 @@ export class StatisticsService {
     const singlePageSessionRaw = await prisma.$queryRaw<
       Array<{ session_id: string; page_count: bigint }>
     >(Prisma.sql`
-      SELECT session_id, COUNT(DISTINCT page)::int as page_count
+      SELECT "sessionId", COUNT(DISTINCT page)::int as page_count
       FROM "Visitor"
-      WHERE deleted_at IS NULL AND session_id IS NOT NULL
-      GROUP BY session_id
+      WHERE "deletedAt" IS NULL AND "sessionId" IS NOT NULL
+      GROUP BY "sessionId"
       HAVING COUNT(DISTINCT page) <= 1
     `)
 
@@ -260,11 +260,11 @@ export class StatisticsService {
       Array<{ day: number; hour: number; count: bigint }>
     >(Prisma.sql`
       SELECT
-        EXTRACT(DOW FROM created_at)::int as day,
-        EXTRACT(HOUR FROM created_at)::int as hour,
+        EXTRACT(DOW FROM "createdAt")::int as day,
+        EXTRACT(HOUR FROM "createdAt")::int as hour,
         COUNT(*)::int as count
       FROM "Visitor"
-      WHERE deleted_at IS NULL
+      WHERE "deletedAt" IS NULL
       GROUP BY day, hour
       ORDER BY day, hour
     `)

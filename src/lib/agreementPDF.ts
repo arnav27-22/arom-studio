@@ -396,7 +396,8 @@ export function buildAgreementPDF(data: AgreementData): jsPDF {
     '  - I have read and agree to Section 32: Contact Information',
   ], layout, true, true)
 
-  y = writeSignatureBlock(doc, y, layout, data.clientName, effDate)
+  // Declaration section with confirmation checkbox
+  y = writeDeclaration(doc, y, layout, data.clientName, effDate, data.clientEmail)
   y = writeContactFooter(doc, y, layout)
 
   finalizeDoc(doc)
@@ -405,53 +406,57 @@ export function buildAgreementPDF(data: AgreementData): jsPDF {
   return doc
 }
 
-function writeSignatureBlock(doc: jsPDF, y: number, layout: PageLayout, clientName: string, date: string): number {
-  y = checkPageBreak(doc, layout, y, 70)
+function writeDeclaration(doc: jsPDF, y: number, layout: PageLayout, clientName: string, date: string, clientEmail?: string): number {
+  y = checkPageBreak(doc, layout, y, 55)
 
-  doc.setDrawColor(200, 200, 210)
-  doc.setLineWidth(0.3)
+  doc.setDrawColor(78, 133, 191)
+  doc.setLineWidth(0.5)
   doc.line(layout.marginLeft, y, layout.marginLeft + layout.contentWidth, y)
-  y += 6
+  y += 8
 
   doc.setFont('helvetica', 'bold')
-  doc.setFontSize(14)
+  doc.setFontSize(13)
   doc.setTextColor(30, 30, 35)
-  doc.text('Signature & Acceptance', layout.marginLeft, y)
-  y += 12
+  doc.text('Declaration', layout.marginLeft, y)
+  y += 10
 
   doc.setFont('helvetica', 'normal')
-  doc.setFontSize(9)
+  doc.setFontSize(9.5)
   doc.setTextColor(60, 60, 70)
 
-  doc.text(`Client Name: ${clientName || '_____________________________'}`, layout.marginLeft, y); y += 8
-  doc.text(`Date: ${date || '_____________________________'}`, layout.marginLeft, y); y += 8
-  doc.text('Signature: _____________________________', layout.marginLeft, y); y += 8
-  y += 6
+  const bx = layout.marginLeft + 1
+  const by = y
+  doc.setDrawColor(78, 133, 191)
+  doc.setLineWidth(0.5)
+  doc.rect(bx, by, 4.5, 4.5, 'S')
+  doc.setLineWidth(0.7)
+  doc.line(bx + 1, by + 3, bx + 2, by + 4)
+  doc.line(bx + 2, by + 4, bx + 4, by + 1)
 
-  doc.setDrawColor(200, 200, 210)
-  doc.setLineWidth(0.3)
-  doc.line(layout.marginLeft, y, layout.marginLeft + layout.contentWidth, y)
-  y += 6
+  doc.text('I have read, understood and agree to all terms and conditions.', bx + 9, y + 3.5)
+  y += 8
 
-  doc.setFont('helvetica', 'normal')
-  doc.setFontSize(8.5)
-  doc.setTextColor(100, 100, 110)
-  doc.text('Agency Name: AROM Studio', layout.marginLeft, y); y += 7
-  doc.text('Authorized Representative: Arnav (Founder)', layout.marginLeft, y); y += 7
-  doc.text('Date of Acceptance:', layout.marginLeft, y); y += 7
-  doc.text(date, layout.marginLeft + 40, y - 7)
+  doc.setFontSize(9)
+  doc.setTextColor(30, 30, 35)
+  doc.text(`Client Name: ${clientName}`, layout.marginLeft, y)
   y += 6
+  if (clientEmail) {
+    doc.text(`Email: ${clientEmail}`, layout.marginLeft, y)
+    y += 6
+  }
+  doc.text(`Date: ${date}`, layout.marginLeft, y)
+  y += 8
 
-  doc.setDrawColor(200, 200, 210)
-  doc.setLineWidth(0.3)
+  doc.setDrawColor(78, 133, 191)
+  doc.setLineWidth(0.5)
   doc.line(layout.marginLeft, y, layout.marginLeft + layout.contentWidth, y)
   y += 6
 
   doc.setFont('helvetica', 'italic')
   doc.setFontSize(7.5)
-  doc.setTextColor(130, 130, 140)
-  doc.text('This Agreement was generated electronically and is legally binding under the terms of Section 30 (Electronic Signatures).', layout.marginLeft, y)
-  y += 10
+  doc.setTextColor(120, 120, 130)
+  doc.text('This Agreement was accepted electronically through the AROM Studio Client Portal. The checked confirmation above serves as the Client\'s binding acceptance.', layout.marginLeft, y)
+  y += 8
 
   return y
 }

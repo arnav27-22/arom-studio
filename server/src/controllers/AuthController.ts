@@ -41,8 +41,9 @@ export class AuthController {
       const ip = req.ip || req.socket.remoteAddress || ''
       const token = await authService.login(password, ip)
 
+      const secure = CONFIG.NODE_ENV === 'production'
       res.setHeader('Set-Cookie', [
-        `admin_token=${token}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=${CONFIG.SESSION_TIMEOUT / 1000}`,
+        `admin_token=${token}; HttpOnly${secure ? '; Secure' : ''}; SameSite=Strict; Path=/; Max-Age=${CONFIG.SESSION_TIMEOUT / 1000}`,
       ])
       res.json({ success: true })
     } catch (err) {

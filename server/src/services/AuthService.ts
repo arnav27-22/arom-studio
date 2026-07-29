@@ -30,8 +30,12 @@ export class AuthService {
       throw new UnauthorizedError('Incorrect password')
     }
 
-    const hash = this.adminPasswordHash || CONFIG.ADMIN_PASSWORD
-    const match = await bcrypt.compare(password, hash)
+    let match: boolean
+    if (this.adminPasswordHash) {
+      match = await bcrypt.compare(password, this.adminPasswordHash)
+    } else {
+      match = password === CONFIG.ADMIN_PASSWORD
+    }
 
     if (!match) {
       logger.warn('Failed login attempt', { ip })

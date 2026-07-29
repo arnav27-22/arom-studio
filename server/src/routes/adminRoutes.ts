@@ -38,7 +38,21 @@ import {
 
 const router = Router()
 
-// Auth (no auth required, rate-limited)
+// Auth (no auth required, rate-limited) - Match frontend expectations
+router.get('/auth', (req, res, next) => authController.check(req, res, next))
+router.post('/auth', loginRateLimiter, async (req, res, next) => {
+  try {
+    const { action, password } = req.body
+    if (action === 'login') {
+      req.body = { password }
+      return authController.login(req, res, next)
+    }
+    if (action === 'logout') {
+      return authController.logout(req, res, next)
+    }
+    res.status(400).json({ error: 'Invalid action' })
+  } catch (err) { next(err) }
+})
 router.post('/auth/login', loginRateLimiter, validate(loginSchema), (req, res, next) => authController.login(req, res, next))
 router.post('/auth/check', loginRateLimiter, (req, res, next) => authController.check(req, res, next))
 router.post('/auth/logout', loginRateLimiter, (req, res, next) => authController.logout(req, res, next))
