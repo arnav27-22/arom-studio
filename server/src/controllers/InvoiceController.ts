@@ -45,6 +45,7 @@ export class InvoiceController {
           taxAmount: body.taxAmount || 0,
           discountAmount: body.discountAmount || 0,
           totalAmount: body.totalAmount || 0,
+          status: (body.status || 'Pending').toUpperCase(),
           dueDate: new Date(body.dueDate || Date.now()),
           notes: body.notes || '',
         },
@@ -65,7 +66,7 @@ export class InvoiceController {
         data: { status: status.toUpperCase() },
       })
       wsManager.broadcastToAll('invoice:updated', invoice)
-      res.json({ success: true })
+      res.json(invoice)
     } catch (err) {
       next(err)
     }

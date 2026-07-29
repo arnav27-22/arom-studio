@@ -41,7 +41,7 @@ export class PaymentController {
           amount: body.amount || 0,
           dueDate: new Date(body.dueDate || Date.now()),
           paidDate: body.paidDate ? new Date(body.paidDate) : null,
-          status: body.status || 'PENDING',
+          status: body.status || 'Pending',
           invoiceLink: body.invoiceLink || '',
           receiptUrl: body.receiptUrl || '',
           paymentMethod: body.paymentMethod || '',

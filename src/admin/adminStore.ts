@@ -413,6 +413,25 @@ const SYNC_COLLECTIONS: { key: keyof StoreData; url: string }[] = Object.keys(EM
   url: COLLECTION_ENDPOINTS[k] || `/api/admin/${k}`,
 }))
 
+function toTitleCase(s: string) {
+  return s.replace(/_/g, ' ').replace(/\w\S*/g, w => w[0].toUpperCase() + w.slice(1).toLowerCase())
+}
+
+function normalizeStatuses(arr: any[]): any[] {
+  if (!Array.isArray(arr)) return arr
+  const STATUS_KEYS = new Set(['status', 'launchStatus', 'paymentStatus', 'leadStatus'])
+  return arr.map(item => {
+    if (!item || typeof item !== 'object') return item
+    const copy = { ...item }
+    for (const key of Object.keys(copy)) {
+      if (STATUS_KEYS.has(key) && typeof copy[key] === 'string') {
+        copy[key] = toTitleCase(copy[key])
+      }
+    }
+    return copy
+  })
+}
+
 export async function syncFromCloud(): Promise<StoreData> {
   if (__syncInProgress) return __cache
   __syncInProgress = true
@@ -424,8 +443,8 @@ export async function syncFromCloud(): Promise<StoreData> {
         const val = (resp as any)[key]
         if (Array.isArray(val)) {
           (updated as any)[key] = key === 'pdfs' || key === 'leads' || key === 'invoices' || key === 'logs'
-            ? sortByCreatedAt(val)
-            : val
+            ? sortByCreatedAt(normalizeStatuses(val))
+            : normalizeStatuses(val)
         }
       }
       __cache = updated
@@ -438,8 +457,8 @@ export async function syncFromCloud(): Promise<StoreData> {
       for (const { key, data } of results) {
         if (Array.isArray(data)) {
           (__cache as any)[key] = key === 'pdfs' || key === 'leads' || key === 'invoices' || key === 'logs'
-            ? sortByCreatedAt(data)
-            : data
+            ? sortByCreatedAt(normalizeStatuses(data))
+            : normalizeStatuses(data)
         }
       }
     }
@@ -780,7 +799,8 @@ export async function recordAdminInvoice(invoice: Omit<AdminInvoice, 'id' | 'cre
     body: JSON.stringify(invoice),
   })
   if (created?.id) {
-    __cache.invoices = [created, ...__cache.invoices]
+    const normalized = normalizeStatuses([created])[0]
+    __cache.invoices = [normalized, ...__cache.invoices]
   }
   return created
 }

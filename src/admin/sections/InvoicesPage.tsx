@@ -52,7 +52,7 @@ export function InvoicesPage() {
   const taxAmount = (taxable * currentTaxRate) / 100
   const totalAmount = taxable + taxAmount
 
-  const fmt = (n: number) => (n ?? 0).toLocaleString('en-IN')
+  const fmt = (n: number, cur?: string) => (n ?? 0).toLocaleString(cur === 'USD' ? 'en-US' : 'en-IN')
   const currencySymbol = currency === 'INR' ? '₹' : '$'
 
   const uid = () => crypto.randomUUID?.() ?? Date.now().toString(36) + Math.random().toString(36).slice(2, 8)
@@ -83,7 +83,7 @@ export function InvoicesPage() {
     reloadStore()
   }
 
-  const handleCreateInvoice = (e: React.FormEvent) => {
+  const handleCreateInvoice = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!clientName || !clientEmail) return
 
@@ -107,15 +107,15 @@ export function InvoicesPage() {
       notes,
     }
 
-    recordAdminInvoice(newInvoice)
-    reloadStore()
-    setShowCreateModal(false)
-
-    // Reset Form
-    setClientName('')
-    setClientEmail('')
-    setClientPhone('')
-    setClientCompany('')
+    const created = await recordAdminInvoice(newInvoice)
+    if (created?.id) {
+      reloadStore()
+      setShowCreateModal(false)
+      setClientName('')
+      setClientEmail('')
+      setClientPhone('')
+      setClientCompany('')
+    }
   }
 
   const handleDownloadInvoicePDF = (inv: AdminInvoice) => {
@@ -219,7 +219,7 @@ export function InvoicesPage() {
                     <td className="py-3 px-2 text-white/60">{formatIST(inv.createdAt)}</td>
                     <td className="py-3 px-2 text-white/60 font-mono">{inv.dueDate}</td>
                     <td className="py-3 px-2 text-right font-mono font-medium text-white">
-                      {inv.currency === 'INR' ? '₹' : '$'}{fmt(inv.totalAmount)}
+                      {inv.currency === 'INR' ? '₹' : '$'}{fmt(inv.totalAmount, inv.currency)}
                     </td>
                     <td className="py-3 px-2 text-center">
                       <span className={`px-2.5 py-1 rounded-full text-[10px] font-medium uppercase ${
@@ -398,10 +398,10 @@ export function InvoicesPage() {
                 </div>
               ) : (
               <div className="p-3 bg-white/5 rounded-xl border border-white/10 space-y-1 font-mono text-right text-xs">
-                <div>Subtotal: {currencySymbol}{subtotal.toLocaleString('en-IN')}</div>
-                {discountAmount > 0 && <div className="text-amber-400">Discount ({discountRate}%): -{currencySymbol}{discountAmount.toLocaleString('en-IN')}</div>}
-                <div>Tax ({taxRate}%): +{currencySymbol}{taxAmount.toLocaleString('en-IN')}</div>
-                <div className="text-sm text-accent font-bold pt-1 border-t border-white/10">Total: {currencySymbol}{totalAmount.toLocaleString('en-IN')}</div>
+                <div>Subtotal: {currencySymbol}{subtotal.toLocaleString(currency === 'USD' ? 'en-US' : 'en-IN')}</div>
+                {discountAmount > 0 && <div className="text-amber-400">Discount ({discountRate}%): -{currencySymbol}{discountAmount.toLocaleString(currency === 'USD' ? 'en-US' : 'en-IN')}</div>}
+                <div>Tax ({taxRate}%): +{currencySymbol}{taxAmount.toLocaleString(currency === 'USD' ? 'en-US' : 'en-IN')}</div>
+                <div className="text-sm text-accent font-bold pt-1 border-t border-white/10">Total: {currencySymbol}{totalAmount.toLocaleString(currency === 'USD' ? 'en-US' : 'en-IN')}</div>
               </div>
               )}
 
