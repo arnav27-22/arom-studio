@@ -102,6 +102,18 @@ export interface AdminClient {
   notes: string
   createdAt: string
   timeline: { date: string; event: string }[]
+  metadata?: {
+    whatsapp?: string
+    address?: string
+    gst?: string
+    socialLinks?: { platform: string; url: string }[]
+    tags?: string[]
+    leadSource?: string
+    industry?: string
+    meetingHistory?: { date: string; title: string; notes: string }[]
+    files?: { name: string; url: string; type: string; uploadedAt: string }[]
+    paymentHistory?: { date: string; amount: number; method: string; invoiceId: string }[]
+  }
 }
 
 export interface AdminProject {

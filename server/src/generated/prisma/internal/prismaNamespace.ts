@@ -3358,6 +3358,7 @@ export const ClientScalarFieldEnum = {
   totalRevenue: 'totalRevenue',
   notes: 'notes',
   timeline: 'timeline',
+  metadata: 'metadata',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'

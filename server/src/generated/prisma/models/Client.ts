@@ -80,6 +80,7 @@ export type ClientCountAggregateOutputType = {
   totalRevenue: number
   notes: number
   timeline: number
+  metadata: number
   createdAt: number
   updatedAt: number
   deletedAt: number
@@ -141,6 +142,7 @@ export type ClientCountAggregateInputType = {
   totalRevenue?: true
   notes?: true
   timeline?: true
+  metadata?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -245,6 +247,7 @@ export type ClientGroupByOutputType = {
   totalRevenue: number
   notes: string | null
   timeline: runtime.JsonValue | null
+  metadata: runtime.JsonValue | null
   createdAt: Date
   updatedAt: Date
   deletedAt: Date | null
@@ -285,6 +288,7 @@ export type ClientWhereInput = {
   totalRevenue?: Prisma.FloatFilter<"Client"> | number
   notes?: Prisma.StringNullableFilter<"Client"> | string | null
   timeline?: Prisma.JsonNullableFilter<"Client">
+  metadata?: Prisma.JsonNullableFilter<"Client">
   createdAt?: Prisma.DateTimeFilter<"Client"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Client"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"Client"> | Date | string | null
@@ -302,6 +306,7 @@ export type ClientOrderByWithRelationInput = {
   totalRevenue?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   timeline?: Prisma.SortOrderInput | Prisma.SortOrder
+  metadata?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -322,6 +327,7 @@ export type ClientWhereUniqueInput = Prisma.AtLeast<{
   totalRevenue?: Prisma.FloatFilter<"Client"> | number
   notes?: Prisma.StringNullableFilter<"Client"> | string | null
   timeline?: Prisma.JsonNullableFilter<"Client">
+  metadata?: Prisma.JsonNullableFilter<"Client">
   createdAt?: Prisma.DateTimeFilter<"Client"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Client"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"Client"> | Date | string | null
@@ -339,6 +345,7 @@ export type ClientOrderByWithAggregationInput = {
   totalRevenue?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   timeline?: Prisma.SortOrderInput | Prisma.SortOrder
+  metadata?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -364,6 +371,7 @@ export type ClientScalarWhereWithAggregatesInput = {
   totalRevenue?: Prisma.FloatWithAggregatesFilter<"Client"> | number
   notes?: Prisma.StringNullableWithAggregatesFilter<"Client"> | string | null
   timeline?: Prisma.JsonNullableWithAggregatesFilter<"Client">
+  metadata?: Prisma.JsonNullableWithAggregatesFilter<"Client">
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Client"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Client"> | Date | string
   deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Client"> | Date | string | null
@@ -381,6 +389,7 @@ export type ClientCreateInput = {
   totalRevenue?: number
   notes?: string | null
   timeline?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -398,6 +407,7 @@ export type ClientUncheckedCreateInput = {
   totalRevenue?: number
   notes?: string | null
   timeline?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -415,6 +425,7 @@ export type ClientUpdateInput = {
   totalRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   timeline?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -432,6 +443,7 @@ export type ClientUncheckedUpdateInput = {
   totalRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   timeline?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -449,6 +461,7 @@ export type ClientCreateManyInput = {
   totalRevenue?: number
   notes?: string | null
   timeline?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -466,6 +479,7 @@ export type ClientUpdateManyMutationInput = {
   totalRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   timeline?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -483,6 +497,7 @@ export type ClientUncheckedUpdateManyInput = {
   totalRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   timeline?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -500,6 +515,7 @@ export type ClientCountOrderByAggregateInput = {
   totalRevenue?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   timeline?: Prisma.SortOrder
+  metadata?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -561,6 +577,7 @@ export type ClientSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   totalRevenue?: boolean
   notes?: boolean
   timeline?: boolean
+  metadata?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
@@ -578,6 +595,7 @@ export type ClientSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   totalRevenue?: boolean
   notes?: boolean
   timeline?: boolean
+  metadata?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
@@ -595,6 +613,7 @@ export type ClientSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   totalRevenue?: boolean
   notes?: boolean
   timeline?: boolean
+  metadata?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
@@ -612,12 +631,13 @@ export type ClientSelectScalar = {
   totalRevenue?: boolean
   notes?: boolean
   timeline?: boolean
+  metadata?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
 }
 
-export type ClientOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "companyName" | "contactPerson" | "email" | "phone" | "website" | "activeProjectsCount" | "status" | "totalRevenue" | "notes" | "timeline" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["client"]>
+export type ClientOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "companyName" | "contactPerson" | "email" | "phone" | "website" | "activeProjectsCount" | "status" | "totalRevenue" | "notes" | "timeline" | "metadata" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["client"]>
 
 export type $ClientPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Client"
@@ -634,6 +654,7 @@ export type $ClientPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     totalRevenue: number
     notes: string | null
     timeline: runtime.JsonValue | null
+    metadata: runtime.JsonValue | null
     createdAt: Date
     updatedAt: Date
     deletedAt: Date | null
@@ -1071,6 +1092,7 @@ export interface ClientFieldRefs {
   readonly totalRevenue: Prisma.FieldRef<"Client", 'Float'>
   readonly notes: Prisma.FieldRef<"Client", 'String'>
   readonly timeline: Prisma.FieldRef<"Client", 'Json'>
+  readonly metadata: Prisma.FieldRef<"Client", 'Json'>
   readonly createdAt: Prisma.FieldRef<"Client", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Client", 'DateTime'>
   readonly deletedAt: Prisma.FieldRef<"Client", 'DateTime'>
