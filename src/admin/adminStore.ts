@@ -323,6 +323,7 @@ export interface StoreData {
   incomes: any[]
   media: any[]
   passwords: any[]
+  documents: any[]
 }
 
 const EMPTY_DATA: StoreData = {
@@ -333,7 +334,7 @@ const EMPTY_DATA: StoreData = {
   aiConversations: [],
   cmsContent: [],
   recycleBin: [],
-  tasks: [], meetings: [], expenses: [], incomes: [], media: [], passwords: [],
+  tasks: [], meetings: [], expenses: [], incomes: [], media: [], passwords: [], documents: [],
 }
 
 let __cache: StoreData = { ...EMPTY_DATA }
@@ -380,6 +381,7 @@ const COLLECTION_ENDPOINTS: Record<string, string> = {
   incomes: '/api/admin/incomes',
   media: '/api/admin/media',
   passwords: '/api/admin/passwords',
+  documents: '/api/admin/documents',
 }
 
 async function api(path: string, options?: RequestInit): Promise<any> {

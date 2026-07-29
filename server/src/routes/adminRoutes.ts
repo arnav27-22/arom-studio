@@ -237,7 +237,7 @@ router.get('/cms/:id', (req, res, next) => cmsController.getOne(req, res, next))
 router.put('/cms/:id', auditLog('UPDATE_CMS', 'cms'), (req, res, next) => cmsController.update(req, res, next))
 
 // DataStore-based modules (generic CRUD)
-const DATA_COLLECTIONS = ['tasks', 'meetings', 'expenses', 'incomes', 'media', 'passwords']
+const DATA_COLLECTIONS = ['tasks', 'meetings', 'expenses', 'incomes', 'media', 'passwords', 'documents']
 for (const col of DATA_COLLECTIONS) {
   router.get(`/${col}`, (req, res, next) => dataStoreController.getAll(req, res, next))
   router.get(`/${col}/:id`, (req, res, next) => dataStoreController.getOne(req, res, next))

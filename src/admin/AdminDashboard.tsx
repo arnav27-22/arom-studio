@@ -3,7 +3,7 @@ import {
   BarChart3, FileText, Mail, LineChart, Settings, LogOut, Menu, X, Receipt, ShieldCheck,
   UserCheck, Briefcase, FileSpreadsheet, FileSignature, CreditCard, FolderKanban, FolderUp,
   CheckSquare, GitCommit, PackageCheck, MessageSquareHeart, Bell, Trash2,
-  Calendar, DollarSign, Image, Lock
+  Calendar, DollarSign, Image, Lock, HardDrive
 } from 'lucide-react'
 
 import { Overview } from './sections/Overview'
@@ -18,6 +18,9 @@ import { Meetings } from './sections/Meetings'
 import { Finance } from './sections/Finance'
 import { MediaLibrary } from './sections/MediaLibrary'
 import { PasswordVault } from './sections/PasswordVault'
+import { DocumentCenter } from './sections/DocumentCenter'
+import { Analytics } from './sections/Analytics'
+import { BackupManager } from './sections/BackupManager'
 
 // 12 New Business & Agency Management Sections
 import { ClientManagement } from './sections/ClientManagement'
@@ -70,6 +73,9 @@ const systemSections = [
   { id: 'finance', label: 'Finance', icon: DollarSign },
   { id: 'media', label: 'Media Library', icon: Image },
   { id: 'passwords', label: 'Password Vault', icon: Lock },
+  { id: 'documents', label: 'Document Center', icon: FileText },
+  { id: 'analytics', label: 'Analytics', icon: BarChart3 },
+  { id: 'backups', label: 'Backup Manager', icon: HardDrive },
 ]
 
 const agencySections = [
@@ -236,6 +242,10 @@ export function AdminDashboard({ onLogout }: { onLogout: () => void }) {
               {active === 'finance' && <Finance />}
               {active === 'media' && <MediaLibrary />}
               {active === 'passwords' && <PasswordVault />}
+
+              {active === 'documents' && <DocumentCenter />}
+              {active === 'analytics' && <Analytics />}
+              {active === 'backups' && <BackupManager />}
 
               {/* 13 Agency Management Sections */}
               {active === 'clients' && <ClientManagement />}

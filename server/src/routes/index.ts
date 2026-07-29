@@ -21,7 +21,7 @@ router.get('/sync', async (_req, res, next) => {
       proposals, agreements, payments, notifications, recycleBin,
       discoveryQuestionnaires, aiConversations, linkClicks,
       contentItems, assetItems, approvalItems, timelineItems, handoverItems, feedbackItems,
-      cmsEntries, taskEntries, meetingEntries, expenseEntries, incomeEntries, mediaEntries, passwordEntries] = await Promise.all([
+      cmsEntries, taskEntries, meetingEntries, expenseEntries, incomeEntries, mediaEntries, passwordEntries, documentEntries] = await Promise.all([
       prisma.visitor.findMany({ where: { deletedAt: null }, orderBy: { createdAt: 'desc' } }),
       prisma.generatedPDF.findMany({ where: { deletedAt: null }, orderBy: { createdAt: 'desc' } }),
       prisma.lead.findMany({ where: { deletedAt: null }, orderBy: { createdAt: 'desc' } }),
@@ -50,6 +50,7 @@ router.get('/sync', async (_req, res, next) => {
       prisma.dataStore.findMany({ where: { collection: 'incomes' }, orderBy: { createdAt: 'desc' } }),
       prisma.dataStore.findMany({ where: { collection: 'media' }, orderBy: { createdAt: 'desc' } }),
       prisma.dataStore.findMany({ where: { collection: 'passwords' }, orderBy: { createdAt: 'desc' } }),
+      prisma.dataStore.findMany({ where: { collection: 'documents' }, orderBy: { createdAt: 'desc' } }),
     ])
     res.json({
       visitors, pdfs, leads, invoices, logs, linkClicks,
@@ -74,6 +75,7 @@ router.get('/sync', async (_req, res, next) => {
       incomes: incomeEntries,
       media: mediaEntries,
       passwords: passwordEntries,
+      documents: documentEntries,
     })
   } catch (err) { next(err) }
 })
