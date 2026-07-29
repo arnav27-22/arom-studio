@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { FileSpreadsheet, Search, Plus, Download, Copy, CheckCircle2, Eye, Clock, FileText, X, Trash2 } from 'lucide-react'
-import { getAdminStore, saveAdminStore, moveToRecycleBin, type AdminProposal } from '../adminStore'
+import { getAdminStore, saveAdminStore, moveToRecycleBin, recordAdminProposal, type AdminProposal } from '../adminStore'
 import { exportSectionReportPDF, generateProposalPDF } from '../../lib/professionalPDF'
 
 export function ProposalManager() {
@@ -41,24 +41,24 @@ export function ProposalManager() {
     exportSectionReportPDF('Proposals Pipeline Report', 'AROM Studio Agency Proposal Audit', headers, rows, 'Proposals_Pipeline_Report')
   }
 
-  const handleCreateProposal = (e: React.FormEvent) => {
+  const handleCreateProposal = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!form.title || !form.clientName) return
-    const newProp: AdminProposal = {
-      id: crypto.randomUUID(),
+    const created = await recordAdminProposal({
       proposalNumber: `PROP-2026-${String(store.proposals.length + 1).padStart(3, '0')}`,
       title: form.title,
       clientName: form.clientName,
       clientEmail: form.clientEmail,
       amount: Number(form.amount),
       status: 'Sent',
-      createdAt: new Date().toISOString(),
       validUntil: new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0],
       scopeSummary: form.scopeSummary,
+    })
+    if (created) {
+      const updated = { ...store, proposals: [created, ...store.proposals] }
+      saveAdminStore(updated)
+      setStore(updated)
     }
-    const updated = { ...store, proposals: [newProp, ...store.proposals] }
-    saveAdminStore(updated)
-    setStore(updated)
     setShowAddModal(false)
     setForm({ title: '', clientName: '', clientEmail: '', amount: 12000, scopeSummary: '' })
   }

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { UserCheck, Search, Plus, ExternalLink, Mail, Phone, DollarSign, Briefcase, Eye, Trash2, X, Clock, Download } from 'lucide-react'
-import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, type AdminClient } from '../adminStore'
+import { getAdminStore, saveAdminStore, moveToRecycleBin, formatIST, recordAdminClient, type AdminClient } from '../adminStore'
 import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function ClientManagement() {
@@ -58,12 +58,11 @@ export function ClientManagement() {
   const onboardingClients = clients.filter((c) => c.status === 'Onboarding').length
   const totalRevenue = clients.reduce((acc, c) => acc + (c.totalRevenue || 0), 0)
 
-  const handleAddClient = (e: React.FormEvent) => {
+  const handleAddClient = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!form.companyName || !form.email) return
 
-    const newClient: AdminClient = {
-      id: crypto.randomUUID(),
+    const created = await recordAdminClient({
       companyName: form.companyName,
       contactPerson: form.contactPerson || 'Primary Contact',
       email: form.email,
@@ -73,15 +72,16 @@ export function ClientManagement() {
       status: form.status,
       totalRevenue: Number(form.revenue) || 0,
       notes: form.notes || 'Client added from admin dashboard.',
-      createdAt: new Date().toISOString(),
       timeline: [
         { date: new Date().toISOString().slice(0, 10), event: 'Client Account Created' },
       ],
-    }
+    })
 
-    const updated = { ...store, clients: [newClient, ...store.clients] }
-    saveAdminStore(updated)
-    setStore(updated)
+    if (created) {
+      const updated = { ...store, clients: [created, ...store.clients] }
+      saveAdminStore(updated)
+      setStore(updated)
+    }
     setShowAddModal(false)
     setForm({ companyName: '', contactPerson: '', email: '', phone: '', website: '', status: 'Active', notes: '', revenue: 0 })
   }

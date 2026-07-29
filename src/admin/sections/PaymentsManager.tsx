@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { CreditCard, Search, DollarSign, Clock, AlertCircle, Download, Bell, Plus, X, Trash2 } from 'lucide-react'
-import { getAdminStore, saveAdminStore, moveToRecycleBin, type AdminPayment } from '../adminStore'
+import { getAdminStore, saveAdminStore, moveToRecycleBin, recordAdminPayment, type AdminPayment } from '../adminStore'
 import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function PaymentsManager() {
@@ -70,24 +70,28 @@ export function PaymentsManager() {
     setStore(updated)
   }
 
-  const handleAddPayment = (e: React.FormEvent) => {
+  const handleAddPayment = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!form.clientName) return
 
-    const newPay: AdminPayment = {
-      id: crypto.randomUUID(),
-      invoiceNumber: form.invoiceNumber,
+    const created = await recordAdminPayment({
+      invoiceNumber: form.invoiceNumber || `PAY-${Date.now()}`,
       clientName: form.clientName,
       amount: Number(form.amount) || 0,
       dueDate: form.dueDate,
       status: form.status,
       reminderSentCount: 0,
-      createdAt: new Date().toISOString(),
-    }
+      invoiceLink: '',
+      receiptUrl: '',
+      paymentMethod: '',
+      paidDate: form.status === 'Paid' ? new Date().toISOString() : undefined,
+    })
 
-    const updated = { ...store, payments: [newPay, ...store.payments] }
-    saveAdminStore(updated)
-    setStore(updated)
+    if (created) {
+      const updated = { ...store, payments: [created, ...store.payments] }
+      saveAdminStore(updated)
+      setStore(updated)
+    }
     setShowAddModal(false)
   }
 

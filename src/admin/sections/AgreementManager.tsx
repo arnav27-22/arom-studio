@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { StatCard } from '../components/StatCard'
 import { DataTable } from '../components/DataTable'
 import { FileSignature, Search, Download, CheckCircle2, Clock, Plus, X, Trash2 } from 'lucide-react'
-import { getAdminStore, saveAdminStore, syncFromCloud, moveToRecycleBin, formatIST, type AdminAgreement } from '../adminStore'
+import { getAdminStore, saveAdminStore, syncFromCloud, moveToRecycleBin, formatIST, recordAdminAgreement, type AdminAgreement } from '../adminStore'
 import { exportSectionReportPDF } from '../../lib/professionalPDF'
 
 export function AgreementManager() {
@@ -61,25 +61,26 @@ export function AgreementManager() {
   const signedAgreements = agreements.filter((a) => a.status === 'Signed').length
   const pendingAgreements = agreements.filter((a) => a.status === 'Pending').length
 
-  const handleCreateAgreement = (e: React.FormEvent) => {
+  const handleCreateAgreement = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!form.clientName) return
 
     const num = `AGR-2026-${(agreements.length + 1).toString().padStart(3, '0')}`
-    const newAgr: AdminAgreement = {
-      id: crypto.randomUUID(),
+    const created = await recordAdminAgreement({
       agreementNumber: num,
       clientName: form.clientName,
       clientEmail: form.clientEmail || '',
       status: form.status,
       agreementVersion: form.version,
-      createdAt: new Date().toISOString(),
       signedDate: form.status === 'Signed' ? new Date().toISOString() : undefined,
-    }
+      downloadUrl: '',
+    })
 
-    const updated = { ...store, agreements: [newAgr, ...store.agreements] }
-    saveAdminStore(updated)
-    setStore(updated)
+    if (created) {
+      const updated = { ...store, agreements: [created, ...store.agreements] }
+      saveAdminStore(updated)
+      setStore(updated)
+    }
     setShowAddModal(false)
   }
 

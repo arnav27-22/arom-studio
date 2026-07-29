@@ -17,6 +17,16 @@ import { notificationController } from '../controllers/NotificationController'
 import { searchController } from '../controllers/SearchController'
 import { discoveryController } from '../controllers/DiscoveryController'
 import { blogController } from '../controllers/BlogController'
+import { proposalController } from '../controllers/ProposalController'
+import { agreementController } from '../controllers/AgreementController'
+import { paymentController } from '../controllers/PaymentController'
+import { contentController } from '../controllers/ContentController'
+import { assetController } from '../controllers/AssetController'
+import { approvalController } from '../controllers/ApprovalController'
+import { timelineController } from '../controllers/TimelineController'
+import { handoverController } from '../controllers/HandoverController'
+import { feedbackController } from '../controllers/FeedbackController'
+import { cmsController } from '../controllers/CmsController'
 import { sseService } from '../services/SSEService'
 import { requireAuth } from '../middleware/auth'
 import { rateLimiter, loginRateLimiter } from '../middleware/rateLimiter'
@@ -156,6 +166,74 @@ router.get('/blogs', (req, res, next) => blogController.list(req, res, next))
 router.post('/blogs', auditLog('CREATE_BLOG', 'blogs'), (req, res, next) => blogController.create(req, res, next))
 router.put('/blogs/:id', auditLog('UPDATE_BLOG', 'blogs'), (req, res, next) => blogController.update(req, res, next))
 router.delete('/blogs/:id', auditLog('DELETE_BLOG', 'blogs'), (req, res, next) => blogController.delete(req, res, next))
+
+// Proposals
+router.get('/proposals', (req, res, next) => proposalController.getAll(req, res, next))
+router.get('/proposals/:id', (req, res, next) => proposalController.getOne(req, res, next))
+router.post('/proposals', auditLog('CREATE_PROPOSAL', 'proposals'), (req, res, next) => proposalController.create(req, res, next))
+router.put('/proposals/:id', auditLog('UPDATE_PROPOSAL', 'proposals'), (req, res, next) => proposalController.update(req, res, next))
+router.delete('/proposals/:id', auditLog('DELETE_PROPOSAL', 'proposals'), (req, res, next) => proposalController.delete(req, res, next))
+
+// Agreements
+router.get('/agreements', (req, res, next) => agreementController.getAll(req, res, next))
+router.get('/agreements/:id', (req, res, next) => agreementController.getOne(req, res, next))
+router.post('/agreements', auditLog('CREATE_AGREEMENT', 'agreements'), (req, res, next) => agreementController.create(req, res, next))
+router.put('/agreements/:id', auditLog('UPDATE_AGREEMENT', 'agreements'), (req, res, next) => agreementController.update(req, res, next))
+router.delete('/agreements/:id', auditLog('DELETE_AGREEMENT', 'agreements'), (req, res, next) => agreementController.delete(req, res, next))
+
+// Payments
+router.get('/payments', (req, res, next) => paymentController.getAll(req, res, next))
+router.get('/payments/:id', (req, res, next) => paymentController.getOne(req, res, next))
+router.post('/payments', auditLog('CREATE_PAYMENT', 'payments'), (req, res, next) => paymentController.create(req, res, next))
+router.put('/payments/:id', auditLog('UPDATE_PAYMENT', 'payments'), (req, res, next) => paymentController.update(req, res, next))
+router.delete('/payments/:id', auditLog('DELETE_PAYMENT', 'payments'), (req, res, next) => paymentController.delete(req, res, next))
+
+// Content Collection
+router.get('/content', (req, res, next) => contentController.getAll(req, res, next))
+router.get('/content/:id', (req, res, next) => contentController.getOne(req, res, next))
+router.post('/content', auditLog('CREATE_CONTENT', 'content'), (req, res, next) => contentController.create(req, res, next))
+router.put('/content/:id', auditLog('UPDATE_CONTENT', 'content'), (req, res, next) => contentController.update(req, res, next))
+router.delete('/content/:id', auditLog('DELETE_CONTENT', 'content'), (req, res, next) => contentController.delete(req, res, next))
+
+// Assets
+router.get('/assets', (req, res, next) => assetController.getAll(req, res, next))
+router.get('/assets/:id', (req, res, next) => assetController.getOne(req, res, next))
+router.post('/assets', auditLog('CREATE_ASSET', 'assets'), (req, res, next) => assetController.create(req, res, next))
+router.put('/assets/:id', auditLog('UPDATE_ASSET', 'assets'), (req, res, next) => assetController.update(req, res, next))
+router.delete('/assets/:id', auditLog('DELETE_ASSET', 'assets'), (req, res, next) => assetController.delete(req, res, next))
+
+// Design Approvals
+router.get('/approvals', (req, res, next) => approvalController.getAll(req, res, next))
+router.get('/approvals/:id', (req, res, next) => approvalController.getOne(req, res, next))
+router.post('/approvals', auditLog('CREATE_APPROVAL', 'approvals'), (req, res, next) => approvalController.create(req, res, next))
+router.put('/approvals/:id', auditLog('UPDATE_APPROVAL', 'approvals'), (req, res, next) => approvalController.update(req, res, next))
+router.delete('/approvals/:id', auditLog('DELETE_APPROVAL', 'approvals'), (req, res, next) => approvalController.delete(req, res, next))
+
+// Project Timelines
+router.get('/timelines', (req, res, next) => timelineController.getAll(req, res, next))
+router.get('/timelines/:id', (req, res, next) => timelineController.getOne(req, res, next))
+router.post('/timelines', auditLog('CREATE_TIMELINE', 'timelines'), (req, res, next) => timelineController.create(req, res, next))
+router.put('/timelines/:id', auditLog('UPDATE_TIMELINE', 'timelines'), (req, res, next) => timelineController.update(req, res, next))
+router.delete('/timelines/:id', auditLog('DELETE_TIMELINE', 'timelines'), (req, res, next) => timelineController.delete(req, res, next))
+
+// Handovers
+router.get('/handovers', (req, res, next) => handoverController.getAll(req, res, next))
+router.get('/handovers/:id', (req, res, next) => handoverController.getOne(req, res, next))
+router.post('/handovers', auditLog('CREATE_HANDOVER', 'handovers'), (req, res, next) => handoverController.create(req, res, next))
+router.put('/handovers/:id', auditLog('UPDATE_HANDOVER', 'handovers'), (req, res, next) => handoverController.update(req, res, next))
+router.delete('/handovers/:id', auditLog('DELETE_HANDOVER', 'handovers'), (req, res, next) => handoverController.delete(req, res, next))
+
+// Feedbacks
+router.get('/feedbacks', (req, res, next) => feedbackController.getAll(req, res, next))
+router.get('/feedbacks/:id', (req, res, next) => feedbackController.getOne(req, res, next))
+router.post('/feedbacks', auditLog('CREATE_FEEDBACK', 'feedbacks'), (req, res, next) => feedbackController.create(req, res, next))
+router.put('/feedbacks/:id', auditLog('UPDATE_FEEDBACK', 'feedbacks'), (req, res, next) => feedbackController.update(req, res, next))
+router.delete('/feedbacks/:id', auditLog('DELETE_FEEDBACK', 'feedbacks'), (req, res, next) => feedbackController.delete(req, res, next))
+
+// CMS
+router.get('/cms', (req, res, next) => cmsController.getAll(req, res, next))
+router.get('/cms/:id', (req, res, next) => cmsController.getOne(req, res, next))
+router.put('/cms/:id', auditLog('UPDATE_CMS', 'cms'), (req, res, next) => cmsController.update(req, res, next))
 
 // Server-Sent Events for real-time admin updates
 router.get('/events', (req, res) => {

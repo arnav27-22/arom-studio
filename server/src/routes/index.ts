@@ -19,7 +19,8 @@ router.get('/sync', async (_req, res, next) => {
     const { prisma } = await import('../database/prisma')
     const [visitors, pdfs, leads, invoices, logs, clients, projects,
       proposals, agreements, payments, notifications, recycleBin,
-      discoveryQuestionnaires, aiConversations, linkClicks] = await Promise.all([
+      discoveryQuestionnaires, aiConversations, linkClicks,
+      contentItems, assetItems, approvalItems, timelineItems, handoverItems, feedbackItems] = await Promise.all([
       prisma.visitor.findMany({ where: { deletedAt: null }, orderBy: { createdAt: 'desc' } }),
       prisma.generatedPDF.findMany({ where: { deletedAt: null }, orderBy: { createdAt: 'desc' } }),
       prisma.lead.findMany({ where: { deletedAt: null }, orderBy: { createdAt: 'desc' } }),
@@ -35,6 +36,12 @@ router.get('/sync', async (_req, res, next) => {
       prisma.discoveryForm.findMany({ where: { deletedAt: null }, orderBy: { createdAt: 'desc' } }),
       prisma.aIConversation.findMany({ where: { deletedAt: null }, orderBy: { lastActiveAt: 'desc' }, include: { messages: { orderBy: { timestamp: 'asc' } } } }),
       prisma.linkClick.findMany({ orderBy: { createdAt: 'desc' } }),
+      prisma.contentCollection.findMany({ where: { deletedAt: null }, orderBy: { createdAt: 'desc' } }),
+      prisma.asset.findMany({ where: { deletedAt: null }, orderBy: { uploadDate: 'desc' } }),
+      prisma.designApproval.findMany({ where: { deletedAt: null }, orderBy: { createdAt: 'desc' } }),
+      prisma.projectTimeline.findMany({ where: { deletedAt: null }, orderBy: { createdAt: 'desc' } }),
+      prisma.handover.findMany({ where: { deletedAt: null }, orderBy: { createdAt: 'desc' } }),
+      prisma.feedback.findMany({ where: { deletedAt: null }, orderBy: { createdAt: 'desc' } }),
     ])
     res.json({
       visitors, pdfs, leads, invoices, logs, linkClicks,
@@ -43,16 +50,16 @@ router.get('/sync', async (_req, res, next) => {
       proposals: proposals.length ? proposals : undefined,
       agreements: agreements.length ? agreements : undefined,
       payments: payments.length ? payments : undefined,
-      content: undefined,
-      assets: undefined,
-      approvals: undefined,
-      timelines: undefined,
-      handovers: undefined,
-      feedbacks: undefined,
+      content: contentItems.length ? contentItems : undefined,
+      assets: assetItems.length ? assetItems : undefined,
+      approvals: approvalItems.length ? approvalItems : undefined,
+      timelines: timelineItems.length ? timelineItems : undefined,
+      handovers: handoverItems.length ? handoverItems : undefined,
+      feedbacks: feedbackItems.length ? feedbackItems : undefined,
       notifications: notifications.length ? notifications : undefined,
       discoveryQuestionnaires,
       recycleBin, aiConversations,
-      cmsContent: undefined,
+      cmsContent: await prisma.dataStore.findMany({ where: { collection: 'cms' } }),
     })
   } catch (err) { next(err) }
 })

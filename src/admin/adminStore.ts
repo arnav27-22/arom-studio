@@ -524,6 +524,90 @@ export async function recordAdminLead(lead: Omit<AdminLead, 'id' | 'createdAt' |
   return created
 }
 
+export async function recordAdminClient(client: Omit<AdminClient, 'id' | 'createdAt'>): Promise<AdminClient | null> {
+  const created = await api('/api/admin/clients', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(client),
+  })
+  if (created?.id) {
+    __cache.clients = [created, ...__cache.clients]
+  }
+  return created
+}
+
+export async function recordAdminProposal(proposal: Omit<AdminProposal, 'id' | 'createdAt'>): Promise<AdminProposal | null> {
+  const created = await api('/api/admin/proposals', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(proposal),
+  })
+  if (created?.id) {
+    __cache.proposals = [created, ...__cache.proposals]
+  }
+  return created
+}
+
+export async function recordAdminAgreement(agreement: Omit<AdminAgreement, 'id' | 'createdAt'>): Promise<AdminAgreement | null> {
+  const created = await api('/api/admin/agreements', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(agreement),
+  })
+  if (created?.id) {
+    __cache.agreements = [created, ...__cache.agreements]
+  }
+  return created
+}
+
+export async function recordAdminPayment(payment: Omit<AdminPayment, 'id' | 'createdAt'>): Promise<AdminPayment | null> {
+  const created = await api('/api/admin/payments', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payment),
+  })
+  if (created?.id) {
+    __cache.payments = [created, ...__cache.payments]
+  }
+  return created
+}
+
+export async function recordAdminContentItem(item: Omit<AdminContentItem, 'id' | 'createdAt'>): Promise<AdminContentItem | null> {
+  const created = await api('/api/admin/content', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(item),
+  })
+  if (created?.id) {
+    __cache.content = [created, ...__cache.content]
+  }
+  return created
+}
+
+export async function recordAdminAsset(asset: Omit<AdminAssetFolder, 'id' | 'createdAt'>): Promise<AdminAssetFolder | null> {
+  const created = await api('/api/admin/assets', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(asset),
+  })
+  if (created?.id) {
+    __cache.assets = [created, ...__cache.assets]
+  }
+  return created
+}
+
+export async function recordAdminFeedback(feedback: Omit<AdminFeedback, 'id' | 'createdAt'>): Promise<AdminFeedback | null> {
+  const created = await api('/api/admin/feedbacks', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(feedback),
+  })
+  if (created?.id) {
+    __cache.feedbacks = [created, ...__cache.feedbacks]
+  }
+  return created
+}
+
 export async function recordAdminDiscoveryQuestionnaire(dq: Omit<AdminDiscoveryQuestionnaire, 'id' | 'createdAt' | 'status'>): Promise<AdminDiscoveryQuestionnaire | null> {
   const created = await api('/api/admin/discovery', {
     method: 'POST',
@@ -623,6 +707,42 @@ export async function emptyRecycleBin(): Promise<boolean> {
     __cache.recycleBin = []
   }
   return result?.success === true
+}
+
+export async function recordAdminProject(project: Omit<AdminProject, 'id' | 'createdAt'>): Promise<AdminProject | null> {
+  const created = await api('/api/admin/projects', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(project),
+  })
+  if (created?.id) {
+    __cache.projects = [created, ...__cache.projects]
+  }
+  return created
+}
+
+export async function recordAdminApproval(approval: Omit<AdminDesignApproval, 'id' | 'createdAt'>): Promise<AdminDesignApproval | null> {
+  const created = await api('/api/admin/approvals', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(approval),
+  })
+  if (created?.id) {
+    __cache.approvals = [created, ...__cache.approvals]
+  }
+  return created
+}
+
+export async function recordAdminHandover(handover: Omit<AdminHandover, 'id' | 'createdAt'>): Promise<AdminHandover | null> {
+  const created = await api('/api/admin/handovers', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(handover),
+  })
+  if (created?.id) {
+    __cache.handovers = [created, ...__cache.handovers]
+  }
+  return created
 }
 
 export async function recordAdminInvoice(invoice: Omit<AdminInvoice, 'id' | 'createdAt'>): Promise<AdminInvoice | null> {

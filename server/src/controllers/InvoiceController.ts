@@ -50,7 +50,7 @@ export class InvoiceController {
         },
       })
       wsManager.broadcastToAll('invoice:created', invoice)
-      res.json({ success: true, id: invoice.id })
+      res.json(invoice)
     } catch (err) {
       next(err)
     }
