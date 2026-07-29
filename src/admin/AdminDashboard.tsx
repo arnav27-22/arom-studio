@@ -219,7 +219,7 @@ export function AdminDashboard({ onLogout }: { onLogout: () => void }) {
           {mounted && (
             <>
               {/* System Dashboard Sections */}
-              {active === 'overview' && <Overview />}
+              {active === 'overview' && <Overview onNavigate={(section: string) => { setActive(section); window.scrollTo({ top: 0, behavior: 'smooth' }) }} onLogout={onLogout} />}
               {active === 'ai_overview' && <AIOverview />}
               {active === 'ai_conversations' && <AIConversations />}
               {active === 'ai_knowledge' && <AIKnowledge />}

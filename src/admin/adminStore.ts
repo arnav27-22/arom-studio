@@ -833,6 +833,67 @@ export async function recordAdminNotification(notification: Omit<AdminNotificati
   return created
 }
 
+export async function recordAdminTask(task: any): Promise<any> {
+  const created = await api('/api/admin/tasks', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(task),
+  })
+  if (created?.id) {
+    __cache.tasks = [created, ...(__cache.tasks || [])]
+  }
+  return created
+}
+
+export async function recordAdminMeeting(meeting: any): Promise<any> {
+  const created = await api('/api/admin/meetings', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(meeting),
+  })
+  if (created?.id) {
+    __cache.meetings = [created, ...(__cache.meetings || [])]
+  }
+  return created
+}
+
+export async function recordAdminExpense(expense: any): Promise<any> {
+  const created = await api('/api/admin/expenses', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(expense),
+  })
+  if (created?.id) {
+    __cache.expenses = [created, ...(__cache.expenses || [])]
+  }
+  return created
+}
+
+export async function recordAdminDocument(document: any): Promise<any> {
+  const created = await api('/api/admin/documents', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(document),
+  })
+  if (created?.id) {
+    __cache.documents = [created, ...(__cache.documents || [])]
+  }
+  return created
+}
+
+export async function recordAdminTimeline(timeline: any): Promise<any> {
+  const created = await api('/api/admin/timelines', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(timeline),
+  })
+  if (created?.id) {
+    __cache.timelines = [created, ...(__cache.timelines || [])]
+  }
+  return created
+}
+
+
 function initWebSocketHandlers() {
   if (__wsHandlersInitialized) return
   __wsHandlersInitialized = true
